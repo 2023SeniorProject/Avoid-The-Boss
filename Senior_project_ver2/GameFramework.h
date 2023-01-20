@@ -2,6 +2,8 @@
 //----CGameFramework 클래스
 //----1 Direct3D 디바이스 생성과 관리 
 //----2 화면 출력을 위한 처리 - 게임 객체 생성과 관리, 사용자 입력, 애니메이션 작업
+#include "GameTimer.h"
+
 class CGameFramework
 {
 private:
@@ -28,7 +30,7 @@ private:
 	UINT m_nSwapChainBufferIndex;
 	//현재 스왑 체인의 후면 버퍼 인덱스이다.
 
-	ID3D12Resource* m_ppd3dRenderTargetBuffers[m_nSwapChainBuffers];
+	ID3D12Resource* m_ppd3dSwapChainBackBuffers[m_nSwapChainBuffers];
 	ID3D12DescriptorHeap* m_pd3dRtvDescriptorHeap;
 	UINT m_nRtvDescriptorIncrementSize;
 	//렌더 타겟 버퍼, 서술자 힙 인터페이스 포인터, 렌더 타겟 서술자 원소의 크기이다.
@@ -54,7 +56,12 @@ private:
 	D3D12_VIEWPORT m_d3dViewport;
 	D3D12_RECT m_d3dScissorRect;
 	//뷰포트와 씨저 사각형이다. 
+private:
+	//다음은 게임 프레임워크에서 사용할 타이머이다. 
+	CGameTimer m_GameTimer;
 
+	//다음은 프레임 레이트를 주 윈도우의 캡션에 출력하기 위한 문자열이다. 
+	_TCHAR m_pszFrameRate[50];
 public:
 	CGameFramework();
 	~CGameFramework();
@@ -92,6 +99,8 @@ public:
 	LRESULT CALLBACK OnProcessingWindowMessage(HWND hWnd, UINT nMessageID, WPARAM wParam,
 		LPARAM lParam);
 	//윈도우의 메시지(키보드, 마우스 입력)를 처리하는 함수이다. 
-
+public:
+	//----전체 화면 모드 F9
+	void ChangeSwapChainState();
 };
 

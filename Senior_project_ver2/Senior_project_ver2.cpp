@@ -108,25 +108,25 @@ ATOM MyRegisterClass(HINSTANCE hInstance)
 BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 {
    hInst = hInstance; // 인스턴스 핸들을 전역 변수에 저장합니다.
+
    DWORD dwStyle = WS_OVERLAPPED | WS_CAPTION | WS_MINIMIZEBOX | WS_SYSMENU |
        WS_BORDER;
    RECT rc = { 0, 0,FRAME_BUFFER_WIDTH, FRAME_BUFFER_HEIGHT };
    AdjustWindowRect(&rc, dwStyle, FALSE);   //윈도우가 원하는 클라이언트 영역 크기 가지도록 윈도우크기 계산
-
    HWND hMainWnd = CreateWindow(szWindowClass, szTitle, dwStyle, CW_USEDEFAULT,
        CW_USEDEFAULT, rc.right - rc.left, rc.bottom - rc.top, NULL, NULL, hInstance,
        NULL);
-
-   if (!hMainWnd)
-   {
-      return FALSE;
-   }
+   if (!hMainWnd)return (FALSE);
 
    //----프레임워크 객체 초기화
    gGameFramework.OnCreate(hInstance, hMainWnd);
 
    ShowWindow(hMainWnd, nCmdShow);
    UpdateWindow(hMainWnd);
+
+#ifdef _WITH_SWAPCHAIN_FULLSCREEN_STATE
+   gGameFramework.ChangeSwapChainState();
+#endif
 
    return TRUE;
 }
@@ -145,31 +145,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
     switch (message)
     {
-    //case WM_COMMAND:
-    //    {
-    //        int wmId = LOWORD(wParam);
-    //        // 메뉴 선택을 구문 분석합니다:
-    //        switch (wmId)
-    //        {
-    //        case IDM_ABOUT:
-    //            DialogBox(hInst, MAKEINTRESOURCE(IDD_ABOUTBOX), hWnd, About);
-    //            break;
-    //        case IDM_EXIT:
-    //            DestroyWindow(hWnd);
-    //            break;
-    //        default:
-    //            return DefWindowProc(hWnd, message, wParam, lParam);
-    //        }
-    //    }
-    //    break;
-    //case WM_PAINT:
-    //    {
-    //        PAINTSTRUCT ps;
-    //        HDC hdc = BeginPaint(hWnd, &ps);
-    //        // TODO: 여기에 hdc를 사용하는 그리기 코드를 추가합니다...
-    //        EndPaint(hWnd, &ps);
-    //    }
-    //    break;
     case WM_SIZE:
     case WM_LBUTTONDOWN:
     case WM_LBUTTONUP:
@@ -180,6 +155,31 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
     case WM_KEYUP:
         gGameFramework.OnProcessingWindowMessage(hWnd, message, wParam, lParam);
         break;
+    case WM_COMMAND:
+    {
+        int wmId = LOWORD(wParam);
+        // 메뉴 선택을 구문 분석합니다:
+        switch (wmId)
+        {
+        case IDM_ABOUT:
+            DialogBox(hInst, MAKEINTRESOURCE(IDD_ABOUTBOX), hWnd, About);
+            break;
+        case IDM_EXIT:
+            DestroyWindow(hWnd);
+            break;
+        default:
+            return DefWindowProc(hWnd, message, wParam, lParam);
+        }
+    }
+    break;
+    case WM_PAINT:
+    {
+        PAINTSTRUCT ps;
+        HDC hdc = BeginPaint(hWnd, &ps);
+        // TODO: 여기에 hdc를 사용하는 그리기 코드를 추가합니다...
+        EndPaint(hWnd, &ps);
+    }
+    break;
     case WM_DESTROY:
         ::PostQuitMessage(0);
         break;

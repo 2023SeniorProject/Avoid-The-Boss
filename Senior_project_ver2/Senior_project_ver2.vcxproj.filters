@@ -30,6 +30,9 @@
     <ClInclude Include="GameFramework.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
+    <ClInclude Include="GameTimer.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Senior_project_ver2.cpp">
@@ -39,6 +42,9 @@
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="GameFramework.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="GameTimer.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
   </ItemGroup>

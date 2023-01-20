@@ -6,6 +6,7 @@
 
 #include "targetver.h"
 #define WIN32_LEAN_AND_MEAN  // 거의 사용되지 않는 내용을 Windows 헤더에서 제외합니다.
+#pragma comment(lib,"winmm.lib")
 
 //----Windows 헤더 파일
 #include <windows.h>
@@ -15,11 +16,14 @@
 #include <malloc.h>
 #include <memory.h>
 #include <tchar.h>
+#include <timeapi.h>
 
 
 //----클라이언트 영역 크기 및 후면 버퍼 크기
-#define FRAME_BUFFER_WIDTH 800
-#define FRAME_BUFFER_HEIGHT 600
+#define FRAME_BUFFER_WIDTH 1080
+#define FRAME_BUFFER_HEIGHT 790
+
+//#define _WITH_SWAPCHAIN_FULLSCREEN_STATE
 
 //----D3D 라이브러리 헤더 포함
 #include <string>
@@ -49,6 +53,8 @@ using Microsoft::WRL::ComPtr;
 #pragma comment(lib, "dxgi.lib")
 
 #pragma comment(lib, "dxguid.lib")
+
+
 
 
 

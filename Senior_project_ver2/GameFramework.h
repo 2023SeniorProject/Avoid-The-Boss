@@ -3,6 +3,7 @@
 //----1 Direct3D 디바이스 생성과 관리 
 //----2 화면 출력을 위한 처리 - 게임 객체 생성과 관리, 사용자 입력, 애니메이션 작업
 #include "GameTimer.h"
+#include "Scene.h"
 
 class CGameFramework
 {
@@ -49,7 +50,7 @@ private:
 	//그래픽스 파이프라인 상태 객체에 대한 인터페이스 포인터이다.
 
 	ID3D12Fence* m_pd3dFence;
-	UINT64 m_nFenceValue;
+	UINT64 m_nFenceValues[m_nSwapChainBuffers];
 	HANDLE m_hFenceEvent;
 	//펜스 인터페이스 포인터, 펜스의 값, 이벤트 핸들이다.
 
@@ -62,6 +63,8 @@ private:
 
 	//다음은 프레임 레이트를 주 윈도우의 캡션에 출력하기 위한 문자열이다. 
 	_TCHAR m_pszFrameRate[50];
+private:
+	CScene* m_pScene;
 public:
 	CGameFramework();
 	~CGameFramework();
@@ -102,5 +105,9 @@ public:
 public:
 	//----전체 화면 모드 F9
 	void ChangeSwapChainState();
+
+public:
+	void MoveToNextFrame();
+
 };
 

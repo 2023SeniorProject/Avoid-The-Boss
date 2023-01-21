@@ -6,10 +6,11 @@
 
 #include "targetver.h"
 #define WIN32_LEAN_AND_MEAN  // 거의 사용되지 않는 내용을 Windows 헤더에서 제외합니다.
-#pragma comment(lib,"winmm.lib")
 
 //----Windows 헤더 파일
 #include <windows.h>
+
+#pragma comment(lib,"winmm.lib")
 
 //----C 런타임 헤더 파일
 #include <stdlib.h>
@@ -53,6 +54,13 @@ using Microsoft::WRL::ComPtr;
 #pragma comment(lib, "dxgi.lib")
 
 #pragma comment(lib, "dxguid.lib")
+
+//----버퍼 리소스 생성 함수
+extern ID3D12Resource* CreateBufferResource(ID3D12Device* pd3dDevice,
+	ID3D12GraphicsCommandList* pd3dCommandList, void* pData, UINT nBytes, D3D12_HEAP_TYPE
+	d3dHeapType = D3D12_HEAP_TYPE_UPLOAD, D3D12_RESOURCE_STATES d3dResourceStates =
+	D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER, ID3D12Resource** ppd3dUploadBuffer =
+	NULL);
 
 
 

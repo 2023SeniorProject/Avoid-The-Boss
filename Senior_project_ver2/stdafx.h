@@ -21,8 +21,8 @@
 
 
 //----클라이언트 영역 크기 및 후면 버퍼 크기
-#define FRAME_BUFFER_WIDTH 1080
-#define FRAME_BUFFER_HEIGHT 790
+#define FRAME_BUFFER_WIDTH 800
+#define FRAME_BUFFER_HEIGHT 600
 
 //#define _WITH_SWAPCHAIN_FULLSCREEN_STATE
 
@@ -50,7 +50,7 @@ using Microsoft::WRL::ComPtr;
 //----임포트 라이브러리
 #pragma comment(lib, "d3dcompiler.lib")
 #pragma comment(lib,"d3d12.lib") //정적 Direct3D 12 API 스텁 라이브러리
-#pragma comment(lib,"D3D12.lib") //정적 Direct3D 12 API 스텁 라이브러리
+//#pragma comment(lib,"D3D12.lib") //정적 Direct3D 12 API 스텁 라이브러리
 #pragma comment(lib, "dxgi.lib")
 
 #pragma comment(lib, "dxguid.lib")

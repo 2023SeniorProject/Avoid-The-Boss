@@ -10,9 +10,8 @@ private:
 	HINSTANCE m_hInstance;
 	HWND m_hWnd;
 
-	int m_nWndClientWidth;
-	int m_nWndClientHeight;
-
+	int	m_nWndClientWidth = FRAME_BUFFER_WIDTH;
+	int	m_nWndClientHeight = FRAME_BUFFER_HEIGHT;
 
 	IDXGIFactory4* m_pdxgiFactory;
 	//DXGI 팩토리 인터페이스에 대한 포인터이다. 
@@ -71,14 +70,18 @@ public:
 	void OnDestroy();
 
 	void CreateSwapChain();
-	void CreateRtvAndDsvDescriptorHeaps();
 	void CreateDirect3DDevice();	//createDirect3DDisplay()
 	void CreateCommandQueueAndList();
 	//스왑 체인, 디바이스, 서술자 힙, 명령 큐/할당자/리스트를 생성하는 함수이다. 
 
+	void CreateRtvAndDsvDescriptorHeaps();
+
 	void CreateRenderTargetViews();
 	void CreateDepthStencilView();
 	//렌더 타겟 뷰와 깊이-스텐실 뷰를 생성하는 함수이다.
+
+	//----전체 화면 모드 F9
+	void ChangeSwapChainState();
 
 	void BuildObjects();
 	void ReleaseObjects();
@@ -91,6 +94,7 @@ public:
 
 	void WaitForGpuComplete();
 	//CPU와 GPU를 동기화하는 함수이다. 
+	void MoveToNextFrame();
 
 	void OnProcessingMouseMessage(HWND hWnd, UINT nMessageID, WPARAM wParam, LPARAM
 		lParam);
@@ -99,8 +103,5 @@ public:
 	LRESULT CALLBACK OnProcessingWindowMessage(HWND hWnd, UINT nMessageID, WPARAM wParam,
 		LPARAM lParam);
 	//윈도우의 메시지(키보드, 마우스 입력)를 처리하는 함수이다. 
-public:
-	//----전체 화면 모드 F9
-	void ChangeSwapChainState();
 };
 

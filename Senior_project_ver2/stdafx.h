@@ -6,7 +6,7 @@
 
 #include "targetver.h"
 #define WIN32_LEAN_AND_MEAN  // 거의 사용되지 않는 내용을 Windows 헤더에서 제외합니다.
-#pragma comment(lib,"winmm.lib")
+
 
 //----Windows 헤더 파일
 #include <windows.h>
@@ -17,7 +17,7 @@
 #include <memory.h>
 #include <tchar.h>
 #include <timeapi.h>
-
+#include <MMSystem.h>
 
 //----클라이언트 영역 크기 및 후면 버퍼 크기
 #define FRAME_BUFFER_WIDTH 1080
@@ -54,7 +54,7 @@ using Microsoft::WRL::ComPtr;
 
 #pragma comment(lib, "dxguid.lib")
 
-
+#pragma comment(lib,"winmm.lib")
 
 
 

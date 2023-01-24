@@ -50,9 +50,9 @@ void CScene::CreateGraphicsPipelineState(ID3D12Device* pd3dDevice)
 #if defined(_DEBUG)
 	nCompileFlags = D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION;
 #endif
-	D3DCompileFromFile(L"Shaders.hlsl", NULL, NULL, "VSMain", "vs_5_1", nCompileFlags, 0,
+	D3DCompileFromFile(L"C:\\Users\\aeiou\\Desktop\\SeniorProject\\Avoid-The-Boss\\Senior_project_ver2\\Shaders.hlsl", NULL, NULL, "VSMain", "vs_5_1", nCompileFlags, 0,
 		&pd3dVertexShaderBlob, NULL);
-	D3DCompileFromFile(L"Shaders.hlsl", NULL, NULL, "PSMain", "ps_5_1", nCompileFlags, 0,
+	D3DCompileFromFile(L"C:\\Users\\aeiou\\Desktop\\SeniorProject\\Avoid-The-Boss\\Senior_project_ver2\\Shaders.hlsl", NULL, NULL, "PSMain", "ps_5_1", nCompileFlags, 0,
 		&pd3dPixelShaderBlob, NULL);
 
 	//래스터라이저 상태를 설정한다. 
@@ -116,6 +116,9 @@ void CScene::CreateGraphicsPipelineState(ID3D12Device* pd3dDevice)
 
 void CScene::BuildObjects(ID3D12Device* pd3dDevice)
 {
+	CreateGraphicsRootSignature(pd3dDevice);
+
+	CreateGraphicsPipelineState(pd3dDevice);
 }
 
 void CScene::ReleaseObjects()
@@ -145,6 +148,7 @@ void CScene::PrepareRender(ID3D12GraphicsCommandList* pd3dCommandList)
 
 void CScene::Render(ID3D12GraphicsCommandList* pd3dCommandList)
 {
+	PrepareRender(pd3dCommandList);
 	//정점 3개를 사용하여 렌더링한다. 
 	pd3dCommandList->DrawInstanced(3, 1, 0, 0);
 }

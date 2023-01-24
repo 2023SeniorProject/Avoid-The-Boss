@@ -4,12 +4,9 @@ const ULONG MAX_SAMPLE_COUNT = 50; // 50회의 프레임 처리시간을 누적하여 평균한다
 class CGameTimer
 {
 private:
-	//bool m_bHardwareHasPerformanceCounter; //컴퓨터가 Performance Counter를 가지고 있는 가
 	double			m_fTimeScale; //Scale Counter의 양
 	float			m_fTimeElapsed; //마지막 프레임 이후 지나간 시간
 
-	//__int64 m_nCurrentTime; //현재의 시간
-	//__int64 m_nLastTime; //마지막 프레임의 시간
 	__int64			m_nBasePerformanceCounter;
 	__int64			m_nPausedPerformanceCounter;
 	__int64			m_nStopPerformanceCounter;
@@ -32,10 +29,10 @@ public:
 	CGameTimer();
 	virtual ~CGameTimer();
 
+	void Tick(float fLockFPS = 0.0f); // 타이머 시간 갱신
 	void Start();
 	void Stop();
 	void Reset();
-	void Tick(float fLockFPS = 0.0f); // 타이머 시간 갱신
 	
 	unsigned long GetFrameRate(LPTSTR lpszString = NULL, int nCharacters = 0); // 프레임 레이트 반환
 	float GetTimeElapsed(); // 프레임 평균 경과 시간 반환

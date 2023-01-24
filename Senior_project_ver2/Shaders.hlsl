@@ -1,7 +1,7 @@
-//float4 main( float4 pos : POSITION ) : SV_POSITION
-//{
-//	return pos;
-//}
+float4 main( float4 pos : POSITION ) : SV_POSITION
+{
+	return pos;
+}
 
 //정점 셰이더를 정의한다. 
 float4 VSMain(uint nVertexID : SV_VertexID) : SV_POSITION

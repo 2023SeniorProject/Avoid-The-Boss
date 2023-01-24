@@ -68,6 +68,11 @@
     </Image>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Shaders.hlsl" />
+    <FxCompile Include="Shaders2.hlsl">
+      <Filter>리소스 파일</Filter>
+    </FxCompile>
+    <FxCompile Include="Shaders.hlsl">
+      <Filter>리소스 파일</Filter>
+    </FxCompile>
   </ItemGroup>
 </Project>

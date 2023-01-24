@@ -4,10 +4,10 @@
 #include <sqlext.h>  
 class USER_DB_MANAGER
 {
-    SQLHENV henv;
-    SQLHDBC hdbc;
-    SQLHSTMT hstmt;
-    SQLRETURN retcode;
+    SQLHENV henv = 0;
+    SQLHDBC hdbc = 0;
+    SQLHSTMT hstmt = 0;
+    SQLRETURN retcode = 0;
     SQLLEN cb_cid, cb_status;
 public:
     SQLINTEGER user_cid = -1;

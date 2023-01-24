@@ -15,7 +15,7 @@ public:
 		_comp_type = COMP_TYPE::OP_RECV;
 		ZeroMemory(&_over, sizeof(_over));
 	}
-	OVER_EXP(int8* packet)
+	OVER_EXP(char* packet)
 	{
 		_wsabuf.buf = _buf;
 		_wsabuf.len = packet[0];
@@ -30,13 +30,14 @@ public:
 	COMP_TYPE _comp_type;
 	WSAOVERLAPPED _over;
 	WSABUF _wsabuf;
-	int8 _buf[BUF_SIZE];
+	char _buf[BUF_SIZE];
 	
 };
 
 class MSession
 {
 public:
+	MSession() {}
 	MSession(SOCKET c_sock, int32 cid): _sock(c_sock), _cid(cid) {}
 	MSession(const MSession& other) = delete; // 복사 생성 금지
 	~MSession() { closesocket(_sock); }

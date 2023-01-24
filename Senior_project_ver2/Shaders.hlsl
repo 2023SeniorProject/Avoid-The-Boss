@@ -1,3 +1,7 @@
+float4 main( float4 pos : POSITION ) : SV_POSITION
+{
+	return pos;
+}
 //정점 셰이더의 입력을 위한 구조체를 선언한다. 
 struct VS_INPUT
 {

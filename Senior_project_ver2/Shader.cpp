@@ -210,8 +210,7 @@ void CShader::ReleaseObjects()
 void CShader::OnPrepareRender(ID3D12GraphicsCommandList* pd3dCommandList)
 {
 	//파이프라인에 그래픽스 상태 객체를 설정한다. 
-	if(pd3dCommandList)
-		pd3dCommandList->SetPipelineState(m_ppd3dPipelineStates[0]);
+	pd3dCommandList->SetPipelineState(m_ppd3dPipelineStates[0]);
 }
 
 void CShader::Render(ID3D12GraphicsCommandList* pd3dCommandList)

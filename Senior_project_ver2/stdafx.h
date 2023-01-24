@@ -10,15 +10,13 @@
 //----Windows 헤더 파일
 #include <windows.h>
 
-#pragma comment(lib,"winmm.lib")
-
 //----C 런타임 헤더 파일
 #include <stdlib.h>
 #include <malloc.h>
 #include <memory.h>
 #include <tchar.h>
 #include <timeapi.h>
-
+#include <MMSystem.h>
 
 //----클라이언트 영역 크기 및 후면 버퍼 크기
 #define FRAME_BUFFER_WIDTH 800
@@ -55,6 +53,7 @@ using Microsoft::WRL::ComPtr;
 
 #pragma comment(lib, "dxguid.lib")
 
+#pragma comment(lib,"winmm.lib")
 //----버퍼 리소스 생성 함수
 extern ID3D12Resource* CreateBufferResource(ID3D12Device* pd3dDevice,
 	ID3D12GraphicsCommandList* pd3dCommandList, void* pData, UINT nBytes, D3D12_HEAP_TYPE

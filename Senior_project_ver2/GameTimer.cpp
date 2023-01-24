@@ -3,18 +3,13 @@
 
 CGameTimer::CGameTimer()
 {
-	if (::QueryPerformanceFrequency((LARGE_INTEGER*)&m_nPerformanceFrequency))
-	{
-		m_bHardwareHasPerformanceCounter = TRUE;
-		::QueryPerformanceCounter((LARGE_INTEGER*)&m_nLastTime);
-		m_fTimeScale = 1.0f / m_nPerformanceFrequency;
-	}
-	else
-	{
-		m_bHardwareHasPerformanceCounter = FALSE;
-		m_nLastTime = ::timeGetTime();
-		m_fTimeScale = 0.001f;
-	}
+	::QueryPerformanceFrequency((LARGE_INTEGER*)&m_nPerformanceFrequencyPerSec);
+	::QueryPerformanceCounter((LARGE_INTEGER*)&m_nLastPerformanceCounter);
+	m_fTimeScale = 1.0 / (double)m_nPerformanceFrequencyPerSec;
+
+	m_nBasePerformanceCounter = m_nLastPerformanceCounter;
+	m_nPausedPerformanceCounter = 0;
+	m_nStopPerformanceCounter = 0;
 
 	m_nSampleCount = 0;
 	m_nCurrentFrameRate = 0;
@@ -26,32 +21,53 @@ CGameTimer::~CGameTimer()
 {
 }
 
+void CGameTimer::Start()
+{
+	__int64 nPerformanceCounter;
+	::QueryPerformanceCounter((LARGE_INTEGER*)&nPerformanceCounter);
+	if (m_bStopped)
+	{
+		m_nPausedPerformanceCounter += (nPerformanceCounter - m_nStopPerformanceCounter);
+		m_nLastPerformanceCounter = nPerformanceCounter;
+		m_nStopPerformanceCounter = 0;
+		m_bStopped = false;
+	}
+}
+
+void CGameTimer::Stop()
+{
+	if (!m_bStopped)
+	{
+		::QueryPerformanceCounter((LARGE_INTEGER*)&m_nStopPerformanceCounter);
+		m_bStopped = true;
+	}
+}
+
 void CGameTimer::Reset()
 {
 	__int64 nPerformanceCounter;
 	::QueryPerformanceCounter((LARGE_INTEGER*)&nPerformanceCounter);
 
-	m_nLastTime = nPerformanceCounter;
-	m_nCurrentTime = nPerformanceCounter;
+	m_nBasePerformanceCounter = nPerformanceCounter;
+	m_nLastPerformanceCounter = nPerformanceCounter;
+	m_nStopPerformanceCounter = 0;
 
 	m_bStopped = false;
 }
 
 void CGameTimer::Tick(float fLockFPS)
 {
-	if (m_bHardwareHasPerformanceCounter)
+	if (m_bStopped)
 	{
-		::QueryPerformanceCounter((LARGE_INTEGER*)&m_nCurrentTime);
-	}
-	else
-	{
-		m_nCurrentTime = ::timeGetTime();
+		m_fTimeElapsed = 0.0f;
+		return;
 	}
 
 	//마지막으로 이 함수를 호출한 이후 경과한 시간을 계산한다. 
-	float fTimeElapsed = (m_nCurrentTime - m_nLastTime) * m_fTimeScale;
+	::QueryPerformanceCounter((LARGE_INTEGER*)&m_nCurrentPerformanceCounter);
+	float fTimeElapsed = float((m_nCurrentPerformanceCounter - m_nLastPerformanceCounter) * m_fTimeScale);
 
-	if (fLockFPS > 0.0f)
+	/*if (fLockFPS > 0.0f)
 	{
 		//이 함수의 파라메터(fLockFPS)가 0보다 크면 이 시간만큼 호출한 함수를 기다리게 한다. 
 		while (fTimeElapsed < (1.0f / fLockFPS))
@@ -67,17 +83,16 @@ void CGameTimer::Tick(float fLockFPS)
 			//마지막으로 이 함수를 호출한 이후 경과한 시간을 계산한다. 
 			fTimeElapsed = (m_nCurrentTime - m_nLastTime) * m_fTimeScale;
 		}
-	}
+	}*/
 
 	//현재 시간을 m_nLastTime에 저장한다. 
-	m_nLastTime = m_nCurrentTime;
+	m_nLastPerformanceCounter = m_nCurrentPerformanceCounter;
 
 	/* 마지막 프레임 처리 시간과 현재 프레임 처리 시간의 차이가 1초보다 작으면 현재 프레임 처리 시간
 을 m_fFrameTime[0]에 저장한다. */
 	if (fabsf(fTimeElapsed - m_fTimeElapsed) < 1.0f)
 	{
-		::memmove(&m_fFrameTime[1], m_fFrameTime, (MAX_SAMPLE_COUNT - 1) *
-			sizeof(float));
+		::memmove(&m_fFrameTime[1], m_fFrameTime, (MAX_SAMPLE_COUNT - 1) * sizeof(float));
 		m_fFrameTime[0] = fTimeElapsed;
 		if (m_nSampleCount < MAX_SAMPLE_COUNT) m_nSampleCount++;
 	}
@@ -112,4 +127,10 @@ unsigned long  CGameTimer::GetFrameRate(LPTSTR lpszString, int nCharacters)
 float CGameTimer::GetTimeElapsed()
 {
 	return(m_fTimeElapsed);
+}
+
+float CGameTimer::GetTotalTime()
+{
+	if (m_bStopped) return(float(((m_nStopPerformanceCounter - m_nPausedPerformanceCounter) - m_nBasePerformanceCounter) * m_fTimeScale));
+	return(float(((m_nCurrentPerformanceCounter - m_nPausedPerformanceCounter) - m_nBasePerformanceCounter) * m_fTimeScale));
 }

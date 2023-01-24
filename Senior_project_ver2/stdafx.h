@@ -18,12 +18,6 @@
 #include <timeapi.h>
 #include <MMSystem.h>
 
-//----클라이언트 영역 크기 및 후면 버퍼 크기
-#define FRAME_BUFFER_WIDTH 800
-#define FRAME_BUFFER_HEIGHT 600
-
-//#define _WITH_SWAPCHAIN_FULLSCREEN_STATE
-
 //----D3D 라이브러리 헤더 포함
 #include <string>
 #include <wrl.h>
@@ -39,6 +33,7 @@
 #include <DirectXCollision.h>
 
 #include <DXGIDebug.h>
+#include <D3d12SDKLayers.h>
 
 using namespace DirectX;
 using namespace DirectX::PackedVector;
@@ -47,13 +42,19 @@ using Microsoft::WRL::ComPtr;
 
 //----임포트 라이브러리
 #pragma comment(lib, "d3dcompiler.lib")
-#pragma comment(lib,"d3d12.lib") //정적 Direct3D 12 API 스텁 라이브러리
-//#pragma comment(lib,"D3D12.lib") //정적 Direct3D 12 API 스텁 라이브러리
+#pragma comment(lib, "d3d12.lib") //정적 Direct3D 12 API 스텁 라이브러리
 #pragma comment(lib, "dxgi.lib")
-
 #pragma comment(lib, "dxguid.lib")
-
 #pragma comment(lib,"winmm.lib")
+
+
+//----클라이언트 영역 크기 및 후면 버퍼 크기
+#define FRAME_BUFFER_WIDTH 800
+#define FRAME_BUFFER_HEIGHT 600
+
+//#define _WITH_SWAPCHAIN_FULLSCREEN_STATE
+
+
 //----버퍼 리소스 생성 함수
 extern ID3D12Resource* CreateBufferResource(ID3D12Device* pd3dDevice,
 	ID3D12GraphicsCommandList* pd3dCommandList, void* pData, UINT nBytes, D3D12_HEAP_TYPE

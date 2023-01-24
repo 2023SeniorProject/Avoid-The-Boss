@@ -13,7 +13,6 @@ private:
 	__int64			m_nCurrentPerformanceCounter;
 	__int64			m_nLastPerformanceCounter;
 
-
 	__int64			m_nPerformanceFrequencyPerSec; //컴퓨터의 Performance Frequency
 
 	float			m_fFrameTime[MAX_SAMPLE_COUNT]; //프레임 시간을 누적하기 위한 배열

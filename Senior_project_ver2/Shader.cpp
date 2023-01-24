@@ -103,13 +103,13 @@ D3D12_DEPTH_STENCIL_DESC CShader::CreateDepthStencilState()
 //정점 셰이더 바이트 코드를 생성(컴파일)한다. 
 D3D12_SHADER_BYTECODE CShader::CreateVertexShader(ID3DBlob** ppd3dShaderBlob)
 {
-	return(CompileShaderFromFile(L"Shaders.hlsl", "VSMain", "vs_5_1", ppd3dShaderBlob));
+	return(CompileShaderFromFile(L"C:\\Users\\aeiou\\Desktop\\SeniorProject\\Avoid-The-Boss\\Senior_project_ver2\\Shaders.hlsl", "VSMain", "vs_5_1", ppd3dShaderBlob));
 }
 
 //픽셀 셰이더 바이트 코드를 생성(컴파일)한다. 
 D3D12_SHADER_BYTECODE CShader::CreatePixelShader(ID3DBlob** ppd3dShaderBlob)
 {
-	return(CompileShaderFromFile(L"Shaders.hlsl", "PSMain", "ps_5_1", ppd3dShaderBlob));
+	return(CompileShaderFromFile(L"C:\\Users\\aeiou\\Desktop\\SeniorProject\\Avoid-The-Boss\\Senior_project_ver2\\Shaders.hlsl", "PSMain", "ps_5_1", ppd3dShaderBlob));
 }
 
 //셰이더 소스 코드를 컴파일하여 바이트 코드 구조체를 반환한다. 
@@ -118,8 +118,7 @@ D3D12_SHADER_BYTECODE CShader::CompileShaderFromFile( const WCHAR* pszFileName, 
 	UINT nCompileFlags = 0;
 #if defined(_DEBUG)
 	nCompileFlags = D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION;
-#endif
-	//Microsoft HLSL(High Level Shader Language) 코드를 지정된 대상에 대한 바이트코드로 컴파일
+#endif //Microsoft HLSL(High Level Shader Language) 코드를 지정된 대상에 대한 바이트코드로 컴파일
 	::D3DCompileFromFile(pszFileName, NULL, NULL, pszShaderName, pszShaderProfile,
 		nCompileFlags, 0, ppd3dShaderBlob, NULL);
 

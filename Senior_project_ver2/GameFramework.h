@@ -62,8 +62,10 @@ private:
 
 	//다음은 프레임 레이트를 주 윈도우의 캡션에 출력하기 위한 문자열이다. 
 	_TCHAR						m_pszFrameRate[50];
+
 private:
 	CScene*						m_pScene;
+
 public:
 	CGameFramework();
 	~CGameFramework();

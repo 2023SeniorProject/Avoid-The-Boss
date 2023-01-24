@@ -3,27 +3,28 @@
 
 CGameFramework::CGameFramework()
 {
-	m_pdxgiFactory = NULL;
-	m_pdxgiSwapChain = NULL;
-	m_pd3dDevice = NULL;
+	//m_pdxgiFactory = NULL;
+	//m_pdxgiSwapChain = NULL;
+	//m_pd3dDevice = NULL;
 
-	m_pd3dCommandAllocator = NULL;
-	m_pd3dCommandQueue = NULL;
-	m_pd3dCommandList = NULL;
+	//m_pd3dCommandAllocator = NULL;
+	//m_pd3dCommandQueue = NULL;
+	//m_pd3dCommandList = NULL;
+	_tcscpy_s(m_pszFrameRate, _T("LapProject ("));
 
 	for (int i = 0; i < m_nSwapChainBuffers; i++) m_ppd3dSwapChainBackBuffers[i] = NULL;
 
-	m_pd3dRtvDescriptorHeap = NULL;
-	m_nRtvDescriptorIncrementSize = 0;
+	//m_pd3dRtvDescriptorHeap = NULL;
+	//m_nRtvDescriptorIncrementSize = 0;
 
-	m_pd3dDepthStencilBuffer = NULL;
-	m_pd3dDsvDescriptorHeap = NULL;
-	m_nDsvDescriptorIncrementSize = 0;
+	//m_pd3dDepthStencilBuffer = NULL;
+	//m_pd3dDsvDescriptorHeap = NULL;
+	//m_nDsvDescriptorIncrementSize = 0;
 
-	m_nSwapChainBufferIndex = 0;
+	//m_nSwapChainBufferIndex = 0;
 
-	m_hFenceEvent = NULL;
-	m_pd3dFence = NULL;
+	//m_hFenceEvent = NULL;
+	//m_pd3dFence = NULL;
 
 	for (int i = 0; i < m_nSwapChainBuffers; i++) m_nFenceValues[i] = 0;
 	m_pScene = NULL;
@@ -31,7 +32,7 @@ CGameFramework::CGameFramework()
 	m_d3dViewport = { 0, 0, FRAME_BUFFER_WIDTH, FRAME_BUFFER_HEIGHT, 0.0f, 1.0f };
 	m_d3dScissorRect = { 0, 0, FRAME_BUFFER_WIDTH, FRAME_BUFFER_HEIGHT };
 
-	_tcscpy_s(m_pszFrameRate, _T("LapProject ("));
+
 }
 
 CGameFramework::~CGameFramework()
@@ -55,7 +56,6 @@ bool CGameFramework::OnCreate(HINSTANCE hInstance, HWND hMainWnd)
 	BuildObjects();
 
 	m_pScene->CreateGraphicsRootSignature(m_pd3dDevice);
-	m_pScene->CreateGraphicsPipelineState(m_pd3dDevice);
 
 	return(true);
 }
@@ -370,13 +370,11 @@ void CGameFramework::FrameAdvance()
 	m_GameTimer.Tick(0.0f);
 	
 	ProcessInput();
-
 	AnimateObjects();
 	
 	HRESULT hResult = m_pd3dCommandAllocator->Reset();
 	hResult = m_pd3dCommandList->Reset(m_pd3dCommandAllocator, NULL);
 	//명령 할당자와 명령 리스트를 리셋한다.
-
 	m_pd3dCommandList->RSSetViewports(1, &m_d3dViewport);
 	m_pd3dCommandList->RSSetScissorRects(1, &m_d3dScissorRect);
 	//뷰포트와 씨저 사각형을 설정한다.
@@ -397,6 +395,7 @@ void CGameFramework::FrameAdvance()
 	D3D12_CPU_DESCRIPTOR_HANDLE d3dRtvCPUDescriptorHandle = m_pd3dRtvDescriptorHeap->GetCPUDescriptorHandleForHeapStart();
 	d3dRtvCPUDescriptorHandle.ptr += (m_nSwapChainBufferIndex * m_nRtvDescriptorIncrementSize);
 	//현재의 렌더 타겟에 해당하는 서술자의 CPU 주소(핸들)를 계산한다.
+
 	D3D12_CPU_DESCRIPTOR_HANDLE d3dDsvCPUDescriptorHandle = m_pd3dDsvDescriptorHeap->GetCPUDescriptorHandleForHeapStart();
 	//깊이-스텐실 서술자의 CPU 주소를 계산한다. 
 
@@ -413,9 +412,9 @@ void CGameFramework::FrameAdvance()
 	D3D12_CLEAR_FLAG_DEPTH | D3D12_CLEAR_FLAG_STENCIL, 1.0f, 0, 0, NULL);
 	//원하는 값으로 깊이-스텐실(뷰)을 지운다.
 
-	if (m_pScene) m_pScene->Render(m_pd3dCommandList);
 
 	//----렌더링 코드는 여기에 추가될 것이다.***
+	if (m_pScene) m_pScene->Render(m_pd3dCommandList);
 
 	d3dResourceBarrier.Transition.StateBefore = D3D12_RESOURCE_STATE_RENDER_TARGET;
 	d3dResourceBarrier.Transition.StateAfter = D3D12_RESOURCE_STATE_PRESENT;
@@ -434,28 +433,28 @@ void CGameFramework::FrameAdvance()
 	WaitForGpuComplete();
 	//GPU가 모든 명령 리스트를 실행할 때 까지 기다린다.
 
-#ifdef _WITH_PRESENT_PARAMETERS
-	DXGI_PRESENT_PARAMETERS dxgiPresentParameters;
-	dxgiPresentParameters.DirtyRectsCount = 0;
-	dxgiPresentParameters.pDirtyRects = NULL;
-	dxgiPresentParameters.pScrollRect = NULL;
-	dxgiPresentParameters.pScrollOffset = NULL;
-	m_pdxgiSwapChain->Present1(1, 0, &dxgiPresentParameters);
-	/*스왑체인을 프리젠트한다. 프리젠트를 하면 현재 렌더 타겟(후면버퍼)의 내용이 전면버퍼로 옮겨지고 렌더 타겟 인
-	덱스가 바뀔 것이다.*/
-#else
-#ifdef _WITH_SYNCH_SWAPCHAIN
-	m_pdxgiSwapChain->Present(1, 0);
-#else
+//#ifdef _WITH_PRESENT_PARAMETERS
+//	DXGI_PRESENT_PARAMETERS dxgiPresentParameters;
+//	dxgiPresentParameters.DirtyRectsCount = 0;
+//	dxgiPresentParameters.pDirtyRects = NULL;
+//	dxgiPresentParameters.pScrollRect = NULL;
+//	dxgiPresentParameters.pScrollOffset = NULL;
+//	m_pdxgiSwapChain->Present1(1, 0, &dxgiPresentParameters);
+//	/*스왑체인을 프리젠트한다. 프리젠트를 하면 현재 렌더 타겟(후면버퍼)의 내용이 전면버퍼로 옮겨지고 렌더 타겟 인
+//	덱스가 바뀔 것이다.*/
+//#else
+//#ifdef _WITH_SYNCH_SWAPCHAIN
+//	m_pdxgiSwapChain->Present(1, 0);
+//#else
 	m_pdxgiSwapChain->Present(0, 0);
-#endif
-#endif
-	/*현재의 프레임 레이트를 문자열로 가져와서 주 윈도우의 타이틀로 출력한다. m_pszBuffer 문자열이
-	"LapProject ("으로 초기화되었으므로 (m_pszFrameRate+12)에서부터 프레임 레이트를 문자열로 출력
-	하여 “ FPS)” 문자열과 합친다.
-	::_itow_s(m_nCurrentFrameRate, (m_pszFrameRate+12), 37, 10);
-	::wcscat_s((m_pszFrameRate+12), 37, _T(" FPS)"));
-	*/
+//#endif
+//#endif
+//	/*현재의 프레임 레이트를 문자열로 가져와서 주 윈도우의 타이틀로 출력한다. m_pszBuffer 문자열이
+//	"LapProject ("으로 초기화되었으므로 (m_pszFrameRate+12)에서부터 프레임 레이트를 문자열로 출력
+//	하여 “ FPS)” 문자열과 합친다.
+//	::_itow_s(m_nCurrentFrameRate, (m_pszFrameRate+12), 37, 10);
+//	::wcscat_s((m_pszFrameRate+12), 37, _T(" FPS)"));
+//	*/
 
 	MoveToNextFrame();
 

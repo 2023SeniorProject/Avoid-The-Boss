@@ -52,7 +52,7 @@ void CScene::ReleaseObjects()
 	}
 }
 
-bool CScene::ProcessInput()
+bool CScene::ProcessInput(UCHAR* pKeysBuffer)
 {
 	return false;
 }
@@ -109,7 +109,7 @@ ID3D12RootSignature* CScene::CreateGraphicsRootSignature(ID3D12Device* pd3dDevic
 		&pd3dSignatureBlob, &pd3dErrorBlob); //ID3D12Device::CreateRootSignature 에 전달할 수 있는 루트 서명 버전 1.0을 직렬화
 	pd3dDevice->CreateRootSignature(0, pd3dSignatureBlob->GetBufferPointer(),
 		pd3dSignatureBlob->GetBufferSize(), __uuidof(ID3D12RootSignature), (void
-			**)&m_pd3dGraphicsRootSignature); // 루트 시그니처 생성
+			**)&pd3dGraphicsRootSignature); // 루트 시그니처 생성
 	if (pd3dSignatureBlob) pd3dSignatureBlob->Release();
 	if (pd3dErrorBlob) pd3dErrorBlob->Release();
 

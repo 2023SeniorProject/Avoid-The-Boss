@@ -1,4 +1,4 @@
 C:\Users\aeiou\Desktop\졸작프로젝트\SeniorProject\Senior_project_ver2\x64\Debug\Senior_project_ver2.exe
 C:\Users\aeiou\Desktop\졸작프로젝트\SeniorProject\Avoid-The-Boss\Senior_project_ver2\x64\Debug\Senior_project_ver2.exe
-C:\Users\aeiou\Desktop\SeniorProject\Avoid-The-Boss\Senior_project_ver2\x64\Debug\Senior_project_ver2.exe
 C:\Users\aeiou\Desktop\졸작프로젝트\Avoid-The-Boss\Senior_project_ver2\x64\Debug\Senior_project_ver2.exe
+C:\Users\aeiou\Desktop\SeniorProject\Avoid-The-Boss\Senior_project_ver2\x64\Debug\Senior_project_ver2.exe

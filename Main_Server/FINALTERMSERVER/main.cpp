@@ -1,4 +1,3 @@
-#include <unordered_map>
 #include "MSession.h"
 
 HANDLE h_iocp;
@@ -88,7 +87,7 @@ int main() {
 	AcceptEx(g_s_sock, g_c_sock, g_a_over._buf, 0, addr_size + 16, addr_size + 16, &recv_bytes, &g_a_over._over);
 #pragma endregion
 
-    vector <thread> worker_threads;
+    vector<thread> worker_threads;
     int num_threads = std::thread::hardware_concurrency();
     for (int i = 0; i < num_threads; ++i)
         worker_threads.emplace_back(worker_thread, h_iocp);

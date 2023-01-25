@@ -21,6 +21,9 @@
     <Filter Include="RoomManager">
       <UniqueIdentifier>{14ffd42b-ae7b-4f97-a29e-30116077c56d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Util">
+      <UniqueIdentifier>{f68e0cb8-c558-45b8-b72e-87129c1b4a96}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="OBDC_MGR.cpp">
@@ -32,12 +35,12 @@
     <ClCompile Include="MSession.cpp">
       <Filter>Session</Filter>
     </ClCompile>
+    <ClCompile Include="pch.cpp">
+      <Filter>Util</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="protocol.h">
-      <Filter>Core</Filter>
-    </ClInclude>
-    <ClInclude Include="types.h">
       <Filter>Core</Filter>
     </ClInclude>
     <ClInclude Include="OBDC_MGR.h">
@@ -46,8 +49,8 @@
     <ClInclude Include="MSession.h">
       <Filter>Session</Filter>
     </ClInclude>
-    <ClInclude Include="common.h">
-      <Filter>Core</Filter>
+    <ClInclude Include="pch.h">
+      <Filter>Util</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

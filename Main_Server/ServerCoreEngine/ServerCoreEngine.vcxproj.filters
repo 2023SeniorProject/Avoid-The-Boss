@@ -1,0 +1,54 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Main">
+      <UniqueIdentifier>{eda0efdf-573e-4931-9f41-374ef493bbdd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Thread">
+      <UniqueIdentifier>{a95af20f-4f85-4ed5-8c3c-09b62d27e554}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Util">
+      <UniqueIdentifier>{a6e3cf21-9364-4ff5-b658-5af8a5f4f20d}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="CoreGlobal.h">
+      <Filter>Main</Filter>
+    </ClInclude>
+    <ClInclude Include="CoreMacro.h">
+      <Filter>Main</Filter>
+    </ClInclude>
+    <ClInclude Include="CorePch.h">
+      <Filter>Main</Filter>
+    </ClInclude>
+    <ClInclude Include="CoreTLS.h">
+      <Filter>Main</Filter>
+    </ClInclude>
+    <ClInclude Include="ThreadManager.h">
+      <Filter>Thread</Filter>
+    </ClInclude>
+    <ClInclude Include="Types.h">
+      <Filter>Main</Filter>
+    </ClInclude>
+    <ClInclude Include="pch.h">
+      <Filter>Main</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="CoreGlobal.cpp">
+      <Filter>Main</Filter>
+    </ClCompile>
+    <ClCompile Include="CoreMacro.cpp">
+      <Filter>Main</Filter>
+    </ClCompile>
+    <ClCompile Include="CorePch.cpp">
+      <Filter>Main</Filter>
+    </ClCompile>
+    <ClCompile Include="CoreTLS.cpp">
+      <Filter>Main</Filter>
+    </ClCompile>
+    <ClCompile Include="pch.cpp">
+      <Filter>Main</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>

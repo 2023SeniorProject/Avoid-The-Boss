@@ -4,6 +4,7 @@
 //----2 화면 출력을 위한 처리 - 게임 객체 생성과 관리, 사용자 입력, 애니메이션 작업
 #include "GameTimer.h"
 #include "Scene.h"
+#include "Camera.h"
 
 class CGameFramework
 {
@@ -108,5 +109,8 @@ public:
 	LRESULT CALLBACK OnProcessingWindowMessage(HWND hWnd, UINT nMessageID, WPARAM wParam,
 		LPARAM lParam);
 	//윈도우의 메시지(키보드, 마우스 입력)를 처리하는 함수이다. 
+
+public:
+	CCamera* m_pCamera = NULL;
 };
 

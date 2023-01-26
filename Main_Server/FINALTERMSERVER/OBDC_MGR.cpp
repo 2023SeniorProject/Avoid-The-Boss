@@ -1,4 +1,6 @@
+#include "pch.h"
 #include "OBDC_MGR.h"
+
 
 void USER_DB_MANAGER::AllocateHandles()
 {

@@ -8,7 +8,8 @@ class USER_DB_MANAGER
     SQLHDBC hdbc = 0;
     SQLHSTMT hstmt = 0;
     SQLRETURN retcode = 0;
-    SQLLEN cb_cid, cb_status;
+    SQLLEN cb_cid = 0;
+    SQLLEN cb_status = 0;
 public:
     SQLINTEGER user_cid = -1;
     SQLCHAR user_status = 0;

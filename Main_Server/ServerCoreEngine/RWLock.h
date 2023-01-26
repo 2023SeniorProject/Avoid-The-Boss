@@ -28,3 +28,22 @@ private:
 	uint16 _writeCnt = 0;
 };
 
+class rlock_guard
+{
+public:
+	rlock_guard(RWLock& lock) : _lock(lock) { _lock.ReadLock(); }
+	
+	~rlock_guard() { _lock.ReadUnLock(); }
+private:
+	RWLock& _lock;
+};
+
+class wlock_guard
+{
+public:
+	wlock_guard(RWLock& lock) : _lock(lock) { _lock.WriteLock(); }
+	
+	~wlock_guard() { _lock.WriteUnLock(); }
+private:
+	RWLock& _lock;
+};

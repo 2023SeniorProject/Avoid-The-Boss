@@ -4,6 +4,7 @@
 #include "CoreGlobal.h"
 #include "CoreMacro.h"
 #include "CoreTLS.h"
+#include "RWLock.h"
 
 #include <vector>
 #include <list>

@@ -17,14 +17,15 @@ void RWLock::WriteLock()
 	}
 
 	const uint32 desired = (WRITE_FLAG_MASK & lThreadId << 16); // 스레드id(상위 16비트)  0000 0000
-	uint32 expected = EMPTY_FLAG;
+	
 
 	auto begin = chrono::high_resolution_clock::now();
 	while (true)
 	{	
 		for (uint32 spinCnt = 0; spinCnt < MAX_SPIN_CNT; ++spinCnt) // tick 동안 못할 경우 소유권을 내려놓고 나중에 다시 와라
 		{
-			if (_rwFlag.compare_exchange_strong(OUTPUT expected, INPUT desired))
+			uint32 expected = EMPTY_FLAG;
+			if (_rwFlag.compare_exchange_strong(MOUTPUT expected, MINPUT desired))
 			{
 				++_writeCnt; // 재귀적으로 lock을 걸 수 있음.
 				return;
@@ -64,7 +65,7 @@ void RWLock::ReadLock()
 		for (uint32 spinCnt = 0; spinCnt < MAX_SPIN_CNT; ++spinCnt) // tick 동안 못할 경우 소유권을 내려놓고 나중에 다시 와라
 		{
 			uint32 expected = (_rwFlag.load() & READ_FLAG_MASK); 
-			if (_rwFlag.compare_exchange_strong(expected, expected + 1)) return;
+			if (_rwFlag.compare_exchange_strong(MOUTPUT expected, expected + 1)) return;
 		}
 		auto end = chrono::high_resolution_clock::now();
 		if ((chrono::duration_cast<chrono::milliseconds>(end - begin).count()) > MAX_WAIT_TICK) CRASH("TIME OUT");
@@ -80,20 +81,3 @@ void RWLock::ReadUnLock()
 
 // RWLock을 위한 LockGuard
 
-class rlock_guard
-{
-public:
-	rlock_guard(RWLock& lock) : _lock(lock) { _lock.ReadLock(); }
-	~rlock_guard() { _lock.ReadUnLock(); }
-private:
-	RWLock& _lock;
-};
-
-class wlock_guard
-{
-public:
-	wlock_guard(RWLock& lock) : _lock(lock) { _lock.WriteLock(); }
-	~wlock_guard() { _lock.WriteUnLock(); }
-private:
-	RWLock& _lock;
-};

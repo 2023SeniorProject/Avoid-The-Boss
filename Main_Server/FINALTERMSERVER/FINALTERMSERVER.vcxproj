@@ -73,25 +73,27 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <LibraryPath>C:\Users\inter\Desktop\졸작\Avoid-The-Boss\Main_Server\lib;$(LibraryPath)</LibraryPath>
-    <IncludePath>C:\Users\inter\Desktop\졸작\Avoid-The-Boss\Main_Server\ServerCoreEngine;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)Library\;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(SolutionDir)ServerCoreEngine\;$(IncludePath)</IncludePath>
+    <OutDir>$(SolutionDir)Binary\$(Configuration)\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <LibraryPath>C:\Users\inter\Desktop\졸작\Avoid-The-Boss\Main_Server\lib;$(LibraryPath)</LibraryPath>
-    <IncludePath>C:\Users\inter\Desktop\졸작\Avoid-The-Boss\Main_Server\ServerCoreEngine;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)Library\;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(SolutionDir)ServerCoreEngine\;$(IncludePath)</IncludePath>
+    <OutDir>$(SolutionDir)Binary\$(Configuration)\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <OutDir>$(SolutionDir)\Binary\$(Configuration)\</OutDir>
-    <LibraryPath>C:\Users\inter\Desktop\졸작\Avoid-The-Boss\Main_Server\lib;$(LibraryPath)</LibraryPath>
-    <IncludePath>C:\Users\inter\Desktop\졸작\Avoid-The-Boss\Main_Server\ServerCoreEngine;$(IncludePath)</IncludePath>
+    <OutDir>$(SolutionDir)Binary\$(Configuration)\</OutDir>
+    <LibraryPath>$(SolutionDir)Library\;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(SolutionDir)ServerCoreEngine\;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <OutDir>$(SolutionDir)\Binary\$(Configuration)\</OutDir>
-    <LibraryPath>C:\Users\inter\Desktop\졸작\Avoid-The-Boss\Main_Server\lib;$(LibraryPath)</LibraryPath>
-    <IncludePath>C:\Users\inter\Desktop\졸작\Avoid-The-Boss\Main_Server\ServerCoreEngine;$(IncludePath)</IncludePath>
+    <OutDir>$(SolutionDir)Binary\$(Configuration)\</OutDir>
+    <LibraryPath>$(SolutionDir)Library\;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(SolutionDir)ServerCoreEngine\;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -176,6 +178,7 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="common.h" />
     <ClInclude Include="MSession.h" />
     <ClInclude Include="OBDC_MGR.h" />
     <ClInclude Include="pch.h" />

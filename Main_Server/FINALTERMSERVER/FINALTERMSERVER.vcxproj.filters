@@ -36,7 +36,7 @@
       <Filter>Session</Filter>
     </ClCompile>
     <ClCompile Include="pch.cpp">
-      <Filter>Main</Filter>
+      <Filter>Core</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -49,10 +49,10 @@
     <ClInclude Include="MSession.h">
       <Filter>Session</Filter>
     </ClInclude>
-    <ClInclude Include="pch.h">
-      <Filter>Main</Filter>
-    </ClInclude>
     <ClInclude Include="common.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="pch.h">
       <Filter>Core</Filter>
     </ClInclude>
   </ItemGroup>

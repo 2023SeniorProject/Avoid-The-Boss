@@ -10,6 +10,9 @@
     <Filter Include="Util">
       <UniqueIdentifier>{a6e3cf21-9364-4ff5-b658-5af8a5f4f20d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Network">
+      <UniqueIdentifier>{7bbf481f-b8ea-4a61-917e-2d23ddd357ca}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CoreGlobal.h">
@@ -36,6 +39,13 @@
     <ClInclude Include="RWLock.h">
       <Filter>Thread</Filter>
     </ClInclude>
+    <ClInclude Include="SocketUtil.h">
+      <Filter>Network</Filter>
+    </ClInclude>
+    <ClInclude Include="Networker.h">
+      <Filter>Network</Filter>
+    </ClInclude>
+    <ClInclude Include="DeadLockFinder.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CoreGlobal.cpp">
@@ -59,5 +69,12 @@
     <ClCompile Include="RWLock.cpp">
       <Filter>Thread</Filter>
     </ClCompile>
+    <ClCompile Include="SocketUtil.cpp">
+      <Filter>Network</Filter>
+    </ClCompile>
+    <ClCompile Include="Networker.cpp">
+      <Filter>Network</Filter>
+    </ClCompile>
+    <ClCompile Include="DeadLockFinder.cpp" />
   </ItemGroup>
 </Project>

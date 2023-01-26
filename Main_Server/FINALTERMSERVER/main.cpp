@@ -1,108 +1,10 @@
 //#include "MSession.h"
 #include "pch.h"
 #include "CorePch.h"
-#include "ThreadManager.h"
 //HANDLE h_iocp;
 //SOCKET g_s_sock;
 //SOCKET g_c_sock;
 //OVER_EXP g_a_over;
-
-CoreGlobal Core;
-
-
-
-class test_lock
-{
-    queue<int32> _q;
-    USE_LOCK;
-public:
-    void Push() 
-    {
-        WRITE_LOCK;
-        int32 value = rand() & 100;
-        _q.push(value);
-    }
-    void Pop() 
-    {
-        WRITE_LOCK;
-        if(!_q.empty())
-            _q.pop();
-    }
-
-    int32 Read()
-    {
-        READ_LOCK;
-        if (!_q.empty())
-        {
-            return _q.front();
-        }
-        return -1;
-    }
-};
-
-//void worker_thread(HANDLE h_iocp)
-//{
-    //while (true) {
-    //    DWORD num_bytes(0);
-    //    MSession tmp_session;
-    //    WSAOVERLAPPED* over = nullptr;
-    //    BOOL ret = GetQueuedCompletionStatus(h_iocp, &num_bytes,(PULONG_PTR)&tmp_session, &over, INFINITE);
-    //    OVER_EXP* ex_over = reinterpret_cast<OVER_EXP*>(over);
-    //   
-    //    if (FALSE == ret) { // 만약 처리가 실패됐다면?
-    //        if (ex_over->_comp_type == COMP_TYPE::OP_ACCEPT) std::cout << "Accept Error";
-    //        else 
-    //        {
-    //            if (ex_over->_comp_type == COMP_TYPE::OP_SEND) delete ex_over;
-    //            continue;
-    //        }
-    //    }
-
-    //    if ((0 == num_bytes) && ((ex_over->_comp_type == COMP_TYPE::OP_RECV) || (ex_over->_comp_type == COMP_TYPE::OP_SEND))) {
-    //        if (ex_over->_comp_type == COMP_TYPE::OP_SEND) delete ex_over;
-    //        continue;
-    //    }
-
-    //    switch (ex_over->_comp_type) {
-    //    case COMP_TYPE::OP_ACCEPT: {
-    //       // accept 호출 시 , 세션 추가.
-    //        clients.try_emplace(cnt, cnt++, g_c_sock);
-    //        ZeroMemory(&g_a_over._over, sizeof(g_a_over._over));
-    //        int32 addr_size = sizeof(SOCKADDR_IN);
-    //        DWORD recv_bytes(0);
-    //        AcceptEx(g_s_sock, g_c_sock, g_a_over._buf, 0, addr_size + 16, addr_size + 16, &recv_bytes, &g_a_over._over);
-
-    //        break;
-    //    }
-    //    case COMP_TYPE::OP_RECV:
-    //    {
-    //    }
-    //        break;
-    //    case COMP_TYPE::OP_SEND:
-    //        delete ex_over;
-    //        break;
-    //    }
-    //}
-//}
-
-test_lock t;
-
-void write()
-{
-    while (true)
-    {
-        t.Push();
-        this_thread::sleep_for(10ms);
-        t.Pop();
-    }
-}
-
-
-void read()
-{
-    while(true)
-       cout << t.Read() << endl;
-}
 
 
 int main() {
@@ -140,9 +42,4 @@ int main() {
 //	
 //	WSACleanup();
 
-    for (int i = 0; i < 3; ++i)
-        GThreadManager->Launch(write);
-    for (int i = 0; i < 3; ++i)
-        GThreadManager->Launch(read);
-    GThreadManager->Join();
 }

@@ -26,7 +26,6 @@ int main()
 	serveraddr.sin_family = AF_INET;
 	serveraddr.sin_port = htons(PORTNUM);
 	inet_pton(AF_INET, "127.0.0.1", &serveraddr.sin_addr);
-
 	WSAConnect(c_sock,(sockaddr*)&serveraddr,sizeof(serveraddr),NULL,NULL,NULL,NULL);
 #pragma endregion
 	WSABUF wsabuf;

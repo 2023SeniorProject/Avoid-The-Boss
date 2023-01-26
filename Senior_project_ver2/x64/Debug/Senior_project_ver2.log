@@ -1,11 +1,2 @@
-﻿  stdafx.cpp
-  Camera.cpp
-  GameFramework.cpp
-  GameObject.cpp
-  GameTimer.cpp
-  Mesh.cpp
-  Scene.cpp
-  Senior_project_ver2.cpp
-  Shader.cpp
-  코드를 생성하고 있습니다...
+﻿  Shader.cpp
   Senior_project_ver2.vcxproj -> C:\Users\aeiou\Desktop\SeniorProject\Avoid-The-Boss\Senior_project_ver2\x64\Debug\Senior_project_ver2.exe

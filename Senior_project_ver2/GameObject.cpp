@@ -4,6 +4,7 @@
 
 CGameObject::CGameObject()
 {
+	//단위행렬로 초기화해서 초기위치가 (0.0f,0.0f,0.0f)임
 	XMStoreFloat4x4(&m_xmf4x4World, XMMatrixIdentity());
 }
 

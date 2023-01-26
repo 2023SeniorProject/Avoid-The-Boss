@@ -36,7 +36,7 @@
       <Filter>Session</Filter>
     </ClCompile>
     <ClCompile Include="pch.cpp">
-      <Filter>Util</Filter>
+      <Filter>Main</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -50,7 +50,7 @@
       <Filter>Session</Filter>
     </ClInclude>
     <ClInclude Include="pch.h">
-      <Filter>Util</Filter>
+      <Filter>Main</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

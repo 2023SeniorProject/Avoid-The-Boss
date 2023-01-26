@@ -1,6 +1,8 @@
 #pragma once
 #include <thread>
 #include <functional>
+
+using namespace std;
 class ThreadManager
 {
 public:

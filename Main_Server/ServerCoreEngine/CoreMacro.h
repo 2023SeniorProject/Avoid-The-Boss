@@ -4,6 +4,9 @@
 // CRASH
 // 인위적인 크러쉬를 일으키게 만드는 매크로
 // ===================
+#define OUTPUT
+#define INPUT
+
 #define CRASH(cause) 						 \
 {											 \
 uint32* crash = nullptr; 					 \

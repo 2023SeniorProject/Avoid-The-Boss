@@ -3,6 +3,8 @@
 #include "Types.h"
 #include "CoreGlobal.h"
 #include "CoreMacro.h"
+#include "CoreTLS.h"
+
 #include <vector>
 #include <list>
 #include <queue>

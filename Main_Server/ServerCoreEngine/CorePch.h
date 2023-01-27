@@ -5,6 +5,7 @@
 #include "CoreMacro.h"
 #include "CoreTLS.h"
 #include "RWLock.h"
+#include "protocol.h"
 
 #include <vector>
 #include <list>
@@ -14,11 +15,13 @@
 #include <set>
 #include <unordered_map>
 #include <unordered_set>
+#include <algorithm>
 
 #include <iostream>
 #include <WinSock2.h>
 #include <MSWSock.h>
 #include <WS2tcpip.h>
 
-#pragma comment(lib,"ws2_32")
+#pragma comment(lib, "WS2_32.lib")
+#pragma comment(lib, "MSWSock.lib")
 using namespace std;

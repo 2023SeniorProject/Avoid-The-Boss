@@ -10,8 +10,10 @@
       <Filter>Main</Filter>
     </ClCompile>
     <ClCompile Include="pch.cpp" />
+    <ClCompile Include="DummyClient.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />
+    <ClInclude Include="DummyClient.h" />
   </ItemGroup>
 </Project>

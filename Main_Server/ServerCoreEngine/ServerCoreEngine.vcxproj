@@ -166,6 +166,8 @@
     <ClInclude Include="DeadLockFinder.h" />
     <ClInclude Include="Networker.h" />
     <ClInclude Include="pch.h" />
+    <ClInclude Include="protocol.h" />
+    <ClInclude Include="RoomManager.h" />
     <ClInclude Include="RWLock.h" />
     <ClInclude Include="SocketUtil.h" />
     <ClInclude Include="ThreadManager.h" />
@@ -184,6 +186,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="RoomManager.cpp" />
     <ClCompile Include="RWLock.cpp" />
     <ClCompile Include="SocketUtil.cpp" />
     <ClCompile Include="ThreadManager.cpp" />

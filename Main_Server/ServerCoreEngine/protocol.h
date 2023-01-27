@@ -1,5 +1,4 @@
 #pragma once
-#include "types.h"
 
 #define MAX_USER 10
 #define PORTNUM 9999

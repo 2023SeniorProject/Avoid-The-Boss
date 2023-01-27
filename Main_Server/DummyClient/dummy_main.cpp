@@ -1,13 +1,6 @@
 #include "pch.h"
 
-#include <iostream>
-#include <WinSock2.h>
-#include <WS2tcpip.h>
-#include <MSWSock.h>
-#include "../FINALTERMSERVER/protocol.h"
 
-#pragma comment(lib, "WS2_32.lib")
-#pragma comment(lib, "MSWSock.lib")
 
 #define PORTNUM 9000
 #define BUFSIZE 512
@@ -26,18 +19,14 @@ int main()
 	serveraddr.sin_family = AF_INET;
 	serveraddr.sin_port = htons(PORTNUM);
 	inet_pton(AF_INET, "127.0.0.1", &serveraddr.sin_addr);
-	WSAConnect(c_sock,(sockaddr*)&serveraddr,sizeof(serveraddr),NULL,NULL,NULL,NULL);
+	int32 retval =  WSAConnect(c_sock,(sockaddr*)&serveraddr,sizeof(serveraddr),NULL,NULL,NULL,NULL);
+	if (retval == SOCKET_ERROR) return -1;
 #pragma endregion
-	WSABUF wsabuf;
-	char buf[BUFSIZE];
-	wsabuf.buf = buf;
-	wsabuf.len = 512;
+	
 	while (true)
 	{
-		// TO-DO
+
 	}
-
-
 
 	closesocket(c_sock);
 	WSACleanup();

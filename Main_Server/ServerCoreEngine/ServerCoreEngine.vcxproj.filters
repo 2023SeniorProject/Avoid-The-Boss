@@ -13,6 +13,12 @@
     <Filter Include="Network">
       <UniqueIdentifier>{7bbf481f-b8ea-4a61-917e-2d23ddd357ca}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Account">
+      <UniqueIdentifier>{1643a2ad-aa5e-4136-be37-15ff5177a6af}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Room">
+      <UniqueIdentifier>{7853e4e0-380b-492d-a0f7-e66f60d7bc91}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CoreGlobal.h">
@@ -45,7 +51,13 @@
     <ClInclude Include="Networker.h">
       <Filter>Network</Filter>
     </ClInclude>
-    <ClInclude Include="DeadLockFinder.h" />
+    <ClInclude Include="protocol.h">
+      <Filter>Main</Filter>
+    </ClInclude>
+    <ClInclude Include="DeadLockFinder.h">
+      <Filter>Thread</Filter>
+    </ClInclude>
+    <ClInclude Include="RoomManager.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CoreGlobal.cpp">
@@ -75,6 +87,9 @@
     <ClCompile Include="Networker.cpp">
       <Filter>Network</Filter>
     </ClCompile>
-    <ClCompile Include="DeadLockFinder.cpp" />
+    <ClCompile Include="DeadLockFinder.cpp">
+      <Filter>Thread</Filter>
+    </ClCompile>
+    <ClCompile Include="RoomManager.cpp" />
   </ItemGroup>
 </Project>

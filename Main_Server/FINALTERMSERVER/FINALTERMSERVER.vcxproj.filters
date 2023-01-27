@@ -15,9 +15,6 @@
     <Filter Include="Session">
       <UniqueIdentifier>{ca0f0fc8-8da3-4a23-b1bc-2a8784f8ad11}</UniqueIdentifier>
     </Filter>
-    <Filter Include="AccountManager">
-      <UniqueIdentifier>{07927dbb-1bc2-44f9-8b8b-3439a78bace3}</UniqueIdentifier>
-    </Filter>
     <Filter Include="RoomManager">
       <UniqueIdentifier>{14ffd42b-ae7b-4f97-a29e-30116077c56d}</UniqueIdentifier>
     </Filter>
@@ -40,17 +37,11 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="protocol.h">
-      <Filter>Core</Filter>
-    </ClInclude>
     <ClInclude Include="OBDC_MGR.h">
       <Filter>DB</Filter>
     </ClInclude>
     <ClInclude Include="MSession.h">
       <Filter>Session</Filter>
-    </ClInclude>
-    <ClInclude Include="common.h">
-      <Filter>Core</Filter>
     </ClInclude>
     <ClInclude Include="pch.h">
       <Filter>Core</Filter>

@@ -5,7 +5,7 @@ CCamera::CCamera()
 {
 	m_xmf4x4View = Matrix4x4::Identity();
 	m_xmf4x4Projection = Matrix4x4::Identity();
-	m_d3dViewport = { 0, 0, FRAME_BUFFER_WIDTH , FRAME_BUFFER_HEIGHT, 0.0f, 1.0f };
+	m_d3dViewport = { 0, 0, FRAME_BUFFER_WIDTH , FRAME_BUFFER_HEIGHT, 0.0f, 1.0f }; // 화면 영역 설정, 깊이 값 설정 0~1.0f (Z값)
 	m_d3dScissorRect = { 0, 0, FRAME_BUFFER_WIDTH , FRAME_BUFFER_HEIGHT };
 }
 

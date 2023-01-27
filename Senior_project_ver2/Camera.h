@@ -1,5 +1,6 @@
 #pragma once
 
+//----카메라 종횡비
 #define ASPECT_RATIO (float(FRAME_BUFFER_WIDTH) / float(FRAME_BUFFER_HEIGHT))
 
 //---카메라 상수 버퍼를 위한 구조체
@@ -8,6 +9,7 @@ struct VS_CB_CAMERA_INFO
 	XMFLOAT4X4 m_xmf4x4View;
 	XMFLOAT4X4 m_xmf4x4Projection;
 };
+
 class CCamera
 {
 protected:
@@ -18,8 +20,9 @@ protected:
 	XMFLOAT4X4 m_xmf4x4Projection;
 
 	//뷰포트와 씨저 사각형
-	D3D12_VIEWPORT m_d3dViewport;
-	D3D12_RECT m_d3dScissorRect;
+	D3D12_VIEWPORT m_d3dViewport; // 렌더링 할 렌더타겟(후면버퍼) 영역 나타내는 구조체 
+	D3D12_RECT m_d3dScissorRect; // 렌더링에서 제거하지 않을 영역 설정
+
 public:
 	CCamera();
 	virtual ~CCamera();

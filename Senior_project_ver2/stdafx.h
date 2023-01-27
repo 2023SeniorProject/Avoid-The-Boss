@@ -153,7 +153,9 @@ namespace Vector3
 	}
 	inline float Angle(XMFLOAT3& xmf3Vector1, XMFLOAT3& xmf3Vector2)
 	{
-		return(Angle(XMLoadFloat3(&xmf3Vector1), XMLoadFloat3(&xmf3Vector2)));
+		XMVECTOR Vec1 = XMLoadFloat3(&xmf3Vector1);
+		XMVECTOR Vec2 = XMLoadFloat3(&xmf3Vector2);
+		return(Angle(Vec1, Vec2));
 	}
 	inline XMFLOAT3 TransformNormal(XMFLOAT3& xmf3Vector, XMMATRIX& xmmtxTransform)
 	{
@@ -172,7 +174,8 @@ namespace Vector3
 	}
 	inline XMFLOAT3 TransformCoord(XMFLOAT3& xmf3Vector, XMFLOAT4X4& xmmtx4x4Matrix)
 	{
-		return(TransformCoord(xmf3Vector, XMLoadFloat4x4(&xmmtx4x4Matrix)));
+		XMMATRIX M = XMLoadFloat4x4(&xmmtx4x4Matrix);
+		return(TransformCoord(xmf3Vector, M));
 	}
 }
 

@@ -13,11 +13,11 @@
     <Filter Include="Network">
       <UniqueIdentifier>{7bbf481f-b8ea-4a61-917e-2d23ddd357ca}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Account">
-      <UniqueIdentifier>{1643a2ad-aa5e-4136-be37-15ff5177a6af}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Room">
       <UniqueIdentifier>{7853e4e0-380b-492d-a0f7-e66f60d7bc91}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Session">
+      <UniqueIdentifier>{a3fe3742-3fed-4d2f-89b9-34c93b335924}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -28,9 +28,6 @@
       <Filter>Main</Filter>
     </ClInclude>
     <ClInclude Include="CorePch.h">
-      <Filter>Main</Filter>
-    </ClInclude>
-    <ClInclude Include="CoreTLS.h">
       <Filter>Main</Filter>
     </ClInclude>
     <ClInclude Include="ThreadManager.h">
@@ -48,16 +45,18 @@
     <ClInclude Include="SocketUtil.h">
       <Filter>Network</Filter>
     </ClInclude>
-    <ClInclude Include="Networker.h">
-      <Filter>Network</Filter>
-    </ClInclude>
     <ClInclude Include="protocol.h">
       <Filter>Main</Filter>
     </ClInclude>
     <ClInclude Include="DeadLockFinder.h">
       <Filter>Thread</Filter>
     </ClInclude>
-    <ClInclude Include="RoomManager.h" />
+    <ClInclude Include="RoomManager.h">
+      <Filter>Room</Filter>
+    </ClInclude>
+    <ClInclude Include="CoreTLS.h">
+      <Filter>Main</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CoreGlobal.cpp">
@@ -67,9 +66,6 @@
       <Filter>Main</Filter>
     </ClCompile>
     <ClCompile Include="CorePch.cpp">
-      <Filter>Main</Filter>
-    </ClCompile>
-    <ClCompile Include="CoreTLS.cpp">
       <Filter>Main</Filter>
     </ClCompile>
     <ClCompile Include="pch.cpp">
@@ -84,12 +80,14 @@
     <ClCompile Include="SocketUtil.cpp">
       <Filter>Network</Filter>
     </ClCompile>
-    <ClCompile Include="Networker.cpp">
-      <Filter>Network</Filter>
-    </ClCompile>
     <ClCompile Include="DeadLockFinder.cpp">
       <Filter>Thread</Filter>
     </ClCompile>
-    <ClCompile Include="RoomManager.cpp" />
+    <ClCompile Include="RoomManager.cpp">
+      <Filter>Room</Filter>
+    </ClCompile>
+    <ClCompile Include="CoreTLS.cpp">
+      <Filter>Main</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

@@ -1,14 +1,20 @@
 #pragma once
 
 #define MAX_USER 10
-#define PORTNUM 9999
+#define PORTNUM 9000
 // 클라 -> 서버 패킷
 
-enum class C_PACKET_TYPE { ACQ_LOGIN, ACQ_LOGOUT, ACQ_REGISTER  };
-enum class C_ROOM_PACKET_TYPE { MK_RM, DEL_RM, ENTER_RM, EXIT_RM }; // 방 생성, 방 삭제, 입장 , 종료 
-enum class S_PACKET_TYPE { LOGIN_OK,  LOGIN_FAIL };
+enum  C_PACKET_TYPE { ACQ_LOGIN = 1, ACQ_LOGOUT = 2, ACQ_REGISTER = 3, CHAT = 4   };
+enum  C_ROOM_PACKET_TYPE { MK_RM = 5, DEL_RM = 6 , ENTER_RM = 7, EXIT_RM = 8}; // 방 생성, 방 삭제, 입장 , 종료 
+enum  S_PACKET_TYPE { LOGIN_OK = 9,  LOGIN_FAIL = 10};
 
 
+struct C2S_CHAT
+{
+	int8 size;
+	int8 type;
+	char buf[100];
+};
 
 struct C2S_LOGIN
 {

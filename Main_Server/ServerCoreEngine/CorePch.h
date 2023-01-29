@@ -28,7 +28,7 @@ using namespace std;
 
 #define BUFSIZE 512
 
-enum COMP_TYPE { OP_RECV, OP_SEND, OP_ACCEPT };
+enum COMP_TYPE{ OP_RECV, OP_SEND, OP_ACCEPT };
 
 class OVEREXTEN
 {
@@ -38,7 +38,7 @@ public:
 	{
 		_wsabuf.len = BUFSIZE;
 		_wsabuf.buf = _buf;
-		_comp_type = COMP_TYPE::OP_RECV;
+		_comp_type = OP_RECV;
 		::ZeroMemory(&_over, sizeof(_over));
 	}
 	OVEREXTEN(char* packet)
@@ -46,7 +46,7 @@ public:
 		_wsabuf.buf = _buf;
 		_wsabuf.len = packet[0];
 		::ZeroMemory(&_over, sizeof(_over));
-		_comp_type = COMP_TYPE::OP_SEND;
+		_comp_type = OP_SEND;
 		memcpy(_buf, packet, packet[0]);
 	}
 	~OVEREXTEN()

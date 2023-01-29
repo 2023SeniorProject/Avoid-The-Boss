@@ -16,9 +16,6 @@
     <Filter Include="Room">
       <UniqueIdentifier>{7853e4e0-380b-492d-a0f7-e66f60d7bc91}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Session">
-      <UniqueIdentifier>{a3fe3742-3fed-4d2f-89b9-34c93b335924}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CoreGlobal.h">

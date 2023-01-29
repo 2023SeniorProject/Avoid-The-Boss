@@ -3,7 +3,7 @@
 #include "ThreadManager.h"
 #include "SocketUtil.h"
 
-HANDLE h_iocp;
+HANDLE g_h_iocp;
 SOCKET g_listen_sock;
 SOCKET g_client_sock;
 OVEREXTEN g_accept_over;
@@ -19,14 +19,13 @@ void ProcessPacket(int32 c_id, char* packet)
         {
             C2S_CHAT* cp = (C2S_CHAT*)packet;
             std::cout << cp->buf;
-            delete cp;
         }
         break;
     }
 }
 
 
-void WorkerThread()
+void WorkerThread(HANDLE h_iocp)
 {
     while (true)
     {
@@ -51,12 +50,12 @@ void WorkerThread()
 
         switch (ex_over->_comp_type)
         {
-            cout << "Client Accept!" << endl;
+           
             case OP_ACCEPT: // 클라이언트 접속 시, 등록
             {
                 if (client_id == 1)
                 {
-                    
+                    cout << "Client Accept!" << endl;
                     client._sock = g_client_sock;
                     client._cid = client_id;
                     client.do_recv_packet();
@@ -70,8 +69,8 @@ void WorkerThread()
                 }
                 
                 ZeroMemory(&g_accept_over._over, sizeof(g_accept_over._over));
-                int addr_size = sizeof(SOCKADDR_IN);
-                AcceptEx(g_listen_sock, g_client_sock, g_accept_over._buf, 0, addr_size + 16, addr_size + 16, 0, &g_accept_over._over);
+                int addrsize = sizeof(SOCKADDR_IN);
+                AcceptEx(g_listen_sock, g_client_sock, g_accept_over._buf, 0, addrsize + 16, addrsize + 16, 0, &g_accept_over._over);
                 break;
             }
             case OP_RECV:
@@ -117,12 +116,14 @@ int main()
     if (g_listen_sock == INVALID_SOCKET) return -1;
     g_client_sock = SocketUtil::CreateSocket();
     if (g_client_sock == INVALID_SOCKET) return -1;
-    SocketUtil::Bind(g_listen_sock);
-    SocketUtil::Listen(g_listen_sock);
+    if(!SocketUtil::Bind(g_listen_sock)) return -2;
+    if(!SocketUtil::Listen(g_listen_sock)) return -3;
     
     SOCKADDR_IN clientaddr;
     ::ZeroMemory(&clientaddr, sizeof(clientaddr));
 #pragma endregion
+    g_h_iocp = CreateIoCompletionPort(INVALID_HANDLE_VALUE, 0, 0, 0);
+    CreateIoCompletionPort(reinterpret_cast<HANDLE>(g_listen_sock), g_h_iocp, 9999, 0);
 	// 1. 리슨 소켓
 	// 2. 접속한 클라이언트 소켓,
 	// 3. 로컬 주소 및 리모트 주소를 받기 위한 버퍼
@@ -137,7 +138,7 @@ int main()
 #pragma endregion
 
 	for (int i = 0; i < thread::hardware_concurrency(); ++i)
-		GThreadManager->Launch(WorkerThread);
+		GThreadManager->Launch(WorkerThread, g_h_iocp);
 	GThreadManager->Join();
     
     WSACleanup();

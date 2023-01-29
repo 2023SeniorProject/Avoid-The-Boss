@@ -9,7 +9,8 @@ public:
 	ThreadManager() { InitTLS(); }
 	~ThreadManager() { Join(); }
 
-	void Launch(function<void(void)> callback);
+	
+	void Launch(function<void(HANDLE)> callback, HANDLE);
 	void Join();
 	//TLS init
 	static void InitTLS();
@@ -17,6 +18,7 @@ public:
 private:
 	Mutex _m;
 	vector<thread> _threads;
-	
 };
+
+
 

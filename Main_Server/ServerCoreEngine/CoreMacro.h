@@ -30,5 +30,4 @@ __analysis_assume(crash != nullptr); 		 \
 	}										\
 											\
 }											\
-											
-		
+										

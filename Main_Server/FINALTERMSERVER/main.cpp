@@ -10,6 +10,7 @@ OVEREXTEN g_accept_over;
 Atomic<int32> client_id = 1;
 MSession client;
 
+
 // 패킷 처리 진행
 void ProcessPacket(int32 c_id, char* packet)
 {
@@ -18,7 +19,7 @@ void ProcessPacket(int32 c_id, char* packet)
         case CHAT:
         {
             C2S_CHAT* cp = (C2S_CHAT*)packet;
-            std::cout << cp->buf;
+            std::cout << cp->buf << endl;
         }
         break;
     }
@@ -42,7 +43,7 @@ void WorkerThread(HANDLE h_iocp)
                 continue;
             }
         }
-
+        cout << key << endl;
         if ((0 == num_bytes) && ((ex_over->_comp_type == OP_RECV) || (ex_over->_comp_type == OP_SEND))) {
             if (ex_over->_comp_type == OP_SEND) delete ex_over;
             continue;

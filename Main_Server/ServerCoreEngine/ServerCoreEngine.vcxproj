@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -159,25 +159,32 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="AcceptManager.h" />
     <ClInclude Include="CoreGlobal.h" />
     <ClInclude Include="CoreMacro.h" />
     <ClInclude Include="CorePch.h" />
     <ClInclude Include="CoreTLS.h" />
     <ClInclude Include="DeadLockFinder.h" />
+    <ClInclude Include="IocpCore.h" />
+    <ClInclude Include="IocpEvent.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="protocol.h" />
     <ClInclude Include="RoomManager.h" />
     <ClInclude Include="RWLock.h" />
+    <ClInclude Include="Session.h" />
     <ClInclude Include="SocketUtil.h" />
     <ClInclude Include="ThreadManager.h" />
     <ClInclude Include="Types.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="AcceptManager.cpp" />
     <ClCompile Include="CoreGlobal.cpp" />
     <ClCompile Include="CoreMacro.cpp" />
     <ClCompile Include="CorePch.cpp" />
     <ClCompile Include="CoreTLS.cpp" />
     <ClCompile Include="DeadLockFinder.cpp" />
+    <ClCompile Include="IocpCore.cpp" />
+    <ClCompile Include="IocpEvent.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
@@ -186,6 +193,7 @@
     </ClCompile>
     <ClCompile Include="RoomManager.cpp" />
     <ClCompile Include="RWLock.cpp" />
+    <ClCompile Include="Session.cpp" />
     <ClCompile Include="SocketUtil.cpp" />
     <ClCompile Include="ThreadManager.cpp" />
   </ItemGroup>

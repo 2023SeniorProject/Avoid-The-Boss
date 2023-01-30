@@ -16,6 +16,9 @@
     <Filter Include="Room">
       <UniqueIdentifier>{7853e4e0-380b-492d-a0f7-e66f60d7bc91}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Session">
+      <UniqueIdentifier>{23a66a44-420a-45bf-b11a-a995896c51dc}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CoreGlobal.h">
@@ -54,6 +57,14 @@
     <ClInclude Include="CoreTLS.h">
       <Filter>Main</Filter>
     </ClInclude>
+    <ClInclude Include="Session.h">
+      <Filter>Session</Filter>
+    </ClInclude>
+    <ClInclude Include="AcceptManager.h">
+      <Filter>Network</Filter>
+    </ClInclude>
+    <ClInclude Include="IocpCore.h" />
+    <ClInclude Include="IocpEvent.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CoreGlobal.cpp">
@@ -86,5 +97,13 @@
     <ClCompile Include="CoreTLS.cpp">
       <Filter>Main</Filter>
     </ClCompile>
+    <ClCompile Include="Session.cpp">
+      <Filter>Session</Filter>
+    </ClCompile>
+    <ClCompile Include="AcceptManager.cpp">
+      <Filter>Network</Filter>
+    </ClCompile>
+    <ClCompile Include="IocpCore.cpp" />
+    <ClCompile Include="IocpEvent.cpp" />
   </ItemGroup>
 </Project>

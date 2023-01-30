@@ -64,7 +64,7 @@ int main()
 			}
 		}
 
-		cout << "Send Data ! Len = " << sizeof(sendBuffer) << endl;
+		cout << "Send Data ! Len = " << sizeof(sendLen) << endl;
 
 		this_thread::sleep_for(1s);
 	}

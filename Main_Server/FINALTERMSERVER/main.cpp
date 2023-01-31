@@ -14,17 +14,20 @@ SOCKET g_client_sock;
 OVEREXTEN g_accept_over;
 Atomic<int32> client_id = 1;
 unordered_map<int32, MSession*> clients;
-condition_variable dbcv;
 Mutex m;
 
-bool DB_Worker(int32 key, wstring sqlexec);
+void DB_Worker(int32 key, wstring sqlexec);
 int32 GetSessionId()
 {
-    return clients.size();
+    return client_id.fetch_add(1);
+}
+// 菩哦 贸府 柳青
+void Disconnect(int32 key)
+{
+    clients.erase(key);
 }
 
-// 菩哦 贸府 柳青
-void ProcessPacket(int32 c_id, char* packet)
+void ProcessPacket(int32 key, char* packet)
 {
     switch (packet[1]) 
     {
@@ -32,7 +35,7 @@ void ProcessPacket(int32 c_id, char* packet)
         {
           
             _CHAT* cp = (_CHAT*)packet;
-            std::cout << cp->buf << endl;
+            std::cout << "client[" << clients[key]->_cid << "] 's msg : " << cp->buf << endl;
         }
         break;
         case (int8)C_PACKET_TYPE::ACQ_LOGIN:
@@ -43,8 +46,7 @@ void ProcessPacket(int32 c_id, char* packet)
             sqlExec += cp->name;
             sqlExec += L", ";
             sqlExec += cp->pw;
-            DB_Worker(c_id, sqlExec);
-        
+            DB_Worker(key, sqlExec);
         }
         break;
     }
@@ -65,6 +67,7 @@ void WorkerThread(HANDLE h_iocp)
             else {
                 cout << "GQCS Error on client[" << key << "]\n";
                 if (ex_over->_comp_type == OP_SEND) delete ex_over;
+                Disconnect(key);
                 continue;
             }
         }
@@ -132,7 +135,7 @@ void WorkerThread(HANDLE h_iocp)
 }
 
 
-bool DB_Worker(int32 key,wstring sqlexec)
+void DB_Worker(int32 key,wstring sqlexec)
 {
     USER_DB_MANAGER udb;
     udb.AllocateHandles();
@@ -148,13 +151,15 @@ bool DB_Worker(int32 key,wstring sqlexec)
         {
             cout << "LoginFail" << endl;
             udb.DisconnectDataSource();
-            return false;
+            clients[key]->DoSendLoginPacket(false);
+            return;
         }
     }
-    cout << "LoginSuccess" << endl;
+    cout << "client[" << clients[key]->_cid <<"] " <<  "LoginSuccess" << endl;
     udb.DisconnectDataSource();
-    return true;
+    clients[key]->DoSendLoginPacket(true);
 }
+
 
 int main() 
 {

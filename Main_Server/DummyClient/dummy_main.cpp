@@ -3,20 +3,23 @@
 
 
 
-SOCKET clientSocket;
-
+SOCKET clientSock;
+int32 cid = 0;
 void ProcessPacket(char* packet)
 {
 	switch (packet[1])
 	{
 		case (int8)S_PACKET_TYPE::LOGIN_OK:
 		{
-			cout << "login success" << endl;
+			
+			S2C_LOGIN_OK* lp = (S2C_LOGIN_OK*)packet;
+			cid = lp->cid;
 		}
 		break;
 		case (int8)S_PACKET_TYPE::LOGIN_FAIL:
 		{
-			cout << "login fail" << endl;
+			cout << "Login fail" << endl;
+			closesocket(clientSock);
 		}
 		break;
 		case (int8)S_PACKET_TYPE::CHAT:
@@ -47,13 +50,13 @@ void SendThread()
 
 		DWORD sendLen = 0;
 		DWORD flags = 0;
-		if (::WSASend(clientSocket, &cover._wsabuf, 1, &sendLen, flags, (LPWSAOVERLAPPED)&cover, nullptr) == SOCKET_ERROR)
+		if (::WSASend(clientSock, &cover._wsabuf, 1, &sendLen, flags, (LPWSAOVERLAPPED)&cover, nullptr) == SOCKET_ERROR)
 		{
 			if (::WSAGetLastError() == WSA_IO_PENDING)
 			{
 				// Pending
 				::WSAWaitForMultipleEvents(1, &wsaEvent, TRUE, WSA_INFINITE, FALSE);
-				::WSAGetOverlappedResult(clientSocket, (LPWSAOVERLAPPED)&cover, &sendLen, FALSE, &flags);
+				::WSAGetOverlappedResult(clientSock, (LPWSAOVERLAPPED)&cover, &sendLen, FALSE, &flags);
 				WSACloseEvent(wsaEvent);
 
 			}
@@ -81,20 +84,20 @@ void RecvThread()
 		DWORD recvLen = 0;
 		DWORD flags = 0;
 
-		if (::WSARecv(clientSocket, &cover._wsabuf, 1, &recvLen, &flags, (LPWSAOVERLAPPED)&cover, nullptr) == SOCKET_ERROR)
+		if (::WSARecv(clientSock, &cover._wsabuf, 1, &recvLen, &flags, (LPWSAOVERLAPPED)&cover, nullptr) == SOCKET_ERROR)
 		{
 			if (::WSAGetLastError() == WSA_IO_PENDING)
 			{
 				// Pending
 				::WSAWaitForMultipleEvents(1, &wsaEvent, TRUE, WSA_INFINITE, FALSE);
-				::WSAGetOverlappedResult(clientSocket, (LPWSAOVERLAPPED)&cover, &recvLen, FALSE, &flags);
+				::WSAGetOverlappedResult(clientSock, (LPWSAOVERLAPPED)&cover, &recvLen, FALSE, &flags);
 				 ProcessPacket(cover._buf);
 			}
 			else if(WSAGetLastError() != 0)
 			{
 				// 진짜 문제 있는 상황
-				cout << WSAGetLastError() << endl;
 				cout << "error2" << endl;
+				
 				break;
 			}
 		}
@@ -111,8 +114,8 @@ int main()
 	if (::WSAStartup(MAKEWORD(2, 2), &wsaData) != 0)
 		return 0;
 
-	clientSocket = WSASocket(AF_INET, SOCK_STREAM, IPPROTO_TCP, NULL, 0, WSA_FLAG_OVERLAPPED);
-	if (clientSocket == INVALID_SOCKET)
+	clientSock = WSASocket(AF_INET, SOCK_STREAM, IPPROTO_TCP, NULL, 0, WSA_FLAG_OVERLAPPED);
+	if (clientSock == INVALID_SOCKET)
 		return 0;
 
 	SOCKADDR_IN serveraddr;
@@ -132,7 +135,7 @@ int main()
 	std::cout << "PW : ";
 	std::wcin.getline(loginPacket.pw, sizeof(WCHAR) * 10);
 	
-	if (WSAConnect(clientSocket, (SOCKADDR*)&serveraddr, sizeof(serveraddr), NULL, NULL, NULL, NULL) == SOCKET_ERROR) return - 1;
+	if (WSAConnect(clientSock, (SOCKADDR*)&serveraddr, sizeof(serveraddr), NULL, NULL, NULL, NULL) == SOCKET_ERROR) return - 1;
 	cout << "Connected to Server!" << endl;
 
 	WSAEVENT wsaEvent = ::WSACreateEvent();
@@ -141,12 +144,12 @@ int main()
 	DWORD sendlen(0);
 	DWORD flags(0);
 
-	if (::WSASend(clientSocket, &cover._wsabuf, 1, &sendlen, flags, &cover._over, nullptr) == SOCKET_ERROR)
+	if (::WSASend(clientSock, &cover._wsabuf, 1, &sendlen, flags, &cover._over, nullptr) == SOCKET_ERROR)
 	{
 		if (WSAGetLastError() == WSA_IO_PENDING)
 		{
 			::WSAWaitForMultipleEvents(1, &wsaEvent, TRUE, WSA_INFINITE, FALSE);
-			::WSAGetOverlappedResult(clientSocket, &cover._over, &sendlen, FALSE, &flags);
+			::WSAGetOverlappedResult(clientSock, &cover._over, &sendlen, FALSE, &flags);
 			WSACloseEvent(wsaEvent);
 			
 		}
@@ -168,7 +171,7 @@ int main()
 	rt.join();
 
 	// 소켓 리소스 반환
-	::closesocket(clientSocket);
+	if(clientSock != INVALID_SOCKET)::closesocket(clientSock);
 
 	// 윈속 종료
 	::WSACleanup();

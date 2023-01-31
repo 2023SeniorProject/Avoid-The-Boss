@@ -58,7 +58,6 @@ void USER_DB_MANAGER::RetrieveResult()
     if (retcode == SQL_SUCCESS || retcode == SQL_SUCCESS_WITH_INFO) 
     {
         retcode = SQLBindCol(hstmt, 1, SQL_C_LONG, &user_cid, 4, &cb_cid);
-        retcode = SQLBindCol(hstmt, 2, SQL_C_CHAR, &user_status, 1, &cb_status);
         // 실제 데이터를 꺼낸다
         // Fetch and print each row of data. On an error, display a message and exit.  
         for (int i = 0; ; i++) {
@@ -67,7 +66,8 @@ void USER_DB_MANAGER::RetrieveResult()
                 show_error(hstmt, SQL_HANDLE_STMT, retcode);
             if (retcode == SQL_SUCCESS || retcode == SQL_SUCCESS_WITH_INFO)
             {
-                wprintf(L"id:%3d %4d\n", user_cid, user_status);
+                wprintf(L"id:%3d %4d\n", user_cid);
+                
                 break;
             }
             else

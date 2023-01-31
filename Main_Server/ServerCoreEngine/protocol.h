@@ -1,15 +1,15 @@
 #pragma once
-
+#include <windows.h>
 #define MAX_USER 10
 #define PORTNUM 9000
 // 클라 -> 서버 패킷
 
-enum  C_PACKET_TYPE { ACQ_LOGIN = 1, ACQ_LOGOUT = 2, ACQ_REGISTER = 3, CHAT = 4   };
-enum  C_ROOM_PACKET_TYPE { MK_RM = 5, DEL_RM = 6 , ENTER_RM = 7, EXIT_RM = 8}; // 방 생성, 방 삭제, 입장 , 종료 
-enum  S_PACKET_TYPE { LOGIN_OK = 9,  LOGIN_FAIL = 10};
+enum class C_PACKET_TYPE : int8{ ACQ_LOGIN = 1, ACQ_LOGOUT = 2, ACQ_REGISTER = 3, CHAT = 4   };
+enum class C_ROOM_PACKET_TYPE : int8 { MK_RM = 5, DEL_RM = 6 , ENTER_RM = 7, EXIT_RM = 8}; // 방 생성, 방 삭제, 입장 , 종료 
+enum class S_PACKET_TYPE : int8 { LOGIN_OK = 9,  LOGIN_FAIL = 10 , CHAT = 4};
 
 
-struct C2S_CHAT
+struct _CHAT
 {
 	int8 size;
 	int8 type;
@@ -20,8 +20,8 @@ struct C2S_LOGIN
 {
 	int8 size;
 	int8 type;
-	int8 name[10];
-	int32 pw;
+	WCHAR name[10];
+	WCHAR pw[10];
 };
 
 struct C2S_REGISTER

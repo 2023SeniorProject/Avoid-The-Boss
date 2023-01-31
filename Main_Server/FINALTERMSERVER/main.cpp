@@ -2,24 +2,49 @@
 #include "MSession.h"
 #include "ThreadManager.h"
 #include "SocketUtil.h"
+#include "OBDC_MGR.h"
+#include <string>
+#include <future>
+
+#define MAX_USER 10
 
 HANDLE g_h_iocp;
 SOCKET g_listen_sock;
 SOCKET g_client_sock;
 OVEREXTEN g_accept_over;
 Atomic<int32> client_id = 1;
-MSession client;
+unordered_map<int32, MSession*> clients;
+condition_variable dbcv;
+Mutex m;
 
+bool DB_Worker(int32 key, wstring sqlexec);
+int32 GetSessionId()
+{
+    return clients.size();
+}
 
 // 패킷 처리 진행
 void ProcessPacket(int32 c_id, char* packet)
 {
     switch (packet[1]) 
     {
-        case CHAT:
+        case (int8)C_PACKET_TYPE::CHAT:
         {
-            C2S_CHAT* cp = (C2S_CHAT*)packet;
+          
+            _CHAT* cp = (_CHAT*)packet;
             std::cout << cp->buf << endl;
+        }
+        break;
+        case (int8)C_PACKET_TYPE::ACQ_LOGIN:
+        {
+         
+            C2S_LOGIN* cp = (C2S_LOGIN*)packet;
+            wstring sqlExec(L"EXEC search_user_db ");
+            sqlExec += cp->name;
+            sqlExec += L", ";
+            sqlExec += cp->pw;
+            DB_Worker(c_id, sqlExec);
+        
         }
         break;
     }
@@ -43,7 +68,7 @@ void WorkerThread(HANDLE h_iocp)
                 continue;
             }
         }
-        cout << key << endl;
+
         if ((0 == num_bytes) && ((ex_over->_comp_type == OP_RECV) || (ex_over->_comp_type == OP_SEND))) {
             if (ex_over->_comp_type == OP_SEND) delete ex_over;
             continue;
@@ -54,16 +79,16 @@ void WorkerThread(HANDLE h_iocp)
            
             case OP_ACCEPT: // 클라이언트 접속 시, 등록
             {
-                if (client_id == 1)
+                int32 Session_id = GetSessionId();
+                if (Session_id < MAX_USER)
                 {
+                    MSession* tmp = new MSession(g_client_sock,client_id);
                     cout << "Client Accept!" << endl;
-                    client._sock = g_client_sock;
-                    client._cid = client_id;
-                    client.do_recv_packet();
                     CreateIoCompletionPort(reinterpret_cast<HANDLE>(g_client_sock),
                         h_iocp, client_id, 0);
+                    clients.try_emplace(client_id, tmp);
+                    clients[client_id]->DoRecv();
                     g_client_sock = WSASocket(AF_INET, SOCK_STREAM, 0, NULL, 0, WSA_FLAG_OVERLAPPED);
-                    client_id.fetch_add(1);
                 }
                 else {
                     cout << "Max user exceeded.\n";
@@ -76,24 +101,25 @@ void WorkerThread(HANDLE h_iocp)
             }
             case OP_RECV:
             {
-                int remain_data = num_bytes + client._prev_remain;
+               
+                int remain_data = num_bytes + clients[key]->_prev_remain;
                 char* p = ex_over->_buf;
                 while (remain_data > 0) 
                 {
-                    int packet_size = p[0];
+                    int8 packet_size = p[0];
                     if (packet_size <= remain_data)
                     {
-                        ProcessPacket(static_cast<int>(key), p);
+                        ProcessPacket(static_cast<int32>(key), p);
                         p = p + packet_size;
                         remain_data = remain_data - packet_size;
                     }
                     else break;
                 }
-                client._prev_remain = remain_data;
+                clients[key]->_prev_remain = remain_data;
                 if (remain_data > 0) {
                     memcpy(ex_over->_buf, p, remain_data);
                 }
-                client.do_recv_packet();
+                clients[key]->DoRecv();
                 break;
             }
             case OP_SEND:
@@ -106,11 +132,35 @@ void WorkerThread(HANDLE h_iocp)
 }
 
 
+bool DB_Worker(int32 key,wstring sqlexec)
+{
+    USER_DB_MANAGER udb;
+    udb.AllocateHandles();
+    udb.ConnectDataSource(L"2023SENIORPROJECT");
+    const WCHAR* a = sqlexec.c_str();
+    udb.ExecuteStatementDirect(a);
+    udb.RetrieveResult();
+
+    lockG lg(m);
+    {
+        clients[key]->_cid = udb.user_cid;
+        if (clients[key]->_cid == -1)
+        {
+            cout << "LoginFail" << endl;
+            udb.DisconnectDataSource();
+            return false;
+        }
+    }
+    cout << "LoginSuccess" << endl;
+    udb.DisconnectDataSource();
+    return true;
+}
+
 int main() 
 {
 
 	GThreadManager = new ThreadManager();
-    
+    clients.reserve(10);
 #pragma region 초기화
     SocketUtil::Init();
     g_listen_sock = SocketUtil::CreateSocket();
@@ -134,6 +184,7 @@ int main()
 	// 7. NULL
 	// 8. accept 전용 확장 오버랩드 구조체
     g_accept_over._comp_type = OP_ACCEPT; // Accept용 오버랩드 구조체임을 알려준다.
+    
 	AcceptEx(g_listen_sock, g_client_sock, g_accept_over._buf, 0, sizeof(clientaddr) + 16, sizeof(clientaddr) + 16, NULL, &g_accept_over._over);
 
 #pragma endregion

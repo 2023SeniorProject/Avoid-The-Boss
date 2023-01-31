@@ -9,10 +9,8 @@ class USER_DB_MANAGER
     SQLHSTMT hstmt = 0;
     SQLRETURN retcode = 0;
     SQLLEN cb_cid = 0;
-    SQLLEN cb_status = 0;
 public:
     SQLINTEGER user_cid = -1;
-    SQLCHAR user_status = 0;
     USER_DB_MANAGER() {};
     ~USER_DB_MANAGER() {};
     void AllocateHandles();

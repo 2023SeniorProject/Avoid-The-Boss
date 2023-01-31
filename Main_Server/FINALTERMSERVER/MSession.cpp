@@ -2,15 +2,15 @@
 #include "MSession.h"
 
 
-void MSession::do_send_login_packet()
+void MSession::DoSendLoginPacket()
 {
 }
 
-void MSession::do_send_room_packet(C_ROOM_PACKET_TYPE type)
+void MSession::DoSendRoomPacket(C_ROOM_PACKET_TYPE type)
 {
 }
 
-void MSession::do_recv_packet()
+void MSession::DoRecv()
 {
     DWORD recv_flag = 0;
     memset(&_recv_over._over, 0, sizeof(_recv_over._over));

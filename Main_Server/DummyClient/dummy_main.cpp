@@ -1,5 +1,109 @@
 #include "pch.h"
 #include "SocketUtil.h"
+
+
+
+SOCKET clientSocket;
+
+void ProcessPacket(char* packet)
+{
+	switch (packet[1])
+	{
+		case (int8)S_PACKET_TYPE::LOGIN_OK:
+		{
+			cout << "login success" << endl;
+		}
+		break;
+		case (int8)S_PACKET_TYPE::LOGIN_FAIL:
+		{
+			cout << "login fail" << endl;
+		}
+		break;
+		case (int8)S_PACKET_TYPE::CHAT:
+		{
+			_CHAT* chat = reinterpret_cast<_CHAT*>(packet);
+			std::cout << chat->buf << std::endl;
+		}
+		break;
+	}
+}
+
+void SendThread()
+{
+	char sendBuffer[100];
+	WSAEVENT wsaEvent = ::WSACreateEvent();
+	while (true)
+	{
+		std::cout << "msg : ";
+		std::cin.getline(sendBuffer, 100);
+		
+		_CHAT chat_packet;
+		chat_packet.type = (int8)C_PACKET_TYPE::CHAT;
+		chat_packet.size = sizeof(_CHAT);
+		strcpy_s(chat_packet.buf, 100, sendBuffer);
+
+		OVEREXTEN cover(reinterpret_cast<char*>(&chat_packet));
+		cover._over.hEvent = wsaEvent;
+
+		DWORD sendLen = 0;
+		DWORD flags = 0;
+		if (::WSASend(clientSocket, &cover._wsabuf, 1, &sendLen, flags, (LPWSAOVERLAPPED)&cover, nullptr) == SOCKET_ERROR)
+		{
+			if (::WSAGetLastError() == WSA_IO_PENDING)
+			{
+				// Pending
+				::WSAWaitForMultipleEvents(1, &wsaEvent, TRUE, WSA_INFINITE, FALSE);
+				::WSAGetOverlappedResult(clientSocket, (LPWSAOVERLAPPED)&cover, &sendLen, FALSE, &flags);
+				WSACloseEvent(wsaEvent);
+
+			}
+			else if(WSAGetLastError() != 0)
+			{
+				// 진짜 문제 있는 상황
+				cout << "error1" << endl;
+				break;
+			}
+		}
+	}
+	WSACloseEvent(wsaEvent);
+}
+
+void RecvThread()
+{
+
+	WSAEVENT wsaEvent = ::WSACreateEvent();
+	OVEREXTEN cover;
+
+	while (true)
+	{
+		::ZeroMemory(&cover, sizeof(WSAOVERLAPPED));
+		cover._over.hEvent = wsaEvent;
+		DWORD recvLen = 0;
+		DWORD flags = 0;
+
+		if (::WSARecv(clientSocket, &cover._wsabuf, 1, &recvLen, &flags, (LPWSAOVERLAPPED)&cover, nullptr) == SOCKET_ERROR)
+		{
+			if (::WSAGetLastError() == WSA_IO_PENDING)
+			{
+				// Pending
+				::WSAWaitForMultipleEvents(1, &wsaEvent, TRUE, WSA_INFINITE, FALSE);
+				::WSAGetOverlappedResult(clientSocket, (LPWSAOVERLAPPED)&cover, &recvLen, FALSE, &flags);
+				 ProcessPacket(cover._buf);
+			}
+			else if(WSAGetLastError() != 0)
+			{
+				// 진짜 문제 있는 상황
+				cout << WSAGetLastError() << endl;
+				cout << "error2" << endl;
+				break;
+			}
+		}
+	}
+	WSACloseEvent(wsaEvent);
+}
+
+
+
 int main()
 {
 #pragma region init winsock
@@ -7,13 +111,9 @@ int main()
 	if (::WSAStartup(MAKEWORD(2, 2), &wsaData) != 0)
 		return 0;
 
-	SOCKET clientSocket = WSASocket(AF_INET, SOCK_STREAM, IPPROTO_TCP, NULL, 0, WSA_FLAG_OVERLAPPED);
+	clientSocket = WSASocket(AF_INET, SOCK_STREAM, IPPROTO_TCP, NULL, 0, WSA_FLAG_OVERLAPPED);
 	if (clientSocket == INVALID_SOCKET)
 		return 0;
-
-	/*u_long on = 1;
-	if (::ioctlsocket(clientSocket, FIONBIO, &on) == INVALID_SOCKET)
-		return 0;*/
 
 	SOCKADDR_IN serveraddr;
 	::memset(&serveraddr, 0, sizeof(serveraddr));
@@ -22,52 +122,50 @@ int main()
 	serveraddr.sin_port = ::htons(PORTNUM);
 
 	// Connect
+	// 커넥트와 동시에 로그인 패킷 전송
+	C2S_LOGIN loginPacket;
+	loginPacket.size = sizeof(C2S_LOGIN);
+	loginPacket.type = (int8)C_PACKET_TYPE::ACQ_LOGIN;
+	std::cout << "ID : ";
+	std::wcin.getline(loginPacket.name, sizeof(WCHAR) * 10);
+	std::cout << endl;
+	std::cout << "PW : ";
+	std::wcin.getline(loginPacket.pw, sizeof(WCHAR) * 10);
 	
 	if (WSAConnect(clientSocket, (SOCKADDR*)&serveraddr, sizeof(serveraddr), NULL, NULL, NULL, NULL) == SOCKET_ERROR) return - 1;
-	
-
 	cout << "Connected to Server!" << endl;
 
-	
 	WSAEVENT wsaEvent = ::WSACreateEvent();
-	OVEREXTEN cover;
+	OVEREXTEN cover(reinterpret_cast<char*>(&loginPacket));
 	cover._over.hEvent = wsaEvent;
-	char sendBuffer[100];
-	// Send
-	while (true)
+	DWORD sendlen(0);
+	DWORD flags(0);
+
+	if (::WSASend(clientSocket, &cover._wsabuf, 1, &sendlen, flags, &cover._over, nullptr) == SOCKET_ERROR)
 	{
-		cin.getline(sendBuffer, 100);
-
-		C2S_CHAT chat_packet;
-		chat_packet.type = (int8)CHAT;
-		chat_packet.size = sizeof(C2S_CHAT);
-		strcpy_s(chat_packet.buf,100, sendBuffer);
-
-		WSABUF wsaBuf;
-		wsaBuf.buf = (char*)&chat_packet;
-		wsaBuf.len = sizeof(C2S_CHAT);
-
-		DWORD sendLen = 0;
-		DWORD flags = 0;
-		if (::WSASend(clientSocket, &wsaBuf, 1, &sendLen, flags, (LPWSAOVERLAPPED)&cover, nullptr) == SOCKET_ERROR)
+		if (WSAGetLastError() == WSA_IO_PENDING)
 		{
-			if (::WSAGetLastError() == WSA_IO_PENDING)
-			{
-				// Pending
-				::WSAWaitForMultipleEvents(1, &wsaEvent, TRUE, WSA_INFINITE, FALSE);
-				::WSAGetOverlappedResult(clientSocket, (LPWSAOVERLAPPED)&cover, &sendLen, FALSE, &flags);
-			}
-			else
-			{
-				// 진짜 문제 있는 상황
-				break;
-			}
+			::WSAWaitForMultipleEvents(1, &wsaEvent, TRUE, WSA_INFINITE, FALSE);
+			::WSAGetOverlappedResult(clientSocket, &cover._over, &sendlen, FALSE, &flags);
+			WSACloseEvent(wsaEvent);
+			
 		}
+		else if (WSAGetLastError() != 0)
+		{
 
-		cout << "Send Data ! Len = " << sizeof(sendLen) << endl;
-
-		this_thread::sleep_for(1s);
+			cout << ::WSAGetLastError() << "error" << endl;
+			WSACloseEvent(wsaEvent);
+			return -1;
+		}
 	}
+
+   
+	// Send
+	std::thread st(SendThread);
+	std::thread rt(RecvThread);
+
+	st.join();
+	rt.join();
 
 	// 소켓 리소스 반환
 	::closesocket(clientSocket);

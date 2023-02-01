@@ -8,6 +8,7 @@ IocpEvent::IocpEvent(EventType et) : _comp(et)
 
 void IocpEvent::Init()
 {
+	// 오버랩드 구조체를 초기화 시킨다.
 	WSAOVERLAPPED::hEvent = 0;
 	WSAOVERLAPPED::Offset = 0;
 	WSAOVERLAPPED::OffsetHigh = 0;

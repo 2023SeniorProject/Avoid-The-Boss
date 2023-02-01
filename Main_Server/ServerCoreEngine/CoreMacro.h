@@ -14,6 +14,15 @@
 #define	WRITE_LOCK_IDX(idx)		wlock_guard writeLockGuard_##idx(_locks[idx]);
 #define WRITE_LOCK				WRITE_LOCK_IDX(0)
 
+
+#ifdef _DEBUG
+#define Xalloc(size)					StompAllocator::Alloc(size)
+#define Xrelease(ptr)					StompAllocator::Rel(ptr)
+#else
+#define xallocate(size)					BasicAllocator::Alloc(size)
+#define xrelease(ptr)					BasicAllocator::Rel(ptr)
+#endif
+
 #define CRASH(cause) 						 \
 {											 \
 uint32* crash = nullptr; 					 \

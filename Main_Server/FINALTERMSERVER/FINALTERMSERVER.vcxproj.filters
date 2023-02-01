@@ -35,6 +35,9 @@
     <ClCompile Include="pch.cpp">
       <Filter>Core</Filter>
     </ClCompile>
+    <ClCompile Include="newMain.cpp">
+      <Filter>Main</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="OBDC_MGR.h">

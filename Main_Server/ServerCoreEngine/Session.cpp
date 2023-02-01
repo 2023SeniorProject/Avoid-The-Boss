@@ -17,7 +17,7 @@ HANDLE Session::GetHandle()
 	return reinterpret_cast<HANDLE>(_sock);
 }
 
-void Session::CheckCompletionWork(IocpEvent* iocpEvent, int32 numOfBytes)
+void Session::Processing(IocpEvent* iocpEvent, int32 numOfBytes)
 {
 	//TODO
 }

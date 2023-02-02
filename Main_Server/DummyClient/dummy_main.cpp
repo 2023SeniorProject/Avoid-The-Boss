@@ -110,19 +110,21 @@ void RecvThread()
 int main()
 {
 #pragma region init winsock
-	WSAData wsaData;
+	/*WSAData wsaData;
 	if (::WSAStartup(MAKEWORD(2, 2), &wsaData) != 0)
 		return 0;
 
 	clientSock = WSASocket(AF_INET, SOCK_STREAM, IPPROTO_TCP, NULL, 0, WSA_FLAG_OVERLAPPED);
 	if (clientSock == INVALID_SOCKET)
-		return 0;
-
-	SOCKADDR_IN serveraddr;
-	::memset(&serveraddr, 0, sizeof(serveraddr));
-	serveraddr.sin_family = AF_INET;
-	::inet_pton(AF_INET, "127.0.0.1", &serveraddr.sin_addr);
-	serveraddr.sin_port = ::htons(PORTNUM);
+		return 0;*/
+	SocketUtil::Init();
+	clientSock = SocketUtil::CreateSocket();
+	if(!SocketUtil::Connect(clientSock, "127.0.0.1")) cout << "connect fail" << endl;
+	//SOCKADDR_IN serveraddr;
+	//::memset(&serveraddr, 0, sizeof(serveraddr));
+	//serveraddr.sin_family = AF_INET;
+	//::inet_pton(AF_INET, "127.0.0.1", &serveraddr.sin_addr);
+	//serveraddr.sin_port = ::htons(PORTNUM);
 
 	// Connect
 	// 커넥트와 동시에 로그인 패킷 전송
@@ -135,7 +137,7 @@ int main()
 	std::cout << "PW : ";
 	std::wcin.getline(loginPacket.pw, sizeof(WCHAR) * 10);
 	
-	if (WSAConnect(clientSock, (SOCKADDR*)&serveraddr, sizeof(serveraddr), NULL, NULL, NULL, NULL) == SOCKET_ERROR) return - 1;
+	// if (WSAConnect(clientSock, (SOCKADDR*)&serveraddr, sizeof(serveraddr), NULL, NULL, NULL, NULL) == SOCKET_ERROR) return - 1;
 	cout << "Connected to Server!" << endl;
 
 	WSAEVENT wsaEvent = ::WSACreateEvent();
@@ -171,8 +173,10 @@ int main()
 	rt.join();
 
 	// 소켓 리소스 반환
-	if(clientSock != INVALID_SOCKET)::closesocket(clientSock);
+	//if(clientSock != INVALID_SOCKET)::closesocket(clientSock);
 
-	// 윈속 종료
-	::WSACleanup();
+	//// 윈속 종료
+	//::WSACleanup();
+	SocketUtil::Close(clientSock);
+	SocketUtil::Clear();
 }

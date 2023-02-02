@@ -24,7 +24,7 @@ using lockG = std::lock_guard<std::mutex>;
 
 using IocpObjRef = std::shared_ptr<class IocpObject>;
 using IocpCoreRef = std::shared_ptr<class IocpCore>;
-using SessionRef = std::shared_ptr<class Session>;
+using SessionRef = std::shared_ptr<class GameSession>;
 using ServerMainRef = std::shared_ptr<class ServerMain>;
 
 

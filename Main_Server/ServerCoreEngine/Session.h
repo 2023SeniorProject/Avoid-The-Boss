@@ -1,12 +1,13 @@
 #pragma once
 #include "IocpCore.h"
+class RecvEvent;
 // 서버에서 클라이언트 소켓을 관리할 클래스
 // 마찬가지로 Iocp에 등록할 대상이기 때문에 IocpObject에 해당된다
-class Session : public IocpObject
+class GameSession : public IocpObject
 {
 public:
-	Session();
-	virtual ~Session();
+	GameSession();
+	virtual ~GameSession();
 public:
 	// 세션 인터페이스
 	virtual HANDLE GetHandle() override;
@@ -14,10 +15,13 @@ public:
 public:
 	// 세션 정보를 얻어 내거나 세팅할 수 있는 함수들
 	SOCKET GetSock() { return _sock; }
+	void DoSend(void* packet);
+	void DoRecv();
 public:
-	char _recvBuf[BUFSIZE];
-	int32 _cid;
+	int32 _cid = -1;
+	int32 _sid = -1;
 private:
 	SOCKET _sock = INVALID_SOCKET;
+	RecvEvent _rev;
 };
 

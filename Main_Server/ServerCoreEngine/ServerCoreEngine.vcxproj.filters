@@ -75,9 +75,6 @@
     <ClInclude Include="IocpEvent.h">
       <Filter>IocpCore</Filter>
     </ClInclude>
-    <ClInclude Include="NetAddress.h">
-      <Filter>Network</Filter>
-    </ClInclude>
     <ClInclude Include="Memory.h">
       <Filter>Memory</Filter>
     </ClInclude>
@@ -130,9 +127,6 @@
     </ClCompile>
     <ClCompile Include="IocpEvent.cpp">
       <Filter>IocpCore</Filter>
-    </ClCompile>
-    <ClCompile Include="NetAddress.cpp">
-      <Filter>Network</Filter>
     </ClCompile>
     <ClCompile Include="Memory.cpp">
       <Filter>Memory</Filter>

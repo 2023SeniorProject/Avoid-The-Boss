@@ -15,6 +15,7 @@ public:
 	
 	static bool Connect(SOCKET s);
 	static bool Bind(SOCKET s);
+	static bool Connect(SOCKET s, string Address);
 	static bool Listen(SOCKET s);
 	static bool Close(SOCKET& s);
 	static bool BindWindowsFunction(SOCKET socket, GUID guid, LPVOID* fn);

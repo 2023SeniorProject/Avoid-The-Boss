@@ -1,7 +1,7 @@
 #pragma once
 
 
-class Session;
+class GameSession;
 
 
 //==========================
@@ -26,11 +26,9 @@ class IocpEvent : public WSAOVERLAPPED
 {
 public:
 	IocpEvent(EventType type);
-	EventType	GetType() { return _comp; }
 	void Init();
 public:
 	EventType _comp;
-	IocpObjRef _ev_owner; // 해당 이벤트 호출 IOCP객체
 };
 
 
@@ -44,7 +42,8 @@ class AcceptEvent : public IocpEvent
 public:
 	AcceptEvent() : IocpEvent(EventType::Accept) { };
 public:
-	SessionRef _session = nullptr;
+	GameSession* _session = nullptr;
+	char _buf[BUFSIZE / 2];
 };
 
 class ConnectEvent : public IocpEvent
@@ -58,12 +57,26 @@ public:
 class SendEvent : public IocpEvent
 {
 public:
-	SendEvent() : IocpEvent(EventType::Send) { };
+	SendEvent(char* packet) : IocpEvent(EventType::Send) 
+	{
+		_sWsaBuf.buf = _sbuf;
+		memcpy(_sbuf, packet, sizeof(*packet));
+	};
+public:
+	int32 _sid;
+	int32 _cid;
+	WSABUF _sWsaBuf;
+	char _sbuf[BUFSIZE];
 };
 
 class RecvEvent : public IocpEvent
 {
 public:
 	RecvEvent() : IocpEvent(EventType::Recv) { };
+public:
+	int32 _sid;
+	int32 _cid;
+	WSABUF _rWsaBuf;
+	char _rbuf[BUFSIZE];
 };
 

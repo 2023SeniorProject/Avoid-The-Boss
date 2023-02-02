@@ -60,11 +60,12 @@ public:
 	SendEvent(char* packet) : IocpEvent(EventType::Send) 
 	{
 		_sWsaBuf.buf = _sbuf;
+		_sWsaBuf.len = packet[0];
 		memcpy(_sbuf, packet, sizeof(*packet));
 	};
 public:
-	int32 _sid;
-	int32 _cid;
+	int32 _sid = -1;
+	int32 _cid = -1;
 	WSABUF _sWsaBuf;
 	char _sbuf[BUFSIZE];
 };
@@ -72,10 +73,14 @@ public:
 class RecvEvent : public IocpEvent
 {
 public:
-	RecvEvent() : IocpEvent(EventType::Recv) { };
+	RecvEvent() : IocpEvent(EventType::Recv) 
+	{	 
+		_rWsaBuf.buf = _rbuf;
+		_rWsaBuf.len = BUFSIZE;
+	};
 public:
-	int32 _sid;
-	int32 _cid;
+	int32 _sid = -1;
+	int32 _cid = -1;
 	WSABUF _rWsaBuf;
 	char _rbuf[BUFSIZE];
 };

@@ -21,16 +21,51 @@ HANDLE GameSession::GetHandle()
 void GameSession::Processing(IocpEvent* iocpEvent, int32 numOfBytes)
 {
 	//TODO
+	switch (iocpEvent->_comp)
+	{
+	case EventType::Recv:
+		{
+			WRITE_LOCK;
+			RecvEvent* rev = static_cast<RecvEvent*>(iocpEvent);
+			int remain_data = numOfBytes + _prev_remain;
+			char* p = rev->_rbuf;
+			while (remain_data > 0)
+			{
+				int8 packet_size = p[0];
+				if (packet_size <= remain_data)
+				{
+					ProcessPacket(p);
+					p = p + packet_size;
+					remain_data = remain_data - packet_size;
+				}
+				else break;
+			}
+			_prev_remain = remain_data;
+			if (remain_data > 0) 
+			{
+				memcpy(rev->_rbuf, p, remain_data);
+			}
+			DoRecv();
+		}
+		break;
+	case EventType::Send:
+		{
+			WRITE_LOCK;
+			if(_sev == nullptr) ASSERT_CRASH("double Del");
+			delete _sev;
+		}
+		break;
+	}
 }
 
 void GameSession::DoSend(void* packet)
 {
-	SendEvent* sev;
+	
 	DWORD sendLen(0);
 	DWORD flag(0);
-	sev = new SendEvent(reinterpret_cast<char*>(packet));
-	sev->_sid = _sid;
-	WSASend(_sock, &sev->_sWsaBuf, 1, &sendLen, flag, static_cast<LPWSAOVERLAPPED>(sev), NULL);
+	_sev = new SendEvent(reinterpret_cast<char*>(packet));
+	_sev->_sid = _sid;
+	WSASend(_sock, &_sev->_sWsaBuf, 1, &sendLen, flag, static_cast<LPWSAOVERLAPPED>(_sev), NULL);
 }
 
 void GameSession::DoRecv()

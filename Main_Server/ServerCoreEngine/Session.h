@@ -17,11 +17,15 @@ public:
 	SOCKET GetSock() { return _sock; }
 	void DoSend(void* packet);
 	void DoRecv();
+	void ProcessPacket(char* packet);
 public:
 	int32 _cid = -1;
 	int32 _sid = -1;
+	int32 _prev_remain = 0;
 private:
 	SOCKET _sock = INVALID_SOCKET;
 	RecvEvent _rev;
+	SendEvent* _sev;
+	USE_LOCK;
 };
 

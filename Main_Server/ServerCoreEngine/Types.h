@@ -22,7 +22,15 @@ using CondVal = std::condition_variable;
 using UlockG = std::unique_lock<std::mutex>;
 using lockG = std::lock_guard<std::mutex>;
 
+using IocpObjRef = std::shared_ptr<class IocpObject>;
+using IocpCoreRef = std::shared_ptr<class IocpCore>;
+using SessionRef = std::shared_ptr<class Session>;
+using ServerMainRef = std::shared_ptr<class ServerMain>;
+
+
 #define size16(val)		static_cast<int16>(sizeof(val))
 #define size32(val)		static_cast<int32>(sizeof(val))
 #define len16(arr)		static_cast<int16>(sizeof(arr)/sizeof(arr[0]))
 #define len32(arr)		static_cast<int32>(sizeof(arr)/sizeof(arr[0]))
+
+#define _STOMP

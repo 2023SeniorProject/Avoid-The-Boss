@@ -10,7 +10,7 @@ public:
 	~ThreadManager() { Join(); }
 
 	
-	void Launch(function<void(HANDLE)> callback, HANDLE);
+	void Launch(function<void(void)> callback);
 	void Join();
 	//TLS init
 	static void InitTLS();

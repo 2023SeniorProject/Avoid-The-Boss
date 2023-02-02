@@ -2,7 +2,7 @@
 // Worker Thread 기능을 클래스로 랩핑
 
 // IOCP에 등록할 수 있는 모든 오브젝트에 관해서 정의
-class IocpObject
+class IocpObject 
 {
 public:
 	virtual HANDLE GetHandle() abstract;

@@ -4,9 +4,6 @@
 #include "IocpEvent.h"
 #include "Session.h"
 
-AcceptManager::AcceptManager()
-{
-}
 
 AcceptManager::~AcceptManager()
 {
@@ -32,7 +29,7 @@ void AcceptManager::Processing(IocpEvent* iocpEvent, int32 numOfBytes)
 
 
 
-bool AcceptManager::InitAccept(NetAddress addr)
+bool AcceptManager::InitAccept()
 {
 	_listenSock = SocketUtil::CreateSocket();
 	if (_listenSock == INVALID_SOCKET)

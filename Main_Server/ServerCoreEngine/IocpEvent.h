@@ -30,6 +30,7 @@ public:
 	void Init();
 public:
 	EventType _comp;
+	IocpObjRef _ev_owner; // 해당 이벤트 호출 IOCP객체
 };
 
 
@@ -42,10 +43,8 @@ class AcceptEvent : public IocpEvent
 {
 public:
 	AcceptEvent() : IocpEvent(EventType::Accept) { };
-	void SetSession(Session* session) { _session = session; }
-	Session* GetSession() { return _session; }
-private:
-	Session* _session = nullptr;
+public:
+	SessionRef _session = nullptr;
 };
 
 class ConnectEvent : public IocpEvent

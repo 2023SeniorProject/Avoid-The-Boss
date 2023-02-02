@@ -8,11 +8,11 @@ class AcceptEvent;
 class AcceptManager : public IocpObject
 {
 public:
-	AcceptManager();
+	AcceptManager() = default;
 	~AcceptManager();
 public:
 	// Accept를 받을 준비를 진행해라
-	bool InitAccept(NetAddress addr);
+	bool InitAccept();
 	void CloseSocket();
 private:
 	// 수신관련 진행
@@ -21,7 +21,7 @@ private:
 public: // 인터페이스 구현할 예정
 	// 상속하고 있는 iocObject의 추상 함수들을 오버라이딩
 	virtual HANDLE GetHandle() override;
-	virtual void Processing(class IocpEvent* iocpEvent, int32 numOfBytes = 0) override;
+	virtual void Processing(IocpEvent* iocpEvent, int32 numOfBytes = 0) override;
 public:
 	SOCKET _listenSock = INVALID_SOCKET;
 	vector<AcceptEvent*> _acceptEvents;

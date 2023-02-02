@@ -346,7 +346,7 @@ void CThirdPersonCamera::Update(XMFLOAT3& xmf3LookAt, float fTimeElapsed)
 
 }
 
-void CThirdPersonCamera::SetLookAt(XMFLOAT3& xmf3LookAt)
+void CThirdPersonCamera::SetLookAt(const XMFLOAT3& xmf3LookAt)
 {
 	//현재 카메라의 위치에서 플레이어를 바라보기 위한 카메라 변환 행렬을 생성한다.
 	XMFLOAT4X4 mtxLookAt = Matrix4x4::LookAtLH(m_xmf3Position, xmf3LookAt, 

@@ -25,10 +25,10 @@ void CScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* p
 	//그래픽 루트 시그너쳐를 생성한다. 
 	m_pd3dGraphicsRootSignature = CreateGraphicsRootSignature(pd3dDevice);
 
-	//CTriangleMesh* pMesh = new CTriangleMesh(pd3dDevice, pd3dCommandList); // 삼각형그리기
+	/*/CTriangleMesh* pMesh = new CTriangleMesh(pd3dDevice, pd3dCommandList); // 삼각형그리기
 	
 	//가로x세로x깊이가 12x12x12인 정육면체 메쉬를 생성한다.  // 큐브 그리기
-	/*CCubeMeshDiffused* pCubeMesh = new CCubeMeshDiffused(pd3dDevice, pd3dCommandList,
+	CCubeMeshDiffused* pCubeMesh = new CCubeMeshDiffused(pd3dDevice, pd3dCommandList,
 	12.0f, 12.0f, 12.0f);
 	
 	m_nObjects = 1;
@@ -45,10 +45,25 @@ void CScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* p
 
 	m_ppObjects[0] = pRotatingObject;*/
 
+	//지형을 확대할 스케일 벡터이다. x-축과 z-축은 8배, y-축은 2배 확대한다. 
+	XMFLOAT3 xmf3Scale(8.0f, 2.0f, 8.0f);
+	XMFLOAT4 xmf4Color(0.0f, 0.2f, 0.0f, 0.0f);
+
+	//지형을 높이 맵 이미지 파일(HeightMap.raw)을 사용하여 생성한다. 높이 맵의 크기는 가로x세로(257x257)이다. 
+#ifdef _WITH_TERRAIN_PARTITION
+	/*하나의 격자 메쉬의 크기는 가로x세로(17x17)이다. 지형 전체는 가로 방향으로 16개, 세로 방향으로 16의 격자 메쉬를 가진다. 지형을 구성하는 격자 메쉬의 개수는 총 256(16x16)개가 된다.*/
+	m_pLand = new CMapLand(pd3dDevice, pd3dCommandList,
+		m_pd3dGraphicsRootSignature, _T("C:\\Users\\aeiou\\Desktop\\SeniorProject\\Avoid-The-Boss\\Senior_project_ver2\\HeightMap.raw"), 257, 257, 17,
+		17, xmf3Scale, xmf4Color);
+#else
+	//지형을 하나의 격자 메쉬(257x257)로 생성한다. 
+	m_pLand = new CMapLand(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, _T("C:\\Users\\aeiou\\Desktop\\SeniorProject\\Avoid-The-Boss\\Senior_project_ver2\\HeightMap.raw"), 257, 257, 257, 257, xmf3Scale, xmf4Color);
+#endif
+
 	m_nShaders = 1;
 	m_pShaders = new CObjectsShader[m_nShaders];
 	m_pShaders[0].CreateShader(pd3dDevice, m_pd3dGraphicsRootSignature);
-	m_pShaders[0].BuildObjects(pd3dDevice, pd3dCommandList);
+	m_pShaders[0].BuildObjects(pd3dDevice, pd3dCommandList,m_pLand);
 }
 
 void CScene::ReleaseObjects()
@@ -76,6 +91,8 @@ void CScene::ReleaseObjects()
 		m_pShaders[i].ReleaseObjects();
 	}
 	if (m_pShaders) delete[] m_pShaders;
+
+	if (m_pLand) delete m_pLand;
 }
 
 bool CScene::ProcessInput(UCHAR* pKeysBuffer)
@@ -96,7 +113,9 @@ void CScene::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera
 	pCamera->SetViewportsAndScissorRects(pd3dCommandList);	
 	//그래픽 루트 시그너쳐를 파이프라인에 연결(설정)한다. 
 	pd3dCommandList->SetGraphicsRootSignature(m_pd3dGraphicsRootSignature);
-	if (pCamera) pCamera->UpdateShaderVariables(pd3dCommandList);
+	pCamera->UpdateShaderVariables(pd3dCommandList);
+
+	if (m_pLand)m_pLand->Render(pd3dCommandList, pCamera);
 
 	//씬을 렌더링하는 것은 씬을 구성하는 게임 객체(셰이더를 포함하는 객체)들을 렌더링하는 것이다. 
 	for (int i = 0; i < m_nShaders; i++)
@@ -121,6 +140,8 @@ void CScene::ReleaseUploadBuffers()
 			m_ppObjects[j]->ReleaseUploadBuffers();
 	}*/
 	for (int i = 0; i < m_nShaders; i++) m_pShaders[i].ReleaseUploadBuffers();
+
+	if (m_pLand) m_pLand->ReleaseUploadBuffers();
 }
 
 ID3D12RootSignature* CScene::CreateGraphicsRootSignature(ID3D12Device* pd3dDevice)

@@ -10,6 +10,8 @@
 //----Windows 헤더 파일
 #include <windows.h>
 
+#pragma comment(lib, "winmm.lib")
+
 //----C 런타임 헤더 파일
 #include <stdlib.h>
 #include <malloc.h>
@@ -35,6 +37,7 @@
 #include <DirectXPackedVector.h>//벡터 관련 패킹된 구조체 제공
 #include <DirectXColors.h>//색상 정의 제공
 #include <DirectXCollision.h>//충돌 검사 관련 함수,구조체,클래스 제공 
+
 //C:\Program Files(x86)\Windows Kits\10\Include\10.0.17763.0\um 에서  DirectX로 시작하는 파일들 - 특히 “DirectXCollision.h”와 “DirectXCollision.inl” 내용 보기
 //심드 성능상 벡터 연산 오버로드 하지말자
 
@@ -42,7 +45,7 @@
 using namespace DirectX;
 using namespace DirectX::PackedVector;
 
-//bool XMVerifyCPUSupport(); // 응용프로그램에서 SIMD 기능(벡터 연산 명령집합 확장 기능 / 벡터의 병렬 연산 ) 제공여부 확인 
+bool XMVerifyCPUSupport(); // 응용프로그램에서 SIMD 기능(벡터 연산 명령집합 확장 기능 / 벡터의 병렬 연산 ) 제공여부 확인 
 
 using Microsoft::WRL::ComPtr;
 
@@ -51,7 +54,6 @@ using Microsoft::WRL::ComPtr;
 #pragma comment(lib, "d3d12.lib") //정적 Direct3D 12 API 스텁 라이브러리
 #pragma comment(lib, "dxgi.lib")
 #pragma comment(lib, "dxguid.lib")
-#pragma comment(lib,"winmm.lib")
 
 
 //----클라이언트 영역 크기 및 후면 버퍼 크기
@@ -61,6 +63,7 @@ using Microsoft::WRL::ComPtr;
 //----전체 화면 모드로 시작
 //#define _WITH_SWAPCHAIN_FULLSCREEN_STATE
 
+//#define assert(!XMVector3Equal(EyeDirection, XMVectorZero()));
 
 /*정점의 색상을 무작위로(Random) 설정하기 위해 사용한다. 각 정점의 색상은 난수(Random Number)를 생성하여
 지정한다.*/
@@ -73,9 +76,23 @@ extern ID3D12Resource* CreateBufferResource(ID3D12Device* pd3dDevice,
 	D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER, ID3D12Resource** ppd3dUploadBuffer =
 	NULL);
 
+#define			EPSILON 1.0e-10f
+
+inline bool		IsZero(float fValue) { return((fabsf(fValue) < EPSILON)); }
+inline bool		IsEqual(float fA, float fB) { return(::IsZero(fA - fB)); }
+inline float	InverseSqrt(float fValue) { return 1.0f / sqrtf(fValue); }
+inline void		Swap(float* pfS, float* pfT) { float fTemp = *pfS; *pfS = *pfT; *pfT = fTemp; }
+
 //3차원 벡터의 연산
 namespace Vector3
 {
+	//3-차원 벡터가 영 벡터인 지를 반환하는 함수이다. 
+	inline bool IsZero(XMFLOAT3& xmf3Vector)
+	{
+		if (::IsZero(xmf3Vector.x) && ::IsZero(xmf3Vector.y) && ::IsZero(xmf3Vector.z))
+			return(true);
+		return(false);
+	}
 	inline XMFLOAT3 XMVectorToFloat3(XMVECTOR& xmvVector)
 	{
 		XMFLOAT3 xmf3Result;
@@ -107,21 +124,21 @@ namespace Vector3
 			* fScalar));
 		return(xmf3Result);
 	}
-	inline XMFLOAT3 Subtract(XMFLOAT3& xmf3Vector1, const XMFLOAT3& xmf3Vector2)
+	inline XMFLOAT3 Subtract(const XMFLOAT3& xmf3Vector1, const XMFLOAT3& xmf3Vector2)
 	{
 		XMFLOAT3 xmf3Result;
 		XMStoreFloat3(&xmf3Result, XMLoadFloat3(&xmf3Vector1) -
 			XMLoadFloat3(&xmf3Vector2));
 		return(xmf3Result);
 	}
-	inline float DotProduct(XMFLOAT3& xmf3Vector1, XMFLOAT3& xmf3Vector2)
+	inline float DotProduct(const XMFLOAT3& xmf3Vector1, XMFLOAT3& xmf3Vector2)
 	{
 		XMFLOAT3 xmf3Result;
 		XMStoreFloat3(&xmf3Result, XMVector3Dot(XMLoadFloat3(&xmf3Vector1),
 			XMLoadFloat3(&xmf3Vector2)));
 		return(xmf3Result.x);
 	}
-	inline XMFLOAT3 CrossProduct(XMFLOAT3& xmf3Vector1, XMFLOAT3& xmf3Vector2, bool
+	inline XMFLOAT3 CrossProduct(const XMFLOAT3& xmf3Vector1, const XMFLOAT3& xmf3Vector2, bool
 		bNormalize = true)
 	{
 		XMFLOAT3 xmf3Result;
@@ -151,11 +168,9 @@ namespace Vector3
 		XMVECTOR xmvAngle = XMVector3AngleBetweenNormals(xmvVector1, xmvVector2);
 		return(XMConvertToDegrees(acosf(XMVectorGetX(xmvAngle))));
 	}
-	inline float Angle(const XMFLOAT3& xmf3Vector1, const XMFLOAT3& xmf3Vector2)
+	inline float Angle(const XMFLOAT3& xmf3Vector1,const XMFLOAT3& xmf3Vector2)
 	{
-		XMVECTOR Vec1 = XMLoadFloat3(&xmf3Vector1);
-		XMVECTOR Vec2 = XMLoadFloat3(&xmf3Vector2);
-		return(Angle(Vec1, Vec2));
+		return(Angle(XMLoadFloat3(&xmf3Vector1), XMLoadFloat3(&xmf3Vector2)));
 	}
 	inline XMFLOAT3 TransformNormal(XMFLOAT3& xmf3Vector, XMMATRIX& xmmtxTransform)
 	{
@@ -165,7 +180,7 @@ namespace Vector3
 		return(xmf3Result);
 	}
 	//행렬을 사용하여 벡터변환
-	inline XMFLOAT3 TransformCoord(XMFLOAT3& xmf3Vector, XMMATRIX& xmmtxTransform)
+	inline XMFLOAT3 TransformCoord(const XMFLOAT3& xmf3Vector, const XMMATRIX& xmmtxTransform)
 	{
 		XMFLOAT3 xmf3Result;
 		XMStoreFloat3(&xmf3Result, XMVector3TransformCoord(XMLoadFloat3(&xmf3Vector),
@@ -174,20 +189,25 @@ namespace Vector3
 	}
 	inline XMFLOAT3 TransformCoord(XMFLOAT3& xmf3Vector, XMFLOAT4X4& xmmtx4x4Matrix)
 	{
-		XMMATRIX M = XMLoadFloat4x4(&xmmtx4x4Matrix);
-		return(TransformCoord(xmf3Vector, M));
+		return(TransformCoord(xmf3Vector, XMLoadFloat4x4(&xmmtx4x4Matrix)));
 	}
 }
 
 //4차원 벡터의 연산
 namespace Vector4
 {
-	inline XMFLOAT4 Add(XMFLOAT4& xmf4Vector1, const XMFLOAT4& xmf4Vector2)
+	//4-차원 벡터와 스칼라(실수)의 곱을 반환하는 함수이다.
+	inline XMFLOAT4 Multiply(float fScalar, XMFLOAT4& xmf4Vector)
 	{
 		XMFLOAT4 xmf4Result;
-		XMVECTOR vec = XMLoadFloat4(&xmf4Vector1) +
-			XMLoadFloat4(&xmf4Vector2);
-		XMStoreFloat4(&xmf4Result, vec);
+		XMStoreFloat4(&xmf4Result, fScalar * XMLoadFloat4(&xmf4Vector));
+		return(xmf4Result);
+	}
+	inline XMFLOAT4 Add(const XMFLOAT4& xmf4Vector1, const XMFLOAT4& xmf4Vector2)
+	{
+		XMFLOAT4 xmf4Result;
+		XMStoreFloat4(&xmf4Result, XMLoadFloat4(&xmf4Vector1) +
+			XMLoadFloat4(&xmf4Vector2));
 		return(xmf4Result);
 	}
 	inline XMFLOAT4 Multiply(XMFLOAT4& xmf4Vector1, XMFLOAT4& xmf4Vector2)
@@ -195,12 +215,6 @@ namespace Vector4
 		XMFLOAT4 xmf4Result;
 		XMStoreFloat4(&xmf4Result, XMLoadFloat4(&xmf4Vector1) *
 			XMLoadFloat4(&xmf4Vector2));
-		return(xmf4Result);
-	}
-	inline XMFLOAT4 Multiply(float fScalar, XMFLOAT4& xmf4Vector)
-	{
-		XMFLOAT4 xmf4Result;
-		XMStoreFloat4(&xmf4Result, fScalar * XMLoadFloat4(&xmf4Vector));
 		return(xmf4Result);
 	}
 }
@@ -244,7 +258,7 @@ namespace Matrix4x4
 	{
 		XMFLOAT4X4 xmmtx4x4Result;
 		XMStoreFloat4x4(&xmmtx4x4Result,
-			XMMatrixTranspose(XMLoadFloat4x4(&xmmtx4x4Matrix)));
+			::XMMatrixTranspose(XMLoadFloat4x4(&xmmtx4x4Matrix)));
 		return(xmmtx4x4Result);
 	}
 
@@ -259,8 +273,8 @@ namespace Matrix4x4
 	}
 
 	// 뷰 매트릭스 설정
-	inline XMFLOAT4X4 LookAtLH(XMFLOAT3& xmf3EyePosition, XMFLOAT3& xmf3LookAtPosition,
-		const XMFLOAT3& xmf3UpDirection)
+	inline XMFLOAT4X4 LookAtLH(const XMFLOAT3& xmf3EyePosition,const XMFLOAT3& xmf3LookAtPosition,
+		 const XMFLOAT3& xmf3UpDirection)
 	{
 		XMFLOAT4X4 xmmtx4x4Result;
 		XMStoreFloat4x4(&xmmtx4x4Result, XMMatrixLookAtLH(XMLoadFloat3(&xmf3EyePosition),

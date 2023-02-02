@@ -345,11 +345,9 @@ void CGameFramework::BuildObjects()
 
 	//씬 객체를 생성하고 씬에 포함될 게임 객체들을 생성한다. 
 	m_pScene = new CScene();
-	m_pScene->BuildObjects(m_pd3dDevice, m_pd3dCommandList);
+	if(m_pScene) m_pScene->BuildObjects(m_pd3dDevice, m_pd3dCommandList);
 
-	CAirplanePlayer* pAirplanePlayer = new CAirplanePlayer(m_pd3dDevice,
-		m_pd3dCommandList, m_pScene->GetGraphicsRootSignature());
-	m_pPlayer = pAirplanePlayer;
+	m_pPlayer = new CLandPlayer(m_pd3dDevice,m_pd3dCommandList, m_pScene->GetGraphicsRootSignature(),m_pScene->GetTerrain(), 1);
 	m_pCamera = m_pPlayer->GetCamera();
 
 	//씬 객체를 생성하기 위하여 필요한 그래픽 명령 리스트들을 명령 큐에 추가한다. 
@@ -422,7 +420,7 @@ void CGameFramework::ProcessInput()
 		}
 
 		/*플레이어를 dwDirection 방향으로 이동한다(실제로는 속도 벡터를 변경한다). 이동 거리는 시간에 비례하도록 한다. 플레이어의 이동 속력은 (50/초)로 가정한다.*/
-		if (dwDirection) m_pPlayer->Move(dwDirection, 50.0f * m_GameTimer.GetTimeElapsed(),
+		if (dwDirection) m_pPlayer->Move(dwDirection, 100.0f * m_GameTimer.GetTimeElapsed(),
 			true);
 	}
 

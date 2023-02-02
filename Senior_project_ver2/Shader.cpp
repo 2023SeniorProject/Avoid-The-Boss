@@ -43,7 +43,7 @@ D3D12_RASTERIZER_DESC CShader::CreateRasterizerState()
 	D3D12_RASTERIZER_DESC d3dRasterizerDesc;
 	::ZeroMemory(&d3dRasterizerDesc, sizeof(D3D12_RASTERIZER_DESC));
 	//D3D12_FILL_MODE_WIREFRAME은 프리미티브(삼각형)의 내부를 칠하지 않고 변(Edge)만 그린다.
-	d3dRasterizerDesc.FillMode = D3D12_FILL_MODE_SOLID; //D3D12_FILL_MODE_SOLID; // 삼각형 렌더링 시 색상 채우기 모드 설정
+	d3dRasterizerDesc.FillMode = D3D12_FILL_MODE_WIREFRAME; //D3D12_FILL_MODE_SOLID; // 삼각형 렌더링 시 색상 채우기 모드 설정
 	d3dRasterizerDesc.CullMode = D3D12_CULL_MODE_BACK; //컬링 설정 : D3D12_CULL_MODE_BACK 뒷면 제거  / 은면 제거 안함 : D3D12_CULL_MODE_NONE(은면도 그린다) / D3D12_CULL_MODE_FRONT 앞면 제거
 	d3dRasterizerDesc.FrontCounterClockwise = FALSE; //false ( 은면제거시 시계방향 또는 반시계방향 설정)
 	d3dRasterizerDesc.DepthBias = 0;
@@ -263,43 +263,28 @@ CObjectsShader::~CObjectsShader()
 {
 }
 
-void CObjectsShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList)
+void CObjectsShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, void* pContext)
 {
-	//가로x세로x높이가 12x12x12인 정육면체 메쉬를 생성한다. 
-	CCubeMeshDiffused *pCubeMesh = new CCubeMeshDiffused(pd3dDevice, pd3dCommandList, 
-	12.0f, 12.0f, 12.0f);
+	CMapLand* pLand = (CMapLand*)pContext;
+	float fLandWidth = pLand->GetWidth(), fLandLength = pLand->GetLength();
 
-	/*x-축, y-축, z-축 양의 방향의 객체 개수이다. 각 값을 1씩 늘리거나 줄이면서 실행할 때 프레임 레이트가 어떻게
-	변하는 가를 살펴보기 바란다.*/
-	int xObjects = 10, yObjects = 10, zObjects = 10, i = 0;
+	float fxPitch = 12.0f * 3.5f;
+	float fyPitch = 12.0f * 3.5f;
+	float fzPitch = 12.0f * 3.5f;
 
-	//x-축, y-축, z-축으로 21개씩 총 21 x 21 x 21 = 9261개의 정육면체를 생성하고 배치한다.
-	m_nObjects = (xObjects * 2 + 1) * (yObjects * 2 + 1) * (zObjects * 2 + 1);
-
+	//직육면체를 지형 표면에 그리고 지형보다 높은 위치에 일정한 간격으로 배치한다. 
+	int xObjects = int(fLandWidth / fxPitch), yObjects = 1, zObjects = int(fLandLength / fzPitch);
+	m_nObjects = xObjects * yObjects * zObjects;
 	m_ppObjects = new CGameObject * [m_nObjects];
 
-	float fxPitch = 12.0f * 2.5f;
-	float fyPitch = 12.0f * 2.5f;
-	float fzPitch = 12.0f * 2.5f;
+	//가로x세로x높이가 12x12x12인 정육면체 메쉬를 생성한다. 
+	CCubeMeshDiffused* pCubeMesh = new CCubeMeshDiffused(pd3dDevice, pd3dCommandList,
+		12.0f, 12.0f, 12.0f);
+
+	XMFLOAT3 xmf3RotateAxis, xmf3SurfaceNormal;
 
 	CRotatingObject* pRotatingObject = NULL;
-	/*for (int x = -xObjects; x <= xObjects; x++)
-	{
-		for (int y = -yObjects; y <= yObjects; y++)
-		{
-			for (int z = -zObjects; z <= zObjects; z++)
-			{
-				pRotatingObject = new CRotatingObject();
-				pRotatingObject->SetMesh(pCubeMesh);
-				//각 정육면체 객체의 위치를 설정한다. 
-				pRotatingObject->SetPosition(fxPitch*x, fyPitch*y, fzPitch*z);
-				pRotatingObject->SetRotationAxis(XMFLOAT3(0.0f, 1.0f, 0.0f));
-				pRotatingObject->SetRotationSpeed(10.0f * (i % 10) + 3.0f);
-				m_ppObjects[i++] = pRotatingObject;
-			}
-		}
-	}*/
-	for (int z = zObjects; z >= -zObjects; z--)	// 깊이 검사 시 멀리있는 물체부터 렌더링 +z~-z
+/*	for (int z = zObjects; z >= -zObjects; z--)	// 깊이 검사 시 멀리있는 물체부터 렌더링 +z~-z
 	{
 		for (int y = -yObjects; y <= yObjects; y++)
 		{
@@ -311,6 +296,37 @@ void CObjectsShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsComman
 				pRotatingObject->SetPosition(fxPitch * x, fyPitch * y, fzPitch * z);
 				pRotatingObject->SetRotationAxis(XMFLOAT3(0.0f, 1.0f, 0.0f));
 				pRotatingObject->SetRotationSpeed(10.0f * (i % 10) + 3.0f);
+				m_ppObjects[i++] = pRotatingObject;
+			}
+		}
+	}*/
+	for (int i = 0, x = 0; x < xObjects; x++)
+	{
+		for (int z = 0; z < zObjects; z++)
+		{
+			for (int y = 0; y < yObjects; y++)
+			{
+				pRotatingObject = new CRotatingObject(1);
+				pRotatingObject->SetMesh(0, pCubeMesh);
+				float xPosition = x * fxPitch;
+				float zPosition = z * fzPitch;
+				float fHeight = pLand->GetHeight(xPosition, zPosition);
+				pRotatingObject->SetPosition(xPosition, fHeight + (y * 10.0f * fyPitch) + 6.0f, zPosition);
+				if (y == 0)
+				{
+					/*지형의 표면에 위치하는 직육면체는 지형의 기울기에 따라 방향이 다르게 배치한다. 직육면체가 위치할 지형의 법선
+					벡터 방향과 직육면체의 y-축이 일치하도록 한다.*/
+					xmf3SurfaceNormal = pLand->GetNormal(xPosition, zPosition);
+					xmf3RotateAxis = Vector3::CrossProduct(XMFLOAT3(0.0f, 1.0f, 0.0f),xmf3SurfaceNormal);
+					if (Vector3::IsZero(xmf3RotateAxis)) 
+						xmf3RotateAxis = XMFLOAT3(0.0f,1.0f,0.0f);
+
+					float fAngle = acos(Vector3::DotProduct(XMFLOAT3(0.0f, 1.0f, 0.0f),
+						xmf3SurfaceNormal));
+					pRotatingObject->Rotate(&xmf3RotateAxis, XMConvertToDegrees(fAngle));
+				}
+				pRotatingObject->SetRotationAxis(XMFLOAT3(0.0f, 1.0f, 0.0f));
+				pRotatingObject->SetRotationSpeed(36.0f * (i % 10) + 36.0f);
 				m_ppObjects[i++] = pRotatingObject;
 			}
 		}
@@ -393,4 +409,49 @@ void CObjectsShader::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera*
 			m_ppObjects[j]->Render(pd3dCommandList, pCamera);
 		}
 	}
+}
+
+CLandShader::CLandShader()
+{
+}
+
+CLandShader::~CLandShader()
+{
+}
+
+D3D12_INPUT_LAYOUT_DESC CLandShader::CreateInputLayout()
+{
+	UINT nInputElementDescs = 2;
+	D3D12_INPUT_ELEMENT_DESC* pd3dInputElementDescs = new
+		D3D12_INPUT_ELEMENT_DESC[nInputElementDescs];
+	pd3dInputElementDescs[0] = { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0,
+	D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 };
+	pd3dInputElementDescs[1] = { "COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 12,
+	D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 };
+
+	D3D12_INPUT_LAYOUT_DESC d3dInputLayoutDesc;
+	d3dInputLayoutDesc.pInputElementDescs = pd3dInputElementDescs;
+	d3dInputLayoutDesc.NumElements = nInputElementDescs;
+
+	return(d3dInputLayoutDesc);
+}
+
+D3D12_SHADER_BYTECODE CLandShader::CreateVertexShader(ID3DBlob** ppd3dShaderBlob)
+{
+	return(CShader::CompileShaderFromFile(L"C:\\Users/\\aeiou\\Desktop\\SeniorProject\\Avoid-The-Boss\\Senior_project_ver2\\Shaders.hlsl", "VSDiffused", "vs_5_1",
+		ppd3dShaderBlob));
+}
+
+D3D12_SHADER_BYTECODE CLandShader::CreatePixelShader(ID3DBlob** ppd3dShaderBlob)
+{
+	return(CShader::CompileShaderFromFile(L"C:\\Users/\\aeiou\\Desktop\\SeniorProject\\Avoid-The-Boss\\Senior_project_ver2\\Shaders.hlsl", "PSDiffused", "ps_5_1",
+		ppd3dShaderBlob));
+}
+
+void CLandShader::CreateShader(ID3D12Device* pd3dDevice, ID3D12RootSignature* pd3dGraphicsRootSignature)
+{
+	m_nPipelineStates = 1;
+	m_ppd3dPipelineStates = new ID3D12PipelineState * [m_nPipelineStates];
+
+	CShader::CreateShader(pd3dDevice, pd3dGraphicsRootSignature);
 }

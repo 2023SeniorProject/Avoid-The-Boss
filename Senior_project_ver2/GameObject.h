@@ -21,7 +21,7 @@ public:
 
 protected:
 	XMFLOAT4X4 m_xmf4x4World;
-	//CMesh* m_pMesh = NULL;
+
 	//게임 객체는 여러 개의 메쉬를 포함하는 경우 게임 객체가 가지는 메쉬들에 대한 포인터와 그 개수이다.
 	CMesh **m_ppMeshes = NULL;
 	int m_nMeshes = 0;
@@ -125,4 +125,12 @@ public:
 	//지형의 크기(가로/세로)를 반환한다. 높이 맵의 크기에 스케일을 곱한 값이다. 
 	float GetWidth() { return(m_nWidth * m_xmf3Scale.x); }
 	float GetLength() { return(m_nLength * m_xmf3Scale.z); }
+};
+
+class CRectObject : public CGameObject
+{
+public:
+	CRectObject(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList
+		* pd3dCommandList);
+	virtual ~CRectObject();
 };

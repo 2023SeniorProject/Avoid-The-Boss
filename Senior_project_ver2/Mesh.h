@@ -60,6 +60,7 @@ protected:
 	UINT m_nVertices = 0;
 	UINT m_nStride = 0;
 	UINT m_nOffset = 0;
+
 protected:
 	ID3D12Resource* m_pd3dIndexBuffer = NULL;
 	ID3D12Resource* m_pd3dIndexUploadBuffer = NULL;
@@ -89,11 +90,17 @@ class CCubeMeshDiffused : public CMesh
 public:
 	//직육면체의 가로, 세로, 깊이의 길이를 지정하여 직육면체 메쉬를 생성한다. 
 	CCubeMeshDiffused(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList 
-	*pd3dCommandList, float fWidth = 2.0f, float f
+	*pd3dCommandList, float fWidth = 2.0f, float fHeight
 		= 2.0f, float fDepth = 2.0f);
 	virtual ~CCubeMeshDiffused();
 };
 
+class CRectangleMesh : public CMesh
+{
+public:
+	CRectangleMesh(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, float nWidth = 30.0f, float nLength = 30.0f, float nScale = 1.0f);
+	virtual ~CRectangleMesh();
+};
 class CAirplaneMeshDiffused : public CMesh
 {
 public:

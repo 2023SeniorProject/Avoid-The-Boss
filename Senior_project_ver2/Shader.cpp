@@ -278,8 +278,8 @@ void CObjectsShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsComman
 	m_ppObjects = new CGameObject * [m_nObjects];
 
 	//가로x세로x높이가 12x12x12인 정육면체 메쉬를 생성한다. 
-	CCubeMeshDiffused* pCubeMesh = new CCubeMeshDiffused(pd3dDevice, pd3dCommandList,
-		12.0f, 12.0f, 12.0f);
+	//CCubeMeshDiffused* pCubeMesh = new CCubeMeshDiffused(pd3dDevice, pd3dCommandList,12.0f, 12.0f, 12.0f);
+	CRectangleMesh* pCubeMesh = new CRectangleMesh(pd3dDevice, pd3dCommandList);
 
 	XMFLOAT3 xmf3RotateAxis, xmf3SurfaceNormal;
 
@@ -331,6 +331,16 @@ void CObjectsShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsComman
 			}
 		}
 	}
+
+	//CRectangleMesh* pRect = new CRectangleMesh(pd3dDevice, pd3dCommandList, 30, 30, 10);
+	//CGameObject* pMap = new CGameObject(1);
+	//
+	//pMap->SetMesh(1, pRect);
+	//pMap->SetPosition(0.0f, 0.0f, 0.0f);
+
+	//m_nObjects++;
+	//m_ppObjects[m_nObjects-1] = pMap;
+
 	CreateShaderVariables(pd3dDevice, pd3dCommandList);
 }
 
@@ -454,4 +464,36 @@ void CLandShader::CreateShader(ID3D12Device* pd3dDevice, ID3D12RootSignature* pd
 	m_ppd3dPipelineStates = new ID3D12PipelineState * [m_nPipelineStates];
 
 	CShader::CreateShader(pd3dDevice, pd3dGraphicsRootSignature);
+}
+
+CRectShader::CRectShader()
+{
+}
+
+CRectShader::~CRectShader()
+{
+}
+
+D3D12_INPUT_LAYOUT_DESC CRectShader::CreateInputLayout()
+{
+	UINT nInputElemetDescs = 2;
+	D3D12_INPUT_ELEMENT_DESC* pd3InputElemetDescs = new D3D12_INPUT_ELEMENT_DESC[nInputElemetDescs];
+	pd3InputElemetDescs[0] = { "POSITION",0,DXGI_FORMAT_R32G32B32_FLOAT,0,0,D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA,0 };
+	pd3InputElemetDescs[1] = { "COLOR",0,DXGI_FORMAT_R32G32B32A32_FLOAT,0,12,D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA,0 };
+
+	D3D12_INPUT_LAYOUT_DESC d3dInputLayoutDesc;
+	d3dInputLayoutDesc.pInputElementDescs = pd3InputElemetDescs;
+	d3dInputLayoutDesc.NumElements = nInputElemetDescs;
+
+	return d3dInputLayoutDesc;
+}
+
+D3D12_SHADER_BYTECODE CRectShader::CreateVertexShader(ID3DBlob** ppd3dShaderBlob)
+{
+	return CShader::CompileShaderFromFile(L"C:\\Users/\\aeiou\\Desktop\\SeniorProject\\Avoid-The-Boss\\Senior_project_ver2\\Shaders.hlsl","VSDiffused","vs_5_1", ppd3dShaderBlob);
+}
+
+D3D12_SHADER_BYTECODE CRectShader::CreatePixelShader(ID3DBlob** ppd3dShaderBlob)
+{
+	return CShader::CompileShaderFromFile(L"C:\\Users/\\aeiou\\Desktop\\SeniorProject\\Avoid-The-Boss\\Senior_project_ver2\\Shaders.hlsl", "PSDiffused", "vs_5_1", ppd3dShaderBlob);
 }

@@ -39,7 +39,7 @@ protected:
 
 protected:
 	CMapLand* m_pLand = NULL;
-
+	//CRectObject* m_Map = NULL;
 public:
 	CMapLand* GetTerrain() { return(m_pLand); }
 };

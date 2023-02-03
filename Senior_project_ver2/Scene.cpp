@@ -63,28 +63,13 @@ void CScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* p
 	m_nShaders = 1;
 	m_pShaders = new CObjectsShader[m_nShaders];
 	m_pShaders[0].CreateShader(pd3dDevice, m_pd3dGraphicsRootSignature);
-	m_pShaders[0].BuildObjects(pd3dDevice, pd3dCommandList,m_pLand);
+	m_pShaders[0].BuildObjects(pd3dDevice, pd3dCommandList, m_pLand);
 }
 
 void CScene::ReleaseObjects()
 {
 	if (m_pd3dGraphicsRootSignature) m_pd3dGraphicsRootSignature->Release();
 
-	//if (m_ppShaders)
-	//{
-	//	for (int i = 0; i < m_nShaders; i++)
-	//	{
-	//		m_ppShaders[i]->ReleaseShaderVariables();
-	//		m_ppShaders[i]->ReleaseObjects();
-	//		m_ppShaders[i]->Release();
-	//	}
-	//	delete[] m_ppShaders;
-	//}
-	/*if (m_ppObjects)
-	{
-		for (int j = 0; j < m_nObjects; j++) if (m_ppObjects[j]) delete m_ppObjects[j];
-		delete[] m_ppObjects;
-	}*/
 	for (int i = 0; i < m_nShaders; i++)
 	{
 		m_pShaders[i].ReleaseShaderVariables();

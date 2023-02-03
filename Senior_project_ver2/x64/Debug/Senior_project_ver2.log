@@ -1,14 +1,2 @@
-﻿  stdafx.cpp
-  Camera.cpp
-  GameFramework.cpp
-C:\Users\aeiou\Desktop\SeniorProject\Avoid-The-Boss\Senior_project_ver2\GameFramework.cpp(605,71): warning C4244: '인수': 'WPARAM'에서 'DWORD'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-  GameObject.cpp
-  GameTimer.cpp
-  Mesh.cpp
-  Player.cpp
-  Scene.cpp
-  Senior_project_ver2.cpp
-  Shader.cpp
-C:\Users\aeiou\Desktop\SeniorProject\Avoid-The-Boss\Senior_project_ver2\Shader.cpp(324,19): warning C4244: '초기화 중': 'double'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-  코드를 생성하고 있습니다...
+﻿  Mesh.cpp
   Senior_project_ver2.vcxproj -> C:\Users\aeiou\Desktop\SeniorProject\Avoid-The-Boss\Senior_project_ver2\x64\Debug\Senior_project_ver2.exe

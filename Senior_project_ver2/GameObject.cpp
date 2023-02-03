@@ -267,3 +267,12 @@ CMapLand::~CMapLand()
 {
 	if (m_pMapImage) delete m_pMapImage;
 }
+
+CRectObject::CRectObject(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList
+	* pd3dCommandList) : CGameObject(1)
+{
+}
+
+CRectObject::~CRectObject()
+{
+}

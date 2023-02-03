@@ -98,7 +98,7 @@ public:
 class CRectangleMesh : public CMesh
 {
 public:
-	CRectangleMesh(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, float nWidth = 30.0f, float nLength = 30.0f, float nScale = 1.0f);
+	CRectangleMesh(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, float nWidth = 30.0f, float nLength = 30.0f, float nScale = 100.0f);
 	virtual ~CRectangleMesh();
 };
 class CAirplaneMeshDiffused : public CMesh

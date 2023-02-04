@@ -347,7 +347,7 @@ void CGameFramework::BuildObjects()
 	m_pScene = new CScene();
 	if(m_pScene) m_pScene->BuildObjects(m_pd3dDevice, m_pd3dCommandList);
 
-	m_pPlayer = new CLandPlayer(m_pd3dDevice,m_pd3dCommandList, m_pScene->GetGraphicsRootSignature(),m_pScene->GetTerrain(), 1);
+	m_pPlayer = new CTilePlayer(m_pd3dDevice,m_pd3dCommandList,m_pScene->GetGraphicsRootSignature(), 1);
 	m_pCamera = m_pPlayer->GetCamera();
 
 	//씬 객체를 생성하기 위하여 필요한 그래픽 명령 리스트들을 명령 큐에 추가한다. 

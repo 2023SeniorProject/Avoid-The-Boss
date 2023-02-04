@@ -137,3 +137,12 @@ public:
 	virtual void OnPlayerUpdateCallback(float fTimeElapsed);
 	virtual void OnCameraUpdateCallback(float fTimeElapsed);
 };
+
+class CTilePlayer : public CPlayer
+{
+public:
+	CTilePlayer(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, int nMeshes = 1);
+	virtual ~CTilePlayer();
+
+	virtual CCamera* ChangeCamera(DWORD nNewCameraMode, float fTimeElapsed);
+};

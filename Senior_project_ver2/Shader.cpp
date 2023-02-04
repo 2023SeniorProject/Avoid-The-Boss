@@ -334,7 +334,7 @@ void CObjectsShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsComman
 	m_nObjects = 1;
 	m_ppObjects = new CGameObject * [m_nObjects];
 
-	CRectangleMesh* pRect = new CRectangleMesh(pd3dDevice, pd3dCommandList, 30, 30, 100);
+	CRectangleMesh* pRect = new CRectangleMesh(pd3dDevice, pd3dCommandList, 30.0f, 30.0f, 1.0f);
 	CGameObject* pMap = new CGameObject(1);
 	
 	pMap->SetMesh(0, pRect);

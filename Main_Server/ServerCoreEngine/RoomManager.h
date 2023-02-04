@@ -17,7 +17,7 @@ public:
 private:
 	int16 _rnum = -1; // 방번호
 	int16 _hid; // 호스트 클라이언트 ID
-	vector<int16> _c_list; // 방에 속해있는 클라이언트 리스트
+	list<int16> _c_list; // 방에 속해있는 클라이언트 리스트
 	int8 _status = NOT_FULL; // 방 상태
 };
 
@@ -30,7 +30,7 @@ public:
 private:
 	map<int16, shared_ptr<Room>> _rooms;
 	int16 _rm_cnt = 0; // 현재 방 개수;
-	int16 _capacity = 1000;
+	int16 _capacity = 100;
 
 };
 

@@ -5,7 +5,7 @@
 #include "ConnectManager.h"
 #include "Session.h"
 
-
+GameSession gameClient;
 
 SOCKET clientSock;
 int32 cid = 0;
@@ -38,7 +38,7 @@ void ProcessPacket(char* packet)
 void SendThread()
 {
 	char sendBuffer[100];
-	WSAEVENT wsaEvent = ::WSACreateEvent();
+	//WSAEVENT wsaEvent = ::WSACreateEvent();
 	while (true)
 	{
 		std::cout << "msg : ";
@@ -49,93 +49,78 @@ void SendThread()
 		chat_packet.size = sizeof(_CHAT);
 		strcpy_s(chat_packet.buf, 100, sendBuffer);
 
-		OVEREXTEN cover(reinterpret_cast<char*>(&chat_packet));
-		cover._over.hEvent = wsaEvent;
+		SendEvent cover(reinterpret_cast<char*>(&chat_packet));
 
 		DWORD sendLen = 0;
 		DWORD flags = 0;
-		if (::WSASend(clientSock, &cover._wsabuf, 1, &sendLen, flags, (LPWSAOVERLAPPED)&cover, nullptr) == SOCKET_ERROR)
+		if (::WSASend(clientSock, &cover._sWsaBuf, 1, &sendLen, flags, (LPWSAOVERLAPPED)&cover, nullptr) == SOCKET_ERROR)
 		{
-			if (::WSAGetLastError() == WSA_IO_PENDING)
-			{
-				// Pending
-				::WSAWaitForMultipleEvents(1, &wsaEvent, TRUE, WSA_INFINITE, FALSE);
-				::WSAGetOverlappedResult(clientSock, (LPWSAOVERLAPPED)&cover, &sendLen, FALSE, &flags);
-				WSACloseEvent(wsaEvent);
+			//if (::WSAGetLastError() == WSA_IO_PENDING)
+			//{
+			//	// Pending
+			//	::WSAWaitForMultipleEvents(1, &wsaEvent, TRUE, WSA_INFINITE, FALSE);
+			//	::WSAGetOverlappedResult(clientSock, (LPWSAOVERLAPPED)&cover, &sendLen, FALSE, &flags);
+			//	WSACloseEvent(wsaEvent);
 
-			}
-			else if(WSAGetLastError() != 0)
-			{
-				// 진짜 문제 있는 상황
-				cout << "error1" << endl;
-				break;
-			}
+			//}
+			//else if(WSAGetLastError() != 0)
+			//{
+			//	// 진짜 문제 있는 상황
+			//	cout << "error1" << endl;
+			//	break;
+			//}
 		}
 	}
-	WSACloseEvent(wsaEvent);
+	//WSACloseEvent(wsaEvent);
 }
 
 void RecvThread()
 {
 
-	WSAEVENT wsaEvent = ::WSACreateEvent();
-	OVEREXTEN cover;
+	//WSAEVENT wsaEvent = ::WSACreateEvent();
+	//OVEREXTEN cover;
 
+	//while (true)
+	//{
+	//	::ZeroMemory(&cover, sizeof(WSAOVERLAPPED));
+	//	cover._over.hEvent = wsaEvent;
+	//	DWORD recvLen = 0;
+	//	DWORD flags = 0;
+
+	//	if (::WSARecv(clientSock, &cover._wsabuf, 1, &recvLen, &flags, (LPWSAOVERLAPPED)&cover, nullptr) == SOCKET_ERROR)
+	//	{
+	//		if (::WSAGetLastError() == WSA_IO_PENDING)
+	//		{
+	//			// Pending
+	//			::WSAWaitForMultipleEvents(1, &wsaEvent, TRUE, WSA_INFINITE, FALSE);
+	//			::WSAGetOverlappedResult(clientSock, (LPWSAOVERLAPPED)&cover, &recvLen, FALSE, &flags);
+	//			 ProcessPacket(cover._buf);
+	//		}
+	//		else if(WSAGetLastError() != 0)
+	//		{
+	//			// 진짜 문제 있는 상황
+	//			cout << "error2" << endl;
+	//			
+	//			break;
+	//		}
+	//	}
+	//}
+	//WSACloseEvent(wsaEvent);
 	while (true)
 	{
-		::ZeroMemory(&cover, sizeof(WSAOVERLAPPED));
-		cover._over.hEvent = wsaEvent;
-		DWORD recvLen = 0;
-		DWORD flags = 0;
-
-		if (::WSARecv(clientSock, &cover._wsabuf, 1, &recvLen, &flags, (LPWSAOVERLAPPED)&cover, nullptr) == SOCKET_ERROR)
-		{
-			if (::WSAGetLastError() == WSA_IO_PENDING)
-			{
-				// Pending
-				::WSAWaitForMultipleEvents(1, &wsaEvent, TRUE, WSA_INFINITE, FALSE);
-				::WSAGetOverlappedResult(clientSock, (LPWSAOVERLAPPED)&cover, &recvLen, FALSE, &flags);
-				 ProcessPacket(cover._buf);
-			}
-			else if(WSAGetLastError() != 0)
-			{
-				// 진짜 문제 있는 상황
-				cout << "error2" << endl;
-				
-				break;
-			}
-		}
+		gameClient.DoRecv();
 	}
-	WSACloseEvent(wsaEvent);
 }
 
-GameSession gameClient;
+
 
 int main()
 {
 #pragma region init winsock
 	SocketUtil::Init();
 	ConnectManager cmgr;
-	cmgr.InitConnect(gameClient, "127.0.0.1");
-	cmgr.DoConnect("hello");
 	
-	
-	for (int32 i = 0; i < 1; i++)
-	{
-		GCThreadManager->Launch([=]()
-			{
-				while (true)
-				{
-					ClientIocpCore.Processing(); // Accept 받기 성공 
-					//기존 게임 서버 프로그래밍 Worker Thread에 해당하는 부분
-				}
-			});
-	}
-	GCThreadManager->Join();
-
-	// Connect
-	// 커넥트와 동시에 로그인 패킷 전송
-	/*C2S_LOGIN loginPacket;
+	C2S_LOGIN loginPacket;
 	loginPacket.size = sizeof(C2S_LOGIN);
 	loginPacket.type = (int8)C_PACKET_TYPE::ACQ_LOGIN;
 	std::cout << "ID : ";
@@ -143,7 +128,28 @@ int main()
 	std::cout << endl;
 	std::cout << "PW : ";
 	std::wcin.getline(loginPacket.pw, sizeof(WCHAR) * 10);
-	*/
+
+	cmgr.InitConnect(gameClient, "127.0.0.1");
+	cmgr.DoConnect(reinterpret_cast<char*>(&loginPacket));
+	
+	
+
+	GCThreadManager->Launch([=]()
+		{
+			while (true)
+			{
+				ClientIocpCore.Processing(); 
+				//기존 게임 서버 프로그래밍 Worker Thread에 해당하는 부분
+			}
+		});
+	//GCThreadManager->Launch(RecvThread);
+	//GCThreadManager->Launch(SendThread);
+	GCThreadManager->Join();
+
+	// Connect
+	// 커넥트와 동시에 로그인 패킷 전송
+	
+	
 	// if (WSAConnect(clientSock, (SOCKADDR*)&serveraddr, sizeof(serveraddr), NULL, NULL, NULL, NULL) == SOCKET_ERROR) return - 1;
 	
 

@@ -2,6 +2,7 @@
 #include "SocketUtil.h"
 #include "IocpEvent.h"
 #include "Session.h"
+#include "OBDC_MGR.h"
 
 GameSession::GameSession() 
 {
@@ -34,7 +35,7 @@ void GameSession::Processing(IocpEvent* iocpEvent, int32 numOfBytes)
 				int8 packet_size = p[0];
 				if (packet_size <= remain_data)
 				{
-					//ProcessPacket(_cid , p);
+					ProcessPacket(p);
 					p = p + packet_size;
 					remain_data = remain_data - packet_size;
 				}
@@ -50,9 +51,8 @@ void GameSession::Processing(IocpEvent* iocpEvent, int32 numOfBytes)
 		break;
 	case EventType::Send:
 		{
-			WRITE_LOCK;
-			if(_sev == nullptr) ASSERT_CRASH("double Del");
-			delete _sev;
+			if(iocpEvent == nullptr) ASSERT_CRASH("double Del");
+			delete iocpEvent;
 		}
 		break;
 	}
@@ -63,9 +63,9 @@ void GameSession::DoSend(void* packet)
 	
 	DWORD sendLen(0);
 	DWORD flag(0);
-	_sev = new SendEvent(reinterpret_cast<char*>(packet));
-	_sev->_sid = _sid;
-	WSASend(_sock, &_sev->_sWsaBuf, 1, &sendLen, flag, static_cast<LPWSAOVERLAPPED>(_sev), NULL);
+	SendEvent* sev = new SendEvent(reinterpret_cast<char*>(packet));
+	sev->_sid = _sid;
+	WSASend(_sock, &sev->_sWsaBuf, 1, &sendLen, flag, static_cast<LPWSAOVERLAPPED>(sev), NULL);
 }
 
 void GameSession::DoRecv()
@@ -99,73 +99,59 @@ void GameSession::DoSendLoginPacket(bool isSuccess)
 }
 
 
-//void DB_Worker(int32 key, wstring sqlexec)
-//{
-//	USER_DB_MANAGER udb;
-//	udb.AllocateHandles();
-//	udb.ConnectDataSource(L"2023SENIORPROJECT");
-//	const WCHAR* a = sqlexec.c_str();
-//	udb.ExecuteStatementDirect(a);
-//	udb.RetrieveResult();
-//
-//	lockG lg(m);
-//	{
-//		clients[key]->_cid = udb.user_cid;
-//		if (clients[key]->_cid == -1)
-//		{
-//			cout << "LoginFail" << endl;
-//			udb.DisconnectDataSource();
-//			clients[key]->DoSendLoginPacket(false);
-//			return;
-//		}
-//	}
-//	cout << "client[" << clients[key]->_cid << "] " << "LoginSuccess" << endl;
-//	udb.DisconnectDataSource();
-//	clients[key]->DoSendLoginPacket(true);
-//}
+void DB_Worker(int32 key, wstring sqlexec)
+{
+	USER_DB_MANAGER udb;
+	udb.AllocateHandles();
+	udb.ConnectDataSource(L"2023SENIORPROJECT");
+	const WCHAR* a = sqlexec.c_str();
+	udb.ExecuteStatementDirect(a);
+	udb.RetrieveResult();
+
+	wlock_guard writeLockGuard(GIocpCore._clients[key]->_locks[0]);
+	{
+		GIocpCore._clients[key]->_cid = udb.user_cid;
+		if (GIocpCore._clients[key]->_cid == -1)
+		{
+			cout << "LoginFail" << endl;
+			udb.DisconnectDataSource();
+			GIocpCore._clients[key]->DoSendLoginPacket(false);
+			return;
+		}
+	}
+	cout << "client[" << GIocpCore._clients[key]->_cid << "] " << "LoginSuccess" << endl;
+	udb.DisconnectDataSource();
+	GIocpCore._clients[key]->DoSendLoginPacket(true);
+}
+
+void GameSession::ProcessPacket(char* packet)
+{
+	switch (packet[1])
+	{
+	case (int8)C_PACKET_TYPE::CHAT:
+	{
+
+		_CHAT* cp = (_CHAT*)packet;
+		std::cout << "client[" << _cid << "] 's msg : " << cp->buf << endl;
+	}
+	break;
+	case (int8)C_PACKET_TYPE::ACQ_LOGIN:
+	{
+
+		C2S_LOGIN* cp = (C2S_LOGIN*)packet;
+		wstring sqlExec(L"EXEC search_user_db ");
+		sqlExec += cp->name;
+		sqlExec += L", ";
+		sqlExec += cp->pw;
+		DB_Worker(_sid, sqlExec);
+	}
+	break;
+	}
+}
 
 
-//void ProcessPacket(int32 key, char* packet)
-//{
-//	switch (packet[1])
-//		{
-//		case (int8)S_PACKET_TYPE::LOGIN_OK:
-//		{
-//
-//			S2C_LOGIN_OK* lp = (S2C_LOGIN_OK*)packet;
-//			_cid = lp->cid;
-//		}
-//		break;
-//		case (int8)S_PACKET_TYPE::LOGIN_FAIL:
-//		{
-//			cout << "Login fail" << endl;
-//			closesocket(_sock);
-//		}
-//		break;
-//		case (int8)S_PACKET_TYPE::CHAT:
-//		{
-//			_CHAT* chat = reinterpret_cast<_CHAT*>(packet);
-//			std::cout << chat->buf << std::endl;
-//		}
-//		break;
-//		case (int8)C_PACKET_TYPE::CHAT:
-//		{
-//
-//			_CHAT* cp = (_CHAT*)packet;
-//			std::cout << "client[" << _cid << "] 's msg : " << cp->buf << endl;
-//		}
-//		break;
-//		case (int8)C_PACKET_TYPE::ACQ_LOGIN:
-//		{
-//
-//			C2S_LOGIN* cp = (C2S_LOGIN*)packet;
-//			wstring sqlExec(L"EXEC search_user_db ");
-//			sqlExec += cp->name;
-//			sqlExec += L", ";
-//			sqlExec += cp->pw;
-//			DB_Worker(key, sqlExec);
-//		}
-//	break;
-//	}
-//}
+
+
+
+
 

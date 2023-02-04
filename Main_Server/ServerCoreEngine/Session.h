@@ -6,7 +6,7 @@
 
 void ProcessPacket(int32 key, char* packet);
 
-
+enum class STATUS: int8 { EMPTY, LOGIN, INGAME};
 
 
 class GameSession : public IocpObject
@@ -24,14 +24,16 @@ public:
 	void DoSend(void* packet);
 	void DoRecv();
 	void DoSendLoginPacket(bool isSuccess);
+	void ProcessPacket(char* packet);
 public:
 	int32 _cid = -1;
 	int32 _sid = -1;
 	int32 _prev_remain = 0;
+	STATUS _status = STATUS::EMPTY;
 public:
 	SOCKET _sock = INVALID_SOCKET;
 	RecvEvent _rev;
-	SendEvent* _sev;
+	
 	USE_LOCK;
 };
 

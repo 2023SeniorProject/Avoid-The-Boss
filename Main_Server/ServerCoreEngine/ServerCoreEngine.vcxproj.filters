@@ -25,6 +25,9 @@
     <Filter Include="Memory">
       <UniqueIdentifier>{198423d0-46ae-40c4-9c0c-197efeda2ca7}</UniqueIdentifier>
     </Filter>
+    <Filter Include="DB">
+      <UniqueIdentifier>{3251044a-b8ce-43b6-b1ed-66984837fc9f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CoreGlobal.h">
@@ -87,6 +90,9 @@
     <ClInclude Include="ConnectManager.h">
       <Filter>Network</Filter>
     </ClInclude>
+    <ClInclude Include="OBDC_MGR.h">
+      <Filter>DB</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CoreGlobal.cpp">
@@ -142,6 +148,9 @@
     </ClCompile>
     <ClCompile Include="ConnectManager.cpp">
       <Filter>Network</Filter>
+    </ClCompile>
+    <ClCompile Include="OBDC_MGR.cpp">
+      <Filter>DB</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

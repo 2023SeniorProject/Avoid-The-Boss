@@ -59,5 +59,5 @@ void ConnectManager::DoConnect(const char* idPw)
 			//exit(1); //  
 		}
 	}
-
+	cout << sendBytes << endl;
 }

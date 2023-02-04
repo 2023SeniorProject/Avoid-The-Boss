@@ -1,10 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="DB">
-      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
-      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
-    </Filter>
     <Filter Include="Main">
       <UniqueIdentifier>{87ce70c1-0802-428c-8814-aa0c22aae570}</UniqueIdentifier>
     </Filter>
@@ -15,22 +11,10 @@
     <Filter Include="Session">
       <UniqueIdentifier>{ca0f0fc8-8da3-4a23-b1bc-2a8784f8ad11}</UniqueIdentifier>
     </Filter>
-    <Filter Include="RoomManager">
-      <UniqueIdentifier>{14ffd42b-ae7b-4f97-a29e-30116077c56d}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Util">
-      <UniqueIdentifier>{f68e0cb8-c558-45b8-b72e-87129c1b4a96}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="OBDC_MGR.cpp">
-      <Filter>DB</Filter>
-    </ClCompile>
     <ClCompile Include="main.cpp">
       <Filter>Main</Filter>
-    </ClCompile>
-    <ClCompile Include="MSession.cpp">
-      <Filter>Session</Filter>
     </ClCompile>
     <ClCompile Include="pch.cpp">
       <Filter>Core</Filter>
@@ -40,12 +24,6 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="OBDC_MGR.h">
-      <Filter>DB</Filter>
-    </ClInclude>
-    <ClInclude Include="MSession.h">
-      <Filter>Session</Filter>
-    </ClInclude>
     <ClInclude Include="pch.h">
       <Filter>Core</Filter>
     </ClInclude>

@@ -4,8 +4,8 @@
     <Filter Include="Main">
       <UniqueIdentifier>{c8d45183-4660-42ea-9672-7e9c42d325c2}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Network">
-      <UniqueIdentifier>{13aac52e-e612-4a51-a2c4-b59be446f57e}</UniqueIdentifier>
+    <Filter Include="Core">
+      <UniqueIdentifier>{01b745f0-b3e9-45aa-aba0-e3318ae50d6a}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -13,12 +13,12 @@
       <Filter>Main</Filter>
     </ClCompile>
     <ClCompile Include="pch.cpp">
-      <Filter>Main</Filter>
+      <Filter>Core</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h">
-      <Filter>Main</Filter>
+      <Filter>Core</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

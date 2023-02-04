@@ -1,5 +1,9 @@
 #include "pch.h"
 #include "SocketUtil.h"
+#include "ThreadManager.h"
+#include "iocpCore.h"
+#include "ConnectManager.h"
+#include "Session.h"
 
 
 
@@ -105,34 +109,29 @@ void RecvThread()
 	WSACloseEvent(wsaEvent);
 }
 
-
+GameSession gameClient;
 
 int main()
 {
 #pragma region init winsock
-	/*WSAData wsaData;
-	if (::WSAStartup(MAKEWORD(2, 2), &wsaData) != 0)
-		return 0;
-
-	clientSock = WSASocket(AF_INET, SOCK_STREAM, IPPROTO_TCP, NULL, 0, WSA_FLAG_OVERLAPPED);
-	if (clientSock == INVALID_SOCKET)
-		return 0;*/
 	SocketUtil::Init();
-	clientSock = SocketUtil::CreateSocket();
-	sockaddr_in serveraddr;
-	serveraddr.sin_family = AF_INET;
-	inet_pton(AF_INET, "127.0.0.1", &serveraddr.sin_addr);
-	serveraddr.sin_port = htons(PORTNUM);
-	char buf[512] = "hello\0";
-	DWORD sb(0);
-	WSAOVERLAPPED over;
-	::ZeroMemory(&over, sizeof(WSAOVERLAPPED));
-	if(!SocketUtil::ConnectEx(clientSock,reinterpret_cast<sockaddr*>(&serveraddr),sizeof(serveraddr),buf,BUFSIZE,&sb, &over)) cout << "connect fail" << endl;
-	//SOCKADDR_IN serveraddr;
-	//::memset(&serveraddr, 0, sizeof(serveraddr));
-	//serveraddr.sin_family = AF_INET;
-	//::inet_pton(AF_INET, "127.0.0.1", &serveraddr.sin_addr);
-	//serveraddr.sin_port = ::htons(PORTNUM);
+	ConnectManager cmgr;
+	cmgr.InitConnect(gameClient, "127.0.0.1");
+	cmgr.DoConnect("hello");
+	
+	
+	for (int32 i = 0; i < 1; i++)
+	{
+		GCThreadManager->Launch([=]()
+			{
+				while (true)
+				{
+					ClientIocpCore.Processing(); // Accept 받기 성공 
+					//기존 게임 서버 프로그래밍 Worker Thread에 해당하는 부분
+				}
+			});
+	}
+	GCThreadManager->Join();
 
 	// Connect
 	// 커넥트와 동시에 로그인 패킷 전송
@@ -146,48 +145,8 @@ int main()
 	std::wcin.getline(loginPacket.pw, sizeof(WCHAR) * 10);
 	*/
 	// if (WSAConnect(clientSock, (SOCKADDR*)&serveraddr, sizeof(serveraddr), NULL, NULL, NULL, NULL) == SOCKET_ERROR) return - 1;
-	while (true)
-	{
-		::GetQueuedCompletionStatus()
-	}
-	cout << "Connected to Server!" << endl;
+	
 
-	//WSAEVENT wsaEvent = ::WSACreateEvent();
-	//OVEREXTEN cover(reinterpret_cast<char*>(&loginPacket));
-	//cover._over.hEvent = wsaEvent;
-	//DWORD sendlen(0);
-	//DWORD flags(0);
-
-	//if (::WSASend(clientSock, &cover._wsabuf, 1, &sendlen, flags, &cover._over, nullptr) == SOCKET_ERROR)
-	//{
-	//	if (WSAGetLastError() == WSA_IO_PENDING)
-	//	{
-	//		::WSAWaitForMultipleEvents(1, &wsaEvent, TRUE, WSA_INFINITE, FALSE);
-	//		::WSAGetOverlappedResult(clientSock, &cover._over, &sendlen, FALSE, &flags);
-	//		WSACloseEvent(wsaEvent);
-	//		
-	//	}
-	//	else if (WSAGetLastError() != 0)
-	//	{
-
-	//		cout << ::WSAGetLastError() << "error" << endl;
-	//		WSACloseEvent(wsaEvent);
-	//		return -1;
-	//	}
-	//}
-
- //  
-	//// Send
-	//std::thread st(SendThread);
-	//std::thread rt(RecvThread);
-
-	//st.join();
-	//rt.join();
-
-	// 소켓 리소스 반환
-	//if(clientSock != INVALID_SOCKET)::closesocket(clientSock);
-
-	//// 윈속 종료
 	//::WSACleanup();
 	SocketUtil::Close(clientSock);
 	SocketUtil::Clear();

@@ -5,6 +5,8 @@
 
 IocpCore GIocpCore;
 
+IocpCore ClientIocpCore;
+
 IocpCore::IocpCore()
 {
 	_hIocp = ::CreateIoCompletionPort(INVALID_HANDLE_VALUE, 0, 0, 0); // iocp 핸들 생성
@@ -50,8 +52,8 @@ bool IocpCore::Processing(uint32_t time_limit) // worker thread 기능 완료된 비동
 			default:
 				// TODO : 로그 찍기
 			{
-				
-				iocpObject->Processing(iocpEvent, numOfBytes);
+				std::cout << ::WSAGetLastError() << std::endl;
+				//iocpObject->Processing(iocpEvent, numOfBytes);
 				break;
 			}
 		}

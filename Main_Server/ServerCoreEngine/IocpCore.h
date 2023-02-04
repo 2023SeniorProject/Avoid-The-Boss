@@ -27,3 +27,4 @@ public:
 
 extern IocpCore GIocpCore;
 
+extern IocpCore ClientIocpCore;

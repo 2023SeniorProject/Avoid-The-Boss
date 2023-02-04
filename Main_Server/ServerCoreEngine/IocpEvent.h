@@ -50,6 +50,7 @@ class ConnectEvent : public IocpEvent
 {
 public:
 	ConnectEvent() : IocpEvent(EventType::Connect) { };
+	char _buf[BUFSIZE / 2] = {};
 };
 
 

@@ -78,6 +78,26 @@ void GameSession::DoRecv()
 	WSARecv(_sock, &_rev._rWsaBuf, 1, &recvBytes, &flag, static_cast<LPWSAOVERLAPPED>(&_rev), NULL);
 }
 
+void GameSession::DoSendLoginPacket(bool isSuccess)
+{
+
+	if (isSuccess)
+	{
+		S2C_LOGIN_OK loginOkPacket;
+		loginOkPacket.cid = _cid;
+		loginOkPacket.size = sizeof(S2C_LOGIN_OK);
+		loginOkPacket.type = (int8)S_PACKET_TYPE::LOGIN_OK;
+		DoSend(&loginOkPacket);
+	}
+	else
+	{
+		S2C_LOGIN_OK loginFailPacket;
+		loginFailPacket.size = sizeof(S2C_LOGIN_OK);
+		loginFailPacket.type = (int8)S_PACKET_TYPE::LOGIN_FAIL;
+		DoSend(&loginFailPacket);
+	}
+}
+
 
 //void DB_Worker(int32 key, wstring sqlexec)
 //{

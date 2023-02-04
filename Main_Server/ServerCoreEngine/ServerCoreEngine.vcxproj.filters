@@ -84,6 +84,9 @@
     <ClInclude Include="Allocator.h">
       <Filter>Memory</Filter>
     </ClInclude>
+    <ClInclude Include="ConnectManager.h">
+      <Filter>Network</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CoreGlobal.cpp">
@@ -136,6 +139,9 @@
     </ClCompile>
     <ClCompile Include="Allocator.cpp">
       <Filter>Memory</Filter>
+    </ClCompile>
+    <ClCompile Include="ConnectManager.cpp">
+      <Filter>Network</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

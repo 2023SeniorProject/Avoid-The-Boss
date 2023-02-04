@@ -449,6 +449,7 @@ CLandPlayer::CLandPlayer(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd
 
 	CMapLand* pTerrain = (CMapLand*)pContext;
 	//플레이어의 위치를 지형의 가운데(y-축 좌표는 지형의 높이보다 1500 높게)로 설정한다. 플레이어 위치 벡터의 y좌표가 지형의 높이보다 크고 중력이 작용하도록 플레이어를 설정하였으므로 플레이어는 점차적으로 하강하게 된다.*/ 
+
 	float fHeight = pTerrain->GetHeight(pTerrain->GetWidth() * 0.5f,
 		pTerrain->GetLength() * 0.5f);
 	SetPosition(XMFLOAT3(pTerrain->GetWidth() * 0.5f, fHeight+1500,

@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "AcceptManager.h"
 #include "SocketUtil.h"
+
 #include "IocpEvent.h"
 #include "Session.h"
 
@@ -116,9 +117,9 @@ void AcceptManager::ProcessAccept(AcceptEvent* acceptEvent)
 	// TODO
 	int32 sid = GetNewSessionIdx();
 	session->_sid = sid;
-	_clients.try_emplace(sid, session); // 세션 추가 후
-	_clients[sid]->DoRecv();  // recv 상태로 만든다.
-	RegisterAccept(acceptEvent);
+	GIocpCore. _clients.try_emplace(sid, session); // 세션 추가 후
+	GIocpCore._clients[sid]->DoRecv();  // recv 상태로 만든다.
+	RegisterAccept(acceptEvent); // 다시 acceptEvent를 등록한다.
 }
 
 int32 AcceptManager::GetNewSessionIdx()

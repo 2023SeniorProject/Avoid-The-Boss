@@ -12,6 +12,7 @@ public:
 
 class IocpCore
 {
+
 public:
 	IocpCore();
 	~IocpCore();
@@ -20,6 +21,8 @@ public:
 	bool Processing(uint32_t limit_time = INFINITE); // 실질적으로 일하는 worker_thread들이 iocp에서 완료된 업무를 탐색하는 곳
 private:
 	HANDLE _hIocp = INVALID_HANDLE_VALUE;
+public:
+	unordered_map<int32, GameSession*> _clients;
 };
 
 extern IocpCore GIocpCore;

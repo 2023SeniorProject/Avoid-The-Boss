@@ -43,7 +43,7 @@ public:
 	AcceptEvent() : IocpEvent(EventType::Accept) { };
 public:
 	GameSession* _session = nullptr;
-	char _buf[BUFSIZE / 2];
+	char _buf[BUFSIZE / 2] ={};
 };
 
 class ConnectEvent : public IocpEvent
@@ -67,7 +67,7 @@ public:
 	int32 _sid = -1;
 	int32 _cid = -1;
 	WSABUF _sWsaBuf;
-	char _sbuf[BUFSIZE];
+	char _sbuf[BUFSIZE] = {};
 };
 
 class RecvEvent : public IocpEvent
@@ -82,6 +82,6 @@ public:
 	int32 _sid = -1;
 	int32 _cid = -1;
 	WSABUF _rWsaBuf;
-	char _rbuf[BUFSIZE];
+	char _rbuf[BUFSIZE] = { };
 };
 

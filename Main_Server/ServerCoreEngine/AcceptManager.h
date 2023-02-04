@@ -26,7 +26,7 @@ public: // 인터페이스 구현할 예정
 public:
 	SOCKET _listenSock = INVALID_SOCKET;
 	vector<AcceptEvent*> _acceptEvents;
-	unordered_map<int32, GameSession*> _clients;
+	
 	int32 maxAcceptCnt = 1000;
 	Atomic<int32> curAcceptCnt = 0;
 };

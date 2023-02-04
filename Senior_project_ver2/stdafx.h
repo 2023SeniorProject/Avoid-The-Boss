@@ -69,7 +69,10 @@ using Microsoft::WRL::ComPtr;
 지정한다.*/
 #define RANDOM_COLOR XMFLOAT4(rand() / float(RAND_MAX), rand() / float(RAND_MAX), rand() / float(RAND_MAX), rand() / float(RAND_MAX))
 
-#define MAP_COLOR XMFLOAT4(217.0f/260.0f,202.0f/260.0f,175.0f/260.0f,0.0f)
+#define DEFAULT_MAP_COLOR XMFLOAT4(217.0f/260.0f,202.0f/260.0f,175.0f/260.0f,0.0f)
+#define MAP_COLOR_2		  XMFLOAT4(200.0f/260.0f,201.0f/260.0f,163.0f/260.0f,0.0f)
+#define MAP_COLOR_3		  XMFLOAT4(50.0f/260.0f,60.0f/260.0f,40.0f/260.0f,0.0f)
+#define MAP_COLOR_4		  XMFLOAT4(133.0f/260.0f,140.0f/260.0f,119.0f/260.0f,0.0f)
 
 //----버퍼 리소스 생성 함수
 extern ID3D12Resource* CreateBufferResource(ID3D12Device* pd3dDevice,

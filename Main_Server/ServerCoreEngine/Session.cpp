@@ -34,7 +34,7 @@ void GameSession::Processing(IocpEvent* iocpEvent, int32 numOfBytes)
 				int8 packet_size = p[0];
 				if (packet_size <= remain_data)
 				{
-					ProcessPacket(p);
+					//ProcessPacket(_cid , p);
 					p = p + packet_size;
 					remain_data = remain_data - packet_size;
 				}
@@ -77,3 +77,75 @@ void GameSession::DoRecv()
 	DWORD flag(0);
 	WSARecv(_sock, &_rev._rWsaBuf, 1, &recvBytes, &flag, static_cast<LPWSAOVERLAPPED>(&_rev), NULL);
 }
+
+
+//void DB_Worker(int32 key, wstring sqlexec)
+//{
+//	USER_DB_MANAGER udb;
+//	udb.AllocateHandles();
+//	udb.ConnectDataSource(L"2023SENIORPROJECT");
+//	const WCHAR* a = sqlexec.c_str();
+//	udb.ExecuteStatementDirect(a);
+//	udb.RetrieveResult();
+//
+//	lockG lg(m);
+//	{
+//		clients[key]->_cid = udb.user_cid;
+//		if (clients[key]->_cid == -1)
+//		{
+//			cout << "LoginFail" << endl;
+//			udb.DisconnectDataSource();
+//			clients[key]->DoSendLoginPacket(false);
+//			return;
+//		}
+//	}
+//	cout << "client[" << clients[key]->_cid << "] " << "LoginSuccess" << endl;
+//	udb.DisconnectDataSource();
+//	clients[key]->DoSendLoginPacket(true);
+//}
+
+
+//void ProcessPacket(int32 key, char* packet)
+//{
+//	switch (packet[1])
+//		{
+//		case (int8)S_PACKET_TYPE::LOGIN_OK:
+//		{
+//
+//			S2C_LOGIN_OK* lp = (S2C_LOGIN_OK*)packet;
+//			_cid = lp->cid;
+//		}
+//		break;
+//		case (int8)S_PACKET_TYPE::LOGIN_FAIL:
+//		{
+//			cout << "Login fail" << endl;
+//			closesocket(_sock);
+//		}
+//		break;
+//		case (int8)S_PACKET_TYPE::CHAT:
+//		{
+//			_CHAT* chat = reinterpret_cast<_CHAT*>(packet);
+//			std::cout << chat->buf << std::endl;
+//		}
+//		break;
+//		case (int8)C_PACKET_TYPE::CHAT:
+//		{
+//
+//			_CHAT* cp = (_CHAT*)packet;
+//			std::cout << "client[" << _cid << "] 's msg : " << cp->buf << endl;
+//		}
+//		break;
+//		case (int8)C_PACKET_TYPE::ACQ_LOGIN:
+//		{
+//
+//			C2S_LOGIN* cp = (C2S_LOGIN*)packet;
+//			wstring sqlExec(L"EXEC search_user_db ");
+//			sqlExec += cp->name;
+//			sqlExec += L", ";
+//			sqlExec += cp->pw;
+//			DB_Worker(key, sqlExec);
+//		}
+//	break;
+//	}
+//}
+

@@ -3,6 +3,12 @@
 class RecvEvent;
 // 서버에서 클라이언트 소켓을 관리할 클래스
 // 마찬가지로 Iocp에 등록할 대상이기 때문에 IocpObject에 해당된다
+
+void ProcessPacket(int32 key, char* packet);
+
+
+
+
 class GameSession : public IocpObject
 {
 public:
@@ -17,7 +23,6 @@ public:
 	SOCKET GetSock() { return _sock; }
 	void DoSend(void* packet);
 	void DoRecv();
-	void ProcessPacket(char* packet);
 public:
 	int32 _cid = -1;
 	int32 _sid = -1;

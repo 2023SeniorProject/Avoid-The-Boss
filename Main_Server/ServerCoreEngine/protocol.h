@@ -6,7 +6,7 @@
 
 enum class C_PACKET_TYPE : int8{ ACQ_LOGIN = 1, ACQ_LOGOUT = 2, ACQ_REGISTER = 3, CHAT = 4   };
 enum class C_ROOM_PACKET_TYPE : int8 { MK_RM = 5, DEL_RM = 6 , ENTER_RM = 7, EXIT_RM = 8}; // 规 积己, 规 昏力, 涝厘 , 辆丰 
-enum class S_PACKET_TYPE : int8 { LOGIN_OK = 9,  LOGIN_FAIL = 10 , CHAT = 4};
+enum class S_PACKET_TYPE : int8 { LOGIN_OK = 9,  LOGIN_FAIL = 10 , CHAT = 11};
 
 
 struct _CHAT

@@ -44,7 +44,7 @@ D3D12_RASTERIZER_DESC CShader::CreateRasterizerState()
 	::ZeroMemory(&d3dRasterizerDesc, sizeof(D3D12_RASTERIZER_DESC));
 	//D3D12_FILL_MODE_WIREFRAME은 프리미티브(삼각형)의 내부를 칠하지 않고 변(Edge)만 그린다.
 	d3dRasterizerDesc.FillMode = D3D12_FILL_MODE_SOLID; //D3D12_FILL_MODE_SOLID; // 삼각형 렌더링 시 색상 채우기 모드 설정
-	d3dRasterizerDesc.CullMode = D3D12_CULL_MODE_BACK; //컬링 설정 : D3D12_CULL_MODE_BACK 뒷면 제거  / 은면 제거 안함 : D3D12_CULL_MODE_NONE(은면도 그린다) / D3D12_CULL_MODE_FRONT 앞면 제거
+	d3dRasterizerDesc.CullMode = D3D12_CULL_MODE_NONE; //컬링 설정 : D3D12_CULL_MODE_BACK 뒷면 제거  / 은면 제거 안함 : D3D12_CULL_MODE_NONE(은면도 그린다) / D3D12_CULL_MODE_FRONT 앞면 제거
 	d3dRasterizerDesc.FrontCounterClockwise = FALSE; //false ( 은면제거시 시계방향 또는 반시계방향 설정)
 	d3dRasterizerDesc.DepthBias = 0;
 	d3dRasterizerDesc.DepthBiasClamp = 0.0f;
@@ -144,10 +144,6 @@ D3D12_SHADER_BYTECODE CShader::CompileShaderFromFile( const WCHAR* pszFileName, 
 //그래픽스 파이프라인 상태 객체를 생성한다. 
 void CShader::CreateShader(ID3D12Device* pd3dDevice, ID3D12RootSignature* pd3dGraphicsRootSignature)
 {
-	//그래픽스 파이프라인 상태 객체 배열을 생성한다. 
-	//m_nPipelineStates = 1;
-	//m_ppd3dPipelineStates = new ID3D12PipelineState * [m_nPipelineStates];
-
 	ID3DBlob* pd3dVertexShaderBlob = NULL;
 	ID3DBlob* pd3dPixelShaderBlob = NULL;
 
@@ -265,83 +261,39 @@ CObjectsShader::~CObjectsShader()
 
 void CObjectsShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, void* pContext)
 {
-	//CMapLand* pLand = (CMapLand*)pContext;
-	//float fLandWidth = pLand->GetWidth(), fLandLength = pLand->GetLength();
-	//float fxPitch = 12.0f * 3.5f;
-	//float fyPitch = 12.0f * 3.5f;
-	//float fzPitch = 12.0f * 3.5f;
-	//직육면체를 지형 표면에 그리고 지형보다 높은 위치에 일정한 간격으로 배치한다. 
-	//int xObjects = 1,int(fLandWidth / fxPitch),yObjects = 1, zObjects = int(fLandLength / fzPitch);
-	//int xObjects = 1, yObjects=1, zObjects = 1;
-	//xObjects * yObjects * zObjects;
+	//1.0f = 1cm / 100.0f = 1m
+	float TileSize = (float) 0.5 * UNIT;
+	float Width = 60 * UNIT;
+	float Depth = 60 * UNIT;
+	int nWidth = (int)Width / TileSize;
+	int nDepth = (int)Depth / TileSize;
 
-
-	//가로x세로x높이가 12x12x12인 정육면체 메쉬를 생성한다. 
-	//CCubeMeshDiffused* pCubeMesh = new CCubeMeshDiffused(pd3dDevice, pd3dCommandList,12.0f, 12.0f, 12.0f);
-	//CRectangleMesh* pRectMesh = new CRectangleMesh(pd3dDevice, pd3dCommandList);
-	//m_ppObjects[0]->SetMesh(0, pRectMesh);
-	//XMFLOAT3 xmf3RotateAxis, xmf3SurfaceNormal;
-	//CGameObject* pMapObject = NULL;
-/*	for (int z = zObjects; z >= -zObjects; z--)	// 깊이 검사 시 멀리있는 물체부터 렌더링 +z~-z
-	{
-		for (int y = -yObjects; y <= yObjects; y++)
-		{
-			for (int x = -xObjects; x <= xObjects; x++)
-			{
-				pRotatingObject = new CRotatingObject();
-				pRotatingObject->SetMesh(pCubeMesh);
-				//각 정육면체 객체의 위치를 설정한다. 
-				pRotatingObject->SetPosition(fxPitch * x, fyPitch * y, fzPitch * z);
-				pRotatingObject->SetRotationAxis(XMFLOAT3(0.0f, 1.0f, 0.0f));
-				pRotatingObject->SetRotationSpeed(10.0f * (i % 10) + 3.0f);
-				m_ppObjects[i++] = pRotatingObject;
-			}
-		}
-	}*/
-	//for (int i = 0, x = 0; x < xObjects; x++)
-	//{
-	//	for (int z = 0; z < zObjects; z++)
-	//	{
-	//		for (int y = 0; y < yObjects; y++)
-	//		{
-	//pMapObject = new CGameObject(1);
-	//pMapObject->SetMesh(0, pRectMesh);
-	//			float xPosition = x * fxPitch;
-	//			float zPosition = z * fzPitch;
-	//			float fHeight = pLand->GetHeight(xPosition, zPosition);
-	//			pRotatingObject->SetPosition(xPosition, fHeight + (y * 10.0f * fyPitch) + 6.0f, zPosition);
-	//			if (y == 0)
-	//			{
-	//				/*지형의 표면에 위치하는 직육면체는 지형의 기울기에 따라 방향이 다르게 배치한다. 직육면체가 위치할 지형의 법선
-	//				벡터 방향과 직육면체의 y-축이 일치하도록 한다.*/
-	//				xmf3SurfaceNormal = pLand->GetNormal(xPosition, zPosition);
-	//				xmf3RotateAxis = Vector3::CrossProduct(XMFLOAT3(0.0f, 1.0f, 0.0f),xmf3SurfaceNormal);
-	//				if (Vector3::IsZero(xmf3RotateAxis)) 
-	//					xmf3RotateAxis = XMFLOAT3(0.0f,1.0f,0.0f);
-	//				
-	//				float fAngle = acos(Vector3::DotProduct(XMFLOAT3(0.0f, 1.0f, 0.0f),
-	//					xmf3SurfaceNormal));
-	//				//pRotatingObject->Rotate(&xmf3RotateAxis, XMConvertToDegrees(fAngle));
-	//			}
-	//			pRotatingObject->SetRotationAxis(XMFLOAT3(0.0f, 1.0f, 0.0f));
-	//			pRotatingObject->SetRotationSpeed(36.0f * (i % 10) + 36.0f);
-	//pMapObject->SetPosition(0.0f, 0.0f, 0.0f);
-	//m_ppObjects[0] = pMapObject;
-	//		}
-	//	}
-	//}
-
-	m_nObjects = 1;
+	m_nObjects = nWidth * nDepth + 1;
 	m_ppObjects = new CGameObject * [m_nObjects];
 
-	CRectangleMesh* pRect = new CRectangleMesh(pd3dDevice, pd3dCommandList, 30.0f, 30.0f, 1.0f);
-	CGameObject* pMap = new CGameObject(1);
+	CRectangleMesh* pRect = new CRectangleMesh(pd3dDevice, pd3dCommandList, TileSize, TileSize, 1.0f);
 	
-	pMap->SetMesh(0, pRect);
-	pMap->SetPosition(0.0f, 0.0f, 0.0f);
-	
-	//m_nObjects++;
-	m_ppObjects[0] = pMap;
+	int i = 0;
+	for (float x = -Width / 2 + TileSize / 2; x < Width / 2; x += TileSize)
+	{
+		for (float z = -Depth / 2 + TileSize / 2; z < Depth / 2; z += TileSize)
+		{
+			CGameObject* pMap = new CGameObject(1);
+			pMap->SetMesh(0, pRect);
+			pMap->SetPosition(x, 0.0f, z);
+
+			m_ppObjects[i++] = pMap;
+		}
+	}
+
+
+	CCubeMeshDiffused* pCube = new CCubeMeshDiffused(pd3dDevice, pd3dCommandList,30*UNIT,8*UNIT, 30 * UNIT);
+
+	CGameObject* pWareHouse = new CGameObject(1);
+	pWareHouse->SetMesh(0, pCube);
+	pWareHouse->SetPosition(XMFLOAT3(0.0f, 3.9 * UNIT, 0.0f));
+
+	m_ppObjects[i++] = pWareHouse;
 
 	CreateShaderVariables(pd3dDevice, pd3dCommandList);
 }

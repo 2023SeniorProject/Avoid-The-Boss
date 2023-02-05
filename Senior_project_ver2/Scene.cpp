@@ -64,6 +64,7 @@ void CScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* p
 	m_pShaders = new CObjectsShader[m_nShaders];
 	m_pShaders[0].CreateShader(pd3dDevice, m_pd3dGraphicsRootSignature);
 	m_pShaders[0].BuildObjects(pd3dDevice, pd3dCommandList, m_pLand);
+
 }
 
 void CScene::ReleaseObjects()
@@ -100,8 +101,6 @@ void CScene::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera
 	pd3dCommandList->SetGraphicsRootSignature(m_pd3dGraphicsRootSignature);
 	pCamera->UpdateShaderVariables(pd3dCommandList);
 
-	if (m_pLand)m_pLand->Render(pd3dCommandList, pCamera);
-
 	//씬을 렌더링하는 것은 씬을 구성하는 게임 객체(셰이더를 포함하는 객체)들을 렌더링하는 것이다. 
 	for (int i = 0; i < m_nShaders; i++)
 	{
@@ -126,7 +125,6 @@ void CScene::ReleaseUploadBuffers()
 	}*/
 	for (int i = 0; i < m_nShaders; i++) m_pShaders[i].ReleaseUploadBuffers();
 
-	if (m_pLand) m_pLand->ReleaseUploadBuffers();
 }
 
 ID3D12RootSignature* CScene::CreateGraphicsRootSignature(ID3D12Device* pd3dDevice)

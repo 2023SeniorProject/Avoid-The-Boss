@@ -373,6 +373,7 @@ CCamera* CPlayer::OnChangeCamera(DWORD nNewCameraMode, DWORD nCurrentCameraMode)
 		pNewCamera = new CSpaceShipCamera(m_pCamera);
 		break;
 	}
+
 	/*현재 카메라의 모드가 스페이스-쉽 모드의 카메라이고 새로운 카메라가 1인칭 또는 3인칭 카메라이면 플레이어의
 	Up 벡터를 월드좌표계의 y-축 방향 벡터(0, 1, 0)이 되도록 한다. 즉, 똑바로 서도록 한다. 그리고 스페이스-쉽 카메
 	라의 경우 플레이어의 이동에는 제약이 없다. 특히, y-축 방향의 움직임이 자유롭다. 그러므로 플레이어의 위치는 공
@@ -518,7 +519,6 @@ CCamera* CLandPlayer::ChangeCamera(DWORD nNewCameraMode, float fTimeElapsed)
 	default:
 		break;
 	}
-
 	Update(fTimeElapsed);
 
 	return(m_pCamera);
@@ -573,15 +573,15 @@ void CLandPlayer::OnCameraUpdateCallback(float fTimeElapsed)
 
 CTilePlayer::CTilePlayer(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, int nMeshes) : CPlayer(nMeshes)
 {
-	CMesh* pPlayerCubeMesh = new CCubeMeshDiffused(pd3dDevice, pd3dCommandList, 3.0f, 15.0f, 3.0f);
+	CMesh* pPlayerCubeMesh = new CCubeMeshDiffused(pd3dDevice, pd3dCommandList, 0.37f*UNIT, 1.5f*UNIT, 0.23f * UNIT);
 
 	SetMesh(0, pPlayerCubeMesh);
 
-	m_pCamera = ChangeCamera(THIRD_PERSON_CAMERA, 0.0f);
+	m_pCamera = ChangeCamera(FIRST_PERSON_CAMERA, 0.0f);
 
 	CreateShaderVariables(pd3dDevice, pd3dCommandList);
 
-	SetPosition(XMFLOAT3(0.0f, 0.0f, 0.0f));
+	SetPosition(XMFLOAT3(0.0f, (1.5f/2.0f) * UNIT, 0.0f));
 
 	CPlayerShader* pShader = new CPlayerShader();
 	pShader->CreateShader(pd3dDevice, pd3dGraphicsRootSignature);
@@ -602,11 +602,10 @@ CCamera* CTilePlayer::ChangeCamera(DWORD nNewCameraMode, float fTimeElapsed)
 	switch (nNewCameraMode)
 	{
 	case FIRST_PERSON_CAMERA:
-		SetFriction(3.0f);
-		SetGravity(XMFLOAT3(0.0f,0.0f,0.0f));
-		SetMaxVelocityXZ(1.7f);
+		SetFriction(1 * UNIT);//마찰력
+		SetGravity(XMFLOAT3(0.0f, 9.8f * UNIT, 0.0f));//중력
+		SetMaxVelocityXZ(2.0f * UNIT);
 		SetMaxVelocityY(0.0f);
-		//SetVelocity(XMFLOAT3 ());
 
 		m_pCamera = OnChangeCamera(FIRST_PERSON_CAMERA, nCurrentCameraMode);
 		m_pCamera->SetTimeLag(0.0f);
@@ -614,28 +613,27 @@ CCamera* CTilePlayer::ChangeCamera(DWORD nNewCameraMode, float fTimeElapsed)
 
 		m_pCamera->GenerateProjectionMatrix(1.01f, 5000.0f, ASPECT_RATIO, 60.0f);
 		break;
-	case SPACESHIP_CAMERA:
+	case SPACESHIP_CAMERA: //자유시점
 		SetFriction(3.0f);
 		SetGravity(XMFLOAT3(0.0f, 0.0f, 0.0f));
-		SetMaxVelocityXZ(10.0f);
+		SetMaxVelocityXZ((10.f / 60.0f) * UNIT);//1초에 최대 10m
 		SetMaxVelocityY(10.0f);
-		//SetVelocity(XMFLOAT3 ());
 
 		m_pCamera = OnChangeCamera(SPACESHIP_CAMERA, nCurrentCameraMode);
 		m_pCamera->SetTimeLag(0.0f);
 		m_pCamera->SetOffset(XMFLOAT3(0.0f, 0.0f, 0.0f));
+		//m_pCamera->SetLookAt(XMFLOAT3(GetPosition()));
 
 		m_pCamera->GenerateProjectionMatrix(1.01f, 5000.0f, ASPECT_RATIO, 60.0f);
 	case THIRD_PERSON_CAMERA:
-		SetFriction(3.0f);
-		SetGravity(XMFLOAT3(0.0f, 9.8f, 0.0f));
-		SetMaxVelocityXZ(1.7f);
+		SetFriction(1* UNIT);
+		SetGravity(XMFLOAT3(0.0f, 9.8f * UNIT, 0.0f));//중력
+		SetMaxVelocityXZ(2.0f * UNIT);
 		SetMaxVelocityY(0.0f);
-		//SetVelocity(XMFLOAT3 ());
 
 		m_pCamera = OnChangeCamera(THIRD_PERSON_CAMERA, nCurrentCameraMode);
 		m_pCamera->SetTimeLag(0.0f);
-		m_pCamera->SetOffset(XMFLOAT3(0.0f, 20.0f, -50.0f));
+		m_pCamera->SetOffset(XMFLOAT3(0.0f, 1.7f * UNIT, -5 *UNIT));
 
 		m_pCamera->GenerateProjectionMatrix(1.01f, 5000.0f, ASPECT_RATIO, 60.0f);
 		break;

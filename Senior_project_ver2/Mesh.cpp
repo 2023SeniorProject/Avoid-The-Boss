@@ -701,9 +701,6 @@ CRectangleMesh::CRectangleMesh(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandLi
 	m_nStride = sizeof(CDiffusedVertex);
 	m_d3dPrimitiveTopology = D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
 
-	//float nWidth = 15.f;
-	//float nLength = 15.f;
-
 	CDiffusedVertex pVertices[4];
 	pVertices[0] = CDiffusedVertex(XMFLOAT3((+nWidth * nScale), 0.0f, (+nLength * nScale)), DEFAULT_MAP_COLOR);
 	pVertices[1] = CDiffusedVertex(XMFLOAT3((+nWidth * nScale), 0.0f, (-nLength * nScale)), MAP_COLOR_2);

@@ -178,6 +178,13 @@ void CGameObject::SetPosition(XMFLOAT3 xmf3Position)
 	SetPosition(xmf3Position.x, xmf3Position.y, xmf3Position.z);
 }
 
+void CGameObject::SetObjectInWorld(CGameObject** ppObjects, int i, XMFLOAT3 position, CMesh* pMesh, int nIndex)
+{
+	SetMesh(nIndex, pMesh);
+	SetPosition(position);
+	ppObjects[i] = this;
+}
+
 //게임 객체를 로컬 x-축 방향으로 이동한다.
 void CGameObject::MoveStrafe(float fDistance)
 {

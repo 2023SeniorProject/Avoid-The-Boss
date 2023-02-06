@@ -44,7 +44,7 @@ D3D12_RASTERIZER_DESC CShader::CreateRasterizerState()
 	::ZeroMemory(&d3dRasterizerDesc, sizeof(D3D12_RASTERIZER_DESC));
 	//D3D12_FILL_MODE_WIREFRAME은 프리미티브(삼각형)의 내부를 칠하지 않고 변(Edge)만 그린다.
 	d3dRasterizerDesc.FillMode = D3D12_FILL_MODE_SOLID; //D3D12_FILL_MODE_SOLID; // 삼각형 렌더링 시 색상 채우기 모드 설정
-	d3dRasterizerDesc.CullMode = D3D12_CULL_MODE_NONE; //컬링 설정 : D3D12_CULL_MODE_BACK 뒷면 제거  / 은면 제거 안함 : D3D12_CULL_MODE_NONE(은면도 그린다) / D3D12_CULL_MODE_FRONT 앞면 제거
+	d3dRasterizerDesc.CullMode = D3D12_CULL_MODE_BACK; //컬링 설정 : D3D12_CULL_MODE_BACK 뒷면 제거  / 은면 제거 안함 : D3D12_CULL_MODE_NONE(은면도 그린다) / D3D12_CULL_MODE_FRONT 앞면 제거
 	d3dRasterizerDesc.FrontCounterClockwise = FALSE; //false ( 은면제거시 시계방향 또는 반시계방향 설정)
 	d3dRasterizerDesc.DepthBias = 0;
 	d3dRasterizerDesc.DepthBiasClamp = 0.0f;
@@ -262,13 +262,13 @@ CObjectsShader::~CObjectsShader()
 void CObjectsShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, void* pContext)
 {
 	//1.0f = 1cm / 100.0f = 1m
-	float TileSize = (float) 0.5 * UNIT;
+	float TileSize = (float) 1 * UNIT;
 	float Width = 60 * UNIT;
 	float Depth = 60 * UNIT;
 	int nWidth = (int)Width / TileSize;
 	int nDepth = (int)Depth / TileSize;
 
-	m_nObjects = nWidth * nDepth + 1;
+	m_nObjects = nWidth * nDepth + 14;
 	m_ppObjects = new CGameObject * [m_nObjects];
 
 	CRectangleMesh* pRect = new CRectangleMesh(pd3dDevice, pd3dCommandList, TileSize, TileSize, 1.0f);
@@ -285,16 +285,43 @@ void CObjectsShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsComman
 			m_ppObjects[i++] = pMap;
 		}
 	}
+	//------ 공장 벽 생성 5개
+	int WarehouseSizeXZ = 30;
+	int WarehouseSizeY = 20;
 
+	CCubeMeshDiffused* pSideXWall = new CCubeMeshDiffused(pd3dDevice, pd3dCommandList,1 * UNIT, WarehouseSizeY * UNIT, WarehouseSizeXZ * UNIT);
+	CCubeMeshDiffused* pSideZWall = new CCubeMeshDiffused(pd3dDevice, pd3dCommandList, WarehouseSizeXZ * UNIT, WarehouseSizeY * UNIT, 1 * UNIT);
+	CCubeMeshDiffused* pSideYWall = new CCubeMeshDiffused(pd3dDevice, pd3dCommandList, WarehouseSizeXZ * UNIT, 1 * UNIT, WarehouseSizeXZ * UNIT);
 
-	CCubeMeshDiffused* pCube = new CCubeMeshDiffused(pd3dDevice, pd3dCommandList,30*UNIT,8*UNIT, 30 * UNIT);
+	CGameObject* pWareHouseLeft = new CGameObject(1);
+	pWareHouseLeft->SetObjectInWorld(m_ppObjects, i++, XMFLOAT3(-WarehouseSizeXZ/2 * UNIT, (WarehouseSizeY/2-0.1f) * UNIT, 0.0f), pSideXWall, 0);
 
-	CGameObject* pWareHouse = new CGameObject(1);
-	pWareHouse->SetMesh(0, pCube);
-	pWareHouse->SetPosition(XMFLOAT3(0.0f, 3.9 * UNIT, 0.0f));
+	CGameObject* pWareHouseRight = new CGameObject(1);
+	pWareHouseRight->SetObjectInWorld(m_ppObjects, i++, XMFLOAT3(WarehouseSizeXZ/2 * UNIT, (WarehouseSizeY / 2 - 0.1f) * UNIT, 0.0f), pSideXWall, 0);
 
-	m_ppObjects[i++] = pWareHouse;
+	CGameObject* pWareHouseFront = new CGameObject(1);
+	pWareHouseFront->SetObjectInWorld(m_ppObjects, i++, XMFLOAT3(0.0f , (WarehouseSizeY / 2 - 0.1f) * UNIT, WarehouseSizeXZ/2 * UNIT), pSideZWall, 0);
 
+	CGameObject* pWareHouseBack = new CGameObject(1);
+	pWareHouseBack->SetObjectInWorld(m_ppObjects, i++, XMFLOAT3(0.0f, (WarehouseSizeY / 2 - 0.1f) * UNIT, -WarehouseSizeXZ/2 * UNIT), pSideZWall, 0);
+
+	CGameObject* pWareHouseFloor = new CGameObject(1);
+	pWareHouseFloor->SetObjectInWorld(m_ppObjects, i++, XMFLOAT3(0.0f, (WarehouseSizeY / 2 + 0.5f) * UNIT, 0.0f), pSideYWall, 0);
+
+	//------- 공장 기둥 생성 9개
+	CCubeMeshDiffused* pRod = new CCubeMeshDiffused(pd3dDevice, pd3dCommandList, 1 * UNIT, WarehouseSizeY * UNIT, 1 * UNIT);
+	float w = WarehouseSizeXZ / 2 * UNIT;
+	float d = WarehouseSizeXZ / 2 * UNIT;
+
+	for (float x = -w / 2; x <= w / 2; x += w/2)
+	{
+		for (float z = -d / 2; z <= d / 2; z += d/2)
+		{
+			CGameObject* pPillar = new CGameObject(1);
+			pPillar->SetObjectInWorld(m_ppObjects, i++, XMFLOAT3(x, (WarehouseSizeY / 2 - 0.1f) * UNIT, z), pRod, 0);
+		}
+	}
+	
 	CreateShaderVariables(pd3dDevice, pd3dCommandList);
 }
 

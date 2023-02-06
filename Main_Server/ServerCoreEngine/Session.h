@@ -29,11 +29,10 @@ public:
 	int32 _cid = -1;
 	int32 _sid = -1;
 	int32 _prev_remain = 0;
-	STATUS _status = STATUS::EMPTY;
+	Atomic<STATUS> _status = STATUS::EMPTY;
 public:
 	SOCKET _sock = INVALID_SOCKET;
 	RecvEvent _rev;
-	
 	USE_LOCK;
 };
 

@@ -4,30 +4,33 @@
 #define PORTNUM 9000
 // 클라 -> 서버 패킷
 
-enum class C_PACKET_TYPE : int8{ ACQ_LOGIN = 1, ACQ_LOGOUT = 2, ACQ_REGISTER = 3, CHAT = 4   };
-enum class C_ROOM_PACKET_TYPE : int8 { MK_RM = 5, DEL_RM = 6 , ENTER_RM = 7, EXIT_RM = 8}; // 방 생성, 방 삭제, 입장 , 종료 
-enum class S_PACKET_TYPE : int8 { LOGIN_OK = 9,  LOGIN_FAIL = 10 , CHAT = 11};
+enum C_PACKET_TYPE : uint8 { ACQ_LOGIN = 101, ACQ_LOGOUT = 102, ACQ_REGISTER = 103, CCHAT = 104   };
+enum C_ROOM_PACKET_TYPE : uint8 { MK_RM = 115, DEL_RM = 116 , ENTER_RM = 117, EXIT_RM = 118}; // 방 생성, 방 삭제, 입장 , 종료 
+enum S_PACKET_TYPE : uint8 { LOGIN_OK = 201,  LOGIN_FAIL = 202 , SCHAT = 203};
 
+
+#pragma pack (push, 1)
 
 struct _CHAT
 {
-	int8 size;
-	int8 type;
-	char buf[100];
+	uint8 size;
+	uint8 type;
+	int8 sid;
+	char buf[50];
 };
 
 struct C2S_LOGIN
 {
-	int8 size;
-	int8 type;
+	uint8 size;
+	uint8 type;
 	WCHAR name[10];
 	WCHAR pw[10];
 };
 
 struct C2S_REGISTER
 {
-	int8 size;
-	int8 type;
+	uint8 size;
+	uint8 type;
 	int8 name[10];
 	int32 pw;
 };
@@ -35,29 +38,29 @@ struct C2S_REGISTER
 
 struct C2S_LOGOUT
 {
-	int8 size;
-	int8 type;
+	uint8 size;
+	uint8 type;
 	int8 cid;
 };
 
 struct C2S_ROOM
 {
-	int8 size;
-	int8 type;
+	uint8 size;
+	uint8 type;
 };
 
 struct C2S_MOVE
 {
-	int8 size;
-	int8 type;
+	uint8 size;
+	uint8 type;
 	int8 cid;
 	int8 dir;
 };
 
 struct C2S_ATTACK
 {
-	int8 size;
-	int8 type;
+	uint8 size;
+	uint8 type;
 	int8 cid;
 	int8 wf; // 발생 시점 월드 프레임
 };
@@ -66,25 +69,25 @@ struct C2S_ATTACK
 
 struct S2C_LOGIN_OK
 {
-	int8 size;
-	int8 type;
+	uint8 size;
+	uint8 type;
 	int8 cid;
 };
 
 struct S2C_LOGIN_FAIL
 {
-	int8 size;
-	int8 type;
+	uint8 size;
+	uint8 type;
 	int8 err_code; // 로그인 실패 사유
 };
 
 
 struct S2C_MOVE
 {
-	int8 size;
-	int8 type;
+	uint8 size;
+	uint8 type;
 	int8 cid;
 	int8 dir;
 	int64 pos_x, pos_y;
 };
-
+#pragma pack (pop)

@@ -87,7 +87,7 @@
     <ClInclude Include="Allocator.h">
       <Filter>Memory</Filter>
     </ClInclude>
-    <ClInclude Include="ConnectManager.h">
+    <ClInclude Include="ClientManager.h">
       <Filter>Network</Filter>
     </ClInclude>
     <ClInclude Include="OBDC_MGR.h">
@@ -146,7 +146,7 @@
     <ClCompile Include="Allocator.cpp">
       <Filter>Memory</Filter>
     </ClCompile>
-    <ClCompile Include="ConnectManager.cpp">
+    <ClCompile Include="ClientManager.cpp">
       <Filter>Network</Filter>
     </ClCompile>
     <ClCompile Include="OBDC_MGR.cpp">

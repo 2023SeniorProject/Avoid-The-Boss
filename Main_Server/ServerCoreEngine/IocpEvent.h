@@ -40,16 +40,17 @@ public:
 class AcceptEvent : public IocpEvent
 {
 public:
-	AcceptEvent() : IocpEvent(EventType::Accept) { };
+	AcceptEvent() : IocpEvent(EventType::Accept) { Init(); };
 public:
 	GameSession* _session = nullptr;
-	char _buf[BUFSIZE / 2] ={};
+	char _buf[BUFSIZE / 2] = {};
 };
 
 class ConnectEvent : public IocpEvent
 {
 public:
-	ConnectEvent() : IocpEvent(EventType::Connect) { };
+	ConnectEvent() : IocpEvent(EventType::Connect) { Init(); };
+public:
 	char _buf[BUFSIZE / 2] = {};
 };
 
@@ -62,7 +63,7 @@ public:
 	{
 		_sWsaBuf.buf = _sbuf;
 		_sWsaBuf.len = packet[0];
-		memcpy(_sbuf, packet, sizeof(*packet));
+		memcpy(_sbuf, packet, packet[0]);
 	};
 public:
 	int32 _sid = -1;
@@ -75,7 +76,8 @@ class RecvEvent : public IocpEvent
 {
 public:
 	RecvEvent() : IocpEvent(EventType::Recv) 
-	{	 
+	{
+		Init();
 		_rWsaBuf.buf = _rbuf;
 		_rWsaBuf.len = BUFSIZE;
 	};

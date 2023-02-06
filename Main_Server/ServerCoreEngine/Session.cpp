@@ -4,6 +4,8 @@
 #include "Session.h"
 #include "OBDC_MGR.h"
 
+
+
 GameSession::GameSession() 
 {
 	_sock = SocketUtil::CreateSocket();
@@ -24,15 +26,23 @@ void GameSession::Processing(IocpEvent* iocpEvent, int32 numOfBytes)
 	//TODO
 	switch (iocpEvent->_comp)
 	{
+		case EventType::Connect:
+		{
+			ConnectEvent* connectEvent = static_cast<ConnectEvent*>(iocpEvent);
+			std::cout << "ConnectEx Successs " << std::endl;
+			DoRecv(); // Connect하고 Do recv 수행
+		}
+		break;
 	case EventType::Recv:
 		{
-			WRITE_LOCK;
 			RecvEvent* rev = static_cast<RecvEvent*>(iocpEvent);
+			WRITE_LOCK;
+			
 			int remain_data = numOfBytes + _prev_remain;
 			char* p = rev->_rbuf;
 			while (remain_data > 0)
 			{
-				int8 packet_size = p[0];
+				uint8 packet_size = p[0];
 				if (packet_size <= remain_data)
 				{
 					ProcessPacket(p);
@@ -46,11 +56,12 @@ void GameSession::Processing(IocpEvent* iocpEvent, int32 numOfBytes)
 			{
 				memcpy(rev->_rbuf, p, remain_data);
 			}
-			DoRecv();
+			
 		}
 		break;
 	case EventType::Send:
 		{
+			SendEvent* sev = static_cast<SendEvent*>(iocpEvent);
 			if(iocpEvent == nullptr) ASSERT_CRASH("double Del");
 			delete iocpEvent;
 		}
@@ -65,17 +76,31 @@ void GameSession::DoSend(void* packet)
 	DWORD flag(0);
 	SendEvent* sev = new SendEvent(reinterpret_cast<char*>(packet));
 	sev->_sid = _sid;
-	WSASend(_sock, &sev->_sWsaBuf, 1, &sendLen, flag, static_cast<LPWSAOVERLAPPED>(sev), NULL);
+	if (WSASend(_sock, &sev->_sWsaBuf, 1, &sendLen, flag, static_cast<LPWSAOVERLAPPED>(sev), NULL) == SOCKET_ERROR)
+	{
+		int32 errcode = WSAGetLastError();
+		if (WSAGetLastError() != WSA_IO_PENDING)
+		{
+			cout << errcode << endl;
+		}
+	}
 }
 
 void GameSession::DoRecv()
 {
-	ZeroMemory(&_rev, sizeof(WSAOVERLAPPED));
+	_rev.Init();
 	_rev._sid = _sid;
 	_rev._cid = _cid;
 	DWORD recvBytes(0);
 	DWORD flag(0);
-	WSARecv(_sock, &_rev._rWsaBuf, 1, &recvBytes, &flag, static_cast<LPWSAOVERLAPPED>(&_rev), NULL);
+	if (WSARecv(_sock, &_rev._rWsaBuf, 1, &recvBytes, &flag, static_cast<LPWSAOVERLAPPED>(&_rev), NULL) == SOCKET_ERROR)
+	{
+		int32 errcode = WSAGetLastError();
+		if (WSAGetLastError() != WSA_IO_PENDING)
+		{
+			cout << errcode << endl;
+		}
+	}
 }
 
 void GameSession::DoSendLoginPacket(bool isSuccess)
@@ -84,69 +109,60 @@ void GameSession::DoSendLoginPacket(bool isSuccess)
 	if (isSuccess)
 	{
 		S2C_LOGIN_OK loginOkPacket;
-		loginOkPacket.cid = _cid;
 		loginOkPacket.size = sizeof(S2C_LOGIN_OK);
-		loginOkPacket.type = (int8)S_PACKET_TYPE::LOGIN_OK;
+		loginOkPacket.type = S_PACKET_TYPE::LOGIN_OK;
+		loginOkPacket.cid = _cid;
 		DoSend(&loginOkPacket);
 	}
 	else
 	{
 		S2C_LOGIN_OK loginFailPacket;
 		loginFailPacket.size = sizeof(S2C_LOGIN_OK);
-		loginFailPacket.type = (int8)S_PACKET_TYPE::LOGIN_FAIL;
+		loginFailPacket.type = (uint8)S_PACKET_TYPE::LOGIN_FAIL;
 		DoSend(&loginFailPacket);
 	}
 }
 
-
-void DB_Worker(int32 key, wstring sqlexec)
-{
-	USER_DB_MANAGER udb;
-	udb.AllocateHandles();
-	udb.ConnectDataSource(L"2023SENIORPROJECT");
-	const WCHAR* a = sqlexec.c_str();
-	udb.ExecuteStatementDirect(a);
-	udb.RetrieveResult();
-
-	wlock_guard writeLockGuard(GIocpCore._clients[key]->_locks[0]);
-	{
-		GIocpCore._clients[key]->_cid = udb.user_cid;
-		if (GIocpCore._clients[key]->_cid == -1)
-		{
-			cout << "LoginFail" << endl;
-			udb.DisconnectDataSource();
-			GIocpCore._clients[key]->DoSendLoginPacket(false);
-			return;
-		}
-	}
-	cout << "client[" << GIocpCore._clients[key]->_cid << "] " << "LoginSuccess" << endl;
-	udb.DisconnectDataSource();
-	GIocpCore._clients[key]->DoSendLoginPacket(true);
-}
-
 void GameSession::ProcessPacket(char* packet)
 {
-	switch (packet[1])
+	switch ((uint8)packet[1])
 	{
-	case (int8)C_PACKET_TYPE::CHAT:
-	{
+		// === CLIENT PACKET ===
+	    //
+	    // ===               ===
+		case C_PACKET_TYPE::CCHAT:
+		{
 
-		_CHAT* cp = (_CHAT*)packet;
-		std::cout << "client[" << _cid << "] 's msg : " << cp->buf << endl;
+			_CHAT* cp = (_CHAT*)packet;
+			std::cout << "client[" << _cid << "] 's msg : " << cp->buf << endl;
+		}
+		break;
+		// === SERVER PACKET ===
+		//
+		// ===               ===
+		case S_PACKET_TYPE::SCHAT:
+		{
+			_CHAT* cp = (_CHAT*)packet;
+			std::cout << "client[" << cp->sid << "] 's msg : " << cp->buf << endl;
+		}
+		break;
+		case S_PACKET_TYPE::LOGIN_OK:
+		{
+			S2C_LOGIN_OK* lo = (S2C_LOGIN_OK*)packet;
+			_cid = lo->cid;
+			std::cout  << "client[" << _cid << "] " << "Login Success" << std::endl;
+			_status = STATUS::LOGIN;
+		}
+		break;
+		case S_PACKET_TYPE::LOGIN_FAIL:
+		{
+			S2C_LOGIN_FAIL* lo = (S2C_LOGIN_FAIL*)packet;
+			std::cout << "Login Fail" << std::endl;
+			SocketUtil::Close(_sock);
+		}
+		break;
 	}
-	break;
-	case (int8)C_PACKET_TYPE::ACQ_LOGIN:
-	{
-
-		C2S_LOGIN* cp = (C2S_LOGIN*)packet;
-		wstring sqlExec(L"EXEC search_user_db ");
-		sqlExec += cp->name;
-		sqlExec += L", ";
-		sqlExec += cp->pw;
-		DB_Worker(_sid, sqlExec);
-	}
-	break;
-	}
+	DoRecv();
 }
 
 

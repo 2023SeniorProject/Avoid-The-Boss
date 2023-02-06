@@ -2,6 +2,7 @@
 #include "AcceptManager.h"
 #include "SocketUtil.h"
 
+#include "OBDC_MGR.h"
 #include "IocpEvent.h"
 #include "Session.h"
 
@@ -99,12 +100,44 @@ void AcceptManager::RegisterAccept(AcceptEvent* acceptEvent)
 
 }
 
+
+void LoginProcess(GameSession& s, wstring sqlexec)
+{
+	USER_DB_MANAGER udb;
+	udb.AllocateHandles();
+	udb.ConnectDataSource(L"2023SENIORPROJECT");
+	const WCHAR* a = sqlexec.c_str();
+	udb.ExecuteStatementDirect(a);
+	udb.RetrieveResult();
+
+	wlock_guard writeLockGuard(s._locks[0]);
+	{
+		s._cid = udb.user_cid;
+		if (s._cid == -1)
+		{
+			cout << "LoginFail" << endl;
+			udb.DisconnectDataSource();
+			s.DoSendLoginPacket(false);
+			return;
+		}
+	}
+	cout << "client[" << s._cid << "] " << "LoginSuccess" << endl;
+	udb.DisconnectDataSource();
+	s.DoSendLoginPacket(true);
+}
+
 // Accept 처리 완료 시 , 후처리를 진행한다. callBack 처리
 void AcceptManager::ProcessAccept(AcceptEvent* acceptEvent)
 {
 	GameSession* session = acceptEvent->_session; // 복원된 세션을 가져온다.
+	ASSERT_CRASH(GIocpCore.Register(session)); // iocp핸들에 소켓 등록
 	C2S_LOGIN* lp = reinterpret_cast<C2S_LOGIN*>(acceptEvent->_buf);
-	std::wcout << "ID : " << lp->name << "PW : " << lp->pw << endl;
+	
+	wstring sqlExec(L"EXEC search_user_db ");
+	sqlExec += lp->name;
+	sqlExec += L", ";
+	sqlExec += lp->pw;
+	LoginProcess(*session, sqlExec);
 	//클라이언트 소켓과 서버 리슨 소켓과 옵션을 동일하게 맞춰준다.
 	if (false == SocketUtil::SetUpdateAcceptSocket(session->_sock, _listenSock))
 	{
@@ -112,22 +145,13 @@ void AcceptManager::ProcessAccept(AcceptEvent* acceptEvent)
 		return;
 	}
 
-	
-	
 	// 클라이언트 ID 셋팅 or unordered_map 컨테이너에 담는다.
 	// TODO
 	int32 sid = GetNewSessionIdx();
-	/*if (GIocpCore._clients[sid]->_status != STATUS::EMPTY)
-	{
-		cout << "Already Accepted Session" << endl;
-		return;
-	}*/
-	cout << "Client Connected!" << endl;
+	GIocpCore._clients.try_emplace(sid, session); // 세션 추가 후
 	session->_sid = sid;
 	session->_status = STATUS::LOGIN;
-	GIocpCore. _clients.try_emplace(sid, session); // 세션 추가 후
-	GIocpCore._clients[sid]->DoRecv();  // recv 상태로 만든다.
-	std::cout << GIocpCore._clients[sid]->_sid << std::endl;
+	session->DoRecv();  // recv 상태로 만든다.
 	RegisterAccept(acceptEvent); // 다시 acceptEvent를 등록한다.
 }
 

@@ -5,9 +5,20 @@
 #include "ClientManager.h"
 #include "Session.h"
 
+
+void gotoxy(int x, int y)
+{
+	COORD Cur;
+	Cur.X = x;
+	Cur.Y = y;
+	SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), Cur);
+}
+
+
+
 ClientManager cmgr;
 
-
+int32 ClientManager::_scene = 0;
 
 void SendThread()
 {
@@ -25,6 +36,23 @@ void SendThread()
 		cmgr.DoSend(&chat_packet);
 	}
 
+}
+
+void SceneThread()
+{
+	switch (ClientManager::_scene)
+	{
+		// 로비
+	case 0:
+		break;
+
+		// 방
+	case 1:
+		break;
+		// 게임
+	case 3:
+		break;
+	}
 }
 
 int main()

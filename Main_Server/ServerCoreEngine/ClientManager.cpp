@@ -8,6 +8,7 @@
 void ClientManager::InitConnect(const char* address)
 {
 	_clientSession._sock = SocketUtil::CreateSocket();
+	_clientSession._sid = 0;
 	ASSERT_CRASH(_clientSession._sock != INVALID_SOCKET);
 	_serveraddr.sin_family = AF_INET;
 	_serveraddr.sin_addr.s_addr = htonl(INADDR_ANY);
@@ -34,12 +35,20 @@ void ClientManager::DoConnect(const char* idPw)
 		{
 			std::cout << errorCode << std::endl;
 			std::cout << "Connect Error" << std::endl;
+			SocketUtil::Close(_clientSession._sock);
+			SocketUtil::Clear();
+			exit(1);
 		}
 	}
 }
 
 void ClientManager::DoSend(void* packet)
 {
-	cout << "send" << endl;
 	_clientSession.DoSend(packet);
+}
+
+// scene 바꾸는 함수
+void ClientManager::SetScene(int32 scene)
+{
+	_scene = scene;
 }

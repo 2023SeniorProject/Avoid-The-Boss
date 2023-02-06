@@ -19,6 +19,7 @@ public:
 	HANDLE GetHandle() { return _hIocp; };
 	bool Register(class IocpObject* iocpObj); // socket과 session을 등록하는 함수
 	bool Processing(uint32_t limit_time = INFINITE); // 실질적으로 일하는 worker_thread들이 iocp에서 완료된 업무를 탐색하는 곳
+	void Disconnect(int32 sid);
 private:
 	HANDLE _hIocp = INVALID_HANDLE_VALUE;
 public:

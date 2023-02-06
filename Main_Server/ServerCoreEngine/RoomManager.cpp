@@ -1,14 +1,37 @@
 #include "pch.h"
 #include "RoomManager.h"
 
-bool RoomManager::CreateRoom(const int16& hid)
+
+//========== ROOM =============
+
+//=============================
+
+void Room::UserOut(int16 sid)
 {
-	if (_capacity >= _rm_cnt) return false; // 최대 방 개수보다 넘어갈 경우 생성 X
-	_rooms.try_emplace(_rm_cnt++, new Room(hid));
+	auto i = std::find(_cList.begin(),_cList.end(), sid);
+	_cList.erase(i); // 리스트에서 제거
+}
+
+void Room::UserIn(int16 sid)
+{
+	_cList.push_back(sid);
+}
+// ======= RoomManager ========
+
+// ============================
+
+bool RoomManager::CreateRoom(int16 hid)
+{
+	if (_cap <= _rmCnt) return false; // 최대 방 개수보다 넘어갈 경우 생성 X
+	_rooms.try_emplace(_rmCnt++, Room(hid));
 	return true;
 }
 
-void RoomManager::RemoveRoom(const int16& rm_id) 
+void RoomManager::RemoveRoom(int16 rm_id) 
 {
-	_rooms[rm_id]->DestroyRoom();
+	if (_rooms[rm_id].IsDestroyRoom())
+	{
+		_rooms.erase(rm_id);
+	}
+	
 }

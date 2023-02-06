@@ -1,7 +1,7 @@
 #include "pch.h"
 #include "IocpCore.h"
 #include "IocpEvent.h"
-
+#include "Session.h"
 
 IocpCore GIocpCore;
 
@@ -38,12 +38,8 @@ bool IocpCore::Processing(uint32_t time_limit) // worker thread 기능 완료된 비동
 	BOOL retVal = ::GetQueuedCompletionStatus(_hIocp, OUT & numOfBytes, reinterpret_cast<PULONG_PTR>(&iocpObject), // 하지만 이렇게 iocpObject를 인자로 넘겨주게 되면, 다른 스레드에서 이 오브젝트를 삭제했을 때, 문제가 생길 수도 있다. --> 
 		//애초에 iocpEvent에서 해당 iocp객체들에 관한 정보(해당 이벤트를 호출한 주인 iocp객체들)을 담고 있도록하자.
 		OUT reinterpret_cast<LPOVERLAPPED*>(&iocpEvent), time_limit);
-	if (retVal) // 성공 했는가?
-	{
-
-		iocpObject->Processing(iocpEvent, numOfBytes); // 성공하면 전반적인 프로세싱을 시작해보자
-	}
-	else // 실패했다면 에러코드 확인
+	
+	if (!retVal) // 실패했다면 에러코드 확인
 	{
 		int32 errCode = ::WSAGetLastError();
 		switch (errCode)
@@ -54,12 +50,31 @@ bool IocpCore::Processing(uint32_t time_limit) // worker thread 기능 완료된 비동
 				// TODO : 로그 찍기
 			{
 				std::cout << ::WSAGetLastError() << std::endl;
-			
+				
 				//iocpObject->Processing(iocpEvent, numOfBytes);
 				break;
 			}
 		}
 	}
+	
+	if (numOfBytes == 0 && (iocpEvent->_comp == EventType::Recv || iocpEvent->_comp == EventType::Send))
+	{
+		//Disconnect
+		//disconnect(static_cast<int>(key));
+		GameSession* s = static_cast<GameSession*>(iocpObject);
+		Disconnect(s->_sid);
+		if (iocpEvent->_comp == EventType::Send) delete iocpEvent;
+		return false;
+	}
 
+	iocpObject->Processing(iocpEvent, numOfBytes); // 성공하면 전반적인 프로세싱을 시작해보자
+	
 	return true;
+}
+
+void IocpCore::Disconnect(int32 sid)
+{
+	cout << "[" << _clients[sid]->_cid << "] Disconnected" << endl;
+	delete _clients[sid];
+	_clients.erase(sid);
 }

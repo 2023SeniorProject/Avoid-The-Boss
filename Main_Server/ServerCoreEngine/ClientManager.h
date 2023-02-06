@@ -14,9 +14,11 @@ public:
 	void InitConnect(const char* address);
 	void DoConnect(const char* idPw);
 	void DoSend(void* packet);
+	static void SetScene(int32);
 public:
 	SOCKADDR_IN _serveraddr;
 	GameSession _clientSession;
+	static int32 _scene;
 	
 };
 

@@ -2,6 +2,7 @@
 #include <windows.h>
 #define MAX_USER 10
 #define PORTNUM 9000
+#define CHATBUF 50
 // 클라 -> 서버 패킷
 
 enum C_PACKET_TYPE : uint8 { ACQ_LOGIN = 101, ACQ_LOGOUT = 102, ACQ_REGISTER = 103, CCHAT = 104   };
@@ -15,8 +16,8 @@ struct _CHAT
 {
 	uint8 size;
 	uint8 type;
-	int8 sid;
-	char buf[50];
+	int16 sid;
+	char buf[CHATBUF];
 };
 
 struct C2S_LOGIN
@@ -40,7 +41,7 @@ struct C2S_LOGOUT
 {
 	uint8 size;
 	uint8 type;
-	int8 cid;
+	int16 cid;
 };
 
 struct C2S_ROOM
@@ -53,7 +54,7 @@ struct C2S_MOVE
 {
 	uint8 size;
 	uint8 type;
-	int8 cid;
+	int16 cid;
 	int8 dir;
 };
 
@@ -61,7 +62,7 @@ struct C2S_ATTACK
 {
 	uint8 size;
 	uint8 type;
-	int8 cid;
+	int16 cid;
 	int8 wf; // 발생 시점 월드 프레임
 };
 
@@ -71,7 +72,7 @@ struct S2C_LOGIN_OK
 {
 	uint8 size;
 	uint8 type;
-	int8 cid;
+	int16 cid;
 };
 
 struct S2C_LOGIN_FAIL
@@ -86,7 +87,7 @@ struct S2C_MOVE
 {
 	uint8 size;
 	uint8 type;
-	int8 cid;
+	int16 cid;
 	int8 dir;
 	int64 pos_x, pos_y;
 };

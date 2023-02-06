@@ -148,7 +148,9 @@ void AcceptManager::ProcessAccept(AcceptEvent* acceptEvent)
 	// 클라이언트 ID 셋팅 or unordered_map 컨테이너에 담는다.
 	// TODO
 	int32 sid = GetNewSessionIdx();
+	curAcceptCnt.fetch_add(1);
 	GIocpCore._clients.try_emplace(sid, session); // 세션 추가 후
+
 	session->_sid = sid;
 	session->_status = STATUS::LOGIN;
 	session->DoRecv();  // recv 상태로 만든다.
@@ -157,5 +159,6 @@ void AcceptManager::ProcessAccept(AcceptEvent* acceptEvent)
 
 int32 AcceptManager::GetNewSessionIdx()
 {
-	return curAcceptCnt.load();
+	
+	return curAcceptCnt;
 }

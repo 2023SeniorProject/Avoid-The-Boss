@@ -6,15 +6,6 @@
 #include "Session.h"
 
 
-void gotoxy(int x, int y)
-{
-	COORD Cur;
-	Cur.X = x;
-	Cur.Y = y;
-	SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), Cur);
-}
-
-
 
 ClientManager cmgr;
 
@@ -22,18 +13,22 @@ int32 ClientManager::_scene = 0;
 
 void SendThread()
 {
+	
 	char sendBuffer[100];
 	while (true)
 	{
+	
 		if (cmgr._clientSession._status.load() == STATUS::EMPTY) continue;
-		std::cout << "msg : ";
 		std::cin.getline(sendBuffer, 100);
-
+		cout << endl;
 		_CHAT chat_packet;
+		chat_packet.sid = (uint8)cmgr._clientSession._cid;
 		chat_packet.size = sizeof(_CHAT);
 		chat_packet.type = (uint8)C_PACKET_TYPE::CCHAT;
-		strcpy_s(chat_packet.buf, 99, sendBuffer);
+		strcpy_s(chat_packet.buf, CHATBUF, sendBuffer);
+		chat_packet.buf[CHATBUF - 1] = '\0';
 		cmgr.DoSend(&chat_packet);
+	
 	}
 
 }
@@ -68,7 +63,7 @@ int main()
 	std::wcin.getline(loginPacket.name, sizeof(WCHAR) * 10);
 	std::cout << "PW : ";
 	std::wcin.getline(loginPacket.pw, sizeof(WCHAR) * 10);
-
+	::system("cls");
 	cmgr.InitConnect("127.0.0.1");
 	cmgr.DoConnect(reinterpret_cast<char*>(&loginPacket));
 	

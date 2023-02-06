@@ -4,9 +4,9 @@
 // 서버에서 클라이언트 소켓을 관리할 클래스
 // 마찬가지로 Iocp에 등록할 대상이기 때문에 IocpObject에 해당된다
 
-void ProcessPacket(int32 key, char* packet);
 
 enum class STATUS: int8 { EMPTY, LOGIN, INGAME};
+
 
 
 class GameSession : public IocpObject
@@ -26,8 +26,8 @@ public:
 	void DoSendLoginPacket(bool isSuccess);
 	void ProcessPacket(char* packet);
 public:
-	int32 _cid = -1;
-	int32 _sid = -1;
+	int16 _cid = -1;
+	int16 _sid = -1;
 	int32 _prev_remain = 0;
 	Atomic<STATUS> _status = STATUS::EMPTY;
 public:

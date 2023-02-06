@@ -5,11 +5,10 @@
 #include "OBDC_MGR.h"
 
 
-
 GameSession::GameSession() 
 {
 	_sock = SocketUtil::CreateSocket();
-}
+}                   
 
 GameSession::~GameSession()
 {
@@ -29,7 +28,6 @@ void GameSession::Processing(IocpEvent* iocpEvent, int32 numOfBytes)
 		case EventType::Connect:
 		{
 			ConnectEvent* connectEvent = static_cast<ConnectEvent*>(iocpEvent);
-			std::cout << "ConnectEx Successs " << std::endl;
 			DoRecv(); // Connect하고 Do recv 수행
 		}
 		break;
@@ -133,8 +131,15 @@ void GameSession::ProcessPacket(char* packet)
 		case C_PACKET_TYPE::CCHAT:
 		{
 
-			_CHAT* cp = (_CHAT*)packet;
-			std::cout << "client[" << _cid << "] 's msg : " << cp->buf << endl;
+			_CHAT* cp = reinterpret_cast<_CHAT*>(packet);
+			_CHAT np;
+			memcpy(&np, cp, sizeof(_CHAT));
+			np.type = SCHAT;
+			for (auto i : GIocpCore._clients)
+			{
+				if (i.second->_cid == np.sid) continue;
+				i.second->DoSend(&np);
+			}
 		}
 		break;
 		// === SERVER PACKET ===
@@ -142,15 +147,16 @@ void GameSession::ProcessPacket(char* packet)
 		// ===               ===
 		case S_PACKET_TYPE::SCHAT:
 		{
-			_CHAT* cp = (_CHAT*)packet;
-			std::cout << "client[" << cp->sid << "] 's msg : " << cp->buf << endl;
+			_CHAT* cp = reinterpret_cast<_CHAT*>(packet);
+			std::cout << "client[" << cp->sid << "] 's msg : " << cp->buf << std::endl;
 		}
 		break;
 		case S_PACKET_TYPE::LOGIN_OK:
 		{
 			S2C_LOGIN_OK* lo = (S2C_LOGIN_OK*)packet;
 			_cid = lo->cid;
-			std::cout  << "client[" << _cid << "] " << "Login Success" << std::endl;
+		
+			std::cout << "client[" << _cid << "] " << "Login Success" << std::endl;
 			_status = STATUS::LOGIN;
 		}
 		break;

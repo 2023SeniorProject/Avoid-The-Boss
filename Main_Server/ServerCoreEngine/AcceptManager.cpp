@@ -105,7 +105,7 @@ void LoginProcess(GameSession& s, wstring sqlexec)
 {
 	USER_DB_MANAGER udb;
 	udb.AllocateHandles();
-	udb.ConnectDataSource(L"2023SENIORPROJECT");
+	udb.ConnectDataSource(L"USER_DB");
 	const WCHAR* a = sqlexec.c_str();
 	udb.ExecuteStatementDirect(a);
 	udb.RetrieveResult();
@@ -149,7 +149,7 @@ void AcceptManager::ProcessAccept(AcceptEvent* acceptEvent)
 	// TODO
 	int32 sid = GetNewSessionIdx();
 	curAcceptCnt.fetch_add(1);
-	GIocpCore._clients.try_emplace(sid, session); // 세션 추가 후
+	GIocpCore._clients[sid] =  session; // 세션 추가 후
 
 	session->_sid = sid;
 	session->_status = STATUS::LOGIN;
@@ -159,6 +159,10 @@ void AcceptManager::ProcessAccept(AcceptEvent* acceptEvent)
 
 int32 AcceptManager::GetNewSessionIdx()
 {
+
+	for (int i = 0; i < 1000; ++i)
+	{
+		if (GIocpCore._clients[i] == nullptr) return i;
+	}
 	
-	return curAcceptCnt;
 }

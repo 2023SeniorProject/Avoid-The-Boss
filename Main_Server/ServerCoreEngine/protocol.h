@@ -6,7 +6,8 @@
 // 클라 -> 서버 패킷
 
 enum C_PACKET_TYPE : uint8 { ACQ_LOGIN = 101, ACQ_LOGOUT = 102, ACQ_REGISTER = 103, CCHAT = 104   };
-enum C_ROOM_PACKET_TYPE : uint8 { MK_RM = 115, DEL_RM = 116 , ENTER_RM = 117, EXIT_RM = 118}; // 방 생성, 방 삭제, 입장 , 종료 
+enum C_ROOM_PACKET_TYPE : uint8 { MK_RM = 115, ENTER_CRM = 116, EXIT_CRM = 117}; // 방 생성, 방 삭제, 입장 , 종료 
+enum S_ROOM_PACKET_TYPE : uint8 { RM_HIDE = 118, MK_RM_OK = 119, MK_RM_FAIL = 120, DEL_RM = 121, ENTER_SRM = 122, EXIT_SRM = 123 }; // 방 생성, 방 삭제, 입장 , 종료 
 enum S_PACKET_TYPE : uint8 { LOGIN_OK = 201,  LOGIN_FAIL = 202 , SCHAT = 203};
 
 
@@ -44,7 +45,20 @@ struct C2S_LOGOUT
 	int16 cid;
 };
 
-struct C2S_ROOM
+struct C2S_ROOM_CREATE
+{
+	uint8 size;
+	uint8 type;
+};
+
+struct C2S_ROOM_ENTER
+{
+	uint8 size;
+	uint8 type;
+	uint8 rmNum;
+};
+
+struct C2S_ROOM_EXIT
 {
 	uint8 size;
 	uint8 type;
@@ -90,5 +104,46 @@ struct S2C_MOVE
 	int16 cid;
 	int8 dir;
 	int64 pos_x, pos_y;
+};
+
+struct S2C_ROOM_CREATE_OK
+{
+	uint8 size;
+	uint8 type;
+	uint8 rmNum;
+};
+
+struct S2C_ROOM_CREATE_FAIL
+{
+	uint8 size;
+	uint8 type;
+};
+
+struct S2C_ROOM_ENTER
+{
+	uint8 size;
+	uint8 type;
+	uint8 success;
+};
+
+struct S2C_ROOM_EXIT
+{
+	uint8 size;
+	uint8 type;
+	uint8 rmNum;
+};
+
+struct S2C_ROOM
+{
+	uint8 size;
+	uint8 type;
+	uint8 rmNum;
+};
+
+struct S2C_HIDE_ROOM
+{
+	uint8 size;
+	uint8 type;
+	uint8 rmNum;
 };
 #pragma pack (pop)

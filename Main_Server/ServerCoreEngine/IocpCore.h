@@ -1,5 +1,6 @@
 #pragma once
 // Worker Thread 기능을 클래스로 랩핑
+#include <array>
 
 // IOCP에 등록할 수 있는 모든 오브젝트에 관해서 정의
 class IocpObject 
@@ -23,7 +24,8 @@ public:
 private:
 	HANDLE _hIocp = INVALID_HANDLE_VALUE;
 public:
-	unordered_map<int32, GameSession*> _clients;
+	USE_LOCK;
+	std::array<GameSession*, 1000> _clients;
 };
 
 extern IocpCore GIocpCore;

@@ -135,10 +135,13 @@ void GameSession::ProcessPacket(char* packet)
 			_CHAT np;
 			memcpy(&np, cp, sizeof(_CHAT));
 			np.type = SCHAT;
-			for (auto i : GIocpCore._clients)
+			for (int i = 0; i < 1000; ++i)
 			{
-				if (i.second->_cid == np.sid) continue;
-				i.second->DoSend(&np);
+				if (GIocpCore._clients[i] != nullptr)
+				{
+					if (GIocpCore._clients[i]->_cid == np.sid) continue;
+					GIocpCore._clients[i]->DoSend(&np);
+				}
 			}
 		}
 		break;

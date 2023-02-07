@@ -74,7 +74,9 @@ bool IocpCore::Processing(uint32_t time_limit) // worker thread 기능 완료된 비동
 
 void IocpCore::Disconnect(int32 sid)
 {
+	WRITE_LOCK;
 	cout << "[" << _clients[sid]->_cid << "] Disconnected" << endl;
 	delete _clients[sid];
-	_clients.erase(sid);
+	_clients[sid] = nullptr;
+	//_clients.erase(sid);
 }

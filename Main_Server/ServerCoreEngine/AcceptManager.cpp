@@ -153,11 +153,11 @@ void AcceptManager::ProcessAccept(AcceptEvent* acceptEvent)
 	{ // 맵에다 추가하는 파트 이므로 락 걸어준다.
 
 		WRITE_IOCP_LOCK;
-		GIocpCore._cList.insert(session->_cid);    // 클라이언트 아이디 추가
+		GIocpCore._cList.insert(sid);                 // 세션 id 추가
 		GIocpCore._clients.try_emplace(sid, session); // 세션 추가 후
 	}
 	session->_sid = sid;
-	session->_status = STATUS::LOBBY;
+	session->_status = USER_STATUS::LOBBY;
 	session->DoRecv();  // recv 상태로 만든다.
 	
 	RegisterAccept(acceptEvent); // 다시 acceptEvent를 등록한다.

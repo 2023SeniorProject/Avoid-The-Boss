@@ -36,33 +36,40 @@ void Room::UserIn(int16 sid)
 
 	S2C_ROOM_ENTER packet;
 	packet.size = sizeof(S2C_ROOM_ENTER);
-	packet.type = S_ROOM_PACKET_TYPE::ENTER_SRM;
+	packet.type = S_ROOM_PACKET_TYPE::REP_ENTER_RM;
 
-	// 현재 인원수가 4명이면 접속 실패 
-	if (_cList.size() >= 4)
+	// 비어있는 방 (만들어지지 않은 방) or 현재 인원수가 4명이면 접속 실패 
+	if (_cList.size() >= 4 || _status == ROOM_STATUS::EMPTY)
 	{
 		// enter fail
 		packet.success = 0;
 		GIocpCore._clients[sid]->DoSend(&packet);
 	}
-	else  // 아니면 접속 성공
+	else if(_cList.size() < 4 && _status != ROOM_STATUS::EMPTY) // 아니면 접속 성공
 	{
 		packet.success = 1;
-		_cList.push_back(sid);
+		{
+			WLock;
+			_cList.push_back(sid);
+		}
 		if (_cList.size() == 4) _status = ROOM_STATUS::FULL;
+		
+		GIocpCore._clients[sid]->_myRm = _num;
+		GIocpCore._clients[sid]->_status = USER_STATUS::ROOM;
 		GIocpCore._clients[sid]->DoSend(&packet);
-		GIocpCore._clients[sid]->_status = STATUS::ROOM;
+		
 	}
+	std::cout << "RM [" << _num << "][" << _cList.size() << "/4]" << std::endl;
 	// 갱신하는걸 보내줄지 말지 미정
 }
 
-template<class T>
-void Room::BroadCasting(T packet) // 방에 속하는 클라이언트에게만 전달하기
+
+void Room::BroadCasting(void* packet) // 방에 속하는 클라이언트에게만 전달하기
 {
 	RLock;
 	for (auto i : _cList)
 	{
-		GIocpCore._clients[i]->DoSend(&packet);
+		GIocpCore._clients[i]->DoSend(packet);
 	}
 }
 // ======= RoomManager ========
@@ -70,7 +77,11 @@ void Room::BroadCasting(T packet) // 방에 속하는 클라이언트에게만 전달하기
 // ============================
 void RoomManager::Init()
 {
-	for (int i = 0; i < _cap; ++i) _rooms[i]._num = i;
+	for (int i = 0; i < _cap; ++i)
+	{
+		_rooms[i]._cList.clear();
+		_rooms[i]._num = i;
+	}
 }
 
 void RoomManager::EnterRoom(int16 sid,int16 rmNum)
@@ -80,12 +91,21 @@ void RoomManager::EnterRoom(int16 sid,int16 rmNum)
 
 void RoomManager::CreateRoom(int16 sid)
 {
+	if (_rmCnt.load() >= _cap)
+	{
+		S2C_ROOM_CREATE packet;
+		packet.size = sizeof(S2C_ROOM_CREATE);
+		packet.type = S_ROOM_PACKET_TYPE::MK_RM_FAIL;
+		GIocpCore._clients[sid]->DoSend(&packet);
+		return;
+	}
 	for (int i = 0; i < 100; ++i)
 	{
 		if (_rooms[i]._status == ROOM_STATUS::EMPTY)
 		{
-			_rooms[i].UserIn(sid);
 			_rooms[i]._status = ROOM_STATUS::NOT_FULL;
+			_rooms[i].UserIn(sid);
+			_rmCnt.fetch_add(1);
 			break;
 		}
 	}

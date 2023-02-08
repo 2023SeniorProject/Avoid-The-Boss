@@ -9,7 +9,6 @@
 
 ClientManager cmgr;
 
-int32 ClientManager::_scene = 0;
 
 void SendThread()
 {
@@ -17,36 +16,60 @@ void SendThread()
 	char sendBuffer[100];
 	while (true)
 	{
-	
-		if (cmgr._clientSession._status.load() == STATUS::EMPTY) continue;
-		std::cin.getline(sendBuffer, 100);
-		cout << endl;
-		_CHAT chat_packet;
-		chat_packet.sid = (uint8)cmgr._clientSession._cid;
-		chat_packet.size = sizeof(_CHAT);
-		chat_packet.type = (uint8)C_PACKET_TYPE::CCHAT;
-		strcpy_s(chat_packet.buf, CHATBUF, sendBuffer);
-		chat_packet.buf[CHATBUF - 1] = '\0';
-		cmgr.DoSend(&chat_packet);
+		switch (cmgr._clientSession._curScene)
+		{
+		case 0:
+			{
+				int32 menu;
+				std::cout << "명령어(1: 방 생성 2: 방 입장): ";
+				std::cin >> menu;
+				
+				switch (menu)
+				{
+					case 1:
+					{
+						C2S_ROOM_CREATE packet;
+						packet.size = sizeof(C2S_ROOM_CREATE);
+						packet.type = C_ROOM_PACKET_TYPE::ACQ_MK_RM;
+						cmgr.DoSend(&packet);
+						break;
+					}
+					case 2:
+					{
+						uint16 num;
+						std::cout << std::endl;
+						std::cout << "방 번호 : ";
+						cin >> num;
+						C2S_ROOM_ENTER packet;
+						packet.size = sizeof(C2S_ROOM_ENTER);
+						packet.type = C_ROOM_PACKET_TYPE::ACQ_ENTER_RM;
+						packet.rmNum = num;
+						cmgr.DoSend(&packet);
+						break;
+					}
+				}
+
+				break;
+			}
+		case 1:
+			{
+				std::cin.getline(sendBuffer, 100);
+				_CHAT chat_packet;
+				chat_packet.cid = (uint8)cmgr._clientSession._cid;
+				chat_packet.size = sizeof(_CHAT);
+				chat_packet.type = (uint8)C_PACKET_TYPE::CCHAT;
+				strcpy_s(chat_packet.buf, CHATBUF, sendBuffer);
+				chat_packet.buf[CHATBUF - 1] = '\0';
+				cmgr.DoSend(&chat_packet);
+				break;
+			}
+		case 2:
+			{
+				break;
+			}
+
+		}
 		if (cmgr._clientSession._sock == INVALID_SOCKET) break;
-	}
-
-}
-
-void SceneThread()
-{
-	switch (ClientManager::_scene)
-	{
-		// 로비
-	case 0:
-		break;
-
-		// 방
-	case 1:
-		break;
-		// 게임
-	case 3:
-		break;
 	}
 }
 

@@ -46,9 +46,3 @@ void ClientManager::DoSend(void* packet)
 {
 	_clientSession.DoSend(packet);
 }
-
-// scene 바꾸는 함수
-void ClientManager::SetScene(int32 scene)
-{
-	_scene = scene;
-}

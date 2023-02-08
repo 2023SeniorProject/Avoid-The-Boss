@@ -5,7 +5,7 @@
 // 마찬가지로 Iocp에 등록할 대상이기 때문에 IocpObject에 해당된다
 
 
-enum class STATUS: int8 { EMPTY,LOBBY,ROOM,INGAME};
+enum class USER_STATUS: int8 { EMPTY,LOBBY,ROOM,INGAME};
 
 
 
@@ -27,9 +27,11 @@ public:
 	void ProcessPacket(char*);
 public:
 	int16 _cid = -1;
+	int16 _myRm = -1;
 	int16 _sid = -1;
 	int32 _prev_remain = 0;
-	Atomic<STATUS> _status = STATUS::EMPTY;
+	Atomic<USER_STATUS> _status = USER_STATUS::EMPTY;
+	int8 _curScene = 0;
 public:
 	SOCKET _sock = INVALID_SOCKET;
 	RecvEvent _rev;

@@ -124,31 +124,40 @@ void GameSession::ProcessPacket(char* packet)
 {
 	switch ((uint8)packet[1])
 	{
-		// === CLIENT PACKET ===
-	    //
-	    // ===               ===
+#pragma region CLIENT to SERVER PACKET
 		case C_PACKET_TYPE::CCHAT:
 		{
 
 			_CHAT* cp = reinterpret_cast<_CHAT*>(packet);
-			_CHAT np;
-			memcpy(&np, cp, sizeof(_CHAT));
-			np.type = SCHAT;
+		
+			cp->type = SCHAT;
 			READ_IOCP_LOCK;
-			for(auto& i : GIocpCore._clients)
+			/*for(auto& i : GIocpCore._clients)
 			{
-				if (i.second->_cid == np.sid) continue;
-				i.second->DoSend(&np);
-			}
+				if (i.second->_cid == cp->cid) continue;
+				i.second->DoSend(cp);
+			}*/
+			GIocpCore.rMgr->_rooms[_myRm].BroadCasting(cp);
 		}
 		break;
-		// === SERVER PACKET ===
-		//
-		// ===               ===
+		// ======== 방 시스템 패킷
+		case C_ROOM_PACKET_TYPE::ACQ_ENTER_RM:
+		{
+			C2S_ROOM_ENTER* rep = reinterpret_cast<C2S_ROOM_ENTER*>(packet);
+			GIocpCore.rMgr->EnterRoom(_sid,rep->rmNum);
+		}
+		break;
+		case C_ROOM_PACKET_TYPE::ACQ_MK_RM:
+		{
+			GIocpCore.rMgr->CreateRoom(_sid);
+		}
+		break;
+#pragma endregion
+#pragma region SERVER to CLIENT PACKET 
 		case S_PACKET_TYPE::SCHAT:
 		{
 			_CHAT* cp = reinterpret_cast<_CHAT*>(packet);
-			std::cout << "client[" << cp->sid << "] 's msg : " << cp->buf << std::endl;
+			std::cout << "client[" << cp->cid << "] 's msg : " << cp->buf << std::endl;
 		}
 		break;
 		case S_PACKET_TYPE::LOGIN_OK:
@@ -157,7 +166,7 @@ void GameSession::ProcessPacket(char* packet)
 			_cid = lo->cid;
 		
 			std::cout << "client[" << _cid << "] " << "Login Success" << std::endl;
-			_status = STATUS::LOBBY;
+			_status = USER_STATUS::LOBBY;
 		}
 		break;
 		case S_PACKET_TYPE::LOGIN_FAIL:
@@ -167,6 +176,26 @@ void GameSession::ProcessPacket(char* packet)
 			SocketUtil::Close(_sock);
 		}
 		break;
+        // ===== 방 관련 패킷 ============
+		case S_ROOM_PACKET_TYPE::REP_ENTER_RM:
+		{
+			S2C_ROOM_ENTER* re = (S2C_ROOM_ENTER*)packet;
+			if (re->success)
+			{
+				_curScene = 1;
+				_status = USER_STATUS::ROOM;
+				::system("cls");
+			}
+			else std::cout << "FAIL TO ENTER ROOM" << std::endl;
+ 		}
+		break;
+		case S_ROOM_PACKET_TYPE::MK_RM_FAIL:
+		{
+			std::cout << "Fail to Create Room!!(MAX_CAPACITY)" << std::endl;
+		}
+		break;
+
+#pragma endregion
 	}
 	DoRecv();
 }

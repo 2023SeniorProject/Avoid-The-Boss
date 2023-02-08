@@ -5,9 +5,9 @@
 #define CHATBUF 50
 // 클라 -> 서버 패킷
 
-enum C_PACKET_TYPE : uint8 { ACQ_LOGIN = 101, ACQ_LOGOUT = 102, ACQ_REGISTER = 103, CCHAT = 104   };
-enum C_ROOM_PACKET_TYPE : uint8 { MK_RM = 115, ENTER_CRM = 116, EXIT_CRM = 117}; // 방 생성, 방 삭제, 입장 , 종료 
-enum S_ROOM_PACKET_TYPE : uint8 { RM_HIDE = 118, MK_RM_OK = 119, MK_RM_FAIL = 120, DEL_RM = 121, ENTER_SRM = 122, EXIT_SRM = 123 }; // 방 생성, 방 삭제, 입장 , 종료 
+enum C_PACKET_TYPE : uint8 { ACQ_LOGIN = 101, ACQ_LOGOUT = 102, CCHAT = 103   };
+enum C_ROOM_PACKET_TYPE : uint8 { ACQ_MK_RM = 115, ACQ_ENTER_RM = 116, EXIT_CRM = 117}; // 방 생성, 방 삭제, 입장 , 종료 
+enum S_ROOM_PACKET_TYPE : uint8 { MK_RM_OK = 119, MK_RM_FAIL = 120, HIDE_RM = 121, REP_ENTER_RM = 122, REP_EXIT_RM = 123 }; // 방 생성, 방 삭제, 입장 , 종료 
 enum S_PACKET_TYPE : uint8 { LOGIN_OK = 201,  LOGIN_FAIL = 202 , SCHAT = 203};
 
 
@@ -17,7 +17,7 @@ struct _CHAT
 {
 	uint8 size;
 	uint8 type;
-	uint16 sid;
+	int16 cid;
 	char buf[CHATBUF];
 };
 
@@ -33,7 +33,7 @@ struct C2S_LOGOUT
 {
 	uint8 size;
 	uint8 type;
-	uint16 cid;
+	uint16 sid;
 };
 
 struct C2S_ROOM_CREATE
@@ -97,14 +97,7 @@ struct S2C_MOVE
 	int64 pos_x, pos_y;
 };
 
-struct S2C_ROOM_CREATE_OK
-{
-	uint8 size;
-	uint8 type;
-	uint8 rmNum;
-};
-
-struct S2C_ROOM_CREATE_FAIL
+struct S2C_ROOM_CREATE
 {
 	uint8 size;
 	uint8 type;

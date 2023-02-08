@@ -20,6 +20,7 @@ public:
 	template<class T>
 	void BroadCasting(T packet);
 public:
+	RWLOCK;
 	list<int16> _cList; // 방에 속해있는 클라이언트 리스트
 	int8 _status = ROOM_STATUS::EMPTY; // 방 상태
 	uint8 _num = 0;

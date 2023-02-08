@@ -50,17 +50,16 @@ bool IocpCore::Processing(uint32_t time_limit) // worker thread 기능 완료된 비동
 				// TODO : 로그 찍기
 			{
 				std::cout << ::WSAGetLastError() << std::endl;
-				
-				//iocpObject->Processing(iocpEvent, numOfBytes);
-				break;
+				GameSession* s = static_cast<GameSession*>(iocpObject);
+				Disconnect(s->_sid);
 			}
+			return false;
 		}
 	}
 	
 	if (numOfBytes == 0 && (iocpEvent->_comp == EventType::Recv || iocpEvent->_comp == EventType::Send))
 	{
 		//Disconnect
-		//disconnect(static_cast<int>(key));
 		GameSession* s = static_cast<GameSession*>(iocpObject);
 		Disconnect(s->_sid);
 		if (iocpEvent->_comp == EventType::Send) delete iocpEvent;
@@ -74,9 +73,9 @@ bool IocpCore::Processing(uint32_t time_limit) // worker thread 기능 완료된 비동
 
 void IocpCore::Disconnect(int32 sid)
 {
-	WRITE_LOCK;
+	WRITE_IOCP_LOCK;
 	cout << "[" << _clients[sid]->_cid << "] Disconnected" << endl;
+	_cList.erase(_clients[sid]->_cid);
 	delete _clients[sid];
-	_clients[sid] = nullptr;
-	//_clients.erase(sid);
+	_clients.erase(sid);
 }

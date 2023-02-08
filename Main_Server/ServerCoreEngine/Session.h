@@ -5,7 +5,7 @@
 // 마찬가지로 Iocp에 등록할 대상이기 때문에 IocpObject에 해당된다
 
 
-enum class STATUS: int8 { EMPTY, LOGIN, INGAME};
+enum class STATUS: int8 { EMPTY,LOBBY,ROOM,INGAME};
 
 
 
@@ -24,7 +24,7 @@ public:
 	void DoSend(void* packet);
 	void DoRecv();
 	void DoSendLoginPacket(bool isSuccess);
-	void ProcessPacket(char* packet);
+	void ProcessPacket(char*);
 public:
 	int16 _cid = -1;
 	int16 _sid = -1;
@@ -33,6 +33,6 @@ public:
 public:
 	SOCKET _sock = INVALID_SOCKET;
 	RecvEvent _rev;
-	USE_LOCK;
+	RWLOCK;
 };
 

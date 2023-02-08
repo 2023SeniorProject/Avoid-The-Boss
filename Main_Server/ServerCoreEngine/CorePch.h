@@ -17,6 +17,7 @@
 #include <unordered_map>
 #include <unordered_set>
 #include <algorithm>
+#include <shared_mutex>
 
 #include <iostream>
 #include <WinSock2.h>

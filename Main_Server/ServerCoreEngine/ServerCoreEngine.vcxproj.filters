@@ -54,9 +54,6 @@
     <ClInclude Include="SocketUtil.h">
       <Filter>Network</Filter>
     </ClInclude>
-    <ClInclude Include="protocol.h">
-      <Filter>Main</Filter>
-    </ClInclude>
     <ClInclude Include="DeadLockFinder.h">
       <Filter>Thread</Filter>
     </ClInclude>
@@ -92,6 +89,9 @@
     </ClInclude>
     <ClInclude Include="OBDC_MGR.h">
       <Filter>DB</Filter>
+    </ClInclude>
+    <ClInclude Include="protocol.h">
+      <Filter>IocpCore</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

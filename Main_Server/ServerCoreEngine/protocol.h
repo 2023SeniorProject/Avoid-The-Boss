@@ -17,7 +17,7 @@ struct _CHAT
 {
 	uint8 size;
 	uint8 type;
-	int16 sid;
+	uint16 sid;
 	char buf[CHATBUF];
 };
 
@@ -29,20 +29,11 @@ struct C2S_LOGIN
 	WCHAR pw[10];
 };
 
-struct C2S_REGISTER
-{
-	uint8 size;
-	uint8 type;
-	int8 name[10];
-	int32 pw;
-};
-
-
 struct C2S_LOGOUT
 {
 	uint8 size;
 	uint8 type;
-	int16 cid;
+	uint16 cid;
 };
 
 struct C2S_ROOM_CREATE

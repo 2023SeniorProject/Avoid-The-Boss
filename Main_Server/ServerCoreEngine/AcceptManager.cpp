@@ -30,7 +30,6 @@ void AcceptManager::Processing(IocpEvent* iocpEvent, int32 numOfBytes)
 }
 
 
-
 bool AcceptManager::InitAccept()
 {
 	_listenSock = SocketUtil::CreateSocket();
@@ -105,15 +104,16 @@ void LoginProcess(GameSession& s, wstring sqlexec)
 {
 	USER_DB_MANAGER udb;
 	udb.AllocateHandles();
-	udb.ConnectDataSource(L"USER_DB");
+	udb.ConnectDataSource(L"2023SENIORPROJECT");
 	const WCHAR* a = sqlexec.c_str();
 	udb.ExecuteStatementDirect(a);
 	udb.RetrieveResult();
 
-	wlock_guard writeLockGuard(s._locks[0]);
+	std::unique_lock<std::shared_mutex> wr(s._lock);
 	{
 		s._cid = udb.user_cid;
-		if (s._cid == -1)
+		auto i = GIocpCore._cList.find(s._cid);
+		if (s._cid == -1 ||  i != GIocpCore._cList.end())
 		{
 			cout << "LoginFail" << endl;
 			udb.DisconnectDataSource();
@@ -139,6 +139,7 @@ void AcceptManager::ProcessAccept(AcceptEvent* acceptEvent)
 	sqlExec += lp->pw;
 	LoginProcess(*session, sqlExec);
 	//클라이언트 소켓과 서버 리슨 소켓과 옵션을 동일하게 맞춰준다.
+	
 	if (false == SocketUtil::SetUpdateAcceptSocket(session->_sock, _listenSock))
 	{
 		RegisterAccept(acceptEvent);
@@ -149,20 +150,22 @@ void AcceptManager::ProcessAccept(AcceptEvent* acceptEvent)
 	// TODO
 	int32 sid = GetNewSessionIdx();
 	curAcceptCnt.fetch_add(1);
-	GIocpCore._clients[sid] =  session; // 세션 추가 후
+	{ // 맵에다 추가하는 파트 이므로 락 걸어준다.
 
+		WRITE_IOCP_LOCK;
+		GIocpCore._cList.insert(session->_cid);    // 클라이언트 아이디 추가
+		GIocpCore._clients.try_emplace(sid, session); // 세션 추가 후
+	}
 	session->_sid = sid;
-	session->_status = STATUS::LOGIN;
+	session->_status = STATUS::LOBBY;
 	session->DoRecv();  // recv 상태로 만든다.
+	
 	RegisterAccept(acceptEvent); // 다시 acceptEvent를 등록한다.
 }
 
 int32 AcceptManager::GetNewSessionIdx()
 {
 
-	for (int i = 0; i < 1000; ++i)
-	{
-		if (GIocpCore._clients[i] == nullptr) return i;
-	}
+	return curAcceptCnt.load();
 	
 }

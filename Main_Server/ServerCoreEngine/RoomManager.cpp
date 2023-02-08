@@ -8,8 +8,12 @@
 
 void Room::UserOut(int16 sid)
 {
-	auto i = std::find(_cList.begin(),_cList.end(), sid); // 리스트에 있는지 탐색 후
-	if(i != _cList.end()) _cList.erase(i); // 리스트에서 제거
+	{
+		WLock;
+		auto i = std::find(_cList.begin(), _cList.end(), sid); // 리스트에 있는지 탐색 후
+		if (i != _cList.end()) _cList.erase(i); // 리스트에서 제거	
+	}
+
 	if (!_cList.size())
 	{
 		_status = ROOM_STATUS::EMPTY;
@@ -17,9 +21,12 @@ void Room::UserOut(int16 sid)
 		packet.size = sizeof(S2C_HIDE_ROOM);
 		packet.rmNum = _num;
 		// 업데이트 리스트를 보내준다. ==> 빈방이므로 더 이상 표시 X
-		for (auto i : GIocpCore._clients)
 		{
-			i->DoSend(&packet);
+			READ_IOCP_LOCK;
+			for (auto i : GIocpCore._clients)
+			{
+				i.second->DoSend(&packet);
+			}
 		}
 	}
 }
@@ -44,6 +51,7 @@ void Room::UserIn(int16 sid)
 		_cList.push_back(sid);
 		if (_cList.size() == 4) _status = ROOM_STATUS::FULL;
 		GIocpCore._clients[sid]->DoSend(&packet);
+		GIocpCore._clients[sid]->_status = STATUS::ROOM;
 	}
 	// 갱신하는걸 보내줄지 말지 미정
 }
@@ -51,9 +59,10 @@ void Room::UserIn(int16 sid)
 template<class T>
 void Room::BroadCasting(T packet) // 방에 속하는 클라이언트에게만 전달하기
 {
+	RLock;
 	for (auto i : _cList)
 	{
-		GIocpCore._clients[*i]->DoSend(&packet);
+		GIocpCore._clients[i]->DoSend(&packet);
 	}
 }
 // ======= RoomManager ========

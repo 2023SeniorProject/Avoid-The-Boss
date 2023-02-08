@@ -28,7 +28,7 @@ void SendThread()
 		strcpy_s(chat_packet.buf, CHATBUF, sendBuffer);
 		chat_packet.buf[CHATBUF - 1] = '\0';
 		cmgr.DoSend(&chat_packet);
-	
+		if (cmgr._clientSession._sock == INVALID_SOCKET) break;
 	}
 
 }
@@ -71,7 +71,7 @@ int main()
 		{
 			while (true)
 			{
-				ClientIocpCore.Processing(); 
+				if(!ClientIocpCore.Processing()) break; 
 				//기존 게임 서버 프로그래밍 Worker Thread에 해당하는 부분
 			}
 		});

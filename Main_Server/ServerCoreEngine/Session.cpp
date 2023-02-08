@@ -33,9 +33,8 @@ void GameSession::Processing(IocpEvent* iocpEvent, int32 numOfBytes)
 		break;
 	case EventType::Recv:
 		{
+			WLock;
 			RecvEvent* rev = static_cast<RecvEvent*>(iocpEvent);
-			WRITE_LOCK;
-			
 			int remain_data = numOfBytes + _prev_remain;
 			char* p = rev->_rbuf;
 			while (remain_data > 0)
@@ -135,13 +134,11 @@ void GameSession::ProcessPacket(char* packet)
 			_CHAT np;
 			memcpy(&np, cp, sizeof(_CHAT));
 			np.type = SCHAT;
-			for (int i = 0; i < 1000; ++i)
+			READ_IOCP_LOCK;
+			for(auto& i : GIocpCore._clients)
 			{
-				if (GIocpCore._clients[i] != nullptr)
-				{
-					if (GIocpCore._clients[i]->_cid == np.sid) continue;
-					GIocpCore._clients[i]->DoSend(&np);
-				}
+				if (i.second->_cid == np.sid) continue;
+				i.second->DoSend(&np);
 			}
 		}
 		break;
@@ -160,7 +157,7 @@ void GameSession::ProcessPacket(char* packet)
 			_cid = lo->cid;
 		
 			std::cout << "client[" << _cid << "] " << "Login Success" << std::endl;
-			_status = STATUS::LOGIN;
+			_status = STATUS::LOBBY;
 		}
 		break;
 		case S_PACKET_TYPE::LOGIN_FAIL:

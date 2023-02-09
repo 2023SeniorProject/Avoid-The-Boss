@@ -32,6 +32,10 @@
 #include <DXGIDebug.h>
 #include <D3d12SDKLayers.h>
 
+
+#include <ppltasks.h>
+
+
 //----DirectXMath 라이브러리
 #include <DirectXMath.h> //벡터 행렬 관련 함수,구조체,클래스 제공
 #include <DirectXPackedVector.h>//벡터 관련 패킹된 구조체 제공

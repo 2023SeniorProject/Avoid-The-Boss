@@ -263,12 +263,12 @@ void CObjectsShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsComman
 {
 	//1.0f = 1cm / 100.0f = 1m
 	float TileSize = (float) 1 * UNIT;
-	float Width = 60 * UNIT;
-	float Depth = 60 * UNIT;
+	float Width = 90 * UNIT;
+	float Depth = 90 * UNIT;
 	int nWidth = (int)Width / TileSize;
 	int nDepth = (int)Depth / TileSize;
 
-	m_nObjects = nWidth * nDepth + 14;
+	m_nObjects = nWidth * nDepth + 5 + 9;// +6;
 	m_ppObjects = new CGameObject * [m_nObjects];
 
 	CRectangleMesh* pRect = new CRectangleMesh(pd3dDevice, pd3dCommandList, TileSize, TileSize, 1.0f);
@@ -286,8 +286,8 @@ void CObjectsShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsComman
 		}
 	}
 	//------ 공장 벽 생성 5개
-	int WarehouseSizeXZ = 30;
-	int WarehouseSizeY = 20;
+	int WarehouseSizeXZ = 60;
+	int WarehouseSizeY = 60;
 
 	CCubeMeshDiffused* pSideXWall = new CCubeMeshDiffused(pd3dDevice, pd3dCommandList,1 * UNIT, WarehouseSizeY * UNIT, WarehouseSizeXZ * UNIT);
 	CCubeMeshDiffused* pSideZWall = new CCubeMeshDiffused(pd3dDevice, pd3dCommandList, WarehouseSizeXZ * UNIT, WarehouseSizeY * UNIT, 1 * UNIT);
@@ -310,18 +310,30 @@ void CObjectsShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsComman
 
 	//------- 공장 기둥 생성 9개
 	CCubeMeshDiffused* pRod = new CCubeMeshDiffused(pd3dDevice, pd3dCommandList, 1 * UNIT, WarehouseSizeY * UNIT, 1 * UNIT);
-	float w = WarehouseSizeXZ / 2 * UNIT;
-	float d = WarehouseSizeXZ / 2 * UNIT;
+	float l = WarehouseSizeXZ / 2 * UNIT;
 
-	for (float x = -w / 2; x <= w / 2; x += w/2)
+	for (float x = -l / 2; x <= l / 2; x += l/2)
 	{
-		for (float z = -d / 2; z <= d / 2; z += d/2)
+		for (float z = -l / 2; z <= l / 2; z += l/2)
 		{
 			CGameObject* pPillar = new CGameObject(1);
 			pPillar->SetObjectInWorld(m_ppObjects, i++, XMFLOAT3(x, (WarehouseSizeY / 2 - 0.1f) * UNIT, z), pRod, 0);
 		}
 	}
 	
+	/*//------ 소량 택배 선반 6개
+	float tem = (float)(l / 2) * (float)(1 / 3);
+	float blockHeight = 2.5f;
+	CCubeMeshDiffused* pBlock = new CCubeMeshDiffused(pd3dDevice, pd3dCommandList, (tem-0.3f) * UNIT, blockHeight * UNIT, 1 * UNIT);
+	for (float x = tem; x < tem*3; x += tem)
+	{
+		for (float z = l/2-tem; z <= l/2+tem; z += tem)
+		{
+			CGameObject* pShelf = new CGameObject(1);
+			pShelf->SetObjectInWorld(m_ppObjects, i++, XMFLOAT3(x, (blockHeight/2-0.1f) * UNIT, z), pBlock, 0);
+		}
+	}*/
+
 	CreateShaderVariables(pd3dDevice, pd3dCommandList);
 }
 
@@ -348,8 +360,7 @@ void CObjectsShader::ReleaseObjects()
 D3D12_INPUT_LAYOUT_DESC CObjectsShader::CreateInputLayout()
 {
 	UINT nInputElementDescs = 2;
-	D3D12_INPUT_ELEMENT_DESC* pd3dInputElementDescs = new
-		D3D12_INPUT_ELEMENT_DESC[nInputElementDescs];
+	D3D12_INPUT_ELEMENT_DESC* pd3dInputElementDescs = new D3D12_INPUT_ELEMENT_DESC[nInputElementDescs];
 
 	pd3dInputElementDescs[0] = { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0,
 	D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 };
@@ -364,14 +375,12 @@ D3D12_INPUT_LAYOUT_DESC CObjectsShader::CreateInputLayout()
 
 D3D12_SHADER_BYTECODE CObjectsShader::CreateVertexShader(ID3DBlob** ppd3dShaderBlob)
 {
-	return(CShader::CompileShaderFromFile(L"C:\\Users\\aeiou\\Desktop\\SeniorProject\\Avoid-The-Boss\\Senior_project_ver2\\Shaders.hlsl", "VSDiffused", "vs_5_1",
-		ppd3dShaderBlob));
+	return(CShader::CompileShaderFromFile(L"C:\\Users\\aeiou\\Desktop\\SeniorProject\\Avoid-The-Boss\\Senior_project_ver2\\Shaders.hlsl", "VSDiffused", "vs_5_1", ppd3dShaderBlob));
 }
 
 D3D12_SHADER_BYTECODE CObjectsShader::CreatePixelShader(ID3DBlob** ppd3dShaderBlob)
 {
-	return(CShader::CompileShaderFromFile(L"C:\\Users\\aeiou\\Desktop\\SeniorProject\\Avoid-The-Boss\\Senior_project_ver2\\Shaders.hlsl", "PSDiffused", "ps_5_1",
-		ppd3dShaderBlob));
+	return(CShader::CompileShaderFromFile(L"C:\\Users\\aeiou\\Desktop\\SeniorProject\\Avoid-The-Boss\\Senior_project_ver2\\Shaders.hlsl", "PSDiffused", "ps_5_1", ppd3dShaderBlob));
 }
 
 void CObjectsShader::CreateShader(ID3D12Device* pd3dDevice, ID3D12RootSignature* pd3dGraphicsRootSignature)
@@ -429,14 +438,12 @@ D3D12_INPUT_LAYOUT_DESC CLandShader::CreateInputLayout()
 
 D3D12_SHADER_BYTECODE CLandShader::CreateVertexShader(ID3DBlob** ppd3dShaderBlob)
 {
-	return(CShader::CompileShaderFromFile(L"C:\\Users/\\aeiou\\Desktop\\SeniorProject\\Avoid-The-Boss\\Senior_project_ver2\\Shaders.hlsl", "VSDiffused", "vs_5_1",
-		ppd3dShaderBlob));
+	return(CShader::CompileShaderFromFile(L"C:\\Users/\\aeiou\\Desktop\\SeniorProject\\Avoid-The-Boss\\Senior_project_ver2\\Shaders.hlsl", "VSDiffused", "vs_5_1", ppd3dShaderBlob));
 }
 
 D3D12_SHADER_BYTECODE CLandShader::CreatePixelShader(ID3DBlob** ppd3dShaderBlob)
 {
-	return(CShader::CompileShaderFromFile(L"C:\\Users/\\aeiou\\Desktop\\SeniorProject\\Avoid-The-Boss\\Senior_project_ver2\\Shaders.hlsl", "PSDiffused", "ps_5_1",
-		ppd3dShaderBlob));
+	return(CShader::CompileShaderFromFile(L"C:\\Users/\\aeiou\\Desktop\\SeniorProject\\Avoid-The-Boss\\Senior_project_ver2\\Shaders.hlsl", "PSDiffused", "ps_5_1", ppd3dShaderBlob));
 }
 
 void CLandShader::CreateShader(ID3D12Device* pd3dDevice, ID3D12RootSignature* pd3dGraphicsRootSignature)
@@ -459,8 +466,8 @@ D3D12_INPUT_LAYOUT_DESC CRectShader::CreateInputLayout()
 {
 	UINT nInputElemetDescs = 2;
 	D3D12_INPUT_ELEMENT_DESC* pd3InputElemetDescs = new D3D12_INPUT_ELEMENT_DESC[nInputElemetDescs];
-	pd3InputElemetDescs[0] = { "POSITION",0,DXGI_FORMAT_R32G32B32_FLOAT,0,0,D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA,0 };
-	pd3InputElemetDescs[1] = { "COLOR",0,DXGI_FORMAT_R32G32B32A32_FLOAT,0,12,D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA,0 };
+	pd3InputElemetDescs[0] = { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 };
+	pd3InputElemetDescs[1] = { "COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 12, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 };
 
 	D3D12_INPUT_LAYOUT_DESC d3dInputLayoutDesc;
 	d3dInputLayoutDesc.pInputElementDescs = pd3InputElemetDescs;

@@ -78,6 +78,7 @@ struct S2C_LOGIN_OK
 	uint8 size;
 	uint8 type;
 	int16 cid;
+	int16 sid;
 };
 
 struct S2C_LOGIN_FAIL

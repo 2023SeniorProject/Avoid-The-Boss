@@ -115,6 +115,7 @@ void ServerSession::DoSendLoginPacket(bool isSuccess)
 		loginOkPacket.size = sizeof(S2C_LOGIN_OK);
 		loginOkPacket.type = S_PACKET_TYPE::LOGIN_OK;
 		loginOkPacket.cid = _cid;
+		loginOkPacket.sid = _sid;
 		DoSend(&loginOkPacket);
 	}
 	else
@@ -138,7 +139,7 @@ void ServerSession::ProcessPacket(char* packet)
 			_CHAT  np;
 			memcpy(&np, cp, sizeof(_CHAT));
 			np.type = S_PACKET_TYPE::SCHAT;
-			READ_IOCP_LOCK;
+			READ_SERVER_LOCK;
 			ServerIocpCore._rmgr->_rooms[_myRm].BroadCasting(&np);
 		}
 		break;
@@ -307,7 +308,7 @@ void ClientSession::ProcessPacket(char* packet)
 {
 	switch ((uint8)packet[1])
 	{
-#pragma region SERVER to CLIENT PACKET 
+
 		case S_PACKET_TYPE::SCHAT:
 		{
 			_CHAT* cp = reinterpret_cast<_CHAT*>(packet);
@@ -318,9 +319,9 @@ void ClientSession::ProcessPacket(char* packet)
 		{
 			S2C_LOGIN_OK* lo = (S2C_LOGIN_OK*)packet;
 			_cid = lo->cid;
-
-			std::cout << "client[" << _cid << "] " << "Login Success" << std::endl;
+			_sid = lo->sid;
 			_status = USER_STATUS::LOBBY;
+			_curScene = 0;
 		}
 		break;
 		case S_PACKET_TYPE::LOGIN_FAIL:
@@ -348,7 +349,6 @@ void ClientSession::ProcessPacket(char* packet)
 			std::cout << "Fail to Create Room!!(MAX_CAPACITY)" << std::endl;
 		}
 		break;
-#pragma endregion
 	}
 	DoRecv();
 }

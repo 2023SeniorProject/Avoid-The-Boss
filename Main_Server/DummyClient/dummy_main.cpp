@@ -11,9 +11,11 @@ void SendThread()
 {
 	
 	char sendBuffer[100];
-	while (true)
+	Atomic<bool> IsErrorOccur = true;
+	while (IsErrorOccur)
 	{
-		if (ClientIocpCore._client->_curScene != 1)
+		if (ClientIocpCore._client->_status == USER_STATUS::EMPTY) continue;
+		if (ClientIocpCore._client->_curScene == 0)
 		{
 			int32 menu;
 			std::cout << "명령어(1: 방 생성 2: 방 입장): ";
@@ -27,7 +29,10 @@ void SendThread()
 					C2S_ROOM_CREATE packet;
 					packet.size = sizeof(C2S_ROOM_CREATE);
 					packet.type = C_ROOM_PACKET_TYPE::ACQ_MK_RM;
-					ClientIocpCore._client->DoSend(&packet);
+					if (!ClientIocpCore._client->DoSend(&packet))
+					{
+						IsErrorOccur.store(false);
+					}
 					break;
 				}
 				case 2:
@@ -40,13 +45,16 @@ void SendThread()
 					packet.size = sizeof(C2S_ROOM_ENTER);
 					packet.type = C_ROOM_PACKET_TYPE::ACQ_ENTER_RM;
 					packet.rmNum = num;
-					ClientIocpCore._client->DoSend(&packet);
+					if (!ClientIocpCore._client->DoSend(&packet))
+					{
+						IsErrorOccur.store(false);
+					}
 					break;
 				}
 			}
 			::system("cls");
 		}
-		else 
+		else if(ClientIocpCore._client->_curScene > 0)
 		{
 			std::cin.getline(sendBuffer, 100);
 			_CHAT chat_packet;

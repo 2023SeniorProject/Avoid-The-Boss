@@ -22,7 +22,7 @@ void Room::UserOut(int16 sid)
 		packet.rmNum = _num;
 		// 업데이트 리스트를 보내준다. ==> 빈방이므로 더 이상 표시 X
 		{
-			READ_IOCP_LOCK;
+			READ_SERVER_LOCK;
 			for (auto i : ServerIocpCore._clients)
 			{
 				i.second->DoSend(&packet);
@@ -39,21 +39,21 @@ void Room::UserIn(int16 sid)
 	packet.type = S_ROOM_PACKET_TYPE::REP_ENTER_RM;
 
 	// 비어있는 방 (만들어지지 않은 방) or 현재 인원수가 4명이면 접속 실패 
-	if (_cList.size() >= 4 || _status == ROOM_STATUS::EMPTY)
+	if (_cList.size() >= MAX_ROOM_USER || _status == ROOM_STATUS::EMPTY)
 	{
 		// enter fail
 		packet.success = 0;
 		ServerIocpCore._clients[sid]->DoSend(&packet);
 	}
-	else if(_cList.size() < 4 && _status != ROOM_STATUS::EMPTY) // 아니면 접속 성공
+	else if(_cList.size() < MAX_ROOM_USER && _status != ROOM_STATUS::EMPTY) // 아니면 접속 성공
 	{
 		packet.success = 1;
 		{
 			WLock;
 			_cList.push_back(sid);
+			if (_cList.size() == 4) _status = ROOM_STATUS::FULL;
 		}
-		if (_cList.size() == 4) _status = ROOM_STATUS::FULL;
-		
+			
 		ServerIocpCore._clients[sid]->_myRm = _num;
 		ServerIocpCore._clients[sid]->_status = USER_STATUS::ROOM;
 		ServerIocpCore._clients[sid]->DoSend(&packet);
@@ -67,12 +67,16 @@ void Room::UserIn(int16 sid)
 void Room::BroadCasting(void* packet) // 방에 속하는 클라이언트에게만 전달하기
 {
 	RLock;
-	for (auto i : _cList)
+	for (auto i =  _cList.begin(); i != _cList.end(); ++i)
 	{
-		std::cout << i << std::endl;
-		if(!ServerIocpCore._clients[i]->DoSend(packet))
+		if (ServerIocpCore._clients[*i] == nullptr)
+		{
+			continue;
+		}
+		if(!ServerIocpCore._clients[*i]->DoSend(packet))
 		{ 
 			// 비정상 접속 클라이언트 처리
+			cout << *i << "Client Error Occur" << endl;
 			continue;
 		}
 	}

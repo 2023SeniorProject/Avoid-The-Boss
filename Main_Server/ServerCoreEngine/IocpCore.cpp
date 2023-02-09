@@ -49,6 +49,7 @@ bool IocpCore::Processing(uint32_t time_limit) // worker thread 기능 완료된 비동
 		switch (errCode)
 		{
 			case WAIT_TIMEOUT: // time_limit이 INFINITE가 아닌 경우 ==> 나중에 다중 접속 시, 접속 시간에 따라 지정 가능
+				std::cout << "Time Out Plz Check Your Network Condition" << std::endl;
 				return false;
 			default:
 				// TODO : 로그 찍기
@@ -60,7 +61,7 @@ bool IocpCore::Processing(uint32_t time_limit) // worker thread 기능 완료된 비동
 			return false;
 		}
 	}
-	
+	// 클라이언트가 정상적으로 종료한 경우
 	if (numOfBytes == 0 && (iocpEvent->_comp == EventType::Recv || iocpEvent->_comp == EventType::Send))
 	{
 		//Disconnect

@@ -16,8 +16,8 @@
 
 #define RWLOCK std::shared_mutex _lock;
 #define RWLOCKS(count) std::shared_mutex _lock[count];
-#define READ_IOCP_LOCK std::shared_lock<std::shared_mutex> rl(ServerIocpCore._lock);
-#define WRITE_IOCP_LOCK std::unique_lock<std::shared_mutex> wr(ServerIocpCore._lock);
+#define READ_SERVER_LOCK std::shared_lock<std::shared_mutex> rl(ServerIocpCore._lock);
+#define WRITE_SERVER_LOCK std::unique_lock<std::shared_mutex> wr(ServerIocpCore._lock);
 #define RLock  std::shared_lock<std::shared_mutex> rl(_lock);
 #define WLock  std::unique_lock<std::shared_mutex> wr(_lock);
 

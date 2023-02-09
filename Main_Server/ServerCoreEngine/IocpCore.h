@@ -35,7 +35,7 @@ public:
 public:
 	RWLOCK;
 	unordered_map<int32, ServerSession*> _clients;
-	std::set<uint16> _cList;
+	std::set<int16> _cList;
 	RoomManager* _rmgr;
 };
 

@@ -137,6 +137,9 @@ void AcceptManager::ProcessAccept(AcceptEvent* acceptEvent)
 	sqlExec += lp->name;
 	sqlExec += L", ";
 	sqlExec += lp->pw;
+
+	int32 sid = GetNewSessionIdx();
+	session->_sid = sid;
 	LoginProcess(*session, sqlExec);
 	//클라이언트 소켓과 서버 리슨 소켓과 옵션을 동일하게 맞춰준다.
 	
@@ -148,15 +151,15 @@ void AcceptManager::ProcessAccept(AcceptEvent* acceptEvent)
 
 	// 클라이언트 ID 셋팅 or unordered_map 컨테이너에 담는다.
 	// TODO
-	int32 sid = GetNewSessionIdx();
+	
 	curAcceptCnt.fetch_add(1);
 	{ // 맵에다 추가하는 파트 이므로 락 걸어준다.
 
-		WRITE_IOCP_LOCK;
+		WRITE_SERVER_LOCK;
 		ServerIocpCore._cList.insert(sid);                 // 세션 id 추가
 		ServerIocpCore._clients.try_emplace(sid, session); // 세션 추가 후
 	}
-	session->_sid = sid;
+	
 	session->_status = USER_STATUS::LOBBY;
 	session->DoRecv();  // recv 상태로 만든다.
 	

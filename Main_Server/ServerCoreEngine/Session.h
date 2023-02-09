@@ -37,6 +37,7 @@ public:
 	SOCKET _sock = INVALID_SOCKET;
 	RecvEvent _rev;
 	RWLOCK;
+
 };
 
 class ClientSession : public IocpObject

@@ -2,7 +2,7 @@
 #include "IocpCore.h"
 #include "Session.h"
 
-class GameSession;
+class ServerSession;
 
 class ClientManager //:public IocpObject
 {
@@ -16,8 +16,6 @@ public:
 	void DoSend(void* packet);
 public:
 	SOCKADDR_IN _serveraddr;
-	GameSession _clientSession;
-	
-	
+	ServerSession _clientSession;
 };
 

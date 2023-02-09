@@ -23,7 +23,7 @@ void Room::UserOut(int16 sid)
 		// 업데이트 리스트를 보내준다. ==> 빈방이므로 더 이상 표시 X
 		{
 			READ_IOCP_LOCK;
-			for (auto i : GIocpCore._clients)
+			for (auto i : ServerIocpCore._clients)
 			{
 				i.second->DoSend(&packet);
 			}
@@ -43,7 +43,7 @@ void Room::UserIn(int16 sid)
 	{
 		// enter fail
 		packet.success = 0;
-		GIocpCore._clients[sid]->DoSend(&packet);
+		ServerIocpCore._clients[sid]->DoSend(&packet);
 	}
 	else if(_cList.size() < 4 && _status != ROOM_STATUS::EMPTY) // 아니면 접속 성공
 	{
@@ -54,9 +54,9 @@ void Room::UserIn(int16 sid)
 		}
 		if (_cList.size() == 4) _status = ROOM_STATUS::FULL;
 		
-		GIocpCore._clients[sid]->_myRm = _num;
-		GIocpCore._clients[sid]->_status = USER_STATUS::ROOM;
-		GIocpCore._clients[sid]->DoSend(&packet);
+		ServerIocpCore._clients[sid]->_myRm = _num;
+		ServerIocpCore._clients[sid]->_status = USER_STATUS::ROOM;
+		ServerIocpCore._clients[sid]->DoSend(&packet);
 		
 	}
 	std::cout << "RM [" << _num << "][" << _cList.size() << "/4]" << std::endl;
@@ -69,7 +69,12 @@ void Room::BroadCasting(void* packet) // 방에 속하는 클라이언트에게만 전달하기
 	RLock;
 	for (auto i : _cList)
 	{
-		GIocpCore._clients[i]->DoSend(packet);
+		std::cout << i << std::endl;
+		if(!ServerIocpCore._clients[i]->DoSend(packet))
+		{ 
+			// 비정상 접속 클라이언트 처리
+			continue;
+		}
 	}
 }
 // ======= RoomManager ========
@@ -96,7 +101,7 @@ void RoomManager::CreateRoom(int16 sid)
 		S2C_ROOM_CREATE packet;
 		packet.size = sizeof(S2C_ROOM_CREATE);
 		packet.type = S_ROOM_PACKET_TYPE::MK_RM_FAIL;
-		GIocpCore._clients[sid]->DoSend(&packet);
+		ServerIocpCore._clients[sid]->DoSend(&packet);
 		return;
 	}
 	for (int i = 0; i < 100; ++i)

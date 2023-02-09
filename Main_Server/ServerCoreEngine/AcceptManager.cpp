@@ -36,7 +36,7 @@ bool AcceptManager::InitAccept()
 	if (_listenSock == INVALID_SOCKET)
 		return false;
 
-	if (GIocpCore.Register(this) == false)
+	if (ServerIocpCore.Register(this) == false)
 		return false;
 
 	if (SocketUtil::SetReuseAddress(_listenSock, true) == false) // 재사용 가능한 주소인지 확인
@@ -70,7 +70,7 @@ void AcceptManager::CloseSocket()
 // SocketUtil::AcceptEx를 여기서 사용할 것임.
 void AcceptManager::RegisterAccept(AcceptEvent* acceptEvent)
 {
-	GameSession* session = new GameSession();
+	ServerSession* session = new ServerSession();
 
 	// 나중에 어떤 세션에 관해 이를 진행했는지 알 수 있기 위해서 acceptEvent에 세션을 포함해서 넘겨주도록 한다.
 	acceptEvent->Init();
@@ -100,7 +100,7 @@ void AcceptManager::RegisterAccept(AcceptEvent* acceptEvent)
 }
 
 
-void LoginProcess(GameSession& s, wstring sqlexec)
+void LoginProcess(ServerSession& s, wstring sqlexec)
 {
 	USER_DB_MANAGER udb;
 	udb.AllocateHandles();
@@ -112,8 +112,8 @@ void LoginProcess(GameSession& s, wstring sqlexec)
 	std::unique_lock<std::shared_mutex> wr(s._lock);
 	{
 		s._cid = udb.user_cid;
-		auto i = GIocpCore._cList.find(s._cid);
-		if (s._cid == -1 ||  i != GIocpCore._cList.end())
+		auto i = ServerIocpCore._cList.find(s._cid);
+		if (s._cid == -1 ||  i != ServerIocpCore._cList.end())
 		{
 			cout << "LoginFail" << endl;
 			udb.DisconnectDataSource();
@@ -129,8 +129,8 @@ void LoginProcess(GameSession& s, wstring sqlexec)
 // Accept 처리 완료 시 , 후처리를 진행한다. callBack 처리
 void AcceptManager::ProcessAccept(AcceptEvent* acceptEvent)
 {
-	GameSession* session = acceptEvent->_session; // 복원된 세션을 가져온다.
-	ASSERT_CRASH(GIocpCore.Register(session)); // iocp핸들에 소켓 등록
+	ServerSession* session = acceptEvent->_session; // 복원된 세션을 가져온다.
+	ASSERT_CRASH(ServerIocpCore.Register(session)); // iocp핸들에 소켓 등록
 	C2S_LOGIN* lp = reinterpret_cast<C2S_LOGIN*>(acceptEvent->_buf);
 	
 	wstring sqlExec(L"EXEC search_user_db ");
@@ -153,8 +153,8 @@ void AcceptManager::ProcessAccept(AcceptEvent* acceptEvent)
 	{ // 맵에다 추가하는 파트 이므로 락 걸어준다.
 
 		WRITE_IOCP_LOCK;
-		GIocpCore._cList.insert(sid);                 // 세션 id 추가
-		GIocpCore._clients.try_emplace(sid, session); // 세션 추가 후
+		ServerIocpCore._cList.insert(sid);                 // 세션 id 추가
+		ServerIocpCore._clients.try_emplace(sid, session); // 세션 추가 후
 	}
 	session->_sid = sid;
 	session->_status = USER_STATUS::LOBBY;

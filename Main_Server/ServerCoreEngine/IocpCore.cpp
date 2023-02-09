@@ -2,25 +2,25 @@
 #include "IocpCore.h"
 #include "IocpEvent.h"
 #include "Session.h"
+#include "SocketUtil.h"
 
+SIocpCore ServerIocpCore;
 
-IocpCore GIocpCore;
-
-IocpCore ClientIocpCore;
+CIocpCore ClientIocpCore;
 
 
 IocpCore::IocpCore()
 {
 	_hIocp = ::CreateIoCompletionPort(INVALID_HANDLE_VALUE, 0, 0, 0); // iocp 핸들 생성
-	rMgr = new RoomManager();
-	rMgr->Init();
+	//rMgr = new RoomManager();
+	//rMgr->Init();
 	ASSERT_CRASH(_hIocp != INVALID_HANDLE_VALUE); 
 }
 
 IocpCore::~IocpCore()
 {
 	::CloseHandle(_hIocp);
-	delete rMgr;
+	//delete rMgr;
 }
 
 // 보통은 클라이언트 소켓을 받아 이를 적용했다.
@@ -54,7 +54,7 @@ bool IocpCore::Processing(uint32_t time_limit) // worker thread 기능 완료된 비동
 				// TODO : 로그 찍기
 			{
 				std::cout << ::WSAGetLastError() << std::endl;
-				GameSession* s = static_cast<GameSession*>(iocpObject);
+				ServerSession* s = static_cast<ServerSession*>(iocpObject);
 				Disconnect(s->_sid);
 			}
 			return false;
@@ -64,7 +64,7 @@ bool IocpCore::Processing(uint32_t time_limit) // worker thread 기능 완료된 비동
 	if (numOfBytes == 0 && (iocpEvent->_comp == EventType::Recv || iocpEvent->_comp == EventType::Send))
 	{
 		//Disconnect
-		GameSession* s = static_cast<GameSession*>(iocpObject);
+		ServerSession* s = static_cast<ServerSession*>(iocpObject);
 		Disconnect(s->_sid);
 		if (iocpEvent->_comp == EventType::Send) delete iocpEvent;
 		return false;
@@ -77,9 +77,78 @@ bool IocpCore::Processing(uint32_t time_limit) // worker thread 기능 완료된 비동
 
 void IocpCore::Disconnect(int32 sid)
 {
-	WRITE_IOCP_LOCK;
+}
+
+SIocpCore::SIocpCore()
+{
+	_rmgr = new RoomManager();
+	_rmgr->Init();
+}
+
+SIocpCore::~SIocpCore()
+{
+	delete _rmgr;
+}
+
+void SIocpCore::Disconnect(int32 sid)
+{
+	WLock;
 	cout << "[" << _clients[sid]->_cid << "] Disconnected" << endl;
 	_cList.erase(_clients[sid]->_cid);
 	delete _clients[sid];
-	_clients.erase(sid);
+	_clients.erase(sid); 
+}
+
+
+CIocpCore::CIocpCore()
+{
+	_client = new ClientSession();
+}
+
+CIocpCore::~CIocpCore()
+{
+	if (_client != nullptr) delete _client;
+}
+
+void CIocpCore::InitConnect(const char* address)
+{
+	_client->_sock = SocketUtil::CreateSocket();
+	_client->_sid = 0;
+	ASSERT_CRASH(_client->_sock != INVALID_SOCKET);
+	_serveraddr.sin_family = AF_INET;
+	_serveraddr.sin_addr.s_addr = htonl(INADDR_ANY);
+	_serveraddr.sin_port = htons(0);
+	ASSERT_CRASH(::bind(_client->_sock, reinterpret_cast<sockaddr*>(&_serveraddr), sizeof(_serveraddr)) != SOCKET_ERROR);
+	inet_pton(AF_INET, address, &_serveraddr.sin_addr);
+	_serveraddr.sin_port = htons(PORTNUM);
+	ASSERT_CRASH(Register(static_cast<IocpObject*>(_client)));
+}
+
+void CIocpCore::DoConnect(void* loginInfo)
+{
+	DWORD sendBytes(0);
+	DWORD sendLength = BUFSIZE / 2;
+	ConnectEvent* _connectEvent = new ConnectEvent();
+	memcpy(_connectEvent->_buf, loginInfo, BUFSIZE / 2);
+	bool retVal = SocketUtil::ConnectEx(_client->_sock, reinterpret_cast<sockaddr*>(&_serveraddr), sizeof(_serveraddr), _connectEvent->_buf, BUFSIZE / 2, NULL,
+		static_cast<LPWSAOVERLAPPED>(_connectEvent));
+
+	if (!retVal)
+	{
+		const int32 errorCode = ::WSAGetLastError();
+		if (errorCode != WSA_IO_PENDING)
+		{
+			std::cout << errorCode << std::endl;
+			std::cout << "Connect Error" << std::endl;
+			delete _client;
+			SocketUtil::Clear();
+		}
+	}
+}
+
+void CIocpCore::Disconnect(int32 sid = 0)
+{
+	std::cout << "Disconnect Client" << std::endl;
+	delete _client;
+	_client == nullptr;
 }

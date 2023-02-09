@@ -13,7 +13,7 @@ int main()
 			{
 				while (true)
 				{
-					GIocpCore.Processing(); // Accept 받기 성공 
+					ServerIocpCore.Processing(); // Accept 받기 성공 
 					//기존 게임 서버 프로그래밍 Worker Thread에 해당하는 부분
 				}
 			});

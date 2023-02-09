@@ -21,7 +21,7 @@ public:
 	RWLOCK;
 	list<int16> _cList; // 방에 속해있는 클라이언트 리스트
 	int8 _status = ROOM_STATUS::EMPTY; // 방 상태
-	uint8 _num = 0;
+	int32 _num = 0;
 };
 
 class RoomManager
@@ -34,7 +34,7 @@ public:
 	void Init();
 public:
 	Room _rooms[100];
-	Atomic<uint8> _rmCnt = 0; // 현재 방 개수;
-	uint8 _cap = 100;
+	Atomic<int32> _rmCnt = 0; // 현재 방 개수;
+	int32 _cap = 100;
 };
 

@@ -1,7 +1,7 @@
 #pragma once
 
 
-class GameSession;
+class ServerSession;
 
 
 //==========================
@@ -42,7 +42,7 @@ class AcceptEvent : public IocpEvent
 public:
 	AcceptEvent() : IocpEvent(EventType::Accept) { Init(); };
 public:
-	GameSession* _session = nullptr;
+	ServerSession* _session = nullptr;
 	char _buf[BUFSIZE / 2] = {};
 };
 

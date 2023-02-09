@@ -46,7 +46,7 @@ struct C2S_ROOM_ENTER
 {
 	uint8 size;
 	uint8 type;
-	uint8 rmNum;
+	int32 rmNum;
 };
 
 struct C2S_ROOM_EXIT
@@ -114,20 +114,20 @@ struct S2C_ROOM_EXIT
 {
 	uint8 size;
 	uint8 type;
-	uint8 rmNum;
+	int32 rmNum;
 };
 
 struct S2C_ROOM
 {
 	uint8 size;
 	uint8 type;
-	uint8 rmNum;
+	int32 rmNum;
 };
 
 struct S2C_HIDE_ROOM
 {
 	uint8 size;
 	uint8 type;
-	uint8 rmNum;
+	int32 rmNum;
 };
 #pragma pack (pop)

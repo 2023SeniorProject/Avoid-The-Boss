@@ -7,69 +7,56 @@
 
 
 
-ClientManager cmgr;
-
-
 void SendThread()
 {
 	
 	char sendBuffer[100];
 	while (true)
 	{
-		switch (cmgr._clientSession._curScene)
+		if (ClientIocpCore._client->_curScene != 1)
 		{
-		case 0:
+			int32 menu;
+			std::cout << "명령어(1: 방 생성 2: 방 입장): ";
+			std::cin >> menu;
+			std::cin.ignore();
+			std::cout << std::endl;
+			switch (menu)
 			{
-				int32 menu;
-				std::cout << "명령어(1: 방 생성 2: 방 입장): ";
-				std::cin >> menu;
-				
-				switch (menu)
+				case 1:
 				{
-					case 1:
-					{
-						C2S_ROOM_CREATE packet;
-						packet.size = sizeof(C2S_ROOM_CREATE);
-						packet.type = C_ROOM_PACKET_TYPE::ACQ_MK_RM;
-						cmgr.DoSend(&packet);
-						break;
-					}
-					case 2:
-					{
-						uint16 num;
-						std::cout << std::endl;
-						std::cout << "방 번호 : ";
-						cin >> num;
-						C2S_ROOM_ENTER packet;
-						packet.size = sizeof(C2S_ROOM_ENTER);
-						packet.type = C_ROOM_PACKET_TYPE::ACQ_ENTER_RM;
-						packet.rmNum = num;
-						cmgr.DoSend(&packet);
-						break;
-					}
+					C2S_ROOM_CREATE packet;
+					packet.size = sizeof(C2S_ROOM_CREATE);
+					packet.type = C_ROOM_PACKET_TYPE::ACQ_MK_RM;
+					ClientIocpCore._client->DoSend(&packet);
+					break;
 				}
-
-				break;
+				case 2:
+				{
+					int32 num;
+					std::cout << "방 번호 : ";
+					cin >> num;
+					cin.ignore();
+					C2S_ROOM_ENTER packet;
+					packet.size = sizeof(C2S_ROOM_ENTER);
+					packet.type = C_ROOM_PACKET_TYPE::ACQ_ENTER_RM;
+					packet.rmNum = num;
+					ClientIocpCore._client->DoSend(&packet);
+					break;
+				}
 			}
-		case 1:
-			{
-				std::cin.getline(sendBuffer, 100);
-				_CHAT chat_packet;
-				chat_packet.cid = (uint8)cmgr._clientSession._cid;
-				chat_packet.size = sizeof(_CHAT);
-				chat_packet.type = (uint8)C_PACKET_TYPE::CCHAT;
-				strcpy_s(chat_packet.buf, CHATBUF, sendBuffer);
-				chat_packet.buf[CHATBUF - 1] = '\0';
-				cmgr.DoSend(&chat_packet);
-				break;
-			}
-		case 2:
-			{
-				break;
-			}
-
+			::system("cls");
 		}
-		if (cmgr._clientSession._sock == INVALID_SOCKET) break;
+		else 
+		{
+			std::cin.getline(sendBuffer, 100);
+			_CHAT chat_packet;
+			chat_packet.cid = (uint8)ClientIocpCore._client->_cid;
+			chat_packet.size = sizeof(_CHAT);
+			chat_packet.type = (uint8)C_PACKET_TYPE::CCHAT;
+			strcpy_s(chat_packet.buf, CHATBUF, sendBuffer);
+			chat_packet.buf[CHATBUF - 1] = '\0';
+			if(!ClientIocpCore._client->DoSend(&chat_packet)) break;
+		}
 	}
 }
 
@@ -87,9 +74,10 @@ int main()
 	std::cout << "PW : ";
 	std::wcin.getline(loginPacket.pw, sizeof(WCHAR) * 10);
 	::system("cls");
-	cmgr.InitConnect("127.0.0.1");
-	cmgr.DoConnect(reinterpret_cast<char*>(&loginPacket));
 	
+	ClientIocpCore.InitConnect("127.0.0.1");
+	ClientIocpCore.DoConnect(reinterpret_cast<char*>(&loginPacket));
+
 	GCThreadManager->Launch([=]()
 		{
 			while (true)

@@ -61,6 +61,7 @@ bool IocpCore::Processing(uint32_t time_limit) // worker thread 기능 완료된 비동
 			return false;
 		}
 	}
+
 	// 클라이언트가 정상적으로 종료한 경우
 	if (numOfBytes == 0 && (iocpEvent->_comp == EventType::Recv || iocpEvent->_comp == EventType::Send))
 	{
@@ -93,6 +94,7 @@ SIocpCore::~SIocpCore()
 
 void SIocpCore::Disconnect(int32 sid)
 {
+	if(sid >= 0) _rmgr->ExitRoom(sid, _clients[sid]->_myRm);
 	WLock;
 	cout << "[" << _clients[sid]->_cid << "] Disconnected" << endl;
 	_cList.erase(_clients[sid]->_cid);
@@ -104,6 +106,7 @@ void SIocpCore::Disconnect(int32 sid)
 CIocpCore::CIocpCore()
 {
 	_client = new ClientSession();
+	::ZeroMemory(&_serveraddr, sizeof(sockaddr_in));
 }
 
 CIocpCore::~CIocpCore()
@@ -131,7 +134,7 @@ void CIocpCore::DoConnect(void* loginInfo)
 	DWORD sendLength = BUFSIZE / 2;
 	ConnectEvent* _connectEvent = new ConnectEvent();
 	memcpy(_connectEvent->_buf, loginInfo, BUFSIZE / 2);
-	bool retVal = SocketUtil::ConnectEx(_client->_sock, reinterpret_cast<sockaddr*>(&_serveraddr), sizeof(_serveraddr), _connectEvent->_buf, BUFSIZE / 2, NULL,
+	bool retVal = SocketUtil::ConnectEx(_client->_sock, reinterpret_cast<sockaddr*>(&_serveraddr), sizeof(_serveraddr), _connectEvent->_buf, (BUFSIZE / 2) - 1, NULL,
 		static_cast<LPWSAOVERLAPPED>(_connectEvent));
 
 	if (!retVal)
@@ -151,5 +154,5 @@ void CIocpCore::Disconnect(int32 sid = 0)
 {
 	std::cout << "Disconnect Client" << std::endl;
 	delete _client;
-	_client == nullptr;
+	_client = nullptr;
 }

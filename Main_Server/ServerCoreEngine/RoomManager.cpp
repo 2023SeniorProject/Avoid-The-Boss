@@ -6,15 +6,15 @@
 
 //=============================
 
-void Room::UserOut(int16 sid)
+void Room::UserOut(int32 sid)
 {
 	{
 		WLock;
 		auto i = std::find(_cList.begin(), _cList.end(), sid); // 리스트에 있는지 탐색 후
-		if (i != _cList.end()) _cList.erase(i); // 리스트에서 제거	
+		if (i != _cList.end()) _cList.erase(i); // 리스트에서 제거
 	}
 
-	if (!_cList.size())
+	if (IsDestroyRoom())
 	{
 		_status = ROOM_STATUS::EMPTY;
 		S2C_HIDE_ROOM packet;
@@ -29,9 +29,10 @@ void Room::UserOut(int16 sid)
 			}
 		}
 	}
+	std::cout << "RM [" << _num << "][" << _cList.size() << "/4]" << std::endl;
 }
 
-void Room::UserIn(int16 sid)
+void Room::UserIn(int32 sid)
 {
 
 	S2C_ROOM_ENTER packet;
@@ -93,12 +94,12 @@ void RoomManager::Init()
 	}
 }
 
-void RoomManager::EnterRoom(int16 sid,int16 rmNum)
+void RoomManager::EnterRoom(int32 sid,int16 rmNum)
 {
 	_rooms[rmNum].UserIn(sid);
 }
 
-void RoomManager::CreateRoom(int16 sid)
+void RoomManager::CreateRoom(int32 sid)
 {
 	if (_rmCnt.load() >= _cap)
 	{
@@ -120,7 +121,7 @@ void RoomManager::CreateRoom(int16 sid)
 	}
 }
 
-void RoomManager::ExitRoom(int16 sid, int16 rmNum)
+void RoomManager::ExitRoom(int32 sid, int16 rmNum)
 {
 	_rooms[rmNum].UserOut(sid);
 }

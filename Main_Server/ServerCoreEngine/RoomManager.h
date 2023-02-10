@@ -14,12 +14,12 @@ public:
 	Room() {}
 	~Room() {}
 	bool IsDestroyRoom() { return (_cList.size() == 0); } // false 반환 시 방 파괴 --> 호스트가 방을 나갔을 경우 파괴하도록함.
-	void UserOut(int16 sid);
-	void UserIn(int16 sid);
+	void UserOut(int32 sid);
+	void UserIn(int32 sid);
 	void BroadCasting(void* packet);
 public:
 	RWLOCK;
-	vector<int16> _cList; // 방에 속해있는 클라이언트 리스트
+	list<int32> _cList; // 방에 속해있는 클라이언트 리스트
 	std::mutex _vecLock;
 	int8 _status = ROOM_STATUS::EMPTY; // 방 상태
 	int32 _num = 0;
@@ -29,9 +29,9 @@ class RoomManager
 {
 
 public:
-	void ExitRoom(int16 sid, int16 rmNum);
-	void EnterRoom(int16 sid, int16 rmNum);
-	void CreateRoom(int16 sid);
+	void ExitRoom(int32 sid, int16 rmNum);
+	void EnterRoom(int32 sid, int16 rmNum);
+	void CreateRoom(int32 sid);
 	void Init();
 public:
 	Room _rooms[100];

@@ -26,9 +26,9 @@ public:
 	void DoSendLoginPacket(bool isSuccess);
 	void ProcessPacket(char*);
 public:
-	int16 _cid = -1;
+	int32 _cid = -1;
+	int32 _sid = -1;
 	int16 _myRm = -1;
-	int16 _sid = -1;
 	int32 _prev_remain = 0;
 	Atomic<USER_STATUS> _status = USER_STATUS::EMPTY;
 	//int8 _curScene = 0;
@@ -56,8 +56,8 @@ public:
 	bool DoRecv();
 	void ProcessPacket(char*);
 public:
-	int16 _cid = -1;
-	int16 _sid = -1;
+	int32 _cid = -1;
+	int32 _sid = -1;
 	int16 _myRm = -1;
 	int32 _prev_remain = 0;
 	Atomic<USER_STATUS> _status = USER_STATUS::EMPTY;

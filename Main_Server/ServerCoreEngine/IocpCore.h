@@ -31,11 +31,11 @@ class SIocpCore : public IocpCore
 public:
 	SIocpCore();
 	~SIocpCore();
-	virtual void Disconnect(int32 sid);
+	virtual void Disconnect(int32 sid) override;
 public:
 	RWLOCK;
 	unordered_map<int32, ServerSession*> _clients;
-	std::set<int16> _cList;
+	std::set<int32> _cList;
 	RoomManager* _rmgr;
 };
 
@@ -48,7 +48,7 @@ public:
 	~CIocpCore();
 	void InitConnect(const char* address);
 	void DoConnect(void* loginInfo);
-	virtual void Disconnect(int32 sid);
+	virtual void Disconnect(int32 sid) override;
 public:
 	RWLOCK;
 	ClientSession* _client;

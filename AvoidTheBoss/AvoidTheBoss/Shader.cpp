@@ -258,7 +258,7 @@ void CObjectsShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsComman
 	int nDepth = (int)Depth / TileSize;
 
 	m_nObjects = nWidth * nDepth + 5 + 9;// +6;
-	m_ppObjects = new CGameObject * [m_nObjects];
+	m_ppObjects = new CGameObject* [m_nObjects];
 
 	CRectangleMesh* pRect = new CRectangleMesh(pd3dDevice, pd3dCommandList, TileSize, TileSize, 1.0f);
 

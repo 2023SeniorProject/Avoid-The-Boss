@@ -19,7 +19,7 @@ public:
 	void BroadCasting(void* packet);
 public:
 	RWLOCK;
-	list<int32> _cList; // 방에 속해있는 클라이언트 리스트
+	std::list<int32> _cList; // 방에 속해있는 클라이언트 리스트
 	std::mutex _vecLock;
 	int8 _status = ROOM_STATUS::EMPTY; // 방 상태
 	int32 _num = 0;

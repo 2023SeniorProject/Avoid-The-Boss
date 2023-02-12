@@ -41,11 +41,11 @@ bool SocketUtil::Bind(SOCKET s)
 	return (::bind(s,(sockaddr*)&serveraddr,sizeof(serveraddr)) != SOCKET_ERROR);
 }
 
-bool SocketUtil::Connect(SOCKET s, string Address)
+bool SocketUtil::Connect(SOCKET s, std::string Address)
 {
 	sockaddr_in serveraddr;
 	serveraddr.sin_family = AF_INET;
-	inet_pton(AF_INET, Address.c_str(), &serveraddr.sin_addr);
+	::inet_pton(AF_INET, Address.c_str(), &serveraddr.sin_addr);
 	serveraddr.sin_port = htons(PORTNUM);
 
 	return (::WSAConnect(s, (sockaddr*)&serveraddr, sizeof(serveraddr),NULL,NULL,NULL,NULL) != SOCKET_ERROR);

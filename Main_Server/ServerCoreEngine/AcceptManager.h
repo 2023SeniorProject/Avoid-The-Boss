@@ -25,7 +25,7 @@ public: // 인터페이스 구현할 예정
 	virtual void Processing(class IocpEvent* iocpEvent, int32 numOfBytes = 0) override;
 public:
 	SOCKET _listenSock = INVALID_SOCKET;
-	vector<AcceptEvent*> _acceptEvents;
+	std::vector<AcceptEvent*> _acceptEvents;
 	
 	int32 maxAcceptCnt = 1000;
 	Atomic<int32> curAcceptCnt = 0;

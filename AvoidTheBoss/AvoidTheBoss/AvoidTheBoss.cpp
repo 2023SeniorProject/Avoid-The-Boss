@@ -4,12 +4,14 @@
 #include "stdafx.h"
 #include "AvoidTheBoss.h"
 #include "GameFramework.h"
+#include "SocketUtil.h"
 
 CGameFramework gGameFramework;
 
 #define MAX_LOADSTRING 100
 
 // 전역 변수:
+
 HINSTANCE hInst;                                // 현재 인스턴스입니다.
 WCHAR szTitle[MAX_LOADSTRING];                  // 제목 표시줄 텍스트입니다.
 WCHAR szWindowClass[MAX_LOADSTRING];            // 기본 창 클래스 이름입니다.
@@ -20,6 +22,8 @@ BOOL                InitInstance(HINSTANCE, int);
 LRESULT CALLBACK    WndProc(HWND, UINT, WPARAM, LPARAM);
 INT_PTR CALLBACK    About(HWND, UINT, WPARAM, LPARAM);
 
+BOOL CALLBACK MyDialogBox(HWND hWndDlg, UINT message, WPARAM wParam, LPARAM lParam);
+
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     _In_opt_ HINSTANCE hPrevInstance,
     _In_ LPWSTR    lpCmdLine,
@@ -27,9 +31,10 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 {
     UNREFERENCED_PARAMETER(hPrevInstance);
     UNREFERENCED_PARAMETER(lpCmdLine);
-
+    SocketUtil::Init();
     // TODO: 여기에 코드를 입력합니다.
-
+    int retval = DialogBox(hInstance, MAKEINTRESOURCE(IDD_LOGINDIALOG), NULL, reinterpret_cast<DLGPROC>(MyDialogBox));
+    if (retval < 0) exit(1);
     // 전역 문자열을 초기화합니다.
     LoadStringW(hInstance, IDS_APP_TITLE, szTitle, MAX_LOADSTRING);
     LoadStringW(hInstance, IDC_AVOIDTHEBOSS, szWindowClass, MAX_LOADSTRING);
@@ -59,6 +64,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
         }
         else
         {
+            ncIocpCore.Processing();
             gGameFramework.FrameAdvance(); // 처리할 윈도우 메세지가 큐에 없을 때 게임프로그램이 CPU사용
         }
     }
@@ -187,4 +193,55 @@ INT_PTR CALLBACK About(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
         break;
     }
     return (INT_PTR)FALSE;
+}
+
+
+BOOL CALLBACK MyDialogBox(HWND hWndDlg, UINT message, WPARAM wParam, LPARAM lParam) 
+{
+
+
+    switch (message)
+    {
+    case WM_INITDIALOG:
+    {
+      
+    }
+    case WM_COMMAND:
+    {
+        switch (wParam)
+        {
+        case IDOK:
+            {
+            C2S_LOGIN loginPacket;
+            loginPacket.size = sizeof(C2S_LOGIN);
+            loginPacket.type = C_PACKET_TYPE::ACQ_LOGIN;
+            GetDlgItemText(hWndDlg, IDC_ID, loginPacket.name, 10);
+            GetDlgItemText(hWndDlg, IDC_PW, loginPacket.pw, 10);
+            ncIocpCore.InitConnect("127.0.0.1");
+            ncIocpCore.DoConnect(&loginPacket);
+
+            while(ncIocpCore.Processing())
+            {
+                if (ncIocpCore._client->_curScene == 0)
+                {
+                    EndDialog(hWndDlg, 1);
+                }
+                else 
+                {
+                    EndDialog(hWndDlg, -1);
+                }
+            }
+            return TRUE;
+            }
+        case IDCANCEL:
+            EndDialog(hWndDlg, -1);
+            return TRUE;
+       
+        }
+
+    }
+    default:
+        return DefWindowProc(hWndDlg, message, wParam, lParam);
+    return FALSE;
+    }
 }

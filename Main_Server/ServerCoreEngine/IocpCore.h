@@ -34,7 +34,7 @@ public:
 	virtual void Disconnect(int32 sid) override;
 public:
 	RWLOCK;
-	unordered_map<int32, ServerSession*> _clients;
+	std::unordered_map<int32, ServerSession*> _clients;
 	std::set<int32> _cList;
 	RoomManager* _rmgr;
 };

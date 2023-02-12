@@ -8,6 +8,9 @@
 
 #include "GameObject.h"
 #include "Camera.h"
+#include "Session.h"
+
+
 
 class CPlayer : public CGameObject
 {
@@ -59,7 +62,8 @@ public:
 
 	/*플레이어의 위치를 xmf3Position 위치로 설정한다. xmf3Position 벡터에서 현재 플레이어의 위치 벡터를 빼면 현
 	재 플레이어의 위치에서 xmf3Position 방향으로의 벡터가 된다. 현재 플레이어의 위치에서 이 벡터 만큼 이동한다.*/
-	void SetPosition(const XMFLOAT3& xmf3Position) {
+	void SetPosition(const XMFLOAT3& xmf3Position) 
+	{
 		Move(XMFLOAT3(xmf3Position.x - m_xmf3Position.x, xmf3Position.y - m_xmf3Position.y, xmf3Position.z - m_xmf3Position.z), false);
 	}
 
@@ -88,7 +92,8 @@ public:
 
 	//카메라의 위치가 바뀔 때마다 호출되는 함수와 그 함수에서 사용하는 정보를 설정하는 함수이다. 
 	virtual void OnCameraUpdateCallback(float fTimeElapsed) { }
-	void SetCameraUpdatedContext(LPVOID pContext) {
+	void SetCameraUpdatedContext(LPVOID pContext) 
+	{
 		m_pCameraUpdatedContext = pContext;
 	}
 	virtual void CreateShaderVariables(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList
@@ -98,7 +103,8 @@ public:
 
 	//카메라를 변경하기 위하여 호출하는 함수이다. 
 	CCamera* OnChangeCamera(DWORD nNewCameraMode, DWORD nCurrentCameraMode);
-	virtual CCamera* ChangeCamera(DWORD nNewCameraMode, float fTimeElapsed) {
+	virtual CCamera* ChangeCamera(DWORD nNewCameraMode, float fTimeElapsed) 
+	{
 		return(NULL);
 	}
 
@@ -106,15 +112,65 @@ public:
 	virtual void OnPrepareRender();
 
 	//플레이어의 카메라가 3인칭 카메라일 때 플레이어(메쉬)를 렌더링한다. 
-	virtual void Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera =
-		NULL);
+	virtual void Render(ID3D12GraphicsCommandList* pd3dCommandList, 
+		CCamera* pCamera = NULL);
 };
 
-class CTilePlayer : public CPlayer
+class CCubePlayer : public CPlayer
 {
 public:
-	CTilePlayer(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, int nMeshes = 1);
-	virtual ~CTilePlayer();
+	CCubePlayer(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, int nMeshes = 1);
+	virtual ~CCubePlayer();
 
 	virtual CCamera* ChangeCamera(DWORD nNewCameraMode, float fTimeElapsed);
 };
+
+
+// =============== new Client Session ================
+class NewClientSession : public IocpObject
+{
+public:
+	NewClientSession();
+	
+	virtual ~NewClientSession();
+public:
+	// 세션 인터페이스
+	virtual HANDLE GetHandle() override;
+	virtual void Processing(class IocpEvent* iocpEvent, int32 numOfBytes = 0) override;
+public:
+	// 세션 정보를 얻어 내거나 세팅할 수 있는 함수들
+	SOCKET GetSock() { return _sock; }
+	bool DoSend(void* packet);
+	bool DoRecv();
+	void ProcessPacket(char*);
+public:
+	int32 _cid = -1;
+	int32 _sid = -1;
+	int16 _myRm = -1;
+	int32 _prev_remain = 0;
+	int8 _curScene = -1;
+public:
+	SOCKET _sock = INVALID_SOCKET;
+	CCubePlayer* _player = nullptr;
+	RecvEvent _rev;
+	RWLOCK;
+};
+
+// ========= new Iocp Core ==============
+
+class NCIocpCore : public IocpCore
+{
+public:
+	NCIocpCore();
+	~NCIocpCore();
+	void InitConnect(const char* address);
+	void DoConnect(void* loginInfo);
+	virtual void Disconnect(int32 sid) override;
+public:
+	RWLOCK;
+	NewClientSession* _client;
+	SOCKADDR_IN _serveraddr;
+};
+
+extern class NCIocpCore ncIocpCore;
+

@@ -72,9 +72,13 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <OutDir>$(SolutionDir)Binary\$(Configuration)\</OutDir>
+    <IncludePath>C:\Users\OH.S.D\Desktop\졸작\졸작\Avoid-The-Boss\AvoidTheBoss\AvoidTheBoss;C:\Users\OH.S.D\Desktop\졸작\졸작\Avoid-The-Boss\Main_Server\ServerCoreEngine;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)Library\;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <OutDir>$(SolutionDir)Binary\$(Configuration)\</OutDir>
+    <IncludePath>C:\Users\OH.S.D\Desktop\졸작\졸작\Avoid-The-Boss\AvoidTheBoss\AvoidTheBoss;C:\Users\OH.S.D\Desktop\졸작\졸작\Avoid-The-Boss\Main_Server\ServerCoreEngine;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)Library\;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>

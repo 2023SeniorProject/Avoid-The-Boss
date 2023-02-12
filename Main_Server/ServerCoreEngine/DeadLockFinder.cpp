@@ -1,6 +1,8 @@
 #include "pch.h"
 #include "DeadLockFinder.h"
 
+using namespace std;
+
 void DeadLockFinder::PushLock(const char* name)
 {
 	lockG lg(_lock);
@@ -52,10 +54,10 @@ void DeadLockFinder::PopLock(const char* name)
 void DeadLockFinder::IsCycle()
 {
 	const int32 lockCnt = (int32)(_findIdWithName.size());
-	_discoveredOrder = vector<int32>(lockCnt, -1); // ∫§≈Õ √ ±‚»≠
+	_discoveredOrder = std::vector<int32>(lockCnt, -1); // ∫§≈Õ √ ±‚»≠
 	_discoveredCnt = 0;
-	_finished = vector<bool>(lockCnt, false);
-	_parent = vector<int32>(lockCnt, -1);
+	_finished = std::vector<bool>(lockCnt, false);
+	_parent = std::vector<int32>(lockCnt, -1);
 
 	for (int32 lockId = 0; lockId < lockCnt; lockId++) Dfs(lockId);
 	_discoveredOrder.clear();
@@ -75,8 +77,7 @@ void DeadLockFinder::Dfs(int32 here)
 		_finished[here] = true;
 		return;
 	}
-
-	set<int32>& nextSet = findIt->second;
+	std::set<int32>& nextSet = findIt->second;
 	for (int32 there : nextSet)
 	{
 		if (_discoveredOrder[there] == -1)

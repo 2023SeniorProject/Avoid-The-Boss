@@ -6,6 +6,7 @@
 #include "IocpEvent.h"
 #include "Session.h"
 
+using namespace std;
 
 AcceptManager::~AcceptManager()
 {
@@ -100,11 +101,11 @@ void AcceptManager::RegisterAccept(AcceptEvent* acceptEvent)
 }
 
 
-void LoginProcess(ServerSession& s, wstring sqlexec)
+void LoginProcess(ServerSession& s, std::wstring sqlexec)
 {
 	USER_DB_MANAGER udb;
 	udb.AllocateHandles();
-	udb.ConnectDataSource(L"2023SENIORPROJECT");
+	udb.ConnectDataSource(L"USER_DB");
 	const WCHAR* a = sqlexec.c_str();
 	udb.ExecuteStatementDirect(a);
 	udb.RetrieveResult();
@@ -133,7 +134,7 @@ void AcceptManager::ProcessAccept(AcceptEvent* acceptEvent)
 	ASSERT_CRASH(ServerIocpCore.Register(session)); // iocp핸들에 소켓 등록
 	C2S_LOGIN* lp = reinterpret_cast<C2S_LOGIN*>(acceptEvent->_buf);
 	
-	wstring sqlExec(L"EXEC search_user_db ");
+	std::wstring sqlExec(L"EXEC search_user_db ");
 	sqlExec += lp->name;
 	sqlExec += L", ";
 	sqlExec += lp->pw;

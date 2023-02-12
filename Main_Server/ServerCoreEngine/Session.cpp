@@ -4,7 +4,7 @@
 #include "Session.h"
 #include "OBDC_MGR.h"
 
-
+using namespace std;
 // =========== 서버 세션 ============
 
 ServerSession::ServerSession() 
@@ -24,48 +24,7 @@ HANDLE ServerSession::GetHandle()
 
 void ServerSession::Processing(IocpEvent* iocpEvent, int32 numOfBytes)
 {
-	//TODO
-	switch (iocpEvent->_comp)
-	{
-		//case EventType::Connect:
-		//{
-		//	ConnectEvent* connectEvent = static_cast<ConnectEvent*>(iocpEvent);
-		//	delete connectEvent;
-		//	DoRecv(); // Connect하고 Do recv 수행
-		//}
-		//break;
-	case EventType::Recv:
-		{
-			WLock;
-			RecvEvent* rev = static_cast<RecvEvent*>(iocpEvent);
-			int remain_data = numOfBytes + _prev_remain;
-			char* p = rev->_rbuf;
-			while (remain_data > 0)
-			{
-				uint8 packet_size = p[0];
-				if (packet_size <= remain_data)
-				{
-					ProcessPacket(p);
-					p = p + packet_size;
-					remain_data = remain_data - packet_size;
-				}
-				else break;
-			}
-			_prev_remain = remain_data;
-			if (remain_data > 0) 
-			{
-				memcpy(rev->_rbuf, p, remain_data);
-			}	
-		}
-		break;
-	case EventType::Send:
-		{
-			SendEvent* sev = static_cast<SendEvent*>(iocpEvent);
-			if(iocpEvent == nullptr) ASSERT_CRASH("double Del");
-			delete iocpEvent;
-		}
-		break;
-	}
+	
 }
 
 bool ServerSession::DoSend(void* packet)

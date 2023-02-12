@@ -4,6 +4,7 @@
 #include <chrono>
 
 #define MAX_SPIN_CNT 3000
+using namespace std;
 
 void RWLock::WriteLock()
 {

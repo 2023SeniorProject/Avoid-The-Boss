@@ -2,6 +2,7 @@
 #include "RoomManager.h"
 #include "Session.h"
 
+using namespace std;
 //========== ROOM =============
 
 //=============================

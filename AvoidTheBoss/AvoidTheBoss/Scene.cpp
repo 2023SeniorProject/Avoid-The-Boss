@@ -73,19 +73,7 @@ void CScene::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera
 
 void CScene::ReleaseUploadBuffers()
 {
-	/*if (m_ppShaders)
-	{
-		for (int j = 0; j < m_nShaders; j++)
-		{
-			if (m_ppShaders[j])
-				m_ppShaders[j]->ReleaseUploadBuffers();
-		}
-	}*/
-	/*if (m_ppObjects)
-	{
-		for (int j = 0; j < m_nObjects; j++) if (m_ppObjects[j])
-			m_ppObjects[j]->ReleaseUploadBuffers();
-	}*/
+	
 	for (int i = 0; i < m_nShaders; i++) m_pShaders[i].ReleaseUploadBuffers();
 
 }

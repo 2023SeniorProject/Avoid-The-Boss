@@ -48,10 +48,6 @@ public:
 	virtual void Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera);
 
 protected:
-	////셰이더가 포함하는 게임 객체들의 리스트(배열)이다.
-	//CGameObject** m_ppObjects = NULL;
-	//int m_nObjects = 0;
-
 	//파이프라인 상태 객체들의 리스트(배열)이다. 
 	ID3D12PipelineState** m_ppd3dPipelineStates = NULL;
 	int m_nPipelineStates = 0;
@@ -98,20 +94,6 @@ public:
 protected:
 	CGameObject** m_ppObjects = NULL;
 	int m_nObjects = 0;
-};
-
-class CLandShader : public CShader
-{
-public:
-	CLandShader();
-	virtual ~CLandShader();
-
-	virtual D3D12_INPUT_LAYOUT_DESC CreateInputLayout();
-	virtual D3D12_SHADER_BYTECODE CreateVertexShader(ID3DBlob** ppd3dShaderBlob);
-	virtual D3D12_SHADER_BYTECODE CreatePixelShader(ID3DBlob** ppd3dShaderBlob);
-
-	virtual void CreateShader(ID3D12Device* pd3dDevice, ID3D12RootSignature
-		* pd3dGraphicsRootSignature);
 };
 
 class CRectShader : public CShader

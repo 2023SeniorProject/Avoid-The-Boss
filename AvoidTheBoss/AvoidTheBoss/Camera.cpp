@@ -144,87 +144,9 @@ void CCamera::SetViewportsAndScissorRects(ID3D12GraphicsCommandList* pd3dCommand
 	pd3dCommandList->RSSetScissorRects(1, &m_d3dScissorRect);
 }
 
-//----비행 물체의 머리쪽에 위치 고정
-CSpaceShipCamera::CSpaceShipCamera(CCamera* pCamera)
-{
-	m_nMode = SPACESHIP_CAMERA;
-}
-
-//스페이스-쉽 카메라를 플레이어의 로컬 x-축(Right), y-축(Up), z-축(Look)을 기준으로 회전하는 함수이다.
-void CSpaceShipCamera::Rotate(float x, float y, float z)
-{
-	//플레이어가 자전할 때 플레이어 중심좌표를 기준으로 공전해야한다.
-	if (m_pPlayer && (x != 0.0f))
-	{
-		//플레이어의 로컬 x-축에 대한 x 각도의 회전 행렬을 계산한다. 
-		XMFLOAT3 xmf3Right = m_pPlayer->GetRightVector();
-		XMMATRIX xmmtxRotate = XMMatrixRotationAxis(XMLoadFloat3(&xmf3Right),
-			XMConvertToRadians(x));
-
-		//카메라의 로컬 x-축, y-축, z-축을 회전한다.
-		m_xmf3Right = Vector3::TransformNormal(m_xmf3Right, xmmtxRotate);
-		m_xmf3Up = Vector3::TransformNormal(m_xmf3Up, xmmtxRotate);
-		m_xmf3Look = Vector3::TransformNormal(m_xmf3Look, xmmtxRotate);
-
-		/*카메라의 위치 벡터에서 플레이어의 위치 벡터를 뺀다. 결과는 플레이어 위치를 기준(원점)으로 한 카메라의 위치
-		벡터이다.*/
-		m_xmf3Position = Vector3::Subtract(m_xmf3Position, m_pPlayer->GetPosition());
-
-		//플레이어의 위치를 중심으로 카메라의 위치 벡터(플레이어를 기준으로 한)를 회전한다. 
-		m_xmf3Position = Vector3::TransformCoord(m_xmf3Position, xmmtxRotate);
-
-		//회전시킨 카메라의 위치 벡터에 플레이어의 위치를 더하여 카메라의 위치 벡터를 구한다. 
-		m_xmf3Position = Vector3::Add(m_xmf3Position, m_pPlayer->GetPosition());
-	}
-
-	if (m_pPlayer && (y != 0.0f))
-	{
-		XMFLOAT3 xmf3Up = m_pPlayer->GetUpVector();
-		XMMATRIX xmmtxRotate = XMMatrixRotationAxis(XMLoadFloat3(&xmf3Up),
-			XMConvertToRadians(y));
-
-		m_xmf3Right = Vector3::TransformNormal(m_xmf3Right, xmmtxRotate);
-		m_xmf3Up = Vector3::TransformNormal(m_xmf3Up, xmmtxRotate);
-		m_xmf3Look = Vector3::TransformNormal(m_xmf3Look, xmmtxRotate);
-
-		m_xmf3Position = Vector3::Subtract(m_xmf3Position, m_pPlayer->GetPosition());
-		m_xmf3Position = Vector3::TransformCoord(m_xmf3Position, xmmtxRotate);
-		m_xmf3Position = Vector3::Add(m_xmf3Position, m_pPlayer->GetPosition());
-	}
-	if (m_pPlayer && (z != 0.0f))
-	{
-		XMFLOAT3 xmf3Look = m_pPlayer->GetLookVector();
-		XMMATRIX xmmtxRotate = XMMatrixRotationAxis(XMLoadFloat3(&xmf3Look),
-			XMConvertToRadians(z));
-
-		m_xmf3Right = Vector3::TransformNormal(m_xmf3Right, xmmtxRotate);
-		m_xmf3Up = Vector3::TransformNormal(m_xmf3Up, xmmtxRotate);
-		m_xmf3Look = Vector3::TransformNormal(m_xmf3Look, xmmtxRotate);
-
-		m_xmf3Position = Vector3::Subtract(m_xmf3Position, m_pPlayer->GetPosition());
-		m_xmf3Position = Vector3::TransformCoord(m_xmf3Position, xmmtxRotate);
-
-		m_xmf3Position = Vector3::Add(m_xmf3Position, m_pPlayer->GetPosition());
-	}
-}
-
 CFirstPersonCamera::CFirstPersonCamera(CCamera* pCamera)
 {
 	m_nMode = FIRST_PERSON_CAMERA;
-	if (pCamera)
-	{
-		/*1인칭 카메라로 변경하기 이전의 카메라가 스페이스-쉽 카메라이면 카메라의 Up 벡터를 월드좌표의 y-축이 되도록
-		한다. 이것은 스페이스-쉽 카메라의 로컬 y-축 벡터가 어떤 방향이든지 1인칭 카메라(대부분 사람인 경우)의 로컬 y축 벡터가 월드좌표의 y-축이 되도록 즉, 똑바로 서있는 형태로 설정한다는 의미이다. 그리고 로컬 x-축 벡터와 로컬 z-축 벡터의 y-좌표가 0.0f가 되도록 한다. 이것은 다음 그림과 같이 로컬 x-축 벡터와 로컬 z-축 벡터를 xz-평면(지
-		면)으로 투영하는 것을 의미한다. 즉, 1인칭 카메라의 로컬 x-축 벡터와 로컬 z-축 벡터는 xz-평면에 평행하다.*/
-		if (pCamera->GetMode() == SPACESHIP_CAMERA)
-		{
-			m_xmf3Up = XMFLOAT3(0.0f, 1.0f, 0.0f);
-			m_xmf3Right.y = 0.0f;
-			m_xmf3Look.y = 0.0f;
-			m_xmf3Right = Vector3::Normalize(m_xmf3Right);
-			m_xmf3Look = Vector3::Normalize(m_xmf3Look);
-		}
-	}
 }
 
 void CFirstPersonCamera::Rotate(float x, float y, float z)
@@ -280,21 +202,6 @@ void CFirstPersonCamera::Rotate(float x, float y, float z)
 CThirdPersonCamera::CThirdPersonCamera(CCamera* pCamera)
 {
 	m_nMode = THIRD_PERSON_CAMERA;
-	if (pCamera)
-	{
-		/*3인칭 카메라로 변경하기 이전의 카메라가 스페이스-쉽 카메라이면 카메라의 Up 벡터를 월드좌표의 y-축이 되도록
-		한다. 이것은 스페이스-쉽 카메라의 로컬 y-축 벡터가 어떤 방향이든지 3인칭 카메라(대부분 사람인 경우)의 로컬 y-
-		축 벡터가 월드좌표의 y-축이 되도록 즉, 똑바로 서있는 형태로 설정한다는 의미이다. 그리고 로컬 x-축 벡터와 로컬 z-축 벡터의 y-좌표가 0.0f가 되도록 한다. 이것은 로컬 x-축 벡터와 로컬 z-축 벡터를 xz-평면(지면)으로 투영하는
-		것을 의미한다. 즉, 3인칭 카메라의 로컬 x-축 벡터와 로컬 z-축 벡터는 xz-평면에 평행하다.*/
-		if (pCamera->GetMode() == SPACESHIP_CAMERA)
-		{
-			m_xmf3Up = XMFLOAT3(0.0f, 1.0f, 0.0f);
-			m_xmf3Right.y = 0.0f;
-			m_xmf3Look.y = 0.0f;
-			m_xmf3Right = Vector3::Normalize(m_xmf3Right);
-			m_xmf3Look = Vector3::Normalize(m_xmf3Look);
-		}
-	}
 }
 
 void CThirdPersonCamera::Update(XMFLOAT3& xmf3LookAt, float fTimeElapsed)

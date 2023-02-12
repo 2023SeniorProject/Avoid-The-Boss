@@ -309,15 +309,6 @@ void CGameFramework::BuildObjects()
 {
 	m_pd3dCommandList->Reset(m_pd3dCommandAllocator, NULL);
 
-	/*//카메라 객체를 생성하여 뷰포트, 씨저 사각형, 투영 변환 행렬, 카메라 변환 행렬을 생성하고 설정한다.
-	m_pCamera = new CCamera();
-	m_pCamera->SetViewport(0, 0, m_nWndClientWidth, m_nWndClientHeight, 0.0f, 1.0f);
-	m_pCamera->SetScissorRect(0, 0, m_nWndClientWidth, m_nWndClientHeight);
-	m_pCamera->GenerateProjectionMatrix(1.0f, 500.0f, float(m_nWndClientWidth) /
-		float(m_nWndClientHeight), 90.0f);
-	m_pCamera->GenerateViewMatrix(XMFLOAT3(0.0f, 0.0f, -50.0f), XMFLOAT3(0.0f, 0.0f, 0.0f),
-		XMFLOAT3(0.0f, 1.0f, 0.0f)); //카메라 위치*/
-
 		//씬 객체를 생성하고 씬에 포함될 게임 객체들을 생성한다. 
 	m_pScene = new CScene();
 	if (m_pScene) m_pScene->BuildObjects(m_pd3dDevice, m_pd3dCommandList);
@@ -395,7 +386,7 @@ void CGameFramework::ProcessInput()
 		}
 
 		/*플레이어를 dwDirection 방향으로 이동한다(실제로는 속도 벡터를 변경한다). 이동 거리는 시간에 비례하도록 한다. 플레이어의 이동 속력은 (1.3UNIT/초)로 가정한다.*/
-		if (dwDirection) m_pPlayer->Move(dwDirection, (1.3f * UNIT) * m_Timer.GetTimeElapsed(),
+		if (dwDirection) m_pPlayer->Move(dwDirection, (60.0f * UNIT) * m_Timer.GetTimeElapsed(),
 			true);
 	}
 
@@ -573,13 +564,11 @@ void CGameFramework::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPA
 			break;
 		case VK_RETURN:
 			break;
-			/*‘F1’ 키를 누르면 1인칭 카메라, ‘F2’ 키를 누르면 스페이스-쉽 카메라로 변경한다, ‘F3’ 키를 누르면 3인칭 카메라로 변경한다.*/
+			/*‘F1’ 키를 누르면 1인칭 카메라, ‘F3’ 키를 누르면 3인칭 카메라로 변경한다.*/
 		case VK_F1:
-		case VK_F2:
+			if (m_pPlayer) m_pCamera = m_pPlayer->ChangeCamera(FIRST_PERSON_CAMERA, m_Timer.GetTimeElapsed());
 		case VK_F3:
-			if (m_pPlayer) m_pCamera = m_pPlayer->ChangeCamera((wParam - VK_F1 + 1), m_Timer.GetTimeElapsed());
-			break;
-		case VK_F8:
+			if (m_pPlayer) m_pCamera = m_pPlayer->ChangeCamera(THIRD_PERSON_CAMERA, m_Timer.GetTimeElapsed());
 			break;
 		case VK_F9:
 			//“F9” 키가 눌려지면 윈도우 모드와 전체화면 모드의 전환을 처리한다. 

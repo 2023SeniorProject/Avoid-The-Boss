@@ -47,17 +47,10 @@ private:
 	ID3D12GraphicsCommandList* m_pd3dCommandList;
 	//명령 큐, 명령 할당자, 명령 리스트 인터페이스 포인터이다.
 
-	//ID3D12PipelineState*		m_pd3dPipelineState;
-	//그래픽스 파이프라인 상태 객체에 대한 인터페이스 포인터이다.
-
-	ID3D12Fence* m_pd3dFence;
+	ID3D12Fence					*m_pd3dFence;
 	UINT64						m_nFenceValues[m_nSwapChainBuffers];
 	HANDLE						m_hFenceEvent;
 	//펜스 인터페이스 포인터, 펜스의 값, 이벤트 핸들이다.
-
-	//D3D12_VIEWPORT				m_d3dViewport;
-	//D3D12_RECT					m_d3dScissorRect;
-	//뷰포트와 씨저 사각형이다. 
 private:
 	//다음은 게임 프레임워크에서 사용할 타이머이다. 
 	CTimer					m_Timer;
@@ -68,8 +61,9 @@ private:
 private:
 	CScene* m_pScene;
 public:
+	CCamera* m_pCamera = NULL;
 	//플레이어 객체에 대한 포인터이다.
-	CPlayer* m_pPlayer = NULL;
+	CTilePlayer* m_pPlayer = NULL;
 
 	//마지막으로 마우스 버튼을 클릭할 때의 마우스 커서의 위치이다. 
 	POINT m_ptOldCursorPos;
@@ -115,8 +109,5 @@ public:
 	LRESULT CALLBACK OnProcessingWindowMessage(HWND hWnd, UINT nMessageID, WPARAM wParam,
 		LPARAM lParam);
 	//윈도우의 메시지(키보드, 마우스 입력)를 처리하는 함수이다. 
-
-public:
-	CCamera* m_pCamera = NULL;
 };
 

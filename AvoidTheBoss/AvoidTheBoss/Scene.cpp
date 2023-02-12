@@ -42,8 +42,6 @@ void CScene::ReleaseObjects()
 		m_pShaders[i].ReleaseObjects();
 	}
 	if (m_pShaders) delete[] m_pShaders;
-
-	if (m_pLand) delete m_pLand;
 }
 
 bool CScene::ProcessInput(UCHAR* pKeysBuffer)

@@ -21,15 +21,6 @@ CShader::~CShader()
 //입력 조립기에게 정점 버퍼의 구조를 알려주기 위한 구조체를 반환한다.
 D3D12_INPUT_LAYOUT_DESC CShader::CreateInputLayout()
 {
-	//	UINT nInputElementDescs = 2;
-	//	D3D12_INPUT_ELEMENT_DESC* pd3dInputElementDescs = new D3D12_INPUT_ELEMENT_DESC[nInputElementDescs];
-	//
-	//	//정점은 위치 벡터(POSITION)와 색상(COLOR)을 가진다. 
-	//	pd3dInputElementDescs[0] = { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0,
-	//D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 };
-	//	pd3dInputElementDescs[1] = { "COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 12,
-	//	D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 };
-
 	D3D12_INPUT_LAYOUT_DESC d3dInputLayoutDesc;
 	d3dInputLayoutDesc.pInputElementDescs = NULL;
 	d3dInputLayoutDesc.NumElements = 0;
@@ -110,7 +101,6 @@ D3D12_SHADER_BYTECODE CShader::CreateVertexShader(ID3DBlob** ppd3dShaderBlob)
 	d3dShaderByteCode.pShaderBytecode = NULL;
 
 	return(d3dShaderByteCode);
-	//return(CompileShaderFromFile(L"C:\\Users\\aeiou\\Desktop\\SeniorProject\\Avoid-The-Boss\\Senior_project_ver2\\Shaders.hlsl", "VSMain", "vs_5_1", ppd3dShaderBlob));
 }
 
 //픽셀 셰이더 바이트 코드를 생성(컴파일)한다. 
@@ -121,7 +111,6 @@ D3D12_SHADER_BYTECODE CShader::CreatePixelShader(ID3DBlob** ppd3dShaderBlob)
 	d3dShaderByteCode.pShaderBytecode = NULL;
 
 	return(d3dShaderByteCode);
-	//return(CompileShaderFromFile(L"C:\\Users\\aeiou\\Desktop\\SeniorProject\\Avoid-The-Boss\\Senior_project_ver2\\Shaders.hlsl", "PSMain", "ps_5_1", ppd3dShaderBlob));
 }
 
 //셰이더 소스 코드를 컴파일하여 바이트 코드 구조체를 반환한다. 
@@ -233,13 +222,13 @@ D3D12_INPUT_LAYOUT_DESC CPlayerShader::CreateInputLayout()
 
 D3D12_SHADER_BYTECODE CPlayerShader::CreateVertexShader(ID3DBlob** ppd3dShaderBlob)
 {
-	return(CShader::CompileShaderFromFile(L"C:\\Users\\aeiou\\Desktop\\SeniorProject\\Avoid-The-Boss\\Senior_project_ver2\\Shaders.hlsl", "VSDiffused", "vs_5_1",
+	return(CShader::CompileShaderFromFile(L"Shaders.hlsl", "VSDiffused", "vs_5_1",
 		ppd3dShaderBlob));
 }
 
 D3D12_SHADER_BYTECODE CPlayerShader::CreatePixelShader(ID3DBlob** ppd3dShaderBlob)
 {
-	return(CShader::CompileShaderFromFile(L"C:\\Users\\aeiou\\Desktop\\SeniorProject\\Avoid-The-Boss\\Senior_project_ver2\\Shaders.hlsl", "PSDiffused", "ps_5_1",
+	return(CShader::CompileShaderFromFile(L"Shaders.hlsl", "PSDiffused", "ps_5_1",
 		ppd3dShaderBlob));
 }
 
@@ -375,12 +364,12 @@ D3D12_INPUT_LAYOUT_DESC CObjectsShader::CreateInputLayout()
 
 D3D12_SHADER_BYTECODE CObjectsShader::CreateVertexShader(ID3DBlob** ppd3dShaderBlob)
 {
-	return(CShader::CompileShaderFromFile(L"C:\\Users\\aeiou\\Desktop\\SeniorProject\\Avoid-The-Boss\\Senior_project_ver2\\Shaders.hlsl", "VSDiffused", "vs_5_1", ppd3dShaderBlob));
+	return(CShader::CompileShaderFromFile(L"Shaders.hlsl", "VSDiffused", "vs_5_1", ppd3dShaderBlob));
 }
 
 D3D12_SHADER_BYTECODE CObjectsShader::CreatePixelShader(ID3DBlob** ppd3dShaderBlob)
 {
-	return(CShader::CompileShaderFromFile(L"C:\\Users\\aeiou\\Desktop\\SeniorProject\\Avoid-The-Boss\\Senior_project_ver2\\Shaders.hlsl", "PSDiffused", "ps_5_1", ppd3dShaderBlob));
+	return(CShader::CompileShaderFromFile(L"Shaders.hlsl", "PSDiffused", "ps_5_1", ppd3dShaderBlob));
 }
 
 void CObjectsShader::CreateShader(ID3D12Device* pd3dDevice, ID3D12RootSignature* pd3dGraphicsRootSignature)
@@ -409,49 +398,6 @@ void CObjectsShader::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera*
 			m_ppObjects[j]->Render(pd3dCommandList, pCamera);
 		}
 	}
-}
-
-CLandShader::CLandShader()
-{
-}
-
-CLandShader::~CLandShader()
-{
-}
-
-D3D12_INPUT_LAYOUT_DESC CLandShader::CreateInputLayout()
-{
-	UINT nInputElementDescs = 2;
-	D3D12_INPUT_ELEMENT_DESC* pd3dInputElementDescs = new
-		D3D12_INPUT_ELEMENT_DESC[nInputElementDescs];
-	pd3dInputElementDescs[0] = { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0,
-	D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 };
-	pd3dInputElementDescs[1] = { "COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 12,
-	D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 };
-
-	D3D12_INPUT_LAYOUT_DESC d3dInputLayoutDesc;
-	d3dInputLayoutDesc.pInputElementDescs = pd3dInputElementDescs;
-	d3dInputLayoutDesc.NumElements = nInputElementDescs;
-
-	return(d3dInputLayoutDesc);
-}
-
-D3D12_SHADER_BYTECODE CLandShader::CreateVertexShader(ID3DBlob** ppd3dShaderBlob)
-{
-	return(CShader::CompileShaderFromFile(L"C:\\Users/\\aeiou\\Desktop\\SeniorProject\\Avoid-The-Boss\\Senior_project_ver2\\Shaders.hlsl", "VSDiffused", "vs_5_1", ppd3dShaderBlob));
-}
-
-D3D12_SHADER_BYTECODE CLandShader::CreatePixelShader(ID3DBlob** ppd3dShaderBlob)
-{
-	return(CShader::CompileShaderFromFile(L"C:\\Users/\\aeiou\\Desktop\\SeniorProject\\Avoid-The-Boss\\Senior_project_ver2\\Shaders.hlsl", "PSDiffused", "ps_5_1", ppd3dShaderBlob));
-}
-
-void CLandShader::CreateShader(ID3D12Device* pd3dDevice, ID3D12RootSignature* pd3dGraphicsRootSignature)
-{
-	m_nPipelineStates = 1;
-	m_ppd3dPipelineStates = new ID3D12PipelineState * [m_nPipelineStates];
-
-	CShader::CreateShader(pd3dDevice, pd3dGraphicsRootSignature);
 }
 
 CRectShader::CRectShader()

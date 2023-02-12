@@ -2,8 +2,7 @@
 
 //카메라의 종류(모드: Mode)를 나타내는 상수를 다음과 같이 선언한다. 
 #define FIRST_PERSON_CAMERA		0x01
-#define SPACESHIP_CAMERA		0x02
-#define THIRD_PERSON_CAMERA		0x03
+#define THIRD_PERSON_CAMERA		0x02
 
 //프레임 버퍼의 크기와 종횡비(Aspect Ratio)를 나타내는 상수를 다음과 같이 선언한
 #define ASPECT_RATIO (float(FRAME_BUFFER_WIDTH) / float(FRAME_BUFFER_HEIGHT))
@@ -132,15 +131,6 @@ public:
 
 	//3인칭 카메라에서 카메라가 바라보는 지점을 설정한다. 일반적으로 플레이어를 바라보도록 설정한다.
 	virtual void SetLookAt(XMFLOAT3& xmf3LookAt) { }
-};
-
-class CSpaceShipCamera : public CCamera
-{
-public:
-	CSpaceShipCamera(CCamera* pCamera);
-	virtual ~CSpaceShipCamera() { }
-
-	virtual void Rotate(float fPitch = 0.0f, float fYaw = 0.0f, float fRoll = 0.0f);
 };
 
 class CFirstPersonCamera : public CCamera

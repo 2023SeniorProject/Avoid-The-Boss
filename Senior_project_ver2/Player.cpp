@@ -337,7 +337,6 @@ void CPlayer::Update(float fTimeElapsed)
 		-fDeceleration, true));
 }
 
-
 void CPlayer::CreateShaderVariables(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList)
 {
 	CGameObject::CreateShaderVariables(pd3dDevice, pd3dCommandList);

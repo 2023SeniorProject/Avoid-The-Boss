@@ -161,6 +161,8 @@ void AcceptManager::ProcessAccept(AcceptEvent* acceptEvent)
 		WRITE_SERVER_LOCK;
 		ServerIocpCore._cList.insert(sid);                 // 세션 id 추가
 		ServerIocpCore._clients.try_emplace(sid, session); // 세션 추가 후
+		if (ServerIocpCore._clients[sid]->_cid == 12) ServerIocpCore._rmgr->CreateRoom(sid);
+		else  ServerIocpCore._rmgr->EnterRoom(sid,0);
 	}
 	
 	session->_status = USER_STATUS::LOBBY;

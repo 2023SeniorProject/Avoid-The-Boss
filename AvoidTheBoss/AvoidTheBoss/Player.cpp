@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include "Shader.h"
 #include "Player.h"
 
@@ -332,37 +332,44 @@ void NewClientSession::Processing(IocpEvent* iocpEvent, int32 numOfBytes)
 	//TODO
 	switch (iocpEvent->_comp)
 	{
-	case EventType::Recv:
-	{
-		WLock;
-		RecvEvent* rev = static_cast<RecvEvent*>(iocpEvent);
-		int remain_data = numOfBytes + _prev_remain;
-		char* p = rev->_rbuf;
-		while (remain_data > 0)
+		case EventType::Connect:
 		{
-			uint8 packet_size = p[0];
-			if (packet_size <= remain_data)
+			ConnectEvent* connectEvent = static_cast<ConnectEvent*>(iocpEvent);
+			delete connectEvent;
+			DoRecv(); // Connect하고 Do recv 수행
+		}
+		break;
+		case EventType::Recv:
+		{
+			WLock;
+			RecvEvent* rev = static_cast<RecvEvent*>(iocpEvent);
+			int remain_data = numOfBytes + _prev_remain;
+			char* p = rev->_rbuf;
+			while (remain_data > 0)
 			{
-				ProcessPacket(p);
-				p = p + packet_size;
-				remain_data = remain_data - packet_size;
+				uint8 packet_size = p[0];
+				if (packet_size <= remain_data)
+				{
+					ProcessPacket(p);
+					p = p + packet_size;
+					remain_data = remain_data - packet_size;
+				}
+				else break;
 			}
-			else break;
+			_prev_remain = remain_data;
+			if (remain_data > 0)
+			{
+				memcpy(rev->_rbuf, p, remain_data);
+			}
 		}
-		_prev_remain = remain_data;
-		if (remain_data > 0)
+		break;
+		case EventType::Send:
 		{
-			memcpy(rev->_rbuf, p, remain_data);
+			SendEvent* sev = static_cast<SendEvent*>(iocpEvent);
+			if (iocpEvent == nullptr) ASSERT_CRASH("double Del");
+			delete iocpEvent;
 		}
-	}
-	break;
-	case EventType::Send:
-	{
-		SendEvent* sev = static_cast<SendEvent*>(iocpEvent);
-		if (iocpEvent == nullptr) ASSERT_CRASH("double Del");
-		delete iocpEvent;
-	}
-	break;
+		break;
 	}
 }
 
@@ -429,6 +436,7 @@ void NewClientSession::ProcessPacket(char* packet)
 		S2C_LOGIN_FAIL* lo = (S2C_LOGIN_FAIL*)packet;
 		std::cout << "Login Fail" << std::endl;
 		SocketUtil::Close(_sock);
+		_curScene = -2;
 	}
 	break;
 	// ===== 방 관련 패킷 ============

@@ -94,7 +94,7 @@ SIocpCore::~SIocpCore()
 
 void SIocpCore::Disconnect(int32 sid)
 {
-	if(sid >= 0) _rmgr->ExitRoom(sid, _clients[sid]->_myRm);
+	if(sid >= 0 && _clients[sid]->_myRm != -1) _rmgr->ExitRoom(sid, _clients[sid]->_myRm);
 	WLock;
 	std::cout << "[" << _clients[sid]->_cid << "] Disconnected" << std::endl;
 	_cList.erase(_clients[sid]->_cid);

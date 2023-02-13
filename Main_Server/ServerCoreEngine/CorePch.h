@@ -102,7 +102,7 @@ using Microsoft::WRL::ComPtr;
 #define MAP_COLOR_3		  XMFLOAT4(50.0f/260.0f,60.0f/260.0f,40.0f/260.0f,0.0f)
 #define MAP_COLOR_4		  XMFLOAT4(133.0f/260.0f,140.0f/260.0f,119.0f/260.0f,0.0f)
 
-//1.0f = 1cm / 100.0f = 1m
+//1.0f = 1cm / 1000.0f = 1m
 #define UNIT 100.0f // 1m = 1 unit
 
 //----버퍼 리소스 생성 함수

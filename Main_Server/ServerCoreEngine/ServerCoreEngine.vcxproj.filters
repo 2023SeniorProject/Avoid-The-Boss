@@ -28,6 +28,9 @@
     <Filter Include="DB">
       <UniqueIdentifier>{3251044a-b8ce-43b6-b1ed-66984837fc9f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="CorePlayer">
+      <UniqueIdentifier>{2b42a5d2-018e-4673-8d0a-0327c93047c7}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CoreGlobal.h">
@@ -90,6 +93,9 @@
     <ClInclude Include="protocol.h">
       <Filter>IocpCore</Filter>
     </ClInclude>
+    <ClInclude Include="CorePlayer.h">
+      <Filter>CorePlayer</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CoreGlobal.cpp">
@@ -145,6 +151,9 @@
     </ClCompile>
     <ClCompile Include="OBDC_MGR.cpp">
       <Filter>DB</Filter>
+    </ClCompile>
+    <ClCompile Include="CorePlayer.cpp">
+      <Filter>CorePlayer</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

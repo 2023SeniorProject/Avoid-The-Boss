@@ -388,11 +388,11 @@ void CGameFramework::ProcessInput()
 		}
 
 		/*플레이어를 dwDirection 방향으로 이동한다(실제로는 속도 벡터를 변경한다). 이동 거리는 시간에 비례하도록 한다. 플레이어의 이동 속력은 (1.3UNIT/초)로 가정한다.*/
-		if (dwDirection) ncIocpCore._client->_player->Move(dwDirection, (60.0f * UNIT) * m_Timer.GetTimeElapsed(),
+		if (dwDirection) ncIocpCore._client->_player->Move(dwDirection, (1.2f * UNIT) * m_Timer.GetTimeElapsed(),
 			true);
 	}
 
-	//플레이어를 실제로 이동하고 카메라를 갱신한다. 중력과 마찰력의 영향을 속도 벡터에 적용한다.
+	//카메라를 갱신한다. 중력과 마찰력의 영향을 속도 벡터에 적용한다.
 	ncIocpCore._client->_player->Update(m_Timer.GetTimeElapsed());
 }
 

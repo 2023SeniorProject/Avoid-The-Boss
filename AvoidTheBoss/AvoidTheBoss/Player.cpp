@@ -67,6 +67,7 @@ void CPlayer::Move(DWORD dwDirection, float fDistance, bool bUpdateVelocity)
 void CPlayer::Move(const XMFLOAT3& xmf3Shift, bool bUpdateVelocity)
 {
 	//bUpdateVelocity가 참이면 플레이어를 이동하지 않고 속도 벡터를 변경한다. 
+	// 등속도에서는 필요없는 항목이다.
 	if (bUpdateVelocity)
 	{
 		//플레이어의 속도 벡터를 xmf3Shift 벡터만큼 변경한다. 
@@ -78,6 +79,8 @@ void CPlayer::Move(const XMFLOAT3& xmf3Shift, bool bUpdateVelocity)
 		m_xmf3Position = Vector3::Add(m_xmf3Position, xmf3Shift);
 		//플레이어의 위치가 변경되었으므로 카메라의 위치도 xmf3Shift 벡터만큼 이동한다. 
 		if (m_pCamera) m_pCamera->Move(xmf3Shift);
+		std::cout << "Player Pos (" << m_xmf3Position.x << ", " << m_xmf3Position.z << ")" << std::endl;
+		
 	}
 }
 
@@ -144,7 +147,7 @@ void CPlayer::Rotate(float x, float y, float z)
 //이 함수는 매 프레임마다 호출된다. 플레이어의 속도 벡터에 중력과 마찰력 등을 적용한다.
 void CPlayer::Update(float fTimeElapsed)
 {
-	//플레이어를 속도 벡터 만큼 실제로 이동한다(카메라도 이동될 것이다). 
+	//플레이어를 속도 벡터 만큼 실제로 이동한다(카메라를 이동할 것이다). 
 	XMFLOAT3 xmf3Velocity = Vector3::ScalarProduct(m_xmf3Velocity, fTimeElapsed, false);
 	
 	Move(xmf3Velocity, false);

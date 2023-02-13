@@ -164,6 +164,7 @@
     <ClInclude Include="CoreGlobal.h" />
     <ClInclude Include="CoreMacro.h" />
     <ClInclude Include="CorePch.h" />
+    <ClInclude Include="CorePlayer.h" />
     <ClInclude Include="CoreTLS.h" />
     <ClInclude Include="DeadLockFinder.h" />
     <ClInclude Include="IocpCore.h" />
@@ -186,6 +187,7 @@
     <ClCompile Include="CoreGlobal.cpp" />
     <ClCompile Include="CoreMacro.cpp" />
     <ClCompile Include="CorePch.cpp" />
+    <ClCompile Include="CorePlayer.cpp" />
     <ClCompile Include="CoreTLS.cpp" />
     <ClCompile Include="DeadLockFinder.cpp" />
     <ClCompile Include="IocpCore.cpp" />

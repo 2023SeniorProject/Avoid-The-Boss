@@ -388,8 +388,8 @@ void CGameFramework::ProcessInput()
 		}
 
 		/*플레이어를 dwDirection 방향으로 이동한다(실제로는 속도 벡터를 변경한다). 이동 거리는 시간에 비례하도록 한다. 플레이어의 이동 속력은 (1.3UNIT/초)로 가정한다.*/
-		if (dwDirection) ncIocpCore._client->_player->Move(dwDirection, (1.2f * UNIT) * m_Timer.GetTimeElapsed(),
-			true);
+		if (dwDirection) ncIocpCore._client->_player->Move(dwDirection, (1.2f * UNIT));
+		// 속도만 더해주고 
 	}
 
 	//카메라를 갱신한다. 중력과 마찰력의 영향을 속도 벡터에 적용한다.
@@ -476,31 +476,12 @@ void CGameFramework::FrameAdvance() // 여기서 업데이트랑 렌더링 동시에 진행하는 
 	WaitForGpuComplete();
 	//GPU가 모든 명령 리스트를 실행할 때 까지 기다린다.
 
-//#ifdef _WITH_PRESENT_PARAMETERS
-//	DXGI_PRESENT_PARAMETERS dxgiPresentParameters;
-//	dxgiPresentParameters.DirtyRectsCount = 0;
-//	dxgiPresentParameters.pDirtyRects = NULL;
-//	dxgiPresentParameters.pScrollRect = NULL;
-//	dxgiPresentParameters.pScrollOffset = NULL;
-//	m_pdxgiSwapChain->Present1(1, 0, &dxgiPresentParameters);
-//	/*스왑체인을 프리젠트한다. 프리젠트를 하면 현재 렌더 타겟(후면버퍼)의 내용이 전면버퍼로 옮겨지고 렌더 타겟 인
-//	덱스가 바뀔 것이다.*/
-//#else
-//#ifdef _WITH_SYNCH_SWAPCHAIN
-//	m_pdxgiSwapChain->Present(1, 0);
-//#else
 	m_pdxgiSwapChain->Present(0, 0);
-	//#endif
-	//#endif
-	//	/*현재의 프레임 레이트를 문자열로 가져와서 주 윈도우의 타이틀로 출력한다. m_pszBuffer 문자열이
-	//	"LapProject ("으로 초기화되었으므로 (m_pszFrameRate+12)에서부터 프레임 레이트를 문자열로 출력
-	//	하여 “ FPS)” 문자열과 합친다.
-	//	::_itow_s(m_nCurrentFrameRate, (m_pszFrameRate+12), 37, 10);
-	//	::wcscat_s((m_pszFrameRate+12), 37, _T(" FPS)"));
-	//	*/
+
 
 	MoveToNextFrame();
 
+	
 	m_Timer.GetFrameRate(m_pszFrameRate + 12, 37);
 	::SetWindowText(m_hWnd, m_pszFrameRate);
 }

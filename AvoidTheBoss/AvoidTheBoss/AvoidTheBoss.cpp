@@ -34,7 +34,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     UNREFERENCED_PARAMETER(lpCmdLine);
     SocketUtil::Init();
     // TODO: 여기에 코드를 입력합니다.
-    //int retval = DialogBox(hInstance, MAKEINTRESOURCE(IDD_LOGINDIALOG), NULL, reinterpret_cast<DLGPROC>(MyDialogBox));
+   // int retval = DialogBox(hInstance, MAKEINTRESOURCE(IDD_LOGINDIALOG), NULL, reinterpret_cast<DLGPROC>(MyDialogBox));
     /*if (retval == -1 || retval == 2)
     {
         SocketUtil::Close(ncIocpCore._client->_sock);
@@ -70,7 +70,6 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
         if (::PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
         {
             if (msg.message == WM_QUIT)
-
             {
                 SocketUtil::Close(ncIocpCore._client->_sock);
                 //SocketUtil::Clear();

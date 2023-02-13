@@ -23,7 +23,6 @@ private:
 	float			m_fFPSTimeElapsed; //프레임 레이트 계산 소요 시간
 
 	bool			m_bStopped;
-
 public:
 	CTimer();
 	virtual ~CTimer();

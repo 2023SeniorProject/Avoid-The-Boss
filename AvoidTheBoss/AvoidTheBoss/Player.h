@@ -65,7 +65,7 @@ public:
 	재 플레이어의 위치에서 xmf3Position 방향으로의 벡터가 된다. 현재 플레이어의 위치에서 이 벡터 만큼 이동한다.*/
 	void SetPosition(const XMFLOAT3& xmf3Position) 
 	{
-		Move(XMFLOAT3(xmf3Position.x - m_xmf3Position.x, xmf3Position.y - m_xmf3Position.y, xmf3Position.z - m_xmf3Position.z), false);
+		UpdateMove(XMFLOAT3(xmf3Position.x - m_xmf3Position.x, xmf3Position.y - m_xmf3Position.y, xmf3Position.z - m_xmf3Position.z));
 	}
 
 	XMFLOAT3& GetVelocity() { return(m_xmf3Velocity); }
@@ -77,9 +77,9 @@ public:
 	CCamera* GetCamera() { return(m_pCamera); }
 
 	//플레이어를 이동하는 함수이다. 
-	void Move(DWORD dwDirection, float fDistance, bool bUpdateVelocity = false);
-	void Move(const XMFLOAT3& xmf3Shift, bool bUpdateVelocity = false);
-	void Move(float fxOffset = 0.0f, float fyOffset = 0.0f, float fzOffset = 0.0f);
+	void Move(DWORD dwDirection, float fDistance);
+	void SetSpeed(const XMFLOAT3& xmf3Shift);
+	void UpdateMove(const XMFLOAT3& velocity);
 
 	//플레이어를 회전하는 함수이다. 
 	void Rotate(float x, float y, float z);

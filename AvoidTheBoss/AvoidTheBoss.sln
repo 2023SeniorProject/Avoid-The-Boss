@@ -5,7 +5,9 @@ VisualStudioVersion = 17.3.32819.101
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "AvoidTheBoss", "AvoidTheBoss\AvoidTheBoss.vcxproj", "{7CC5E69D-315D-4BE4-A205-2BFA21118094}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ServerCoreEngine", "..\Main_Server\ServerCoreEngine\ServerCoreEngine.vcxproj", "{F11D5BD7-5E0D-445E-A930-DC0A0A7280B7}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ServerCoreEngine", "ServerCoreEngine\ServerCoreEngine.vcxproj", "{F11D5BD7-5E0D-445E-A930-DC0A0A7280B7}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GAMESERVER", "FINALTERMSERVER\FINALTERMSERVER.vcxproj", "{CA9438C3-41D4-41B3-B897-B76FA649A778}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -31,6 +33,14 @@ Global
 		{F11D5BD7-5E0D-445E-A930-DC0A0A7280B7}.Release|x64.Build.0 = Release|x64
 		{F11D5BD7-5E0D-445E-A930-DC0A0A7280B7}.Release|x86.ActiveCfg = Release|Win32
 		{F11D5BD7-5E0D-445E-A930-DC0A0A7280B7}.Release|x86.Build.0 = Release|Win32
+		{CA9438C3-41D4-41B3-B897-B76FA649A778}.Debug|x64.ActiveCfg = Debug|x64
+		{CA9438C3-41D4-41B3-B897-B76FA649A778}.Debug|x64.Build.0 = Debug|x64
+		{CA9438C3-41D4-41B3-B897-B76FA649A778}.Debug|x86.ActiveCfg = Debug|Win32
+		{CA9438C3-41D4-41B3-B897-B76FA649A778}.Debug|x86.Build.0 = Debug|Win32
+		{CA9438C3-41D4-41B3-B897-B76FA649A778}.Release|x64.ActiveCfg = Release|x64
+		{CA9438C3-41D4-41B3-B897-B76FA649A778}.Release|x64.Build.0 = Release|x64
+		{CA9438C3-41D4-41B3-B897-B76FA649A778}.Release|x86.ActiveCfg = Release|Win32
+		{CA9438C3-41D4-41B3-B897-B76FA649A778}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "RoomManager.h"
 #include "Session.h"
+#include "packetEvent.h"
 
 using namespace std;
 //========== ROOM =============
@@ -65,7 +66,6 @@ void Room::UserIn(int32 sid)
 	// 갱신하는걸 보내줄지 말지 미정
 }
 
-
 void Room::BroadCasting(void* packet) // 방에 속하는 클라이언트에게만 전달하기
 {
 	RLock;
@@ -82,6 +82,33 @@ void Room::BroadCasting(void* packet) // 방에 속하는 클라이언트에게만 전달하기
 			continue;
 		}
 	}
+}
+void Room::Update()
+{
+	_rmTimer.Tick(0);
+	RLock;
+	for (auto i = _cList.begin(); i != _cList.end(); ++i)
+	{
+		if (ServerIocpCore._clients[*i] == nullptr)
+		{
+			continue;
+		}
+
+		std::lock_guard<std::mutex> ql(_queueLock);
+		if (_eList.empty()) // queue에 이벤트가 들어왔다면 업데이트를 진행한다.
+		{
+			ServerIocpCore._clients[*i]->_playerInfo.Move(UNIT * 1.2f);
+			ServerIocpCore._clients[*i]->_playerInfo.Update(_rmTimer.GetTimeElapsed());
+			_eList.pop();
+		}
+
+	}
+}
+
+void Room::AddEvent(queueEvent* qe)
+{
+	std::lock_guard<std::mutex> ql(_queueLock);
+	_eList.push(qe);
 }
 // ======= RoomManager ========
 
@@ -115,6 +142,7 @@ void RoomManager::CreateRoom(int32 sid)
 		if (_rooms[i]._status == ROOM_STATUS::EMPTY)
 		{
 			_rooms[i]._status = ROOM_STATUS::NOT_FULL;
+			_rooms[i]._rmTimer.Reset();
 			_rooms[i].UserIn(sid);
 			_rmCnt.fetch_add(1);
 			break;

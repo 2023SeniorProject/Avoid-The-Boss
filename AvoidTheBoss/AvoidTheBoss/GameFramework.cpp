@@ -373,8 +373,16 @@ void CGameFramework::ProcessInput()
 		//마우스 커서의 위치를 마우스가 눌려졌던 위치로 설정한다. 
 		::SetCursorPos(m_ptOldCursorPos.x, m_ptOldCursorPos.y);
 	}
+	
+	if (m_lastKeyInput != dwDirection) // 이전과 방향(키입력이 다른 경우에만 무브 이벤트 패킷을 보낸다)
+	{
+		C2S_MOVE packet;
+		packet.size = sizeof(C2S_MOVE);
+		packet.type = C_PACKET_TYPE::MOVE;
+		//ncIocpCore._client->DoSend();
+	}
+	m_lastKeyInput = dwDirection;
 
-	//마우스 또는 키 입력이 있으면 플레이어를 이동하거나(dwDirection) 회전한다(cxDelta 또는 cyDelta).
 	if ((dwDirection != 0) || (cxDelta != 0.0f) || (cyDelta != 0.0f))
 	{
 		if (cxDelta || cyDelta)
@@ -602,7 +610,7 @@ void CGameFramework::ChangeSwapChainState()
 
 	BOOL bFullScreenState = FALSE;
 	m_pdxgiSwapChain->GetFullscreenState(&bFullScreenState, NULL);
-	m_pdxgiSwapChain->SetFullscreenState(!bFullScreenState, NULL);
+	m_pdxgiSwapChain->SetFullscreenState(~bFullScreenState, NULL);
 
 	DXGI_MODE_DESC dxgiTargetParameters;
 	dxgiTargetParameters.Format = DXGI_FORMAT_R8G8B8A8_UNORM;

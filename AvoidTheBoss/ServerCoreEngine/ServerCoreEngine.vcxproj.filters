@@ -28,11 +28,14 @@
     <Filter Include="DB">
       <UniqueIdentifier>{3251044a-b8ce-43b6-b1ed-66984837fc9f}</UniqueIdentifier>
     </Filter>
-    <Filter Include="CorePlayer">
-      <UniqueIdentifier>{2b42a5d2-018e-4673-8d0a-0327c93047c7}</UniqueIdentifier>
-    </Filter>
     <Filter Include="STimer">
       <UniqueIdentifier>{aebedcc9-3fa3-4050-abf2-17ea08fe88c1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Packet">
+      <UniqueIdentifier>{3cf6bd7c-9d3d-46e1-9d17-9a9cbcff0f73}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="PlayerInfo">
+      <UniqueIdentifier>{2b42a5d2-018e-4673-8d0a-0327c93047c7}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -96,11 +99,14 @@
     <ClInclude Include="protocol.h">
       <Filter>IocpCore</Filter>
     </ClInclude>
-    <ClInclude Include="CorePlayer.h">
-      <Filter>CorePlayer</Filter>
+    <ClInclude Include="PlayerInfo.h">
+      <Filter>PlayerInfo</Filter>
     </ClInclude>
     <ClInclude Include="STimer.h">
       <Filter>STimer</Filter>
+    </ClInclude>
+    <ClInclude Include="packetEvent.h">
+      <Filter>Packet</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -158,11 +164,17 @@
     <ClCompile Include="OBDC_MGR.cpp">
       <Filter>DB</Filter>
     </ClCompile>
-    <ClCompile Include="CorePlayer.cpp">
-      <Filter>CorePlayer</Filter>
+    <ClCompile Include="PlayerInfo.cpp">
+      <Filter>PlayerInfo</Filter>
     </ClCompile>
     <ClCompile Include="STimer.cpp">
       <Filter>STimer</Filter>
+    </ClCompile>
+    <ClCompile Include="packetEvent.cpp">
+      <Filter>Packet</Filter>
+    </ClCompile>
+    <ClCompile Include="protocol.cpp">
+      <Filter>IocpCore</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

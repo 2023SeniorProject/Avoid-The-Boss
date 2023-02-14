@@ -1,13 +1,12 @@
 #pragma once
 #include "IocpCore.h"
 #include "IocpEvent.h"
+#include "PlayerInfo.h"
 // 서버에서 클라이언트 소켓을 관리할 클래스
 // 마찬가지로 Iocp에 등록할 대상이기 때문에 IocpObject에 해당된다
 
 
 enum class USER_STATUS: int8 { EMPTY,LOBBY,ROOM,INGAME};
-
-
 
 class ServerSession : public IocpObject
 {
@@ -37,7 +36,7 @@ public:
 	SOCKET _sock = INVALID_SOCKET;
 	RecvEvent _rev;
 	RWLOCK;
-
+	PlayerInfo _playerInfo;
 };
 
 class ClientSession : public IocpObject

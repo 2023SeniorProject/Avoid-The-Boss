@@ -178,6 +178,7 @@
     <ClInclude Include="RWLock.h" />
     <ClInclude Include="Session.h" />
     <ClInclude Include="SocketUtil.h" />
+    <ClInclude Include="STimer.h" />
     <ClInclude Include="ThreadManager.h" />
     <ClInclude Include="Types.h" />
   </ItemGroup>
@@ -205,6 +206,7 @@
     <ClCompile Include="RWLock.cpp" />
     <ClCompile Include="Session.cpp" />
     <ClCompile Include="SocketUtil.cpp" />
+    <ClCompile Include="STimer.cpp" />
     <ClCompile Include="ThreadManager.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

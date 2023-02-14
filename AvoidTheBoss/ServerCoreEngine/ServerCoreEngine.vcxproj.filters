@@ -31,6 +31,9 @@
     <Filter Include="CorePlayer">
       <UniqueIdentifier>{2b42a5d2-018e-4673-8d0a-0327c93047c7}</UniqueIdentifier>
     </Filter>
+    <Filter Include="STimer">
+      <UniqueIdentifier>{aebedcc9-3fa3-4050-abf2-17ea08fe88c1}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CoreGlobal.h">
@@ -96,6 +99,9 @@
     <ClInclude Include="CorePlayer.h">
       <Filter>CorePlayer</Filter>
     </ClInclude>
+    <ClInclude Include="STimer.h">
+      <Filter>STimer</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CoreGlobal.cpp">
@@ -154,6 +160,9 @@
     </ClCompile>
     <ClCompile Include="CorePlayer.cpp">
       <Filter>CorePlayer</Filter>
+    </ClCompile>
+    <ClCompile Include="STimer.cpp">
+      <Filter>STimer</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

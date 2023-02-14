@@ -66,30 +66,32 @@ void CTimer::Tick(float fLockFPS)
 	//마지막으로 이 함수를 호출한 이후 경과한 시간을 계산한다. 
 	::QueryPerformanceCounter((LARGE_INTEGER*)&m_nCurrentPerformanceCounter);
 	float fTimeElapsed = float((m_nCurrentPerformanceCounter - m_nLastPerformanceCounter) * m_fTimeScale);
-
 	
 	//현재 시간을 m_nLastTime에 저장한다. 
 	m_nLastPerformanceCounter = m_nCurrentPerformanceCounter;
 
 	/* 마지막 프레임 처리 시간과 현재 프레임 처리 시간의 차이가 1초보다 작으면 현재 프레임 처리 시간
 을 m_fFrameTime[0]에 저장한다. */
-	if (fabsf(fTimeElapsed - m_fTimeElapsed) < 1.0f)
+	if (fabsf(fTimeElapsed - m_fTimeElapsed) < 1.0f) // 오차가 적다면
 	{
+		// 배열 값들을 한칸 씩 미룬다.
 		::memmove(&m_fFrameTime[1], m_fFrameTime, (MAX_SAMPLE_COUNT - 1) * sizeof(float));
 		m_fFrameTime[0] = fTimeElapsed;
 		if (m_nSampleCount < MAX_SAMPLE_COUNT) m_nSampleCount++;
 	}
 
-	//초당 프레임 수를 1 증가시키고 현재 프레임 처리 시간을 누적하여 저장한다. 
+	//초당 프레임 수를 1 증가시키고 현재 프레임 처리 시간을 누적하여	저장한다. 
 	m_nFramesPerSecond++;
+	m_nWorldFrame++;
 	m_fFPSTimeElapsed += fTimeElapsed;
-	if (m_fFPSTimeElapsed > 1.0f)
+	if (m_fFPSTimeElapsed > 1.0f) // 1초가 넘어가면 프레임 카운트 0
 	{
-		m_nCurrentFrameRate = m_nFramesPerSecond;
-		m_nFramesPerSecond = 0;
+		m_nCurrentFrameRate = m_nFramesPerSecond; // 60fps 대비 얼마나 나오는가?
+		m_nFramesPerSecond = 0; //월드 프레임은 계속 유지하도록 한다.
 		m_fFPSTimeElapsed = 0.0f;
 	}
-
+	
+	
 	//누적된 프레임 처리 시간의 평균을 구하여 프레임 처리 시간을 구한다. 
 	m_fTimeElapsed = 0.0f;
 	for (ULONG i = 0; i < m_nSampleCount; i++) m_fTimeElapsed += m_fFrameTime[i];

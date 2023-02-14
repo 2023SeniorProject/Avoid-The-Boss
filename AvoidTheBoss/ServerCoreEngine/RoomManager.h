@@ -1,6 +1,12 @@
 #pragma once
 #define MAX_ROOM_USER 4 // 한 방당 최대 인원수
+#include "STimer.h"
 
+struct UserEvent
+{
+	int32 sid;
+	int8 type;
+};
 
 enum ROOM_STATUS : int8
 {
@@ -20,6 +26,7 @@ public:
 public:
 	RWLOCK;
 	std::list<int32> _cList; // 방에 속해있는 클라이언트 리스트
+	STimer _rmTimer;
 	std::mutex _vecLock;
 	int8 _status = ROOM_STATUS::EMPTY; // 방 상태
 	int32 _num = 0;

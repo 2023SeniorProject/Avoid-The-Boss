@@ -481,8 +481,8 @@ void CGameFramework::FrameAdvance() // 여기서 업데이트랑 렌더링 동시에 진행하는 
 
 	MoveToNextFrame();
 
-	
-	m_Timer.GetFrameRate(m_pszFrameRate + 12, 37);
+
+	m_Timer.GetFrameRate(m_pszFrameRate + 11, 27);
 	::SetWindowText(m_hWnd, m_pszFrameRate);
 }
 

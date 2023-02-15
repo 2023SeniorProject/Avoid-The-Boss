@@ -30,13 +30,11 @@ public:
 	XMFLOAT3& GetVelocity() { return(m_xmf3Velocity); }
 	
 	//플레이어를 이동하는 함수이다. 
-	void Move(float fDistance);
-	void SetSpeed(const XMFLOAT3& xmf3Shift);
 	void UpdateMove(const XMFLOAT3& velocity);
 	
 	//플레이어의 위치와 회전 정보를 경과 시간에 따라 갱신하는 함수이다.
 	void Update(float fTimeElapsed);
 	void OnPlayerUpdateCallback(float fTimeElapsed) { }
 	void SetPlayerUpdatedContext(LPVOID pContext) { m_pPlayerUpdatedContext = pContext; }
-	void PrintPlayerInfo() { std::cout << "(" << _playerPos.x <<", " << _playerPos.y <<", " << _playerPos.z <<" )" << std::endl; }
+	void PrintPlayerInfo() { std::cout << "(" << _playerPos.x <<", " << _playerPos.z <<" )" << std::endl; }
 };

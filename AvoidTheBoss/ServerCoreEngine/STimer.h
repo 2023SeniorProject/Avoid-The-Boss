@@ -1,6 +1,6 @@
 #pragma once
 
-#define MAX_SAMPLE_COUNT 50
+const ULONG MAX_SAMPLE_COUNT2 = 50;
 
 class STimer
 {
@@ -16,13 +16,13 @@ private:
 
 	int64			_fTimePerformancePerSec; 
 
-	uint64			m_fFrameTime[MAX_SAMPLE_COUNT]; 
+	float			m_fFrameTime[MAX_SAMPLE_COUNT2]; 
 	ULONG			m_nSampleCount; 
 
-	uint64			_curFramerate; 
-	uint64			_nFramePerSec; 
-	uint64			_nWorldFrame;
-	uint64			_totalElapsedTime; 
+	unsigned long			_curFramerate;
+	unsigned long			_nFramePerSec;
+	unsigned long			_nWorldFrame;
+	unsigned long			_totalElapsedTime;
 
 	bool			m_bStopped;
 public:

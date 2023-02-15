@@ -316,6 +316,8 @@ void CGameFramework::BuildObjects()
 	if (m_pScene) m_pScene->BuildObjects(m_pd3dDevice, m_pd3dCommandList);
 
 	ncIocpCore._client->_player = new CCubePlayer(m_pd3dDevice, m_pd3dCommandList, m_pScene->GetGraphicsRootSignature(), 1);
+	for(int i = 0; i < 3; ++i)
+		ncIocpCore._client->_other[i] = new CCubePlayer(m_pd3dDevice, m_pd3dCommandList, m_pScene->GetGraphicsRootSignature(), 1);
 	m_pCamera = ncIocpCore._client->_player->GetCamera();
 
 	//씬 객체를 생성하기 위하여 필요한 그래픽 명령 리스트들을 명령 큐에 추가한다. 
@@ -340,9 +342,6 @@ void CGameFramework::ReleaseObjects()
 
 void CGameFramework::ProcessInput()
 {
-
-	/*키보드의 상태 정보를 반환한다. 화살표 키(‘→’, ‘←’, ‘↑’, ‘↓’)를 누르면 플레이어를 오른쪽/왼쪽(로컬 x-축), 앞/
-	뒤(로컬 z-축)로 이동한다. ‘Page Up’과 ‘Page Down’ 키를 누르면 플레이어를 위/아래(로컬 y-축)로 이동한다.*/
 	static UCHAR pKeyBuffer[256];
 	DWORD dwDirection = 0;
 	if (::GetKeyboardState(pKeyBuffer))
@@ -355,10 +354,6 @@ void CGameFramework::ProcessInput()
 		if (pKeyBuffer[VK_NEXT] & 0xF0) dwDirection |= DIR_DOWN;
 	}
 
-	/*마우스를 캡쳐했으면 마우스가 얼마만큼 이동하였는 가를 계산한다. 마우스 왼쪽 또는 오른쪽 버튼이 눌러질 때의
-	메시지(WM_LBUTTONDOWN, WM_RBUTTONDOWN)를 처리할 때 마우스를 캡쳐하였다. 그러므로 마우스가 캡쳐된
-	것은 마우스 버튼이 눌려진 상태를 의미한다. 마우스 버튼이 눌려진 상태에서 마우스를 좌우 또는 상하로 움직이면 플
-	레이어를 x-축 또는 y-축으로 회전한다.*/
 	float cxDelta = 0.0f, cyDelta = 0.0f;
 	POINT ptCursorPos;
 	if (::GetCapture() == m_hWnd)
@@ -374,14 +369,6 @@ void CGameFramework::ProcessInput()
 		::SetCursorPos(m_ptOldCursorPos.x, m_ptOldCursorPos.y);
 	}
 	
-	if (m_lastKeyInput != dwDirection) // 이전과 방향(키입력이 다른 경우에만 무브 이벤트 패킷을 보낸다)
-	{
-		C2S_MOVE packet;
-		packet.size = sizeof(C2S_MOVE);
-		packet.type = C_PACKET_TYPE::MOVE;
-		//ncIocpCore._client->DoSend();
-	}
-	m_lastKeyInput = dwDirection;
 
 	if ((dwDirection != 0) || (cxDelta != 0.0f) || (cyDelta != 0.0f))
 	{
@@ -398,10 +385,32 @@ void CGameFramework::ProcessInput()
 		/*플레이어를 dwDirection 방향으로 이동한다(실제로는 속도 벡터를 변경한다). 이동 거리는 시간에 비례하도록 한다. 플레이어의 이동 속력은 (1.3UNIT/초)로 가정한다.*/
 		if (dwDirection) ncIocpCore._client->_player->Move(dwDirection, (1.2f * UNIT));
 		// 속도만 더해주고 
+
 	}
+
+
+	if (m_lastKeyInput != dwDirection) // 이전과 방향(키입력이 다른 경우에만 무브 이벤트 패킷을 보낸다)
+	{
+		if (dwDirection == 0) std::cout <<
+			ncIocpCore._client->_player->GetPosition().x << " , " << ncIocpCore._client->_player->GetPosition().z << std::endl;
+		C2S_MOVE packet;
+		packet.size = sizeof(C2S_MOVE);
+		packet.type = C_PACKET_TYPE::MOVE;
+
+		packet.x = ncIocpCore._client->_player->GetVelocity().x;
+		packet.y = ncIocpCore._client->_player->GetVelocity().y;
+		packet.z = ncIocpCore._client->_player->GetVelocity().z;
+		ncIocpCore._client->DoSend(&packet);
+	}
+	m_lastKeyInput = dwDirection;
 
 	//카메라를 갱신한다. 중력과 마찰력의 영향을 속도 벡터에 적용한다.
 	ncIocpCore._client->_player->Update(m_Timer.GetTimeElapsed());
+
+	
+	/*std::cout << "(" << ncIocpCore._client->_player->GetPosition().x << "," <<
+		ncIocpCore._client->_player->GetPosition().y << "," << ncIocpCore._client->_player->GetPosition().z << ")" << std::endl;*/
+
 }
 
 void CGameFramework::AnimateObjects()
@@ -467,6 +476,11 @@ void CGameFramework::FrameAdvance() // 여기서 업데이트랑 렌더링 동시에 진행하는 
 	//3인칭 카메라일 때 플레이어를 렌더링한다. 
 	if (ncIocpCore._client->_player) ncIocpCore._client->_player->Render(m_pd3dCommandList, m_pCamera);
 
+	for (int i = 0; i < 3; ++i)
+	{
+		if (ncIocpCore._client->_other[i]) 
+			ncIocpCore._client->_other[i]->Render(m_pd3dCommandList, m_pCamera);
+	}
 	d3dResourceBarrier.Transition.StateBefore = D3D12_RESOURCE_STATE_RENDER_TARGET;
 	d3dResourceBarrier.Transition.StateAfter = D3D12_RESOURCE_STATE_PRESENT;
 	d3dResourceBarrier.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;

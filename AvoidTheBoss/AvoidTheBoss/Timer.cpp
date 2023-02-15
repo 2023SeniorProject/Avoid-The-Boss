@@ -70,6 +70,7 @@ void CTimer::Tick(float fLockFPS)
 	//현재 시간을 m_nLastTime에 저장한다. 
 	m_nLastPerformanceCounter = m_nCurrentPerformanceCounter;
 
+	//std::cout << fTimeElapsed << std::endl;
 	/* 마지막 프레임 처리 시간과 현재 프레임 처리 시간의 차이가 1초보다 작으면 현재 프레임 처리 시간
 을 m_fFrameTime[0]에 저장한다. */
 	if (fabsf(fTimeElapsed - m_fTimeElapsed) < 1.0f) // 오차가 적다면

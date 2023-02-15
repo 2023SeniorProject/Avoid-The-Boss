@@ -2,6 +2,7 @@
 #include "SocketUtil.h"
 #include "IocpEvent.h"
 #include "Session.h"
+#include "packetEvent.h"
 #include "OBDC_MGR.h"
 
 using namespace std;
@@ -24,6 +25,40 @@ HANDLE ServerSession::GetHandle()
 
 void ServerSession::Processing(IocpEvent* iocpEvent, int32 numOfBytes)
 {
+	switch (iocpEvent->_comp)
+	{
+		case EventType::Recv:
+		{
+			WLock;
+			RecvEvent* rev = static_cast<RecvEvent*>(iocpEvent);
+			int remain_data = numOfBytes + _prev_remain;
+			char* p = rev->_rbuf;
+			while (remain_data > 0)
+			{
+				uint8 packet_size = p[0];
+				if (packet_size <= remain_data)
+				{
+					ProcessPacket(p);
+					p = p + packet_size;
+					remain_data = remain_data - packet_size;
+				}
+				else break;
+			}
+			_prev_remain = remain_data;
+			if (remain_data > 0)
+			{
+				memcpy(rev->_rbuf, p, remain_data);
+			}
+		}
+		break;
+		case EventType::Send:
+		{
+			SendEvent* sev = static_cast<SendEvent*>(iocpEvent);
+			if (iocpEvent == nullptr) ASSERT_CRASH("double Del");
+			delete iocpEvent;
+		}
+		break;
+	}
 	
 }
 
@@ -90,7 +125,22 @@ void ServerSession::ProcessPacket(char* packet)
 {
 	switch ((uint8)packet[1])
 	{
-#pragma region CLIENT to SERVER PACKET
+		case C_PACKET_TYPE::MOVE:
+		{
+			std::lock_guard<std::mutex> pl(_playerLock); // 플레이어 정보 갱신
+			C2S_MOVE* movePacket = reinterpret_cast<C2S_MOVE*>(packet);
+			XMFLOAT3 velocity;
+			velocity.x = movePacket->x;
+			velocity.y = movePacket->y;
+			velocity.z = movePacket->z;
+			moveEvent* mv = new moveEvent;
+			mv->type = EVENT_TYPE::MOVE_EVENT;
+			mv->velocity = velocity;
+			mv->sid = _sid;
+			queueEvent* me = static_cast<queueEvent*>(mv);
+			ServerIocpCore._rmgr->_rooms[_myRm].AddEvent(me);
+		}
+		break;
 		case C_PACKET_TYPE::CCHAT:
 		{
 
@@ -114,50 +164,6 @@ void ServerSession::ProcessPacket(char* packet)
 			ServerIocpCore._rmgr->CreateRoom(_sid);
 		}
 		break;
-#pragma endregion
-//#pragma region SERVER to CLIENT PACKET 
-//		case S_PACKET_TYPE::SCHAT:
-//		{
-//			_CHAT* cp = reinterpret_cast<_CHAT*>(packet);
-//			std::cout << "client[" << cp->cid << "] 's msg : " << cp->buf << std::endl;
-//		}
-//		break;
-//		case S_PACKET_TYPE::LOGIN_OK:
-//		{
-//			S2C_LOGIN_OK* lo = (S2C_LOGIN_OK*)packet;
-//			_cid = lo->cid;
-//		
-//			std::cout << "client[" << _cid << "] " << "Login Success" << std::endl;
-//			_status = USER_STATUS::LOBBY;
-//		}
-//		break;
-//		case S_PACKET_TYPE::LOGIN_FAIL:
-//		{
-//			S2C_LOGIN_FAIL* lo = (S2C_LOGIN_FAIL*)packet;
-//			std::cout << "Login Fail" << std::endl;
-//			SocketUtil::Close(_sock);
-//		}
-//		break;
-//        // ===== 방 관련 패킷 ============
-//		case S_ROOM_PACKET_TYPE::REP_ENTER_RM:
-//		{
-//			S2C_ROOM_ENTER* re = (S2C_ROOM_ENTER*)packet;
-//			if (re->success)
-//			{
-//				_curScene = 1;
-//				_status = USER_STATUS::ROOM;
-//				::system("cls");
-//			}
-//			else std::cout << "FAIL TO ENTER ROOM" << std::endl;
-// 		}
-//		break;
-//		case S_ROOM_PACKET_TYPE::MK_RM_FAIL:
-//		{
-//			std::cout << "Fail to Create Room!!(MAX_CAPACITY)" << std::endl;
-//		}
-//		break;
-
-#pragma endregion
 	}
 	DoRecv();
 }

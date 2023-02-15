@@ -30,12 +30,16 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     _In_ LPWSTR    lpCmdLine,
     _In_ int       nCmdShow)
 {
+    ::SetConsoleTitle(L"Client");
+   
+  
+    
     UNREFERENCED_PARAMETER(hPrevInstance);
     UNREFERENCED_PARAMETER(lpCmdLine);
     SocketUtil::Init();
-    // TODO: 여기에 코드를 입력합니다.
-   // int retval = DialogBox(hInstance, MAKEINTRESOURCE(IDD_LOGINDIALOG), NULL, reinterpret_cast<DLGPROC>(MyDialogBox));
-    /*if (retval == -1 || retval == 2)
+    
+   /* int retval = DialogBox(hInstance, MAKEINTRESOURCE(IDD_LOGINDIALOG), NULL, reinterpret_cast<DLGPROC>(MyDialogBox));
+    if (retval == -1 || retval == 2)
     {
         SocketUtil::Close(ncIocpCore._client->_sock);
         SocketUtil::Clear();
@@ -62,6 +66,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
             while (true)
             {
                 if (!ncIocpCore.Processing()) break;
+                std::this_thread::sleep_for(0ms);
             }
         }
     );

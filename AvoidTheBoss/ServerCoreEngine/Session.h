@@ -35,7 +35,9 @@ public:
 public:
 	SOCKET _sock = INVALID_SOCKET;
 	RecvEvent _rev;
-	RWLOCK;
+	RWLOCK; // 서버의 Recv 세션 관리용 Lock
+
+	std::mutex _playerLock; // 플레이어 관리용 Lock
 	PlayerInfo _playerInfo;
 };
 

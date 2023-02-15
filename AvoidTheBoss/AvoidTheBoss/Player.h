@@ -148,6 +148,7 @@ public:
 public:
 	SOCKET _sock = INVALID_SOCKET;
 	CCubePlayer* _player = nullptr;
+	CCubePlayer* _other[3] = {};
 	RecvEvent _rev;
 	RWLOCK;
 };

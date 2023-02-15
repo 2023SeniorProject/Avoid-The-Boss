@@ -93,12 +93,6 @@ using Microsoft::WRL::ComPtr;
 
 //#define assert(!XMVector3Equal(EyeDirection, XMVectorZero()));
 
-#define DIR_FORWARD	 0x01
-#define DIR_BACKWARD 0x02
-#define DIR_LEFT	 0x04
-#define DIR_RIGHT	 0x08
-#define DIR_UP		 0x10
-#define DIR_DOWN	 0x20
 
 /*정점의 색상을 무작위로(Random) 설정하기 위해 사용한다. 각 정점의 색상은 난수(Random Number)를 생성하여
 지정한다.*/
@@ -325,3 +319,5 @@ namespace Matrix4x4
 		return(xmmtx4x4Result);
 	}
 }
+
+

@@ -1,20 +1,39 @@
 #pragma once
-enum EVENT_TYPE : int8 { MOVE_EVENT, ATTACK_EVENT, STOP_MOVE_EVENT, WALK_EVENT };
+#include "IocpCore.h"
+#include "Session.h"
+enum EVENT_TYPE : int8 { MOVE_EVENT, ATTACK_EVENT};
 // queue
-class queueEvent abstract
-{
-
-};
-
-class moveEvent : queueEvent
+class queueEvent
 {
 public:
-	int8 key;
-	int8 type;
+	queueEvent() {};
+	virtual ~queueEvent() {};
+	virtual void Task() {};
 };
 
-class attackEvent : queueEvent
+class moveEvent : public queueEvent
 {
 public:
+	moveEvent() { };
+	virtual ~moveEvent() {};
+	int8 type = MOVE_EVENT;
+	int32 sid;
+	XMFLOAT3 velocity;
+public:
+	virtual void Task()
+	{
+		std::lock_guard<std::mutex> plg(ServerIocpCore._clients[sid]->_playerLock);
+		ServerIocpCore._clients[sid]->_playerInfo.SetVelocity(velocity);
+	};
+	
+};
+
+class attackEvent : public queueEvent
+{
+public:
+	attackEvent() {};
+	virtual ~attackEvent() {};
 	int8 type = ATTACK_EVENT;
+public:
+	virtual void Task() { };
 };

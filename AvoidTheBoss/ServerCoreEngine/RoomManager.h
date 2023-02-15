@@ -24,13 +24,12 @@ public:
 public:
 	RWLOCK;
 	std::list<int32> _cList; // 방에 속해있는 클라이언트 리스트
-	std::queue<queueEvent*> _eList; // 방에 속해 있는 클라이언트가 야기한 이벤트의 리스트
-	
-	STimer _rmTimer; // 해당 룸의 업데이트에 사용할 타이머
+	std::queue<queueEvent*> _jobQueue; // 방에 속해 있는 클라이언트가 야기한 이벤트 큐
+	std::mutex _jobQueueLock; // eventQueue 관리용 Lock
 
-	std::mutex _queueLock;
+	STimer _rmTimer; // 해당 룸의 업데이트에 사용할 타이머
 	int8 _status = ROOM_STATUS::EMPTY; // 방 상태
-	int32 _num = 0;
+	int32 _num = 0; // 방에 있는 인원 수
 };
 
 class RoomManager
@@ -40,6 +39,7 @@ public:
 	void ExitRoom(int32 sid, int16 rmNum);
 	void EnterRoom(int32 sid, int16 rmNum);
 	void CreateRoom(int32 sid);
+	void UpdateRooms();
 	void Init();
 public:
 	Room _rooms[100];

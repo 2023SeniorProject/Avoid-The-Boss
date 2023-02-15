@@ -70,14 +70,22 @@ void STimer::Tick(float fLockFPS)
 	//마지막으로 이 함수를 호출한 이후 경과한 시간을 계산한다. 
 	::QueryPerformanceCounter((LARGE_INTEGER*)&_fTimeCurrent);
 	float fTimeElapsed = float((_fTimeCurrent - _fTimeLast) * _fTimeScale); // 초단위로 변경
-
-
+	
 	//현재 시간을 m_nLastTime에 저장한다. 
 	_fTimeLast = _fTimeCurrent;
 
+	if (fabsf(fTimeElapsed - _fTimeElapsedAvg) < 1.0f) // 오차가 적다면
+	{
+		// 배열 값들을 한칸 씩 미룬다.
+		::memmove(&m_fFrameTime[1], m_fFrameTime, (MAX_SAMPLE_COUNT2 - 1) * sizeof(float));
+		m_fFrameTime[0] = fTimeElapsed;
+		
+		if (m_nSampleCount < MAX_SAMPLE_COUNT2) m_nSampleCount++;
+	}
 	
 	//프레임 수를 1 증가시키고 현재 프레임 처리 시간을 누적하여 저장한다. 
 	_nFramePerSec++;
+	_nWorldFrame++;
 	_totalElapsedTime += fTimeElapsed;
 	if (_totalElapsedTime > 1.0f)
 	{
@@ -89,7 +97,12 @@ void STimer::Tick(float fLockFPS)
 	//누적된 프레임 처리 시간의 평균을 구하여 프레임 처리 시간을 구한다. 
 	_fTimeElapsedAvg = 0.0f;
 	for (ULONG i = 0; i < m_nSampleCount; i++) _fTimeElapsedAvg += m_fFrameTime[i];
-	if (m_nSampleCount > 0) _fTimeElapsedAvg /= m_nSampleCount;
+	
+	if (m_nSampleCount > 0)
+	{
+		(_fTimeElapsedAvg) /= m_nSampleCount;
+		//std::cout << _fTimeElapsedAvg << std::endl;
+	}
 }
 
 unsigned long  STimer::GetFrameRate(LPTSTR lpszString, int nCharacters)

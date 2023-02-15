@@ -6,12 +6,16 @@
 using namespace std;
 //========== ROOM =============
 
+//    cList Lock 호출 타이밍
+//    1. 쓰는 경우 : 유저가 방에 들어오거나 나갈 때, cList 값을 갱신할 때
+//    2. 읽는 경우 : 방에 있는 유저에게 브로드 캐스팅 진행하는 경우 cList를 탐색할 때
+
 //=============================
 
 void Room::UserOut(int32 sid)
 {
 	{
-		WLock;
+		WLock; // cList Lock 쓰기 호출 
 		auto i = std::find(_cList.begin(), _cList.end(), sid); // 리스트에 있는지 탐색 후
 		if (i != _cList.end()) _cList.erase(i); // 리스트에서 제거
 	}
@@ -52,7 +56,7 @@ void Room::UserIn(int32 sid)
 	{
 		packet.success = 1;
 		{
-			WLock;
+			WLock; // cList Lock 쓰기 호출 
 			_cList.push_back(sid);
 			if (_cList.size() == 4) _status = ROOM_STATUS::FULL;
 		}
@@ -68,7 +72,7 @@ void Room::UserIn(int32 sid)
 
 void Room::BroadCasting(void* packet) // 방에 속하는 클라이언트에게만 전달하기
 {
-	RLock;
+	RLock; // cList Lock 읽기 호출 
 	for (auto i =  _cList.begin(); i != _cList.end(); ++i)
 	{
 		if (ServerIocpCore._clients[*i] == nullptr)
@@ -83,32 +87,40 @@ void Room::BroadCasting(void* packet) // 방에 속하는 클라이언트에게만 전달하기
 		}
 	}
 }
+
 void Room::Update()
 {
 	_rmTimer.Tick(0);
-	RLock;
+	RLock; // cList Lock 읽기 호출
+	{
+		std::lock_guard<std::mutex> ql(_jobQueueLock); // Queue Lock 호출
+		while (!_jobQueue.empty())
+		{
+			queueEvent* ev = _jobQueue.front();
+			if (ev != nullptr)
+			{
+				ev->Task(); // 이벤트를 처리한다.
+				delete ev;
+			}
+			_jobQueue.pop();
+		}
+	}
+	
+	// 그외에는 일반적인 업데이트 처리 계속해서 진행한다.
 	for (auto i = _cList.begin(); i != _cList.end(); ++i)
 	{
 		if (ServerIocpCore._clients[*i] == nullptr)
 		{
 			continue;
 		}
-
-		std::lock_guard<std::mutex> ql(_queueLock);
-		if (_eList.empty()) // queue에 이벤트가 들어왔다면 업데이트를 진행한다.
-		{
-			ServerIocpCore._clients[*i]->_playerInfo.Move(UNIT * 1.2f);
-			ServerIocpCore._clients[*i]->_playerInfo.Update(_rmTimer.GetTimeElapsed());
-			_eList.pop();
-		}
-
+		ServerIocpCore._clients[*i]->_playerInfo.Update(_rmTimer.GetTimeElapsed());
 	}
 }
 
 void Room::AddEvent(queueEvent* qe)
 {
-	std::lock_guard<std::mutex> ql(_queueLock);
-	_eList.push(qe);
+	std::lock_guard<std::mutex> ql(_jobQueueLock); // Queue Lock 호출
+	_jobQueue.push(qe);
 }
 // ======= RoomManager ========
 
@@ -150,6 +162,14 @@ void RoomManager::CreateRoom(int32 sid)
 	}
 }
 
+void RoomManager::UpdateRooms()
+{
+	for (int i = 0; i < _cap; ++i)
+	{
+		if (_rooms[i]._status == ROOM_STATUS::EMPTY) continue;
+		_rooms[i].Update();
+	}
+}
 void RoomManager::ExitRoom(int32 sid, int16 rmNum)
 {
 	_rooms[rmNum].UserOut(sid);

@@ -78,6 +78,12 @@
     <ClInclude Include="Timer.h">
       <Filter>Timer</Filter>
     </ClInclude>
+    <ClInclude Include="d3dx12.h">
+      <Filter>Shader</Filter>
+    </ClInclude>
+    <ClInclude Include="DDSTextureLoader12.h">
+      <Filter>Shader</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AvoidTheBoss.cpp">
@@ -110,6 +116,9 @@
     <ClCompile Include="stdafx.cpp">
       <Filter>Main</Filter>
     </ClCompile>
+    <ClCompile Include="DDSTextureLoader12.cpp">
+      <Filter>Shader</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="AvoidTheBoss.rc">
@@ -121,6 +130,9 @@
       <Filter>리소스 파일</Filter>
     </Image>
     <Image Include="AvoidTheBoss.ico">
+      <Filter>리소스 파일</Filter>
+    </Image>
+    <Image Include="Stone.dds">
       <Filter>리소스 파일</Filter>
     </Image>
   </ItemGroup>

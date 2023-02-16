@@ -31,8 +31,18 @@
 #include <DXGIDebug.h>
 #include <D3d12SDKLayers.h>
 
+#include "d3dx12.h"
 
-#include <ppltasks.h>
+#include <algorithm>
+#include <cassert>
+#include <memory>
+#include <new>
+#include <cstddef>
+#include <cstdint>
+#include <memory>
+#include <vector>
+#include <fstream>
+#include <filesystem>
 
 
 //----DirectXMath 라이브러리
@@ -86,6 +96,8 @@ extern ID3D12Resource* CreateBufferResource(ID3D12Device* pd3dDevice,
 	d3dHeapType = D3D12_HEAP_TYPE_UPLOAD, D3D12_RESOURCE_STATES d3dResourceStates =
 	D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER, ID3D12Resource** ppd3dUploadBuffer =
 	NULL);
+
+extern ID3D12Resource* CreateTextureResourceFromDDSFile(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, wchar_t* pszFileName, ID3D12Resource** ppd3dUploadBuffer, D3D12_RESOURCE_STATES d3dResourceStates = D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
 
 #define			EPSILON 1.0e-10f
 

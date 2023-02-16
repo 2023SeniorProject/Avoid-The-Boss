@@ -165,18 +165,18 @@ namespace
     inline HANDLE safe_handle(HANDLE h) noexcept { return (h == INVALID_HANDLE_VALUE) ? nullptr : h; }
 #endif
 
-#if !defined(NO_D3D12_DEBUG_NAME) && ( defined(_DEBUG) || defined(PROFILE) )
+    #if !defined(NO_D3D12_DEBUG_NAME) && ( defined(_DEBUG) || defined(PROFILE) )
     template<UINT TNameLength>
     inline void SetDebugObjectName(_In_ ID3D12DeviceChild* resource, _In_z_ const wchar_t(&name)[TNameLength]) noexcept
     {
         resource->SetName(name);
     }
-#else
+    #else
     template<UINT TNameLength>
     inline void SetDebugObjectName(_In_ ID3D12DeviceChild*, _In_z_ const wchar_t(&)[TNameLength]) noexcept
     {
     }
-#endif
+    #endif
 
     inline uint32_t CountMips(uint32_t width, uint32_t height) noexcept
     {
@@ -276,8 +276,8 @@ namespace
 
         *bitSize = 0;
 
-#ifdef _WIN32
-        // open the file
+    #ifdef _WIN32
+            // open the file
         ScopedHandle hFile(safe_handle(CreateFile2(
             fileName,
             GENERIC_READ, FILE_SHARE_READ, OPEN_EXISTING,
@@ -335,7 +335,7 @@ namespace
 
         size_t len = fileInfo.EndOfFile.LowPart;
 
-#else // !WIN32
+    #else // !WIN32
         std::ifstream inFile(std::filesystem::path(fileName), std::ios::in | std::ios::binary | std::ios::ate);
         if (!inFile)
             return E_FAIL;
@@ -369,7 +369,7 @@ namespace
         inFile.close();
 
         size_t len = fileLen;
-#endif
+    #endif
 
         // DDS files always start with the same magic number ("DDS ")
         auto const dwMagicNumber = *reinterpret_cast<const uint32_t*>(ddsData.get());
@@ -705,13 +705,13 @@ namespace
             numBytes = rowBytes * height;
         }
 
-#if defined(_M_IX86) || defined(_M_ARM) || defined(_M_HYBRID_X86_ARM64)
+    #if defined(_M_IX86) || defined(_M_ARM) || defined(_M_HYBRID_X86_ARM64)
         static_assert(sizeof(size_t) == 4, "Not a 32-bit platform!");
         if (numBytes > UINT32_MAX || rowBytes > UINT32_MAX || numRows > UINT32_MAX)
             return HRESULT_E_ARITHMETIC_OVERFLOW;
-#else
+    #else
         static_assert(sizeof(size_t) == 8, "Not a 64-bit platform!");
-#endif
+    #endif
 
         if (outNumBytes)
         {
@@ -991,7 +991,7 @@ namespace
             case 116: // D3DFMT_A32B32G32R32F
                 return DXGI_FORMAT_R32G32B32A32_FLOAT;
 
-                // No DXGI format maps to D3DFMT_CxV8U8
+            // No DXGI format maps to D3DFMT_CxV8U8
             }
         }
 
@@ -1208,7 +1208,7 @@ namespace
                         ++skipMip;
                     }
 
-                    if (pSrcBits + (NumBytes * d) > pEndBits)
+                    if (pSrcBits + (NumBytes*d) > pEndBits)
                     {
                         return HRESULT_E_HANDLE_EOF;
                     }
@@ -1626,7 +1626,7 @@ namespace
         _In_z_ const wchar_t* fileName,
         _In_ ID3D12Resource* texture) noexcept
     {
-#if !defined(NO_D3D12_DEBUG_NAME) && ( defined(_DEBUG) || defined(PROFILE) )
+    #if !defined(NO_D3D12_DEBUG_NAME) && ( defined(_DEBUG) || defined(PROFILE) )
         const wchar_t* pstrName = wcsrchr(fileName, '\\');
         if (!pstrName)
         {
@@ -1637,10 +1637,10 @@ namespace
             pstrName++;
         }
         texture->SetName(pstrName);
-#else
+    #else
         UNREFERENCED_PARAMETER(fileName);
         UNREFERENCED_PARAMETER(texture);
-#endif
+    #endif
     }
 } // anonymous namespace
 

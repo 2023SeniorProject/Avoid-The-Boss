@@ -1,4 +1,2 @@
-﻿  Shader.cpp
-C:\Users\OH.S.D\Desktop\졸작\졸작\Avoid-The-Boss\Senior_project_ver2\Shader.cpp(268,13): warning C4244: '초기화 중': 'float'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-C:\Users\OH.S.D\Desktop\졸작\졸작\Avoid-The-Boss\Senior_project_ver2\Shader.cpp(269,13): warning C4244: '초기화 중': 'float'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-  Senior_project_ver2.vcxproj -> C:\Users\OH.S.D\Desktop\졸작\졸작\Avoid-The-Boss\Senior_project_ver2\x64\Debug\Senior_project_ver2.exe
+﻿  stdafx.cpp
+C:\SeniorProject\Avoid-The-Boss\Senior_project_ver2\stdafx.cpp(4,10): fatal  error C1083: 포함 파일을 열 수 없습니다. 'DDSTextureLoader12.h': No such file or directory

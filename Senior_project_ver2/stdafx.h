@@ -10,7 +10,7 @@
 //----Windows 헤더 파일
 #include <windows.h>
 
-#pragma comment(lib, "winmm.lib")
+//#pragma comment(lib, "winmm.lib")
 
 //----C 런타임 헤더 파일
 #include <stdlib.h>
@@ -81,12 +81,16 @@ using Microsoft::WRL::ComPtr;
 //1.0f = 1cm / 100.0f = 1m
 #define UNIT 100.0f // 1m = 1 unit
 
+extern UINT	gnCbvSrvDescriptorIncrementSize;
+
 //----버퍼 리소스 생성 함수
 extern ID3D12Resource* CreateBufferResource(ID3D12Device* pd3dDevice,
-	ID3D12GraphicsCommandList* pd3dCommandList, void* pData, UINT nBytes, D3D12_HEAP_TYPE
+	ID3D12GraphicsCommandList* pd3dCommandList, const void* pData, UINT nBytes, D3D12_HEAP_TYPE
 	d3dHeapType = D3D12_HEAP_TYPE_UPLOAD, D3D12_RESOURCE_STATES d3dResourceStates =
 	D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER, ID3D12Resource** ppd3dUploadBuffer =
 	NULL);
+
+extern ID3D12Resource* CreateTextureResourceFromDDSFile(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, const wchar_t* pszFileName, ID3D12Resource** ppd3dUploadBuffer, D3D12_RESOURCE_STATES d3dResourceStates = D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
 
 #define			EPSILON 1.0e-10f
 

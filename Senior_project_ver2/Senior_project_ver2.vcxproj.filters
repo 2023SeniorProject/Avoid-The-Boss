@@ -57,7 +57,10 @@
     <ClInclude Include="BasicReaderWriter.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="DDSTextureLoader12.h">
+    <ClInclude Include="Material.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="d3dx12.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
   </ItemGroup>
@@ -98,7 +101,7 @@
     <ClCompile Include="BasicReaderWriter.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="DDSTextureLoader12.cpp">
+    <ClCompile Include="Material.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
   </ItemGroup>
@@ -112,6 +115,12 @@
       <Filter>리소스 파일</Filter>
     </Image>
     <Image Include="Senior_project_ver2.ico">
+      <Filter>리소스 파일</Filter>
+    </Image>
+    <Image Include="Texture.dds">
+      <Filter>리소스 파일</Filter>
+    </Image>
+    <Image Include="Stone01.dds">
       <Filter>리소스 파일</Filter>
     </Image>
   </ItemGroup>

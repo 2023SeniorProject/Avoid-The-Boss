@@ -10,9 +10,6 @@
     <Filter Include="FrameWork">
       <UniqueIdentifier>{55cbbf7f-a1b6-47a6-9633-00d8dc72369e}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Main">
-      <UniqueIdentifier>{8ad379e7-e43a-4126-b4d2-6aa34584f282}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Shader">
       <UniqueIdentifier>{68c31b70-264f-4710-ba2d-2e8440cbd608}</UniqueIdentifier>
     </Filter>
@@ -28,15 +25,18 @@
     <Filter Include="Timer">
       <UniqueIdentifier>{fea8fce1-939a-4db8-9821-3e11bc60fb22}</UniqueIdentifier>
     </Filter>
-    <Filter Include="MainGame">
-      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
-      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
-    </Filter>
     <Filter Include="Resource">
       <UniqueIdentifier>{58264972-60ea-4db8-b6e4-3967c8ed7c7b}</UniqueIdentifier>
     </Filter>
     <Filter Include="IocpCore">
       <UniqueIdentifier>{e41ad9a1-45a4-4245-ab77-10b9b05eb4ff}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Core">
+      <UniqueIdentifier>{8ad379e7-e43a-4126-b4d2-6aa34584f282}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Main">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -50,7 +50,7 @@
       <Filter>FrameWork</Filter>
     </ClInclude>
     <ClInclude Include="targetver.h">
-      <Filter>Main</Filter>
+      <Filter>Core</Filter>
     </ClInclude>
     <ClInclude Include="Shader.h">
       <Filter>Shader</Filter>
@@ -65,16 +65,16 @@
       <Filter>GameObject</Filter>
     </ClInclude>
     <ClInclude Include="AvoidTheBoss.h">
-      <Filter>MainGame</Filter>
+      <Filter>Main</Filter>
     </ClInclude>
     <ClInclude Include="Resource.h">
-      <Filter>Main</Filter>
+      <Filter>Core</Filter>
     </ClInclude>
     <ClInclude Include="Timer.h">
       <Filter>Timer</Filter>
     </ClInclude>
     <ClInclude Include="pch.h">
-      <Filter>Main</Filter>
+      <Filter>Core</Filter>
     </ClInclude>
     <ClInclude Include="clientIocpCore.h">
       <Filter>IocpCore</Filter>
@@ -85,7 +85,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AvoidTheBoss.cpp">
-      <Filter>MainGame</Filter>
+      <Filter>Main</Filter>
     </ClCompile>
     <ClCompile Include="Camera.cpp">
       <Filter>Camera</Filter>
@@ -112,7 +112,7 @@
       <Filter>Timer</Filter>
     </ClCompile>
     <ClCompile Include="pch.cpp">
-      <Filter>Main</Filter>
+      <Filter>Core</Filter>
     </ClCompile>
     <ClCompile Include="clientIocpCore.cpp">
       <Filter>IocpCore</Filter>

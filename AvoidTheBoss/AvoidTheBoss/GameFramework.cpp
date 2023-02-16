@@ -316,7 +316,7 @@ void CGameFramework::BuildObjects()
 
 	clientIocpCore._client->_player = new CCubePlayer(m_pd3dDevice, m_pd3dCommandList, m_pScene->GetGraphicsRootSignature(), 1);
 	clientIocpCore._client->_other = new DummyCubePlayer(m_pd3dDevice, m_pd3dCommandList, m_pScene->GetGraphicsRootSignature(), 1);
-	clientIocpCore._client->_other->SetPosition(XMFLOAT3(100, 75, 0));
+	clientIocpCore._client->_other->SetPosition(XMFLOAT3(0, 75, 0));
 	m_pCamera = clientIocpCore._client->_player->GetCamera();
 
 	//씬 객체를 생성하기 위하여 필요한 그래픽 명령 리스트들을 명령 큐에 추가한다. 
@@ -389,7 +389,7 @@ void CGameFramework::ProcessInput()
 	}
 
 
-	if (m_lastKeyInput != dwDirection) // 이전과 방향(키입력이 다른 경우에만 무브 이벤트 패킷을 보낸다)
+	if (m_lastKeyInput != dwDirection || (cxDelta != 0.0f) || (cyDelta != 0.0f)) // 이전과 방향(키입력이 다른 경우에만 무브 이벤트 패킷을 보낸다)
 	{
 		
 		C2S_MOVE packet;

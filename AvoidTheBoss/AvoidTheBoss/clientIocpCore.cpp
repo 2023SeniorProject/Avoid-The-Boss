@@ -121,7 +121,7 @@ void CClientSession::ProcessPacket(char* packet)
 		std::lock_guard<std::mutex> lg(clientIocpCore._client->_otherLock);
 		XMFLOAT3 velocity = { mp->x,mp->y,mp->z };
 		std::cout << mp->x << " " << mp->z << std::endl;
-		clientIocpCore._client->_other->SetVelocity(velocity);
+		if(_sid != mp->sid ) clientIocpCore._client->_other->SetVelocity(velocity);
 	}
 	break;
 	case S_PACKET_TYPE::SCHAT:

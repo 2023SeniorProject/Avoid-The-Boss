@@ -35,6 +35,9 @@
     <Filter Include="Resource">
       <UniqueIdentifier>{58264972-60ea-4db8-b6e4-3967c8ed7c7b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="IocpCore">
+      <UniqueIdentifier>{e41ad9a1-45a4-4245-ab77-10b9b05eb4ff}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Camera.h">
@@ -73,6 +76,12 @@
     <ClInclude Include="pch.h">
       <Filter>Main</Filter>
     </ClInclude>
+    <ClInclude Include="clientIocpCore.h">
+      <Filter>IocpCore</Filter>
+    </ClInclude>
+    <ClInclude Include="DummyPlayer.h">
+      <Filter>Player</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AvoidTheBoss.cpp">
@@ -104,6 +113,12 @@
     </ClCompile>
     <ClCompile Include="pch.cpp">
       <Filter>Main</Filter>
+    </ClCompile>
+    <ClCompile Include="clientIocpCore.cpp">
+      <Filter>IocpCore</Filter>
+    </ClCompile>
+    <ClCompile Include="DummyPlayer.cpp">
+      <Filter>Player</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

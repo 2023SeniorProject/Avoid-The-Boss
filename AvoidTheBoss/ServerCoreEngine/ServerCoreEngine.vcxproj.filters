@@ -96,9 +96,6 @@
     <ClInclude Include="OBDC_MGR.h">
       <Filter>DB</Filter>
     </ClInclude>
-    <ClInclude Include="protocol.h">
-      <Filter>IocpCore</Filter>
-    </ClInclude>
     <ClInclude Include="PlayerInfo.h">
       <Filter>PlayerInfo</Filter>
     </ClInclude>
@@ -106,6 +103,9 @@
       <Filter>STimer</Filter>
     </ClInclude>
     <ClInclude Include="packetEvent.h">
+      <Filter>Packet</Filter>
+    </ClInclude>
+    <ClInclude Include="protocol.h">
       <Filter>Packet</Filter>
     </ClInclude>
   </ItemGroup>

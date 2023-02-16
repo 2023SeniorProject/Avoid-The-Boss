@@ -1,9 +1,8 @@
 #include "pch.h"
 #include "GameFramework.h"
+#include "clientIocpCore.h"
 
 #define _WITH_PLAYER_TOP // 플레이어 깊이 버퍼값 1.0f
-
-NCIocpCore ncIocpCore;
 
 CGameFramework::CGameFramework()
 {
@@ -315,10 +314,10 @@ void CGameFramework::BuildObjects()
 	m_pScene = new CScene();
 	if (m_pScene) m_pScene->BuildObjects(m_pd3dDevice, m_pd3dCommandList);
 
-	ncIocpCore._client->_player = new CCubePlayer(m_pd3dDevice, m_pd3dCommandList, m_pScene->GetGraphicsRootSignature(), 1);
-	for(int i = 0; i < 3; ++i)
-		ncIocpCore._client->_other[i] = new CCubePlayer(m_pd3dDevice, m_pd3dCommandList, m_pScene->GetGraphicsRootSignature(), 1);
-	m_pCamera = ncIocpCore._client->_player->GetCamera();
+	clientIocpCore._client->_player = new CCubePlayer(m_pd3dDevice, m_pd3dCommandList, m_pScene->GetGraphicsRootSignature(), 1);
+	clientIocpCore._client->_other = new DummyCubePlayer(m_pd3dDevice, m_pd3dCommandList, m_pScene->GetGraphicsRootSignature(), 1);
+	clientIocpCore._client->_other->SetPosition(XMFLOAT3(100, 75, 0));
+	m_pCamera = clientIocpCore._client->_player->GetCamera();
 
 	//씬 객체를 생성하기 위하여 필요한 그래픽 명령 리스트들을 명령 큐에 추가한다. 
 	m_pd3dCommandList->Close();
@@ -377,13 +376,14 @@ void CGameFramework::ProcessInput()
 			/*cxDelta는 y-축의 회전을 나타내고 cyDelta는 x-축의 회전을 나타낸다. 오른쪽 마우스 버튼이 눌려진 경우
 			cxDelta는 z-축의 회전을 나타낸다.*/
 			if (pKeyBuffer[VK_RBUTTON] & 0xF0)
-				ncIocpCore._client->_player->Rotate(cyDelta, 0.0f, -cxDelta);
+				clientIocpCore._client->_player->Rotate(cyDelta, 0.0f, -cxDelta);
 			else
-				ncIocpCore._client->_player->Rotate(cyDelta, cxDelta, 0.0f);
+				clientIocpCore._client->_player->Rotate(cyDelta, cxDelta, 0.0f);
 		}
 
 		/*플레이어를 dwDirection 방향으로 이동한다(실제로는 속도 벡터를 변경한다). 이동 거리는 시간에 비례하도록 한다. 플레이어의 이동 속력은 (1.3UNIT/초)로 가정한다.*/
-		if (dwDirection) ncIocpCore._client->_player->Move(dwDirection, (1.2f * UNIT));
+		if (dwDirection) clientIocpCore._client->_player->Move(dwDirection, (1.2f * UNIT));
+		else clientIocpCore._client->_player->SetVelocity(XMFLOAT3(0, 0, 0));
 		// 속도만 더해주고 
 
 	}
@@ -391,21 +391,25 @@ void CGameFramework::ProcessInput()
 
 	if (m_lastKeyInput != dwDirection) // 이전과 방향(키입력이 다른 경우에만 무브 이벤트 패킷을 보낸다)
 	{
-		if (dwDirection == 0) std::cout <<
-			ncIocpCore._client->_player->GetPosition().x << " , " << ncIocpCore._client->_player->GetPosition().z << std::endl;
+		
 		C2S_MOVE packet;
 		packet.size = sizeof(C2S_MOVE);
 		packet.type = C_PACKET_TYPE::MOVE;
-
-		packet.x = ncIocpCore._client->_player->GetVelocity().x;
-		packet.y = ncIocpCore._client->_player->GetVelocity().y;
-		packet.z = ncIocpCore._client->_player->GetVelocity().z;
-		ncIocpCore._client->DoSend(&packet);
+		packet.x = clientIocpCore._client->_player->GetVelocity().x;
+		packet.y = clientIocpCore._client->_player->GetVelocity().y;
+		packet.z = clientIocpCore._client->_player->GetVelocity().z;
+		clientIocpCore._client->DoSend(&packet);
 	}
 	m_lastKeyInput = dwDirection;
 
 	//카메라를 갱신한다. 중력과 마찰력의 영향을 속도 벡터에 적용한다.
-	ncIocpCore._client->_player->Update(m_Timer.GetTimeElapsed());
+	{
+		//if (dwDirection == 0) 
+		std::cout << clientIocpCore._client->_other->GetVelocity().x << " , " << clientIocpCore._client->_other->GetVelocity().z << std::endl;
+		std::lock_guard<std::mutex> lg(clientIocpCore._client->_otherLock);
+		clientIocpCore._client->_other->Update(m_Timer.GetTimeElapsed());
+	}
+	clientIocpCore._client->_player->Update(m_Timer.GetTimeElapsed());
 
 	
 	/*std::cout << "(" << ncIocpCore._client->_player->GetPosition().x << "," <<
@@ -474,13 +478,9 @@ void CGameFramework::FrameAdvance() // 여기서 업데이트랑 렌더링 동시에 진행하는 
 		D3D12_CLEAR_FLAG_DEPTH | D3D12_CLEAR_FLAG_STENCIL, 1.0f, 0, 0, NULL);
 #endif
 	//3인칭 카메라일 때 플레이어를 렌더링한다. 
-	if (ncIocpCore._client->_player) ncIocpCore._client->_player->Render(m_pd3dCommandList, m_pCamera);
-
-	for (int i = 0; i < 3; ++i)
-	{
-		if (ncIocpCore._client->_other[i]) 
-			ncIocpCore._client->_other[i]->Render(m_pd3dCommandList, m_pCamera);
-	}
+	if (clientIocpCore._client->_player) clientIocpCore._client->_player->Render(m_pd3dCommandList, m_pCamera);
+	if (clientIocpCore._client->_other)  clientIocpCore._client->_other->Render(m_pd3dCommandList, m_pCamera);
+	
 	d3dResourceBarrier.Transition.StateBefore = D3D12_RESOURCE_STATE_RENDER_TARGET;
 	d3dResourceBarrier.Transition.StateAfter = D3D12_RESOURCE_STATE_PRESENT;
 	d3dResourceBarrier.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
@@ -571,9 +571,9 @@ void CGameFramework::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPA
 			break;
 			/*‘F1’ 키를 누르면 1인칭 카메라, ‘F3’ 키를 누르면 3인칭 카메라로 변경한다.*/
 		case VK_F1:
-			if (ncIocpCore._client->_player) m_pCamera = ncIocpCore._client->_player->ChangeCamera(FIRST_PERSON_CAMERA, m_Timer.GetTimeElapsed());
+			if (clientIocpCore._client->_player) m_pCamera = clientIocpCore._client->_player->ChangeCamera(FIRST_PERSON_CAMERA, m_Timer.GetTimeElapsed());
 		case VK_F3:
-			if (ncIocpCore._client->_player) m_pCamera = ncIocpCore._client->_player->ChangeCamera(THIRD_PERSON_CAMERA, m_Timer.GetTimeElapsed());
+			if (clientIocpCore._client->_player) m_pCamera = clientIocpCore._client->_player->ChangeCamera(THIRD_PERSON_CAMERA, m_Timer.GetTimeElapsed());
 			break;
 		case VK_F9:
 			//“F9” 키가 눌려지면 윈도우 모드와 전체화면 모드의 전환을 처리한다. 

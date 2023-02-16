@@ -129,15 +129,27 @@ void ServerSession::ProcessPacket(char* packet)
 		{
 			std::lock_guard<std::mutex> pl(_playerLock); // 플레이어 정보 갱신
 			C2S_MOVE* movePacket = reinterpret_cast<C2S_MOVE*>(packet);
+			
 			XMFLOAT3 velocity;
 			velocity.x = movePacket->x;
 			velocity.y = movePacket->y;
 			velocity.z = movePacket->z;
+
 			moveEvent* mv = new moveEvent;
 			mv->type = EVENT_TYPE::MOVE_EVENT;
 			mv->velocity = velocity;
 			mv->sid = _sid;
 			queueEvent* me = static_cast<queueEvent*>(mv);
+
+			// move 패킷 브로드 캐스팅
+			S2C_MOVE packet;
+			packet.size = sizeof(S2C_MOVE);
+			packet.type = S_PACKET_TYPE::SMOVE;
+			packet.sid = _sid;
+			packet.x  = velocity.x;
+			packet.y  = velocity.y;
+			packet.z  = velocity.z;
+			ServerIocpCore._rmgr->_rooms[_myRm].BroadCasting(&packet);
 			ServerIocpCore._rmgr->_rooms[_myRm].AddEvent(me);
 		}
 		break;

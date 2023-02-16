@@ -4,9 +4,8 @@
 //----2 화면 출력을 위한 처리 - 게임 객체 생성과 관리, 사용자 입력, 애니메이션 작업
 #include "Timer.h"
 #include "Scene.h"
+#include "clientIocpCore.h"
 #include "Camera.h"
-#include "Player.h"
-
 
 
 class CGameFramework

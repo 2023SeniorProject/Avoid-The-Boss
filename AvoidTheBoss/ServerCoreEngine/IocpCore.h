@@ -41,22 +41,22 @@ public:
 
 class ClientSession;
 
-class CIocpCore : public IocpCore
-{
-public:
-	CIocpCore();
-	~CIocpCore();
-	void InitConnect(const char* address);
-	void DoConnect(void* loginInfo);
-	virtual void Disconnect(int32 sid) override;
-public:
-	RWLOCK;
-	ClientSession* _client;
-	SOCKADDR_IN _serveraddr;
-};
+//class CIocpCore : public IocpCore
+//{
+//public:
+//	CIocpCore();
+//	~CIocpCore();
+//	void InitConnect(const char* address);
+//	void DoConnect(void* loginInfo);
+//	virtual void Disconnect(int32 sid) override;
+//public:
+//	RWLOCK;
+//	ClientSession* _client;
+//	SOCKADDR_IN _serveraddr;
+//};
 
 
 
 extern SIocpCore ServerIocpCore;
 
-extern CIocpCore ClientIocpCore;
+// extern CIocpCore ClientIocpCore;

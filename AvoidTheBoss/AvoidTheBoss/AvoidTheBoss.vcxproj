@@ -160,6 +160,8 @@
   <ItemGroup>
     <ClInclude Include="AvoidTheBoss.h" />
     <ClInclude Include="Camera.h" />
+    <ClInclude Include="clientIocpCore.h" />
+    <ClInclude Include="DummyPlayer.h" />
     <ClInclude Include="GameFramework.h" />
     <ClInclude Include="GameObject.h" />
     <ClInclude Include="Mesh.h" />
@@ -174,6 +176,8 @@
   <ItemGroup>
     <ClCompile Include="AvoidTheBoss.cpp" />
     <ClCompile Include="Camera.cpp" />
+    <ClCompile Include="clientIocpCore.cpp" />
+    <ClCompile Include="DummyPlayer.cpp" />
     <ClCompile Include="GameFramework.cpp" />
     <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="Mesh.cpp" />

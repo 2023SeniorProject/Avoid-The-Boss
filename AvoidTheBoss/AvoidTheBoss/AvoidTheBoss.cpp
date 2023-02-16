@@ -36,15 +36,15 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     
     UNREFERENCED_PARAMETER(hPrevInstance);
     UNREFERENCED_PARAMETER(lpCmdLine);
-    SocketUtil::Init();
-    
-   /* int retval = DialogBox(hInstance, MAKEINTRESOURCE(IDD_LOGINDIALOG), NULL, reinterpret_cast<DLGPROC>(MyDialogBox));
+   SocketUtil::Init();
+  
+    int retval = DialogBox(hInstance, MAKEINTRESOURCE(IDD_LOGINDIALOG), NULL, reinterpret_cast<DLGPROC>(MyDialogBox));
     if (retval == -1 || retval == 2)
     {
-        SocketUtil::Close(ncIocpCore._client->_sock);
+        SocketUtil::Close(clientIocpCore._client->_sock);
         SocketUtil::Clear();
         return 0;
-    }*/
+    }
     // 전역 문자열을 초기화합니다.
     LoadStringW(hInstance, IDS_APP_TITLE, szTitle, MAX_LOADSTRING);
     LoadStringW(hInstance, IDC_AVOIDTHEBOSS, szWindowClass, MAX_LOADSTRING);
@@ -65,19 +65,18 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
         {
             while (true)
             {
-                if (!ncIocpCore.Processing()) break;
+                if (!clientIocpCore.Processing()) break;
                 std::this_thread::sleep_for(0ms);
             }
         }
     );
-    while (1)
+    while (true)
     {
         if (::PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
         {
             if (msg.message == WM_QUIT)
             {
-                SocketUtil::Close(ncIocpCore._client->_sock);
-                //SocketUtil::Clear();
+                SocketUtil::Close(clientIocpCore._client->_sock);
                 break;
             }
             if (!::TranslateAccelerator(msg.hwnd, hAccelTable, &msg))
@@ -91,6 +90,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
           
             gGameFramework.FrameAdvance(); // 처리할 윈도우 메세지가 큐에 없을 때 게임프로그램이 CPU사용
         }
+        std::this_thread::sleep_for(0ms);
     }
  
     GCThreadManager->Join();
@@ -246,18 +246,18 @@ BOOL CALLBACK MyDialogBox(HWND hWndDlg, UINT message, WPARAM wParam, LPARAM lPar
             loginPacket.type = C_PACKET_TYPE::ACQ_LOGIN;
             GetDlgItemText(hWndDlg, IDC_ID, loginPacket.name, 10);
             GetDlgItemText(hWndDlg, IDC_PW, loginPacket.pw, 10);
-            ncIocpCore.InitConnect("127.0.0.1");
-            ncIocpCore.DoConnect(&loginPacket);
+            clientIocpCore.InitConnect("127.0.0.1");
+            clientIocpCore.DoConnect(&loginPacket);
             while (true)
             {
-                if (ncIocpCore.Processing())
+                if (clientIocpCore.Processing())
                 {
-                    if (ncIocpCore._client->_curScene == 0)
+                    if (clientIocpCore._client->_curScene == 0)
                     {
                         EndDialog(hWndDlg, 1);
                         return TRUE;
                     }
-                    else if (ncIocpCore._client->_curScene == -2)
+                    else if (clientIocpCore._client->_curScene == -2)
                     {
                         EndDialog(hWndDlg, -1);
                         return TRUE;

@@ -100,10 +100,17 @@ void Room::Update()
 			if (ev != nullptr)
 			{
 				ev->Task(); // 이벤트를 처리한다.
+				
 				delete ev;
 			}
 			_jobQueue.pop();
 		}
+	/*	S2C_MOVE packet;
+		packet.size = sizeof(S2C_MOVE);
+		packet.type = S_PACKET_TYPE::SMOVE;
+		packet.sid = 0;
+		packet.x 
+		ServerIocpCore._rmgr->_rooms[_num].BroadCasting(&packet);*/
 	}
 	
 	// 그외에는 일반적인 업데이트 처리 계속해서 진행한다.

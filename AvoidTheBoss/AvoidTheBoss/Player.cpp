@@ -36,10 +36,11 @@ CPlayer::~CPlayer()
 누를 때 변경된다. 플레이어의 이동 방향(dwDirection)에 따라 플레이어를 fDistance 만큼 이동한다.*/
 void CPlayer::Move(DWORD dwDirection, float fDistance)
 {
+	XMFLOAT3 xmf3Shift = XMFLOAT3(0, 0, 0);
 	if (dwDirection)
 	{
 		// xmf3Shift == 방향 벡터
-		XMFLOAT3 xmf3Shift = XMFLOAT3(0, 0, 0);
+
 		//화살표 키 ‘↑’를 누르면 로컬 z-축 방향으로 이동(전진)한다. ‘↓’를 누르면 반대 방향으로 이동한다. 
 		if (dwDirection & DIR_FORWARD) xmf3Shift = Vector3::Add(xmf3Shift, m_xmf3Look,
 			fDistance);
@@ -166,9 +167,7 @@ void CPlayer::Update(float fTimeElapsed)
 
 	//카메라의 카메라 변환 행렬을 다시 생성한다. 
 	m_pCamera->RegenerateViewMatrix();
-	
-	m_xmf3Velocity = XMFLOAT3(0.0f, 0.0f, 0.0f);
-	
+	m_xmf3Velocity = XMFLOAT3(0, 0, 0);
 }
 
 void CPlayer::CreateShaderVariables(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList)

@@ -91,7 +91,7 @@ void Room::BroadCasting(void* packet) // 방에 속하는 클라이언트에게만 전달하기
 void Room::Update()
 {
 	_rmTimer.Tick(0);
-	RLock; // cList Lock 읽기 호출
+	
 	{
 		std::lock_guard<std::mutex> ql(_jobQueueLock); // Queue Lock 호출
 		while (!_jobQueue.empty())
@@ -105,14 +105,8 @@ void Room::Update()
 			}
 			_jobQueue.pop();
 		}
-	/*	S2C_MOVE packet;
-		packet.size = sizeof(S2C_MOVE);
-		packet.type = S_PACKET_TYPE::SMOVE;
-		packet.sid = 0;
-		packet.x 
-		ServerIocpCore._rmgr->_rooms[_num].BroadCasting(&packet);*/
 	}
-	
+	RLock; // cList Lock 읽기 호출
 	// 그외에는 일반적인 업데이트 처리 계속해서 진행한다.
 	for (auto i = _cList.begin(); i != _cList.end(); ++i)
 	{

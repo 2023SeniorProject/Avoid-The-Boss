@@ -4,11 +4,19 @@
 PlayerInfo::PlayerInfo() 
 {
 	
+	m_xmf3Right = XMFLOAT3(1.0f, 0.0f, 0.0f);
+	m_xmf3Up = XMFLOAT3(0.0f, 1.0f, 0.0f);
+	m_xmf3Look = XMFLOAT3(0.0f, 0.0f, 1.0f);
 
-	_playerPos = XMFLOAT3(0.0f, 75.0f, 0.0f);
+	m_xmf3Position = XMFLOAT3(0.0f, 75.0f, 0.0f);
 	m_xmf3Velocity = XMFLOAT3(0.0f, 0.0f, 0.0f);
 	m_xmf3Gravity = XMFLOAT3(0.0f, 0.0f, 0.0f);
 	m_pPlayerUpdatedContext = NULL;
+
+
+	m_fPitch = 0.0f;
+	m_fRoll = 0.0f;
+	m_fYaw = 0.0f;
 	
 }
 
@@ -16,28 +24,88 @@ PlayerInfo::~PlayerInfo()
 {
 }
 
+void PlayerInfo::Move(uint8 dwDirection, float fDistance)
+{
+	if (dwDirection)
+	{
+		// xmf3Shift == 방향 벡터
+		XMFLOAT3 xmf3Shift = XMFLOAT3(0, 0, 0);
+		//화살표 키 ‘↑’를 누르면 로컬 z-축 방향으로 이동(전진)한다. ‘↓’를 누르면 반대 방향으로 이동한다. 
+		if (dwDirection & DIR_FORWARD) xmf3Shift = Vector3::Add(xmf3Shift, m_xmf3Look,
+			fDistance);
+		if (dwDirection & DIR_BACKWARD) xmf3Shift = Vector3::Add(xmf3Shift, m_xmf3Look,
+			-fDistance);
+
+		//화살표 키 ‘→’를 누르면 로컬 x-축 방향으로 이동한다. ‘←’를 누르면 반대 방향으로 이동한다. 
+		if (dwDirection & DIR_RIGHT)
+			xmf3Shift = Vector3::Add(xmf3Shift, m_xmf3Right,
+				fDistance);
+		if (dwDirection & DIR_LEFT) xmf3Shift = Vector3::Add(xmf3Shift, m_xmf3Right,
+			-fDistance);
+
+		//플레이어를 현재 위치 벡터에서 xmf3Shift 벡터만큼 이동한다. 
+		SetSpeed(xmf3Shift);
+	}
+}
+
+void PlayerInfo::Rotate(float x, float y, float z)
+{
+
+
+	if (x != 0.0f)
+	{
+		m_fPitch += x;
+		if (m_fPitch > +89.0f) { x -= (m_fPitch - 89.0f); m_fPitch = +89.0f; }
+		if (m_fPitch < -89.0f) { x -= (m_fPitch + 89.0f); m_fPitch = -89.0f; }
+	}
+	if (y != 0.0f)
+	{
+
+		m_fYaw += y;
+		if (m_fYaw > 360.0f) m_fYaw -= 360.0f;
+		if (m_fYaw < 0.0f) m_fYaw += 360.0f;
+	}
+	if (z != 0.0f)
+	{
+
+		m_fRoll += z;
+		if (m_fRoll > +20.0f) { z -= (m_fRoll - 20.0f); m_fRoll = +20.0f; }
+		if (m_fRoll < -20.0f) { z -= (m_fRoll + 20.0f); m_fRoll = -20.0f; }
+	}
+
+
+	if (y != 0.0f)
+	{
+		XMMATRIX xmmtxRotate = XMMatrixRotationAxis(XMLoadFloat3(&m_xmf3Up),
+			XMConvertToRadians(y));
+		m_xmf3Look = Vector3::TransformNormal(m_xmf3Look, xmmtxRotate);
+		m_xmf3Right = Vector3::TransformNormal(m_xmf3Right, xmmtxRotate);
+	}
+
+	m_xmf3Look = Vector3::Normalize(m_xmf3Look);
+	m_xmf3Right = Vector3::CrossProduct(m_xmf3Up, m_xmf3Look, true);
+	m_xmf3Up = Vector3::CrossProduct(m_xmf3Look, m_xmf3Right, true);
+}
+
 void PlayerInfo::UpdateMove(const XMFLOAT3& xmf3Shift)
 {
 	//플레이어를 현재 위치 벡터에서 xmf3Shift 벡터만큼 이동한다. 
-	_playerPos = Vector3::Add(_playerPos, xmf3Shift);
+	m_xmf3Position = Vector3::Add(m_xmf3Position, xmf3Shift);
 }
 
-//플레이어를 로컬 x-축, y-축, z-축을 중심으로 회전한다.
-
-
-
-//이 함수는 매 프레임마다 호출된다. 플레이어의 속도 벡터에 중력과 마찰력 등을 적용한다.
 void PlayerInfo::Update(float fTimeElapsed)
 {
 	//플레이어를 속도 벡터 만큼 실제로 이동한다(카메라도 이동될 것이다). 
 	XMFLOAT3 xmf3Velocity = Vector3::ScalarProduct(m_xmf3Velocity, fTimeElapsed, false);
-	//std::cout << xmf3Velocity.x << " " << xmf3Velocity.z << " " << fTimeElapsed << std::endl;
 	UpdateMove(xmf3Velocity);
-	//PrintPlayerInfo();
 	if (m_pPlayerUpdatedContext) OnPlayerUpdateCallback(fTimeElapsed);
 
 }
 
+void PlayerInfo::SetSpeed(const XMFLOAT3& xmf3Shift)
+{
+	m_xmf3Velocity = Vector3::Add(m_xmf3Velocity, xmf3Shift);
+}
 
 
 

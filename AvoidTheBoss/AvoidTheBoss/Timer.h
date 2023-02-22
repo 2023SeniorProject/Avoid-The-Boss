@@ -3,6 +3,8 @@ const ULONG MAX_SAMPLE_COUNT = 50; // 50회의 프레임 처리시간을 누적하여 평균한다
 
 class CTimer
 {
+public:
+	unsigned long	m_nWorldFrame;   //초당 프레임 
 private:
 	double			m_fTimeScale; //Scale Counter의 양 1초 단위로 바꾸기 위해서 생성
 	float			m_fTimeElapsed; // 평균 프레임 처리 시간 1 / Frame 초
@@ -20,7 +22,7 @@ private:
 
 	unsigned long	m_nCurrentFrameRate;  //1초 동안 나온 프레임 수
 	unsigned long	m_nFramesPerSecond;   //초당 프레임
-	unsigned long	m_nWorldFrame;   //초당 프레임 
+	
 	float			m_fFPSTimeElapsed;    //프레임 레이트 계산 소요 시간
 
 	bool			m_bStopped;

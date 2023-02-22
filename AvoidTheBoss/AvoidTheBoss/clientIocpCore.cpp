@@ -119,15 +119,25 @@ void CClientSession::ProcessPacket(char* packet)
 	{
 		S2C_MOVE* mp = reinterpret_cast<S2C_MOVE*>(packet);
 		std::lock_guard<std::mutex> lg(clientIocpCore._client->_otherLock);
-		XMFLOAT3 velocity = { mp->x,mp->y,mp->z };
-		std::cout << mp->x << " " << mp->z << std::endl;
-		if(_sid != mp->sid ) clientIocpCore._client->_other->SetVelocity(velocity);
+		if(_sid != mp->sid ) clientIocpCore._client->_other->Move(mp->key, (UNIT * 1.2f));
+	}
+	break;
+
+	case S_PACKET_TYPE::SROTATE:
+	{
+		S2C_ROTATE* mp = reinterpret_cast<S2C_ROTATE*>(packet);
+		
+		std::lock_guard<std::mutex> lg(clientIocpCore._client->_otherLock);
+		if (_sid != mp->sid)
+		{
+			clientIocpCore._client->_other->Rotate(0, mp->angle, 0);
+		}
+		std::cout << "Recv Rotate" << std::endl;
 	}
 	break;
 	case S_PACKET_TYPE::SCHAT:
 	{
 		_CHAT* cp = reinterpret_cast<_CHAT*>(packet);
-		std::cout << "client[" << cp->cid << "] 's msg : " << cp->buf << std::endl;
 	}
 	break;
 	case S_PACKET_TYPE::LOGIN_OK:

@@ -342,16 +342,19 @@ void CGameFramework::ReleaseObjects()
 void CGameFramework::ProcessInput()
 {
 	static UCHAR pKeyBuffer[256];
-	DWORD dwDirection = 0;
+	// 방향키를 바이트로 처리한다.
+
+	uint8 dwDirection = 0;
 	if (::GetKeyboardState(pKeyBuffer))
 	{
 		if (pKeyBuffer[VK_UP] & 0xF0) dwDirection |= DIR_FORWARD;
 		if (pKeyBuffer[VK_DOWN] & 0xF0) dwDirection |= DIR_BACKWARD;
 		if (pKeyBuffer[VK_LEFT] & 0xF0) dwDirection |= DIR_LEFT;
 		if (pKeyBuffer[VK_RIGHT] & 0xF0) dwDirection |= DIR_RIGHT;
-		if (pKeyBuffer[VK_PRIOR] & 0xF0) dwDirection |= DIR_UP;
-		if (pKeyBuffer[VK_NEXT] & 0xF0) dwDirection |= DIR_DOWN;
+		
 	}
+
+	
 
 	float cxDelta = 0.0f, cyDelta = 0.0f;
 	POINT ptCursorPos;
@@ -366,6 +369,8 @@ void CGameFramework::ProcessInput()
 		cyDelta = (float)(ptCursorPos.y - m_ptOldCursorPos.y) / 3.0f;
 		//마우스 커서의 위치를 마우스가 눌려졌던 위치로 설정한다. 
 		::SetCursorPos(m_ptOldCursorPos.x, m_ptOldCursorPos.y);
+		
+	
 	}
 	
 
@@ -373,17 +378,25 @@ void CGameFramework::ProcessInput()
 	{
 		if (cxDelta || cyDelta)
 		{
+			
 			/*cxDelta는 y-축의 회전을 나타내고 cyDelta는 x-축의 회전을 나타낸다. 오른쪽 마우스 버튼이 눌려진 경우
 			cxDelta는 z-축의 회전을 나타낸다.*/
-			if (pKeyBuffer[VK_RBUTTON] & 0xF0)
-				clientIocpCore._client->_player->Rotate(cyDelta, 0.0f, -cxDelta);
-			else
-				clientIocpCore._client->_player->Rotate(cyDelta, cxDelta, 0.0f);
+				if(pKeyBuffer[VK_RBUTTON] & 0xF0) clientIocpCore._client->_player->Rotate(cyDelta, 0.0f, -cxDelta);
+				else if(pKeyBuffer[VK_LBUTTON] & 0xF0) clientIocpCore._client->_player->Rotate(cyDelta, cxDelta, 0.0f);
+				
+				if (pKeyBuffer[VK_LBUTTON] & 0xF0)
+				{
+					C2S_ROTATE packet;
+					packet.size = sizeof(C2S_ROTATE);
+					packet.type = C_PACKET_TYPE::ROTATE;
+					packet.angle = cxDelta;
+					clientIocpCore._client->DoSend(&packet);
+				}
+			
 		}
 
 		/*플레이어를 dwDirection 방향으로 이동한다(실제로는 속도 벡터를 변경한다). 이동 거리는 시간에 비례하도록 한다. 플레이어의 이동 속력은 (1.3UNIT/초)로 가정한다.*/
 		if (dwDirection) clientIocpCore._client->_player->Move(dwDirection, (1.2f * UNIT));
-		else clientIocpCore._client->_player->SetVelocity(XMFLOAT3(0, 0, 0));
 		// 속도만 더해주고 
 
 	}
@@ -395,25 +408,18 @@ void CGameFramework::ProcessInput()
 		C2S_MOVE packet;
 		packet.size = sizeof(C2S_MOVE);
 		packet.type = C_PACKET_TYPE::MOVE;
-		packet.x = clientIocpCore._client->_player->GetVelocity().x;
-		packet.y = clientIocpCore._client->_player->GetVelocity().y;
-		packet.z = clientIocpCore._client->_player->GetVelocity().z;
+		packet.key = dwDirection;
+
 		clientIocpCore._client->DoSend(&packet);
 	}
 	m_lastKeyInput = dwDirection;
 
 	//카메라를 갱신한다. 중력과 마찰력의 영향을 속도 벡터에 적용한다.
 	{
-		//if (dwDirection == 0) 
-		std::cout << clientIocpCore._client->_other->GetVelocity().x << " , " << clientIocpCore._client->_other->GetVelocity().z << std::endl;
 		std::lock_guard<std::mutex> lg(clientIocpCore._client->_otherLock);
 		clientIocpCore._client->_other->Update(m_Timer.GetTimeElapsed());
 	}
 	clientIocpCore._client->_player->Update(m_Timer.GetTimeElapsed());
-
-	
-	/*std::cout << "(" << ncIocpCore._client->_player->GetPosition().x << "," <<
-		ncIocpCore._client->_player->GetPosition().y << "," << ncIocpCore._client->_player->GetPosition().z << ")" << std::endl;*/
 
 }
 
@@ -426,9 +432,7 @@ void CGameFramework::FrameAdvance() // 여기서 업데이트랑 렌더링 동시에 진행하는 
 {
 	//타이머의 시간이 갱신되도록 하고 프레임 레이트를 계산한다. 
 	m_Timer.Tick(0.0f);
-
 	ProcessInput();
-
 	AnimateObjects();
 
 	HRESULT hResult = m_pd3dCommandAllocator->Reset();
@@ -496,14 +500,8 @@ void CGameFramework::FrameAdvance() // 여기서 업데이트랑 렌더링 동시에 진행하는 
 		ppd3dCommandLists);	//명령 리스트를 명령 큐에 추가하여 실행한다.
 
 	WaitForGpuComplete();
-	//GPU가 모든 명령 리스트를 실행할 때 까지 기다린다.
-
 	m_pdxgiSwapChain->Present(0, 0);
-
-
 	MoveToNextFrame();
-
-
 	m_Timer.GetFrameRate(m_pszFrameRate + 11, 27);
 	::SetWindowText(m_hWnd, m_pszFrameRate);
 }

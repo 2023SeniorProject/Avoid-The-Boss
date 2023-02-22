@@ -246,7 +246,7 @@ BOOL CALLBACK MyDialogBox(HWND hWndDlg, UINT message, WPARAM wParam, LPARAM lPar
             loginPacket.type = C_PACKET_TYPE::ACQ_LOGIN;
             GetDlgItemText(hWndDlg, IDC_ID, loginPacket.name, 10);
             GetDlgItemText(hWndDlg, IDC_PW, loginPacket.pw, 10);
-            clientIocpCore.InitConnect("192.168.45.205");
+            clientIocpCore.InitConnect("127.0.0.1");
             clientIocpCore.DoConnect(&loginPacket);
             while (true)
             {

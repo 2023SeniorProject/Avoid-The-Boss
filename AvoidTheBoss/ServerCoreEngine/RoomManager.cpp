@@ -15,7 +15,8 @@ using namespace std;
 void Room::UserOut(int32 sid)
 {
 	{
-		WLock; // cList Lock 쓰기 호출 
+		//WLock; // cList Lock 쓰기 호출
+		std::unique_lock<std::shared_mutex> wll(_listLock);
 		auto i = std::find(_cList.begin(), _cList.end(), sid); // 리스트에 있는지 탐색 후
 		if (i != _cList.end()) _cList.erase(i); // 리스트에서 제거
 	}
@@ -56,7 +57,8 @@ void Room::UserIn(int32 sid)
 	{
 		packet.success = 1;
 		{
-			WLock; // cList Lock 쓰기 호출 
+			//WLock; // cList Lock 쓰기 호출 
+			std::unique_lock<std::shared_mutex> wll(_listLock);
 			_cList.push_back(sid);
 			if (_cList.size() == 4) _status = ROOM_STATUS::FULL;
 		}
@@ -72,7 +74,8 @@ void Room::UserIn(int32 sid)
 
 void Room::BroadCasting(void* packet) // 방에 속하는 클라이언트에게만 전달하기
 {
-	RLock; // cList Lock 읽기 호출 
+	//RLock; // cList Lock 읽기 호출 
+	std::shared_lock<std::shared_mutex> rll(_listLock);
 	for (auto i =  _cList.begin(); i != _cList.end(); ++i)
 	{
 		if (ServerIocpCore._clients[*i] == nullptr)
@@ -93,35 +96,32 @@ void Room::Update()
 	_rmTimer.Tick(0);
 	
 	{
-		std::lock_guard<std::mutex> ql(_jobQueueLock); // Queue Lock 호출
-		while (!_jobQueue.empty())
-		{
-			queueEvent* ev = _jobQueue.front();
-			if (ev != nullptr)
-			{
-				ev->Task(); // 이벤트를 처리한다.
-				
-				delete ev;
-			}
-			_jobQueue.pop();
-		}
+		//std::unique_lock<std::shared_mutex> ql(_jobQueueLock); // Queue Lock 호출
+		//queueEvent* qe = _jobQueue.front();
+		//_jobQueue.pop();
+		//if (qe != nullptr) qe->Task();
 	}
-	RLock; // cList Lock 읽기 호출
-	// 그외에는 일반적인 업데이트 처리 계속해서 진행한다.
+	//RLock; // cList Lock 읽기 호출
+	
+	std::shared_lock<std::shared_mutex> rll(_listLock);
+	
 	for (auto i = _cList.begin(); i != _cList.end(); ++i)
 	{
 		if (ServerIocpCore._clients[*i] == nullptr)
 		{
 			continue;
 		}
+		std::lock_guard<std::mutex> pl(ServerIocpCore._clients[*i]->_playerLock);
 		ServerIocpCore._clients[*i]->_playerInfo.Update(_rmTimer.GetTimeElapsed());
 	}
 }
 
 void Room::AddEvent(queueEvent* qe)
 {
-	std::lock_guard<std::mutex> ql(_jobQueueLock); // Queue Lock 호출
-	_jobQueue.push(qe);
+	std::cout << "wait" << std::endl;
+	//std::unique_lock<std::shared_mutex> ql(_jobQueueLock); // Queue Lock 호출
+	//_jobQueue.push(qe);
+	std::cout << "push" << std::endl;
 }
 // ======= RoomManager ========
 

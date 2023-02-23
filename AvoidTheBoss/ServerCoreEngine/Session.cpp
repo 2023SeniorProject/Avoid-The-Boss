@@ -133,11 +133,11 @@ void ServerSession::ProcessPacket(char* packet)
 			uint8 key;
 			key = movePacket->key;
 
-			moveEvent* mv = new moveEvent;
+			/*moveEvent* mv = new moveEvent;
 			mv->type = EVENT_TYPE::MOVE_EVENT;
 			mv->key = key;
 			mv->sid = _sid;
-			queueEvent* me = static_cast<queueEvent*>(mv);
+			queueEvent* me = static_cast<queueEvent*>(mv);*/
 
 			// move 패킷 브로드 캐스팅
 			S2C_MOVE packet;
@@ -146,30 +146,31 @@ void ServerSession::ProcessPacket(char* packet)
 			packet.sid = _sid;
 			packet.key = key;
 			ServerIocpCore._rmgr->_rooms[_myRm].BroadCasting(&packet);
-			ServerIocpCore._rmgr->_rooms[_myRm].AddEvent(me);
+			
+			//ServerIocpCore._rmgr->_rooms[_myRm].AddEvent(me);
 		}
 		break;
 		case C_PACKET_TYPE::ROTATE:
 		{
-			std::lock_guard<std::mutex> pl(_playerLock); // 플레이어 정보 갱신
+			std::lock_guard<std::mutex> pl(_playerLock); // 플레이어 정보 갱신 용 lock
 			C2S_ROTATE* rotatePacket = reinterpret_cast<C2S_ROTATE*>(packet);
 
-			rotateEvent* mv = new rotateEvent;
+			/*rotateEvent* mv = new rotateEvent;
 			mv->type = EVENT_TYPE::ROTATE_EVENT;
 			mv->angleY = rotatePacket->angle;
 			mv->sid = _sid;
-			queueEvent* me = static_cast<queueEvent*>(mv);
+			queueEvent* me = static_cast<queueEvent*>(mv);*/
 
 	
 			S2C_ROTATE packet;
 			packet.size = sizeof(S2C_ROTATE);
 			packet.type = S_PACKET_TYPE::SROTATE;
 			packet.sid = _sid;
-			packet.angle = mv->angleY;
+			packet.angle = rotatePacket->angle;
 
 			ServerIocpCore._rmgr->_rooms[_myRm].BroadCasting(&packet);
-			ServerIocpCore._rmgr->_rooms[_myRm].AddEvent(me);
-			std::cout << "Send Rotate" << std::endl;
+			//ServerIocpCore._rmgr->_rooms[_myRm].AddEvent(me);
+
 		}
 		break;
 		case C_PACKET_TYPE::CCHAT:

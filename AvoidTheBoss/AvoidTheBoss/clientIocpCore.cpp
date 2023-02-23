@@ -132,7 +132,6 @@ void CClientSession::ProcessPacket(char* packet)
 		{
 			clientIocpCore._client->_other->Rotate(0, mp->angle, 0);
 		}
-		std::cout << "Recv Rotate" << std::endl;
 	}
 	break;
 	case S_PACKET_TYPE::SCHAT:

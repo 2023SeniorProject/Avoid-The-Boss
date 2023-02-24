@@ -82,6 +82,9 @@
     <ClInclude Include="DummyPlayer.h">
       <Filter>Player</Filter>
     </ClInclude>
+    <ClInclude Include="SceneInterface.h">
+      <Filter>Scene</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AvoidTheBoss.cpp">
@@ -119,6 +122,9 @@
     </ClCompile>
     <ClCompile Include="DummyPlayer.cpp">
       <Filter>Player</Filter>
+    </ClCompile>
+    <ClCompile Include="SceneInterface.cpp">
+      <Filter>Scene</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

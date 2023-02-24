@@ -392,7 +392,6 @@ void CGameFramework::ProcessInput()
 					packet.angle = cxDelta;
 					clientIocpCore._client->DoSend(&packet);
 				}
-			
 		}
 
 		/*플레이어를 dwDirection 방향으로 이동한다(실제로는 속도 벡터를 변경한다). 이동 거리는 시간에 비례하도록 한다. 플레이어의 이동 속력은 (1.3UNIT/초)로 가정한다.*/
@@ -404,7 +403,7 @@ void CGameFramework::ProcessInput()
 
 	if (m_lastKeyInput != dwDirection || (cxDelta != 0.0f) || (cyDelta != 0.0f)) // 이전과 방향(키입력이 다른 경우에만 무브 이벤트 패킷을 보낸다)
 	{
-		
+	
 		C2S_MOVE packet;
 		packet.size = sizeof(C2S_MOVE);
 		packet.type = C_PACKET_TYPE::MOVE;

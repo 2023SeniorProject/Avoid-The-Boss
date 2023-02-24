@@ -6,21 +6,19 @@
 
 SIocpCore ServerIocpCore;
 
-//CIocpCore ClientIocpCore;
 
 
 IocpCore::IocpCore()
 {
 	_hIocp = ::CreateIoCompletionPort(INVALID_HANDLE_VALUE, 0, 0, 0); // iocp 핸들 생성
-	//rMgr = new RoomManager();
-	//rMgr->Init();
+	
 	ASSERT_CRASH(_hIocp != INVALID_HANDLE_VALUE); 
 }
 
 IocpCore::~IocpCore()
 {
 	::CloseHandle(_hIocp);
-	//delete rMgr;
+
 }
 
 // 보통은 클라이언트 소켓을 받아 이를 적용했다.

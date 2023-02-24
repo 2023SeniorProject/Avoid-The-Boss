@@ -27,8 +27,9 @@ public:
 	//RWLOCK;
 	std::shared_mutex _listLock;
 	std::list<int32> _cList; // 방에 속해있는 클라이언트 리스트
-	//std::queue<queueEvent*> _jobQueue; // 방에 속해 있는 클라이언트가 야기한 이벤트 큐
-	//std::shared_mutex _jobQueueLock; // eventQueue 관리용 Lock
+
+	std::queue<queueEvent*> _jobQueue; // 방에 속해 있는 클라이언트가 야기한 이벤트 큐
+	std::shared_mutex _jobQueueLock; // eventQueue 관리용 Lock
 	//
 	
 	STimer _rmTimer; // 해당 룸의 업데이트에 사용할 타이머

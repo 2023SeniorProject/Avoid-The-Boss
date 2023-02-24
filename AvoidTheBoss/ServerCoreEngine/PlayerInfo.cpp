@@ -26,10 +26,11 @@ PlayerInfo::~PlayerInfo()
 
 void PlayerInfo::Move(uint8 dwDirection, float fDistance)
 {
+	XMFLOAT3 xmf3Shift = XMFLOAT3(0, 0, 0);
 	if (dwDirection)
 	{
 		// xmf3Shift == 방향 벡터
-		XMFLOAT3 xmf3Shift = XMFLOAT3(0, 0, 0);
+		
 		//화살표 키 ‘↑’를 누르면 로컬 z-축 방향으로 이동(전진)한다. ‘↓’를 누르면 반대 방향으로 이동한다. 
 		if (dwDirection & DIR_FORWARD) xmf3Shift = Vector3::Add(xmf3Shift, m_xmf3Look,
 			fDistance);
@@ -42,9 +43,13 @@ void PlayerInfo::Move(uint8 dwDirection, float fDistance)
 				fDistance);
 		if (dwDirection & DIR_LEFT) xmf3Shift = Vector3::Add(xmf3Shift, m_xmf3Right,
 			-fDistance);
-
+		m_xmf3Velocity = XMFLOAT3(0, 0, 0);
 		//플레이어를 현재 위치 벡터에서 xmf3Shift 벡터만큼 이동한다. 
 		SetSpeed(xmf3Shift);
+	}
+	else
+	{
+		SetVelocity(xmf3Shift);
 	}
 }
 
@@ -99,7 +104,7 @@ void PlayerInfo::Update(float fTimeElapsed)
 	XMFLOAT3 xmf3Velocity = Vector3::ScalarProduct(m_xmf3Velocity, fTimeElapsed, false);
 	UpdateMove(xmf3Velocity);
 	if (m_pPlayerUpdatedContext) OnPlayerUpdateCallback(fTimeElapsed);
-
+	std::cout << "x : " << m_xmf3Position.x << " z : " << m_xmf3Position.z << std::endl;
 }
 
 void PlayerInfo::SetSpeed(const XMFLOAT3& xmf3Shift)

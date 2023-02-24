@@ -167,6 +167,7 @@ void CPlayer::Update(float fTimeElapsed)
 
 	//카메라의 카메라 변환 행렬을 다시 생성한다. 
 	m_pCamera->RegenerateViewMatrix();
+	std::cout << "x : " << m_xmf3Position.x << " y : " << m_xmf3Position.z << std::endl;
 	m_xmf3Velocity = XMFLOAT3(0, 0, 0);
 }
 

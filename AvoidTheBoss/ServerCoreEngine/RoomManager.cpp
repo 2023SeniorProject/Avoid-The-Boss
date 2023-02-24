@@ -96,10 +96,17 @@ void Room::Update()
 	_rmTimer.Tick(0);
 	
 	{
-		//std::unique_lock<std::shared_mutex> ql(_jobQueueLock); // Queue Lock 호출
-		//queueEvent* qe = _jobQueue.front();
-		//_jobQueue.pop();
-		//if (qe != nullptr) qe->Task();
+		std::unique_lock<std::shared_mutex> ql(_jobQueueLock); // Queue WLock 호출
+		while(!_jobQueue.empty())
+		{
+			queueEvent* qe = _jobQueue.front();
+			_jobQueue.pop();
+			if (qe != nullptr)
+			{
+				qe->Task();
+				delete qe;
+			}
+		}
 	}
 	//RLock; // cList Lock 읽기 호출
 	
@@ -118,10 +125,8 @@ void Room::Update()
 
 void Room::AddEvent(queueEvent* qe)
 {
-	std::cout << "wait" << std::endl;
-	//std::unique_lock<std::shared_mutex> ql(_jobQueueLock); // Queue Lock 호출
-	//_jobQueue.push(qe);
-	std::cout << "push" << std::endl;
+	std::unique_lock<std::shared_mutex> ql(_jobQueueLock); // Queue Lock 호출
+	_jobQueue.push(qe);
 }
 // ======= RoomManager ========
 

@@ -110,9 +110,9 @@ void LoginProcess(ServerSession& s, std::wstring sqlexec)
 	udb.ExecuteStatementDirect(a);
 	udb.RetrieveResult();
 
-	std::unique_lock<std::shared_mutex> wr(s._lock);
 	{
 		s._cid = udb.user_cid;
+		READ_SERVER_LOCK;
 		auto i = ServerIocpCore._cList.find(s._cid);
 		if (s._cid == -1 ||  i != ServerIocpCore._cList.end())
 		{

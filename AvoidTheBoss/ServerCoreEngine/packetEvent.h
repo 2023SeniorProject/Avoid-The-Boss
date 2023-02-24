@@ -16,9 +16,8 @@ class moveEvent : public queueEvent
 public:
 	moveEvent() { };
 	virtual ~moveEvent() {};
-	int8 type = MOVE_EVENT;
-	int32 sid;
-	uint8 key;
+	int32 sid = -1;
+	uint8 key = 0;
 public:
 	virtual void Task()
 	{
@@ -33,14 +32,13 @@ class rotateEvent : public queueEvent
 public:
 	rotateEvent() { };
 	virtual ~rotateEvent() {};
-	int8 type = MOVE_EVENT;
-	int32 sid;
-	float angleY;
+	int32 sid = -1;
+	float angleY = 0.f;
 public:
 	virtual void Task()
 	{
 		std::lock_guard<std::mutex> plg(ServerIocpCore._clients[sid]->_playerLock);
-		ServerIocpCore._clients[sid]->_playerInfo.Rotate(0,angleY ,0);
+		ServerIocpCore._clients[sid]->_playerInfo.Rotate(0, angleY ,0);
 	
 	};
 

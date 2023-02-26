@@ -5,17 +5,17 @@ public:
 	SceneInterface() {}
 	virtual ~SceneInterface() {}
 	//씬에서 마우스와 키보드 메시지를 처리한다.
-	virtual bool OnProcessingMouseMessage(HWND hWnd, UINT nMessageID, WPARAM wParam, LPARAM
+	virtual void OnProcessingMouseMessage(HWND hWnd, UINT nMessageID, WPARAM wParam, LPARAM
 		lParam) 
 	{
-		return false;
+		return;
 	};
-	virtual bool OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPARAM wParam, LPARAM
+	virtual void OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPARAM wParam, LPARAM
 		lParam)
 	{
-		return false;
+		return;
 	};
 
-	void ProcessInput(UCHAR* pKeysBuffer){}
+	virtual void ProcessInput(HWND hWnd) {}
 };
 

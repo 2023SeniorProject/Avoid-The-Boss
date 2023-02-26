@@ -21,8 +21,9 @@ private:
 
 	unsigned long			_curFramerate;
 	unsigned long			_nFramePerSec;
+public:
 	unsigned long			_nWorldFrame;
-	unsigned long			_totalElapsedTime;
+	float			_totalElapsedTime;
 
 	bool			m_bStopped;
 public:

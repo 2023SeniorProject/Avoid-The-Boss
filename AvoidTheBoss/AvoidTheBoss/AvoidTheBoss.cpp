@@ -7,7 +7,7 @@
 #include "SocketUtil.h"
 #include "ThreadManager.h"
 
-CGameFramework gGameFramework;
+
 
 #define MAX_LOADSTRING 100
 

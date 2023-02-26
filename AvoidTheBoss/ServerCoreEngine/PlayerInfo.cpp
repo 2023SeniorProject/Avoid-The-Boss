@@ -104,7 +104,7 @@ void PlayerInfo::Update(float fTimeElapsed)
 	XMFLOAT3 xmf3Velocity = Vector3::ScalarProduct(m_xmf3Velocity, fTimeElapsed, false);
 	UpdateMove(xmf3Velocity);
 	if (m_pPlayerUpdatedContext) OnPlayerUpdateCallback(fTimeElapsed);
-	std::cout << "x : " << m_xmf3Position.x << " z : " << m_xmf3Position.z << std::endl;
+	//std::cout << "x : " << m_xmf3Position.x << " z : " << m_xmf3Position.z << std::endl;
 }
 
 void PlayerInfo::SetSpeed(const XMFLOAT3& xmf3Shift)

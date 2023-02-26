@@ -2,7 +2,8 @@
 #include "GameFramework.h"
 #include "clientIocpCore.h"
 
-#define _WITH_PLAYER_TOP // 플레이어 깊이 버퍼값 1.0f
+// #define _WITH_PLAYER_TOP // 플레이어 깊이 버퍼값 1.0f
+CGameFramework gGameFramework;
 
 CGameFramework::CGameFramework()
 {
@@ -311,13 +312,8 @@ void CGameFramework::BuildObjects()
 	m_pd3dCommandList->Reset(m_pd3dCommandAllocator, NULL);
 
 		//씬 객체를 생성하고 씬에 포함될 게임 객체들을 생성한다. 
-	m_pScene = new CScene();
+	m_pScene = new CGameScene();
 	if (m_pScene) m_pScene->BuildObjects(m_pd3dDevice, m_pd3dCommandList);
-
-	clientIocpCore._client->_player = new CCubePlayer(m_pd3dDevice, m_pd3dCommandList, m_pScene->GetGraphicsRootSignature(), 1);
-	clientIocpCore._client->_other = new DummyCubePlayer(m_pd3dDevice, m_pd3dCommandList, m_pScene->GetGraphicsRootSignature(), 1);
-	clientIocpCore._client->_other->SetPosition(XMFLOAT3(0, 75, 0));
-	m_pCamera = clientIocpCore._client->_player->GetCamera();
 
 	//씬 객체를 생성하기 위하여 필요한 그래픽 명령 리스트들을 명령 큐에 추가한다. 
 	m_pd3dCommandList->Close();
@@ -330,7 +326,7 @@ void CGameFramework::BuildObjects()
 	//그래픽 리소스들을 생성하는 과정에 생성된 업로드 버퍼들을 소멸시킨다. 
 	if (m_pScene) m_pScene->ReleaseUploadBuffers();
 
-	m_Timer.Reset();
+	m_pScene->InitScene();
 }
 
 void CGameFramework::ReleaseObjects()
@@ -341,96 +337,18 @@ void CGameFramework::ReleaseObjects()
 
 void CGameFramework::ProcessInput()
 {
-	static UCHAR pKeyBuffer[256];
-	// 방향키를 바이트로 처리한다.
-
-	uint8 dwDirection = 0;
-	if (::GetKeyboardState(pKeyBuffer))
-	{
-		if (pKeyBuffer[VK_UP] & 0xF0) dwDirection |= DIR_FORWARD;
-		if (pKeyBuffer[VK_DOWN] & 0xF0) dwDirection |= DIR_BACKWARD;
-		if (pKeyBuffer[VK_LEFT] & 0xF0) dwDirection |= DIR_LEFT;
-		if (pKeyBuffer[VK_RIGHT] & 0xF0) dwDirection |= DIR_RIGHT;
-		
-	}
-
-	
-
-	float cxDelta = 0.0f, cyDelta = 0.0f;
-	POINT ptCursorPos;
-	if (::GetCapture() == m_hWnd)
-	{
-		//마우스 커서를 화면에서 없앤다(보이지 않게 한다).
-		::SetCursor(NULL);
-		//현재 마우스 커서의 위치를 가져온다. 
-		::GetCursorPos(&ptCursorPos);
-		//마우스 버튼이 눌린 상태에서 마우스가 움직인 양을 구한다. 
-		cxDelta = (float)(ptCursorPos.x - m_ptOldCursorPos.x) / 3.0f;
-		cyDelta = (float)(ptCursorPos.y - m_ptOldCursorPos.y) / 3.0f;
-		//마우스 커서의 위치를 마우스가 눌려졌던 위치로 설정한다. 
-		::SetCursorPos(m_ptOldCursorPos.x, m_ptOldCursorPos.y);
-		
-	
-	}
-	
-
-	if ((dwDirection != 0) || (cxDelta != 0.0f) || (cyDelta != 0.0f))
-	{
-		if (cxDelta || cyDelta)
-		{
-			
-			/*cxDelta는 y-축의 회전을 나타내고 cyDelta는 x-축의 회전을 나타낸다. 오른쪽 마우스 버튼이 눌려진 경우
-			cxDelta는 z-축의 회전을 나타낸다.*/
-				if(pKeyBuffer[VK_RBUTTON] & 0xF0) clientIocpCore._client->_player->Rotate(cyDelta, 0.0f, -cxDelta);
-				else if(pKeyBuffer[VK_LBUTTON] & 0xF0) clientIocpCore._client->_player->Rotate(cyDelta, cxDelta, 0.0f);
-				
-				if (pKeyBuffer[VK_LBUTTON] & 0xF0)
-				{
-					C2S_ROTATE packet;
-					packet.size = sizeof(C2S_ROTATE);
-					packet.type = C_PACKET_TYPE::ROTATE;
-					packet.angle = cxDelta;
-					clientIocpCore._client->DoSend(&packet);
-				}
-		}
-
-		/*플레이어를 dwDirection 방향으로 이동한다(실제로는 속도 벡터를 변경한다). 이동 거리는 시간에 비례하도록 한다. 플레이어의 이동 속력은 (1.3UNIT/초)로 가정한다.*/
-		if (dwDirection) clientIocpCore._client->_player->Move(dwDirection, (1.2f * UNIT));
-		// 속도만 더해주고 
-
-	}
-
-
-	if (m_lastKeyInput != dwDirection || (cxDelta != 0.0f) || (cyDelta != 0.0f)) // 이전과 방향(키입력이 다른 경우에만 무브 이벤트 패킷을 보낸다)
-	{
-	
-		C2S_MOVE packet;
-		packet.size = sizeof(C2S_MOVE);
-		packet.type = C_PACKET_TYPE::MOVE;
-		packet.key = dwDirection;
-
-		clientIocpCore._client->DoSend(&packet);
-	}
-	m_lastKeyInput = dwDirection;
-
-	//카메라를 갱신한다. 중력과 마찰력의 영향을 속도 벡터에 적용한다.
-	{
-		std::lock_guard<std::mutex> lg(clientIocpCore._client->_otherLock);
-		clientIocpCore._client->_other->Update(m_Timer.GetTimeElapsed());
-	}
-	clientIocpCore._client->_player->Update(m_Timer.GetTimeElapsed());
-
+	m_pScene->ProcessInput(m_hWnd);
 }
 
 void CGameFramework::AnimateObjects()
 {
-	if (m_pScene) m_pScene->AnimateObjects(m_Timer.GetTimeElapsed());
+	if (m_pScene) m_pScene->AnimateObjects();
 }
 
 void CGameFramework::FrameAdvance() // 여기서 업데이트랑 렌더링 동시에 진행하는 곳
 {
 	//타이머의 시간이 갱신되도록 하고 프레임 레이트를 계산한다. 
-	m_Timer.Tick(0.0f);
+	
 	ProcessInput();
 	AnimateObjects();
 
@@ -472,7 +390,7 @@ void CGameFramework::FrameAdvance() // 여기서 업데이트랑 렌더링 동시에 진행하는 
 
 
 	//=======렌더링 코드는 여기에 추가될 것이다
-	if (m_pScene) m_pScene->Render(m_pd3dCommandList, m_pCamera);
+	if (m_pScene) m_pScene->Render(m_pd3dCommandList, m_pScene->m_pCamera);
 
 	//3인칭 카메라일 때 플레이어가 항상 보이도록 렌더링한다. 
 #ifdef _WITH_PLAYER_TOP
@@ -481,8 +399,8 @@ void CGameFramework::FrameAdvance() // 여기서 업데이트랑 렌더링 동시에 진행하는 
 		D3D12_CLEAR_FLAG_DEPTH | D3D12_CLEAR_FLAG_STENCIL, 1.0f, 0, 0, NULL);
 #endif
 	//3인칭 카메라일 때 플레이어를 렌더링한다. 
-	if (clientIocpCore._client->_player) clientIocpCore._client->_player->Render(m_pd3dCommandList, m_pCamera);
-	if (clientIocpCore._client->_other)  clientIocpCore._client->_other->Render(m_pd3dCommandList, m_pCamera);
+	if (clientIocpCore._client->_player) clientIocpCore._client->_player->Render(m_pd3dCommandList, m_pScene->m_pCamera);
+	if (clientIocpCore._client->_other)  clientIocpCore._client->_other->Render(m_pd3dCommandList, m_pScene->m_pCamera);
 	
 	d3dResourceBarrier.Transition.StateBefore = D3D12_RESOURCE_STATE_RENDER_TARGET;
 	d3dResourceBarrier.Transition.StateAfter = D3D12_RESOURCE_STATE_PRESENT;
@@ -501,7 +419,7 @@ void CGameFramework::FrameAdvance() // 여기서 업데이트랑 렌더링 동시에 진행하는 
 	WaitForGpuComplete();
 	m_pdxgiSwapChain->Present(0, 0);
 	MoveToNextFrame();
-	m_Timer.GetFrameRate(m_pszFrameRate + 11, 27);
+	m_pScene->m_Timer.GetFrameRate(m_pszFrameRate + 11, 27);
 	::SetWindowText(m_hWnd, m_pszFrameRate);
 }
 
@@ -534,55 +452,57 @@ void CGameFramework::MoveToNextFrame()
 
 void CGameFramework::OnProcessingMouseMessage(HWND hWnd, UINT nMessageID, WPARAM wParam, LPARAM lParam)
 {
-	switch (nMessageID)
-	{
-	case WM_LBUTTONDOWN:
-	case WM_RBUTTONDOWN:
-		//마우스 캡쳐를 하고 현재 마우스 위치를 가져온다. 
-		::SetCapture(hWnd);
-		::GetCursorPos(&m_ptOldCursorPos);
-		break;
-	case WM_LBUTTONUP:
-	case WM_RBUTTONUP:
-		//마우스 캡쳐를 해제한다. 
-		::ReleaseCapture();
-		break;
-	case WM_MOUSEMOVE:
-		break;
-	default:
-		break;
-	}
+	//switch (nMessageID)
+	//{
+	//case WM_LBUTTONDOWN:
+	//case WM_RBUTTONDOWN:
+	//	//마우스 캡쳐를 하고 현재 마우스 위치를 가져온다. 
+	//	::SetCapture(hWnd);
+	//	::GetCursorPos(&m_ptOldCursorPos);
+	//	break;
+	//case WM_LBUTTONUP:
+	//case WM_RBUTTONUP:
+	//	//마우스 캡쳐를 해제한다. 
+	//	::ReleaseCapture();
+	//	break;
+	//case WM_MOUSEMOVE:
+	//	break;
+	//default:
+	//	break;
+	//}
+	m_pScene->OnProcessingMouseMessage(hWnd, nMessageID, wParam, lParam);
 }
 
 void CGameFramework::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPARAM wParam, LPARAM lParam)
 {
-	switch (nMessageID)
-	{
-	case WM_KEYUP:
-		switch (wParam)
-		{
-		case VK_ESCAPE:
-			::PostQuitMessage(0);
-			break;
-		case VK_RETURN:
-			break;
-			/*‘F1’ 키를 누르면 1인칭 카메라, ‘F3’ 키를 누르면 3인칭 카메라로 변경한다.*/
-		case VK_F1:
-			if (clientIocpCore._client->_player) m_pCamera = clientIocpCore._client->_player->ChangeCamera(FIRST_PERSON_CAMERA, m_Timer.GetTimeElapsed());
-		case VK_F3:
-			if (clientIocpCore._client->_player) m_pCamera = clientIocpCore._client->_player->ChangeCamera(THIRD_PERSON_CAMERA, m_Timer.GetTimeElapsed());
-			break;
-		case VK_F9:
-			//“F9” 키가 눌려지면 윈도우 모드와 전체화면 모드의 전환을 처리한다. 
-			ChangeSwapChainState();
-			break;
-		default:
-			break;
-		}
-		break;
-	default:
-		break;
-	}
+	//switch (nMessageID)
+	//{
+	//case WM_KEYUP:
+	//	switch (wParam)
+	//	{
+	//	case VK_ESCAPE:
+	//		::PostQuitMessage(0);
+	//		break;
+	//	case VK_RETURN:
+	//		break;
+	//		/*‘F1’ 키를 누르면 1인칭 카메라, ‘F3’ 키를 누르면 3인칭 카메라로 변경한다.*/
+	//	case VK_F1:
+	//		if (clientIocpCore._client->_player) m_pCamera = clientIocpCore._client->_player->ChangeCamera(FIRST_PERSON_CAMERA, m_Timer.GetTimeElapsed());
+	//	case VK_F3:
+	//		if (clientIocpCore._client->_player) m_pCamera = clientIocpCore._client->_player->ChangeCamera(THIRD_PERSON_CAMERA, m_Timer.GetTimeElapsed());
+	//		break;
+	//	case VK_F9:
+	//		//“F9” 키가 눌려지면 윈도우 모드와 전체화면 모드의 전환을 처리한다. 
+	//		ChangeSwapChainState();
+	//		break;
+	//	default:
+	//		break;
+	//	}
+	//	break;
+	//default:
+	//	break;
+	//}
+	m_pScene->OnProcessingKeyboardMessage(hWnd, nMessageID, wParam, lParam);
 }
 
 LRESULT CGameFramework::OnProcessingWindowMessage(HWND hWnd, UINT nMessageID, WPARAM wParam, LPARAM lParam)
@@ -592,9 +512,9 @@ LRESULT CGameFramework::OnProcessingWindowMessage(HWND hWnd, UINT nMessageID, WP
 	case WM_ACTIVATE:
 	{
 		if (LOWORD(wParam) == WA_INACTIVE)
-			m_Timer.Stop();
+			m_pScene->m_Timer.Stop();
 		else
-			m_Timer.Start();
+			m_pScene->m_Timer.Start();
 		break;
 	}
 	case WM_SIZE:

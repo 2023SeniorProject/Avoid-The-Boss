@@ -36,6 +36,7 @@ public:
 public:
 	SOCKET _sock = INVALID_SOCKET;
 
+	std::mutex _playerLock;
 	CCubePlayer* _player = nullptr;
 	
 	DummyCubePlayer* _other = nullptr;

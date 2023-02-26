@@ -44,6 +44,11 @@ public:
 		UpdateMove(XMFLOAT3(xmf3Position.x - m_xmf3Position.x, xmf3Position.y - m_xmf3Position.y, xmf3Position.z - m_xmf3Position.z));
 	}
 
+	void MakePosition(const XMFLOAT3& xmf3Position)
+	{
+		m_xmf3Position = xmf3Position;
+	}
+
 	XMFLOAT3& GetVelocity() { return(m_xmf3Velocity); }
 	
 	float GetYaw() { return(m_fYaw); }

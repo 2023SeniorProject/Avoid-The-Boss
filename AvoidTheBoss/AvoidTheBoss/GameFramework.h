@@ -54,20 +54,16 @@ private:
 	//펜스 인터페이스 포인터, 펜스의 값, 이벤트 핸들이다.
 private:
 	//다음은 게임 프레임워크에서 사용할 타이머이다. 
-	CTimer					m_Timer;
+	
 
 	//다음은 프레임 레이트를 주 윈도우의 캡션에 출력하기 위한 문자열이다. 
 	WCHAR					m_pszFrameRate[50];
-	DWORD					m_lastKeyInput = 0;
+	
 private:
-	CScene* m_pScene;
+	CGameScene*				m_pScene;
+	
 public:
-	CCamera* m_pCamera = NULL;
-	//플레이어 객체에 대한 포인터이다.
-	//CCubePlayer* m_pPlayer = NULL;
 
-	//마지막으로 마우스 버튼을 클릭할 때의 마우스 커서의 위치이다. 
-	POINT m_ptOldCursorPos;
 public:
 	CGameFramework();
 	~CGameFramework();
@@ -112,3 +108,4 @@ public:
 	//윈도우의 메시지(키보드, 마우스 입력)를 처리하는 함수이다. 
 };
 
+extern CGameFramework gGameFramework;

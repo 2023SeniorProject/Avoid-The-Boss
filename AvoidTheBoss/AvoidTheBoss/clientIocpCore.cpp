@@ -134,6 +134,18 @@ void CClientSession::ProcessPacket(char* packet)
 		}
 	}
 	break;
+	case S_PACKET_TYPE::POSITION:
+	{
+		S2C_POSITION* mp = reinterpret_cast<S2C_POSITION*>(packet);
+		if (_sid == mp->sid)
+		{
+			clientIocpCore._client->_playerLock.lock();
+			clientIocpCore._client->_player->MakePosition(mp->position);
+			clientIocpCore._client->_playerLock.unlock();
+		}
+		
+	}
+	break;
 	case S_PACKET_TYPE::SCHAT:
 	{
 		_CHAT* cp = reinterpret_cast<_CHAT*>(packet);

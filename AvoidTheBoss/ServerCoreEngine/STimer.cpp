@@ -87,6 +87,7 @@ void STimer::Tick(float fLockFPS)
 	_nFramePerSec++;
 	_nWorldFrame++;
 	_totalElapsedTime += fTimeElapsed;
+	
 	if (_totalElapsedTime > 1.0f)
 	{
 		_curFramerate = _nFramePerSec;

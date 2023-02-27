@@ -79,7 +79,7 @@ public:
 	//플레이어를 이동하는 함수이다. 
 	void Move(DWORD dwDirection, float fDistance, bool bUpdateVelocity = false);
 	void Move(const XMFLOAT3& xmf3Shift, bool bUpdateVelocity = false);
-	void Move(float fxOffset = 0.0f, float fyOffset = 0.0f, float fzOffset = 0.0f);
+	//void Move(float fxOffset = 0.0f, float fyOffset = 0.0f, float fzOffset = 0.0f);
 
 	//플레이어를 회전하는 함수이다. 
 	void Rotate(float x, float y, float z);
@@ -125,4 +125,19 @@ public:
 	virtual ~CTilePlayer();
 
 	virtual CCamera* ChangeCamera(DWORD nNewCameraMode, float fTimeElapsed);
+
+	virtual void OnPrepareRender();
+
+};
+
+
+
+class CAirplanePlayer : public CPlayer
+{
+public:
+	CAirplanePlayer(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, void* pContext = NULL, int nMeshes = 1);
+	virtual ~CAirplanePlayer();
+
+	virtual CCamera* ChangeCamera(DWORD nNewCameraMode, float fTimeElapsed);
+	virtual void OnPrepareRender();
 };

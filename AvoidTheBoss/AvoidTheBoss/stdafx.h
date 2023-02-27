@@ -13,11 +13,12 @@
 #include <malloc.h>
 #include <memory.h>
 #include <tchar.h>
+#include <math.h>
 
 #include <timeapi.h>
 #include <MMSystem.h>
 
-#pragma comment(lib, "winmm.lib")
+//#pragma comment(lib, "winmm.lib")
 
 //----D3D 라이브러리 헤더 포함
 #include <string>
@@ -70,7 +71,7 @@ using Microsoft::WRL::ComPtr;
 
 
 //----클라이언트 영역 크기 및 후면 버퍼 크기
-#define FRAME_BUFFER_WIDTH 800
+#define FRAME_BUFFER_WIDTH  800
 #define FRAME_BUFFER_HEIGHT 600
 
 //----전체 화면 모드로 시작
@@ -308,3 +309,20 @@ namespace Matrix4x4
 	}
 }
 
+namespace Triangle
+{
+	inline bool Intersect(XMFLOAT3& xmf3RayPosition, XMFLOAT3& xmf3RayDirection, XMFLOAT3& v0, XMFLOAT3& v1, XMFLOAT3& v2, float& fHitDistance)
+	{
+		return(TriangleTests::Intersects(XMLoadFloat3(&xmf3RayPosition), XMLoadFloat3(&xmf3RayDirection), XMLoadFloat3(&v0), XMLoadFloat3(&v1), XMLoadFloat3(&v2), fHitDistance));
+	}
+}
+
+namespace Plane
+{
+	inline XMFLOAT4 Normalize(XMFLOAT4& xmf4Plane)
+	{
+		XMFLOAT4 xmf4Result;
+		XMStoreFloat4(&xmf4Result, XMPlaneNormalize(XMLoadFloat4(&xmf4Plane)));
+		return(xmf4Result);
+	}
+}

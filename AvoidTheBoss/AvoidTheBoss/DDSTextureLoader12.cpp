@@ -1780,7 +1780,38 @@ HRESULT DirectX::LoadDDSTextureFromFileEx(
 
     if (SUCCEEDED(hr))
     {
-        SetDebugTextureInfo(fileName, *texture);
+#if !defined(NO_D3D12_DEBUG_NAME) && ( defined(_DEBUG) || defined(PROFILE) )
+        if (texture != 0)
+        {
+            CHAR strFileA[MAX_PATH];
+            int result = WideCharToMultiByte(CP_ACP,
+                WC_NO_BEST_FIT_CHARS,
+                fileName,
+                -1,
+                strFileA,
+                MAX_PATH,
+                nullptr,
+                FALSE
+            );
+            if (result > 0)
+            {
+                const wchar_t* pstrName = wcsrchr(fileName, '\\');
+                if (!pstrName)
+                {
+                    pstrName = fileName;
+                }
+                else
+                {
+                    pstrName++;
+                }
+
+                if (texture != 0 && *texture != 0)
+                {
+                    (*texture)->SetName(pstrName);
+                }
+            }
+        }
+#endif
 
         if (alphaMode)
             *alphaMode = GetAlphaMode(header);

@@ -33,26 +33,29 @@ public:
 	virtual void CreateShaderVariables(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList
 		* pd3dCommandList);
 	virtual void UpdateShaderVariables(ID3D12GraphicsCommandList* pd3dCommandList);
-	virtual void ReleaseShaderVariables();
-
 	virtual void UpdateShaderVariable(ID3D12GraphicsCommandList* pd3dCommandList,
 		XMFLOAT4X4* pxmf4x4World);
+	virtual void ReleaseShaderVariables();
+	virtual void ReleaseUploadBuffers();
+
+
 
 	virtual void BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, void* pContext = NULL) { }
+	virtual void AnimateObjects(float fTimeElapsed) { }
 	virtual void OnPrepareRender(ID3D12GraphicsCommandList* pd3dCommandList);
 	virtual void Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera);
+	virtual void ReleaseObjects() { }
 
 	void CreateCbvSrvDescriptorHeaps(ID3D12Device* pd3dDevice, int nCbv, int nSrv);
 	void CreateConstantBufferViews(ID3D12Device* pd3dDevice, int nConstantBufferViews, ID3D12Resource* pd3dConstantBuffers, UINT nStride);
-	void CreateShaderResourceView(ID3D12Device* pd3dDevice, CTexture* pTexture, UINT nDescHeapIndex, UINT nRootParameStartIndex);
+	void CreateShaderResourceViews(ID3D12Device* pd3dDevice, CTexture* pTexture, UINT nDescHeapIndex, UINT nRootParameStartIndex);
 
 	D3D12_GPU_DESCRIPTOR_HANDLE GetCbvGPUDescStartHandle() { return m_d3dCbvGPUDescStartHandle; }
 protected:
 	//파이프라인 상태 객체들의 리스트(배열)이다. 
 	ID3D12PipelineState* m_pd3dPipelineState = NULL;
-	int m_nPipelineStates = 0;
 
-	ID3D12DescriptorHeap* m_pCbvSrvDescHeap;
+	ID3D12DescriptorHeap* m_pCbvSrvDescHeap = NULL;
 
 	//---CPU의 cbv/srv 시작주소
 	D3D12_CPU_DESCRIPTOR_HANDLE m_d3dCbvCPUDescStartHandle;
@@ -68,7 +71,7 @@ protected:
 	D3D12_GPU_DESCRIPTOR_HANDLE m_d3dCbvGPUDescNextHandle;
 	D3D12_GPU_DESCRIPTOR_HANDLE m_d3dSrvGPUDescNextHandle;
 
-	D3D12_SHADER_RESOURCE_VIEW_DESC m_SrvDescriptor;
+	//D3D12_SHADER_RESOURCE_VIEW_DESC m_SrvDescriptor;
 };
 
 class CPlayerShader : public CShader // CDiffusedShader에서 CPlayerShader로 변경
@@ -78,7 +81,6 @@ public:
 	virtual ~CPlayerShader();
 
 	virtual D3D12_INPUT_LAYOUT_DESC CreateInputLayout();
-
 	virtual D3D12_SHADER_BYTECODE CreateVertexShader(ID3DBlob** ppd3dShaderBlob);
 	virtual D3D12_SHADER_BYTECODE CreatePixelShader(ID3DBlob** ppd3dShaderBlob);
 

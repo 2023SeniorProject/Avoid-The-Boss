@@ -40,6 +40,14 @@ void CScene::CreateShaderVariables(ID3D12Device* pd3dDevice, ID3D12GraphicsComma
 {
 }
 
+void CScene::UpdateShaderVariables(ID3D12GraphicsCommandList* pd3dCommandList)
+{
+}
+
+void CScene::ReleaseShaderVariables()
+{
+}
+
 void CScene::ReleaseObjects()
 {
 	if (m_pd3dGraphicsRootSignature)
@@ -48,10 +56,12 @@ void CScene::ReleaseObjects()
 	for (int i = 0; i < m_nShaders; i++)
 	{
 		m_ppShaders[i]->ReleaseShaderVariables();
-		//m_ppShaders[i]->ReleaseObjects();
+		m_ppShaders[i]->ReleaseObjects();
 		m_ppShaders[i]->Release();
 	}
 	delete[] m_ppShaders;
+
+	ReleaseShaderVariables();
 }
 
 bool CScene::ProcessInput(UCHAR* pKeysBuffer)
@@ -63,7 +73,7 @@ void CScene::AnimateObjects(float fTimeElapsed)
 {
 	for (int i = 0; i < m_nShaders; i++)
 	{
-		//m_ppShaders[i]->AnimateObjects(fTimeElapsed);
+		m_ppShaders[i]->AnimateObjects(fTimeElapsed);
 	}
 }
 
@@ -75,7 +85,7 @@ void CScene::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera
 	//그래픽 루트 시그너쳐를 파이프라인에 연결(설정)한다. 
 	pCamera->UpdateShaderVariables(pd3dCommandList);
 
-	//UpdateShaderVariables(pd3dCommandList);
+	UpdateShaderVariables(pd3dCommandList);
 	
 	//씬을 렌더링하는 것은 씬을 구성하는 게임 객체(셰이더를 포함하는 객체)들을 렌더링하는 것이다. 
 	for (int i = 0; i < m_nShaders; i++)
@@ -101,7 +111,8 @@ void CScene::ReleaseUploadBuffers()
 	}*/
 	//for (int i = 0; i < m_nShaders; i++) 
 		//m_ppShaders[i]->ReleaseUploadBuffers();
-
+	for (int i = 0; i < m_nShaders; i++) 
+		m_ppShaders[i]->ReleaseUploadBuffers();
 }
 
 ID3D12RootSignature* CScene::CreateGraphicsRootSignature(ID3D12Device* pd3dDevice)
@@ -118,7 +129,7 @@ ID3D12RootSignature* CScene::CreateGraphicsRootSignature(ID3D12Device* pd3dDevic
 	DescRange[1].NumDescriptors = 1;
 	DescRange[1].BaseShaderRegister = 0;  // ? : texture
 	DescRange[1].RegisterSpace = 0;
-	DescRange[1].RegisterSpace = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;
+	DescRange[1].OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;
 
 	// 루트서명의 슬롯 설명
 	D3D12_ROOT_PARAMETER RootParameters[4]; 

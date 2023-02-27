@@ -4,7 +4,7 @@
 //정점을 표현하기 위한 클래스를 선언한다. 
 class CVertex
 {
-protected:
+public:
 	//정점의 위치 벡터이다(모든 정점은 최소한 위치 벡터를 가져야 한다). 
 	XMFLOAT3 m_xmf3Position;
 public:
@@ -15,7 +15,7 @@ public:
 
 class CDiffusedVertex : public CVertex
 {
-protected:
+public:
 	//정점의 색상이다. 
 	XMFLOAT4 m_xmf4Diffuse;
 
@@ -33,6 +33,45 @@ public:
 		m_xmf4Diffuse = xmf4Diffuse;
 	}
 	~CDiffusedVertex() { }
+};
+
+//--------------------------------------
+class CTextureVertex : CVertex
+{
+public:
+	XMFLOAT2 m_xmf2TexCoord;
+public:
+	CTextureVertex() {
+		m_xmf3Position = XMFLOAT3(0.0f, 0.0f, 0.0f);
+		m_xmf2TexCoord = XMFLOAT2(0.0f, 0.0f);
+	}
+	CTextureVertex(float x, float y, float z, XMFLOAT2 xmf2TexCoord) 
+	{ m_xmf3Position = XMFLOAT3(x, y, z); m_xmf2TexCoord = xmf2TexCoord; }
+	CTextureVertex(XMFLOAT3 xmf3Position, XMFLOAT2 xmf2TexCoord = XMFLOAT2(0.0f, 0.0f)) 
+	{ m_xmf3Position = xmf3Position; m_xmf2TexCoord = xmf2TexCoord; }
+	~CTextureVertex() {}
+};
+
+
+class CDiffusedTexturedVertex : public CDiffusedVertex
+{
+public:
+	XMFLOAT2						m_xmf2TexCoord;
+
+public:
+	CDiffusedTexturedVertex() { 
+		m_xmf3Position = XMFLOAT3(0.0f, 0.0f, 0.0f); 
+		m_xmf4Diffuse = XMFLOAT4(0.0f, 0.0f, 0.0f, 0.0f); 
+		m_xmf2TexCoord = XMFLOAT2(0.0f, 0.0f); }
+	CDiffusedTexturedVertex(float x, float y, float z, XMFLOAT4 xmf4Diffuse, XMFLOAT2 xmf2TexCoord){ 
+		m_xmf3Position = XMFLOAT3(x, y, z); 
+		m_xmf4Diffuse = xmf4Diffuse;
+		m_xmf2TexCoord = xmf2TexCoord; }
+	CDiffusedTexturedVertex(XMFLOAT3 xmf3Position, XMFLOAT4 xmf4Diffuse = XMFLOAT4(0.0f, 0.0f, 0.0f, 0.0f), XMFLOAT2 xmf2TexCoord = XMFLOAT2(0.0f, 0.0f)) { 
+		m_xmf3Position = xmf3Position; 
+		m_xmf4Diffuse = xmf4Diffuse; 
+		m_xmf2TexCoord = xmf2TexCoord; }
+	~CDiffusedTexturedVertex() { }
 };
 
 class CMesh
@@ -54,20 +93,19 @@ protected:
 	ID3D12Resource* m_pd3dVertexBuffer = NULL;
 	ID3D12Resource* m_pd3dVertexUploadBuffer = NULL;
 
+	ID3D12Resource* m_pd3dIndexBuffer = NULL;
+	ID3D12Resource* m_pd3dIndexUploadBuffer = NULL;
+	/*인덱스 버퍼(인덱스의 배열)와 인덱스 버퍼를 위한 업로드 버퍼에 대한 인터페이스 포인터이다. 인덱스 버퍼는 정점
+	버퍼(배열)에 대한 인덱스를 가진다.*/
+
 	D3D12_VERTEX_BUFFER_VIEW m_d3dVertexBufferView;
+	D3D12_INDEX_BUFFER_VIEW m_d3dIndexBufferView;
 
 	D3D12_PRIMITIVE_TOPOLOGY m_d3dPrimitiveTopology = D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
 	UINT m_nSlot = 0;
 	UINT m_nVertices = 0;
 	UINT m_nStride = 0;
 	UINT m_nOffset = 0;
-
-protected:
-	ID3D12Resource* m_pd3dIndexBuffer = NULL;
-	ID3D12Resource* m_pd3dIndexUploadBuffer = NULL;
-	/*인덱스 버퍼(인덱스의 배열)와 인덱스 버퍼를 위한 업로드 버퍼에 대한 인터페이스 포인터이다. 인덱스 버퍼는 정점
-	버퍼(배열)에 대한 인덱스를 가진다.*/
-	D3D12_INDEX_BUFFER_VIEW m_d3dIndexBufferView;
 
 	UINT m_nIndices = 0;
 	//인덱스 버퍼에 포함되는 인덱스의 개수이다. 
@@ -96,6 +134,13 @@ public:
 	virtual ~CCubeMeshDiffused();
 };
 
+class CCubeMeshTextured : public CMesh
+{
+public:
+	CCubeMeshTextured(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, float fWidth = 2.0f, float fHeight = 2.0f, float fDepth = 2.0f);
+	virtual ~CCubeMeshTextured();
+};
+
 class CRectangleMesh : public CMesh
 {
 public:
@@ -103,24 +148,12 @@ public:
 	virtual ~CRectangleMesh();
 };
 
-//--------------------------------------
-class CTextureVertex : CVertex
-{
-private:
-	XMFLOAT2 m_xmf2TexCoord;
-public:
-	CTextureVertex() {
-		m_xmf3Position = XMFLOAT3(0.0f, 0.0f, 0.0f); 
-		m_xmf2TexCoord = XMFLOAT2(0.0f, 0.0f); }
-	CTextureVertex(float x, float y, float z, XMFLOAT2 xmf2TexCoord) { m_xmf3Position = XMFLOAT3(x, y, z); m_xmf2TexCoord = xmf2TexCoord; }
-	CTextureVertex(XMFLOAT3 xmf3Position, XMFLOAT2 xmf2TexCoord = XMFLOAT2(0.0f, 0.0f)) { m_xmf3Position = xmf3Position; m_xmf2TexCoord = xmf2TexCoord; }
-	~CTextureVertex() {}
-};
 
-
-class CCubeMeshTextured : public CMesh
+/////////////////////////////////////////////////////////////////////////////////////////////////
+//
+class CAirplaneMeshDiffused : public CMesh
 {
 public:
-	CCubeMeshTextured(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, float fWidth = 2.0f, float fHeight = 2.0f, float fDepth = 2.0f);
-	virtual ~CCubeMeshTextured();
+	CAirplaneMeshDiffused(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, float fWidth = 20.0f, float fHeight = 20.0f, float fDepth = 4.0f, XMFLOAT4 xmf4Color = XMFLOAT4(1.0f, 1.0f, 0.0f, 0.0f));
+	virtual ~CAirplaneMeshDiffused();
 };

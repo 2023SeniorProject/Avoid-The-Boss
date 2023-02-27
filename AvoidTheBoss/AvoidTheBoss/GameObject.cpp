@@ -2,11 +2,238 @@
 #include "GameObject.h"
 #include "Shader.h"
 
-CGameObject::CGameObject()
+
+//-----------------------------------------
+CTexture::CTexture(int nTexture, UINT nTextureType,  int nSamplers, int nRootParameters) : m_nTexture(nTexture), m_nTextureType(nTextureType), m_nSamplers(nSamplers), m_nRootParameters(nRootParameters)
 {
-	//단위행렬로 초기화해서 초기위치가 (0.0f,0.0f,0.0f)임
-	XMStoreFloat4x4(&m_xmf4x4World, XMMatrixIdentity());
+	if (m_nTexture > 0)
+	{
+		m_ppTexture = new ID3D12Resource * [m_nTexture];
+		m_ppUploadBuffer = new ID3D12Resource * [m_nTexture];
+		for (int i = 0; i < m_nTexture; i++)
+		{
+			m_ppTexture[i] = NULL;
+			m_ppUploadBuffer[i] = NULL;
+		}
+
+		/*m_pTextureType = new UINT*[nTextureType];
+		for (int i = 0; i < (int)nTextureType; i++)
+		{
+			m_pTextureType = NULL;
+		}*/
+		m_pTextureName = new _TCHAR[m_nTexture][64];
+		for (int i = 0; i < m_nTexture; i++)
+		{
+			m_pTextureName[i][0] = '\0';
+		}
+
+		m_pSrvGPUDescHandles = new CD3DX12_GPU_DESCRIPTOR_HANDLE[m_nTexture];
+		for (int i = 0; i < m_nTexture; i++)
+		{
+			m_pSrvGPUDescHandles[i].ptr = NULL;
+		}
+
+		m_pnResourceTypes = new UINT[m_nTexture];
+		m_pdxgiBufferFormats = new DXGI_FORMAT[m_nTexture];
+		m_pnBufferElements = new int[m_nTexture];
+	}
+
+	if (nRootParameters > 0)
+	{
+		m_pnRootParamIndices = new int[m_nRootParameters];
+
+		for (int i = 0; i < m_nRootParameters; i++)
+		{
+			m_pnRootParamIndices[i] = -1;
+		}
+	}
+
+	if(m_nSamplers>0)
+		m_pSamplerGPUDescHandles = new CD3DX12_GPU_DESCRIPTOR_HANDLE[m_nSamplers];
+	for (int i = 0; i < m_nSamplers; i++)
+	{
+		m_pSamplerGPUDescHandles[i].ptr = NULL;
+	}
 }
+
+
+CTexture::~CTexture()
+{
+	if (m_ppTexture)
+	{
+		for (int i = 0; i < m_nTexture; i++)
+		{
+			if (m_ppTexture[i])
+				m_ppTexture[i]->Release();
+		}
+		delete[] m_ppTexture;
+	}
+
+	if (m_pTextureName)
+		delete[] m_pTextureName;
+
+	if (m_pnResourceTypes)
+		delete[] m_pnResourceTypes;
+	if (m_pdxgiBufferFormats)
+		delete[] m_pdxgiBufferFormats;
+	if (m_pnBufferElements)
+		delete[] m_pnBufferElements;
+
+	if (m_pnRootParamIndices)
+		delete[] m_pnRootParamIndices;
+	if (m_pSrvGPUDescHandles)
+		delete[] m_pSrvGPUDescHandles;
+
+	if (m_pSamplerGPUDescHandles)
+		delete[] m_pSamplerGPUDescHandles;
+}
+
+void CTexture::LoadTextureFromDDSFile(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, const wchar_t* pszFileName, UINT nResourceType, UINT nIndex)
+{
+	m_pnResourceTypes[nIndex] = nResourceType;
+	m_ppTexture[nIndex] = ::CreateTextureResourceFromDDSFile(pd3dDevice, pd3dCommandList, pszFileName, &m_ppUploadBuffer[nIndex], D3D12_RESOURCE_STATE_GENERIC_READ);
+}
+
+D3D12_SHADER_RESOURCE_VIEW_DESC CTexture::GetShaderResourceViewDesc(int nIndex)
+{
+	ID3D12Resource* pShaderResource = GetResource(nIndex);
+	D3D12_RESOURCE_DESC d3dResourceDesc = pShaderResource->GetDesc();
+
+	D3D12_SHADER_RESOURCE_VIEW_DESC d3dShaderResourceViewDesc;
+	d3dShaderResourceViewDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+
+	int nTextureType = GetTextureType(nIndex);
+	switch (nTextureType)
+	{
+	case RESOURCE_TEXTURE2D: //(d3dResourceDesc.Dimension == D3D12_RESOURCE_DIMENSION_TEXTURE2D)(d3dResourceDesc.DepthOrArraySize == 1)
+	case RESOURCE_TEXTURE2D_ARRAY: //[]
+		d3dShaderResourceViewDesc.Format = d3dResourceDesc.Format;
+		d3dShaderResourceViewDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
+		d3dShaderResourceViewDesc.Texture2D.MipLevels = -1;
+		d3dShaderResourceViewDesc.Texture2D.MostDetailedMip = 0;
+		d3dShaderResourceViewDesc.Texture2D.PlaneSlice = 0;
+		d3dShaderResourceViewDesc.Texture2D.ResourceMinLODClamp = 0.0f;
+		break;
+	case RESOURCE_TEXTURE2DARRAY: //(d3dResourceDesc.Dimension == D3D12_RESOURCE_DIMENSION_TEXTURE2D)(d3dResourceDesc.DepthOrArraySize != 1)
+		d3dShaderResourceViewDesc.Format = d3dResourceDesc.Format;
+		d3dShaderResourceViewDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2DARRAY;
+		d3dShaderResourceViewDesc.Texture2DArray.MipLevels = -1;
+		d3dShaderResourceViewDesc.Texture2DArray.MostDetailedMip = 0;
+		d3dShaderResourceViewDesc.Texture2DArray.PlaneSlice = 0;
+		d3dShaderResourceViewDesc.Texture2DArray.ResourceMinLODClamp = 0.0f;
+		d3dShaderResourceViewDesc.Texture2DArray.FirstArraySlice = 0;
+		d3dShaderResourceViewDesc.Texture2DArray.ArraySize = d3dResourceDesc.DepthOrArraySize;
+		break;
+	case RESOURCE_TEXTURE_CUBE: //(d3dResourceDesc.Dimension == D3D12_RESOURCE_DIMENSION_TEXTURE2D)(d3dResourceDesc.DepthOrArraySize == 6)
+		d3dShaderResourceViewDesc.Format = d3dResourceDesc.Format;
+		d3dShaderResourceViewDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURECUBE;
+		d3dShaderResourceViewDesc.TextureCube.MipLevels = 1;
+		d3dShaderResourceViewDesc.TextureCube.MostDetailedMip = 0;
+		d3dShaderResourceViewDesc.TextureCube.ResourceMinLODClamp = 0.0f;
+		break;
+	case RESOURCE_BUFFER: //(d3dResourceDesc.Dimension == D3D12_RESOURCE_DIMENSION_BUFFER)
+		d3dShaderResourceViewDesc.Format = m_pdxgiBufferFormats[nIndex];
+		d3dShaderResourceViewDesc.ViewDimension = D3D12_SRV_DIMENSION_BUFFER;
+		d3dShaderResourceViewDesc.Buffer.FirstElement = 0;
+		d3dShaderResourceViewDesc.Buffer.NumElements = m_pnBufferElements[nIndex];
+		d3dShaderResourceViewDesc.Buffer.StructureByteStride = 0;
+		d3dShaderResourceViewDesc.Buffer.Flags = D3D12_BUFFER_SRV_FLAG_NONE;
+		break;
+	}
+	return(d3dShaderResourceViewDesc);
+}
+void CTexture::UpdateShaderVariables(ID3D12GraphicsCommandList* pd3dCommandList)
+{
+	if (m_nRootParameters == m_nTexture)
+	{
+		for (int i = 0; i < m_nRootParameters; i++)
+		{
+			if (m_pSrvGPUDescHandles[i].ptr && (m_pnRootParamIndices[i] != -1))
+				pd3dCommandList->SetGraphicsRootDescriptorTable(m_pnRootParamIndices[i], m_pSrvGPUDescHandles[i]);
+		}
+	}
+	else
+	{
+		if (m_pSrvGPUDescHandles[0].ptr)
+			pd3dCommandList->SetGraphicsRootDescriptorTable(m_pnRootParamIndices[0], m_pSrvGPUDescHandles[0]);
+	}
+}
+
+void CTexture::UpdateShaderVariable(ID3D12GraphicsCommandList* pd3dCommandList, int nRootParam, int nTexIndex)
+{
+	pd3dCommandList->SetGraphicsRootDescriptorTable(m_pnRootParamIndices[nRootParam], m_pSrvGPUDescHandles[nTexIndex]);
+}
+
+void CTexture::ReleaseUploadBuffers()
+{
+	if (m_ppUploadBuffer)
+	{
+		for (int i = 0; i < m_nTexture; i++)
+		{
+			m_ppUploadBuffer[i]->Release();
+		}
+		delete[] m_ppUploadBuffer;
+		m_ppUploadBuffer = NULL;
+	}
+}
+
+void CTexture::ReleaseShaderVariables()
+{
+
+}
+
+//=====================================
+
+
+CMaterial::CMaterial()
+{
+	m_xmfAlbedo = XMFLOAT3(1.0f, 1.0f, 1.0f);
+}
+
+CMaterial::~CMaterial()
+{
+	if (m_pTexture)
+		m_pTexture->Release();
+	if (m_pShader)
+		m_pShader->Release();
+}
+
+void CMaterial::SetTexture(CTexture* pTex)
+{
+	if (m_pTexture) m_pTexture->Release();
+	m_pTexture = pTex;
+	if (m_pTexture) m_pTexture->AddRef();
+}
+
+void CMaterial::SetShader(CShader* pShader)
+{
+	if (m_pShader) m_pShader->Release();
+	m_pShader = pShader;
+	if (m_pShader) m_pShader->AddRef();
+}
+
+void CMaterial::UpdateShaderVariables(ID3D12GraphicsCommandList* pd3dCommandList)
+{
+	if (m_pTexture)
+		m_pTexture->UpdateShaderVariables(pd3dCommandList);
+}
+
+void CMaterial::ReleaseShaderVariables()
+{
+	if (m_pShader)
+		m_pShader->ReleaseShaderVariables();
+	if (m_pTexture)
+		m_pTexture->ReleaseShaderVariables();
+}
+
+void CMaterial::ReleaseUploadBuffers()
+{
+	if (m_pTexture)
+		m_pTexture->ReleaseUploadBuffers();
+}
+
+
+//=====================================
 
 CGameObject::CGameObject(int nMeshes)
 {
@@ -23,6 +250,8 @@ CGameObject::CGameObject(int nMeshes)
 
 CGameObject::~CGameObject()
 {
+	ReleaseShaderVariables();
+
 	if (m_ppMeshes)
 	{
 		for (int i = 0; i < m_nMeshes; i++)
@@ -33,10 +262,7 @@ CGameObject::~CGameObject()
 		delete[] m_ppMeshes;
 	}
 	if (m_pMaterial)
-	{
-		m_pMaterial->ReleaseShaderVariables();
 		m_pMaterial->Release();
-	}
 }
 
 void CGameObject::SetMesh(int nIndex, CMesh* pMesh)
@@ -51,12 +277,13 @@ void CGameObject::SetMesh(int nIndex, CMesh* pMesh)
 
 void CGameObject::SetShader(CShader* pShader)
 {
-	if (m_pMaterial->m_pShader)
+	if (!m_pMaterial)
 	{
-		m_pMaterial->m_pShader->Release();
-		m_pMaterial->m_pShader = pShader;
-		m_pMaterial->m_pShader->AddRef();
+		CMaterial* pMaterial = new CMaterial();
+		SetMaterial(pMaterial);
 	}
+	if (m_pMaterial) 
+		m_pMaterial->SetShader(pShader);
 }
 
 void CGameObject::ReleaseUploadBuffers()
@@ -70,13 +297,11 @@ void CGameObject::ReleaseUploadBuffers()
 				m_ppMeshes[i]->ReleaseUploadBuffers();
 		}
 	}
+	if (m_pMaterial)
+		m_pMaterial->ReleaseUploadBuffers();
 }
 
 void CGameObject::Animate(float fTimeElapsed)
-{
-}
-
-void CGameObject::OnPrepareRender()
 {
 }
 
@@ -132,7 +357,7 @@ void CGameObject::CreateShaderVariables(ID3D12Device* pd3dDevice, ID3D12Graphics
 
 void CGameObject::UpdateShaderVariables(ID3D12GraphicsCommandList* pd3dCommandList)
 {
-	XMFLOAT4X4 xmf4x4World;
+	//XMFLOAT4X4 xmf4x4World;
 	XMStoreFloat4x4(&m_pcbMappedGameObject->m_xmf4x4World, XMMatrixTranspose(XMLoadFloat4x4(&m_xmf4x4World)));
 
 	//객체의 월드 변환 행렬을 루트 상수(32-비트 값)를 통하여 셰이더 변수(상수 버퍼)로 복사한다. 
@@ -141,6 +366,12 @@ void CGameObject::UpdateShaderVariables(ID3D12GraphicsCommandList* pd3dCommandLi
 
 void CGameObject::ReleaseShaderVariables()
 {
+	if (m_pd3dcbGameObject)
+	{
+		m_pd3dcbGameObject->Unmap(0, NULL);
+		m_pd3dcbGameObject->Release();
+	}
+	if (m_pMaterial) m_pMaterial->ReleaseShaderVariables();
 }
 
 XMFLOAT3 CGameObject::GetPosition()
@@ -235,164 +466,4 @@ void CGameObject::SetMaterial(CMaterial* pMaterial)
 	if (m_pMaterial) m_pMaterial->Release();
 	m_pMaterial = pMaterial;
 	if (m_pMaterial) m_pMaterial->AddRef();
-}
-//-----------------------------------------
-CTexture::CTexture(int nTexture, UINT nTextureType, int nRootParameters, int nSamplers) : m_nTexture(nTexture), m_nRootParameters(nRootParameters), m_nSamplers(nSamplers)
-{
-	if (m_nTexture > 0)
-	{
-		m_ppTexture = new ID3D12Resource * [m_nTexture];
-		m_ppUploadBuffer = new ID3D12Resource * [m_nTexture];
-
-		for (int i = 0; i < m_nTexture; i++)
-		{
-			m_ppTexture[i] = NULL;
-			m_ppUploadBuffer[i] = NULL;
-		}
-
-		m_pTextureType = new UINT[nTextureType];
-		for (int i = 0; i < (int)nTextureType; i++)
-		{
-			m_pTextureType[i] = NULL;
-		}
-		m_pTextureName = new _TCHAR[m_nTexture][64];
-		for (int i = 0; i <m_nTexture; i++)
-		{
-			m_pTextureName[i][0] = '\0';
-		}
-
-
-		m_ppd3dTexUploadBuffers = new ID3D12Resource*[m_nTexUploadBuf];
-		for (int i = 0; i < m_nTexUploadBuf; i++)
-		{
-			m_ppd3dTexUploadBuffers[i] = NULL;
-		}
-
-		m_pSrvDescriptorHandles = new CD3DX12_GPU_DESCRIPTOR_HANDLE[m_nTexture];
-		for (int i = 0; i < m_nTexture; i++)
-		{
-			m_pSrvDescriptorHandles[i].ptr = NULL;
-		}
-
-		m_pSamplerDescriptorHandles = new CD3DX12_GPU_DESCRIPTOR_HANDLE[m_nSamplers];
-		for (int i = 0; i < m_nSamplers; i++)
-		{
-			m_pSamplerDescriptorHandles[i].ptr = NULL;
-		}
-	}
-
-	if (nRootParameters > 0)
-	{
-		m_pnRootParamIndices = new int[m_nRootParameters];
-
-		for (int i = 0; i < m_nRootParameters; i++)
-		{
-			m_pnRootParamIndices[i] = -1;
-		}
-	}
-}
-
-
-CTexture::~CTexture()
-{
-	if (m_ppTexture)
-		delete[] m_ppTexture;
-
-	if (m_ppUploadBuffer)
-		delete[] m_ppUploadBuffer;
-
-	if (m_pTextureName)
-		delete[] m_pTextureName;
-
-	if (m_pSamplerDescriptorHandles)
-		delete[] m_pSamplerDescriptorHandles;
-
-	if (m_pSrvDescriptorHandles)
-		delete[] m_pSrvDescriptorHandles;
-
-	if (m_pnResourceTypes)
-		delete[] m_pnResourceTypes;
-}
-
-ID3D12Resource* CTexture::LoadTextureFromDDSFile(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, const wchar_t* pszFileName, UINT nResourceType, UINT nIndex)
-{
-	m_pnResourceTypes[nIndex] = nResourceType;
-	m_ppTexture[nIndex] = ::CreateTextureResourceFromDDSFile(pd3dDevice, pd3dCommandList, pszFileName, &m_ppUploadBuffer[nIndex]);
-	return m_ppTexture[nIndex];
-}
-
-D3D12_SHADER_RESOURCE_VIEW_DESC CTexture::GetShaderResourceViewDesc(int nIndex)
-{
-	D3D12_SHADER_RESOURCE_VIEW_DESC srvDescriptor;
-	srvDescriptor.Format = m_ppTexture[nIndex]->GetDesc().Format;
-	srvDescriptor.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
-	srvDescriptor.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
-	srvDescriptor.Texture2D.MipLevels = -1; //-1 : MostDetailedMip~마지막 수준 모두 포함
-	srvDescriptor.Texture2D.MostDetailedMip = 0;
-	srvDescriptor.Texture2D.PlaneSlice = 0; //특정 형식이라 0으로 포맷
-	srvDescriptor.Texture2D.ResourceMinLODClamp = 0.0f;
-	
-	return srvDescriptor;
-}
-void CTexture::UpdateShaderVariables(ID3D12GraphicsCommandList* pd3dCommandList)
-{
-	for (int i = 0; i < m_nRootParameters; i++)
-	{
-		pd3dCommandList->SetGraphicsRootDescriptorTable(m_pnRootParamIndices[i], m_pSrvDescriptorHandles[i]);
-	}
-}
-
-void CTexture::UpdateShaderVariables(ID3D12GraphicsCommandList* pd3dCommandList, int nRootParam, int nTexIndex)
-{
-	pd3dCommandList->SetGraphicsRootDescriptorTable(m_pnRootParamIndices[nRootParam], m_pSrvDescriptorHandles[nTexIndex]);
-}
-
-void CTexture::ReleaseUploadBuffers()
-{
-	if (m_nTexUploadBuf)
-	{
-		for (int i = 0; i < m_nTexUploadBuf; i++)
-		{
-			m_ppd3dTexUploadBuffers[i]->Release();
-		}
-		delete[] m_ppd3dTexUploadBuffers;
-		m_ppd3dTexUploadBuffers = NULL;
-	}
-}
-void CTexture::ReleaseShaderVariables()
-{
-
-}
-
-CMaterial::CMaterial()
-{
-	m_xmfAlbedo = XMFLOAT3(1.0f, 1.0f, 1.0f);
-}
-
-CMaterial::~CMaterial()
-{
-	if (m_pTexture) 
-		m_pTexture->Release();
-	if (m_pShader) 
-		m_pShader->Release();
-}
-
-void CMaterial::UpdateShaderVariables(ID3D12GraphicsCommandList* pd3dCommandList)
-{
-	if (m_pTexture)
-		m_pTexture->UpdateShaderVariables(pd3dCommandList);
-}
-
-void CMaterial::ReleaseShaderVariables()
-{
-	if (m_pTexture)
-		m_pTexture->ReleaseShaderVariables();
-	if (m_pShader)
-		m_pShader->ReleaseShaderVariables();
-}
-
-void CMaterial::ReleaseUploadBuffers()
-{
-	if (m_pTexture)
-		m_pTexture->ReleaseUploadBuffers();
 }

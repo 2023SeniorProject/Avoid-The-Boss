@@ -92,19 +92,19 @@ void CGameScene::InitScene()
 	m_Timer.Reset();
 }
 
-void CScene::CreateShaderVariables(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList)
+void CGameScene::CreateShaderVariables(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList)
 {
 }
 
-void CScene::UpdateShaderVariables(ID3D12GraphicsCommandList* pd3dCommandList)
+void CGameScene::UpdateShaderVariables(ID3D12GraphicsCommandList* pd3dCommandList)
 {
 }
 
-void CScene::ReleaseShaderVariables()
+void CGameScene::ReleaseShaderVariables()
 {
 }
 
-void CScene::ReleaseObjects()
+void CGameScene::ReleaseObjects()
 {
 	if (m_pd3dGraphicsRootSignature)
 		m_pd3dGraphicsRootSignature->Release();
@@ -209,7 +209,7 @@ void CGameScene::AnimateObjects()
 {
 	for (int i = 0; i < m_nShaders; i++)
 	{
-		m_ppShaders[i].AnimateObjects(m_Timer.GetTimeElapsed());
+		m_ppShaders[i]->AnimateObjects(m_Timer.GetTimeElapsed());
 	}
 }
 

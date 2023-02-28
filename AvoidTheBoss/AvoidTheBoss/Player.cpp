@@ -36,9 +36,9 @@ CPlayer::~CPlayer()
 누를 때 변경된다. 플레이어의 이동 방향(dwDirection)에 따라 플레이어를 fDistance 만큼 이동한다.*/
 void CPlayer::Move(DWORD dwDirection, float fDistance)
 {
+	XMFLOAT3 xmf3Shift = XMFLOAT3(0, 0, 0);
 	if (dwDirection)
-	{
-		XMFLOAT3 xmf3Shift = XMFLOAT3(0, 0, 0);
+	{	
 		//화살표 키 ‘↑’를 누르면 로컬 z-축 방향으로 이동(전진)한다. ‘↓’를 누르면 반대 방향으로 이동한다. 
 		if (dwDirection & DIR_FORWARD) 
 			xmf3Shift = Vector3::Add(xmf3Shift, m_xmf3Look,fDistance);

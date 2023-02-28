@@ -161,7 +161,7 @@ void DummyPlayer::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pC
 	//카메라 모드가 3인칭이면 플레이어 객체를 렌더링한다. 
 	if (nCameraMode == THIRD_PERSON_CAMERA)
 	{
-		if (m_pShader) m_pShader->Render(pd3dCommandList, pCamera);
+		if (m_ppShaders) m_ppShaders->Render(pd3dCommandList, pCamera); // >>>>> m_ppShaders 로 변경되었으니 확인해주세요
 		CGameObject::Render(pd3dCommandList, pCamera);
 	}
 }

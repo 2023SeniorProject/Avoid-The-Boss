@@ -22,19 +22,16 @@
     <Filter Include="GameObject">
       <UniqueIdentifier>{5f477567-9a26-4f76-b30f-20566a3c3a73}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Timer">
-      <UniqueIdentifier>{fea8fce1-939a-4db8-9821-3e11bc60fb22}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Resource">
       <UniqueIdentifier>{58264972-60ea-4db8-b6e4-3967c8ed7c7b}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="IocpCore">
-      <UniqueIdentifier>{e41ad9a1-45a4-4245-ab77-10b9b05eb4ff}</UniqueIdentifier>
     </Filter>
     <Filter Include="Core">
       <UniqueIdentifier>{8ad379e7-e43a-4126-b4d2-6aa34584f282}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Main">
+    <Filter Include="IocpCore">
+      <UniqueIdentifier>{e41ad9a1-45a4-4245-ab77-10b9b05eb4ff}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="MainGame">
       <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
       <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
     </Filter>
@@ -65,13 +62,10 @@
       <Filter>GameObject</Filter>
     </ClInclude>
     <ClInclude Include="AvoidTheBoss.h">
-      <Filter>Main</Filter>
+      <Filter>MainGame</Filter>
     </ClInclude>
     <ClInclude Include="Resource.h">
       <Filter>Core</Filter>
-    </ClInclude>
-    <ClInclude Include="Timer.h">
-      <Filter>Timer</Filter>
     </ClInclude>
     <ClInclude Include="pch.h">
       <Filter>Core</Filter>
@@ -88,7 +82,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AvoidTheBoss.cpp">
-      <Filter>Main</Filter>
+      <Filter>MainGame</Filter>
     </ClCompile>
     <ClCompile Include="Camera.cpp">
       <Filter>Camera</Filter>
@@ -110,9 +104,6 @@
     </ClCompile>
     <ClCompile Include="GameObject.cpp">
       <Filter>GameObject</Filter>
-    </ClCompile>
-    <ClCompile Include="Timer.cpp">
-      <Filter>Timer</Filter>
     </ClCompile>
     <ClCompile Include="pch.cpp">
       <Filter>Core</Filter>

@@ -1,6 +1,6 @@
 #pragma once
+#include "CTimer.h"
 #include "SceneInterface.h"
-#include "Timer.h"
 #include "Shader.h"
 
 class CGameScene : public SceneInterface
@@ -32,7 +32,7 @@ public:
 
 public:
 
-	CTimer				m_Timer;
+	Timer				m_Timer;
 	CCamera* m_pCamera = NULL;
 protected:
 	//배치(Batch) 처리를 하기 위하여 씬을 셰이더들의 리스트로 표현한다. 

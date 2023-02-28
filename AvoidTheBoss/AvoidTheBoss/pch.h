@@ -9,9 +9,9 @@
 // Windows 헤더 파일
 
 #ifdef _DEBUG
-#pragma comment(lib, "Debug\\ServerCoreEngine.lib")
+#pragma comment(lib, "Debug\\CoreEngine.lib")
 #else
-#pragma comment(lib, "Release\\ServerCoreEngine.lib")
+#pragma comment(lib, "Release\\CoreEngine.lib")
 #endif
 
 #include "CorePch.h"

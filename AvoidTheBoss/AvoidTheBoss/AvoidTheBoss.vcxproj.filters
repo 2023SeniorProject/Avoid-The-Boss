@@ -85,6 +85,12 @@
     <ClInclude Include="SceneInterface.h">
       <Filter>Scene</Filter>
     </ClInclude>
+    <ClInclude Include="d3dx12.h">
+      <Filter>Shader</Filter>
+    </ClInclude>
+    <ClInclude Include="DDSTextureLoader12.h">
+      <Filter>Shader</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AvoidTheBoss.cpp">
@@ -110,6 +116,10 @@
     </ClCompile>
     <ClCompile Include="GameObject.cpp">
       <Filter>GameObject</Filter>
+    </ClCompile>
+    </ClCompile>
+    <ClCompile Include="DDSTextureLoader12.cpp">
+      <Filter>Shader</Filter>
     </ClCompile>
     <ClCompile Include="Timer.cpp">
       <Filter>Timer</Filter>
@@ -139,6 +149,38 @@
     <ResourceCompile Include="AvoidTheBoss.rc">
       <Filter>Resource</Filter>
     </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="small.ico">
+      <Filter>리소스 파일</Filter>
+    </Image>
+    <Image Include="AvoidTheBoss.ico">
+      <Filter>리소스 파일</Filter>
+    </Image>
+    <Image Include="Stone.dds">
+      <Filter>리소스 파일</Filter>
+    </Image>
+    <Image Include="Floor.dds">
+      <Filter>리소스 파일</Filter>
+    </Image>
+    <Image Include="Lava(Diffuse).dds">
+      <Filter>리소스 파일</Filter>
+    </Image>
+    <Image Include="Lava(Emissive).dds">
+      <Filter>리소스 파일</Filter>
+    </Image>
+    <Image Include="Metal01.dds">
+      <Filter>리소스 파일</Filter>
+    </Image>
+    <Image Include="Metal02.dds">
+      <Filter>리소스 파일</Filter>
+    </Image>
+    <Image Include="Rock01.dds">
+      <Filter>리소스 파일</Filter>
+    </Image>
+    <Image Include="Stone01.dds">
+      <Filter>리소스 파일</Filter>
+    </Image>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Shaders.hlsl">

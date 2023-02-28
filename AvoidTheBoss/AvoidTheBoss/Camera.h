@@ -1,13 +1,11 @@
 #pragma once
 
-//카메라의 종류(모드: Mode)를 나타내는 상수를 다음과 같이 선언한다. 
-#define FIRST_PERSON_CAMERA		0x01
-#define THIRD_PERSON_CAMERA		0x02
-
 //프레임 버퍼의 크기와 종횡비(Aspect Ratio)를 나타내는 상수를 다음과 같이 선언한
 #define ASPECT_RATIO (float(FRAME_BUFFER_WIDTH) / float(FRAME_BUFFER_HEIGHT))
 
-class CPlayer;
+//카메라의 종류(모드: Mode)를 나타내는 상수를 다음과 같이 선언한다. 
+#define FIRST_PERSON_CAMERA		0x01
+#define THIRD_PERSON_CAMERA		0x02
 
 //---카메라 상수 버퍼를 위한 구조체
 struct VS_CB_CAMERA_INFO
@@ -15,6 +13,8 @@ struct VS_CB_CAMERA_INFO
 	XMFLOAT4X4 m_xmf4x4View;
 	XMFLOAT4X4 m_xmf4x4Projection;
 };
+
+class CPlayer;
 
 class CCamera
 {
@@ -44,7 +44,6 @@ protected:
 	//플레이어가 회전할 때 얼마만큼의 시간을 지연시킨 후 카메라를 회전시킬 것인가를 나타낸다.
 	float m_fTimeLag;
 
-protected:
 	//카메라 변환 행렬
 	XMFLOAT4X4 m_xmf4x4View;
 	//투영 변환 행렬
@@ -56,6 +55,9 @@ protected:
 
 	//카메라를 가지고 있는 플레이어에 대한 포인터이다.
 	CPlayer* m_pPlayer = NULL;
+
+	ID3D12Resource* m_pd3dcbCamera = NULL;
+	VS_CB_CAMERA_INFO* m_pcbMappedCamera = NULL;
 public:
 	CCamera();
 	CCamera(CCamera* pCamera);

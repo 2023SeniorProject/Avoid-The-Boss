@@ -2,6 +2,7 @@
 //----CGameFramework 클래스
 //----1 Direct3D 디바이스 생성과 관리 
 //----2 화면 출력을 위한 처리 - 게임 객체 생성과 관리, 사용자 입력, 애니메이션 작업
+
 #include "Timer.h"
 #include "Scene.h"
 #include "clientIocpCore.h"
@@ -17,11 +18,11 @@ private:
 	int	m_nWndClientWidth = FRAME_BUFFER_WIDTH;
 	int	m_nWndClientHeight = FRAME_BUFFER_HEIGHT;
 
-	IDXGIFactory4* m_pdxgiFactory;
+	IDXGIFactory4* m_pdxgiFactory = NULL;
 	//DXGI 팩토리 인터페이스에 대한 포인터이다. 
-	IDXGISwapChain3* m_pdxgiSwapChain;
+	IDXGISwapChain3* m_pdxgiSwapChain = NULL;
 	//스왑 체인 인터페이스에 대한 포인터이다. 주로 디스플레이를 제어하기 위하여 필요하다. 
-	ID3D12Device* m_pd3dDevice;
+	ID3D12Device* m_pd3dDevice = NULL;
 	//Direct3D 디바이스 인터페이스에 대한 포인터이다. 주로 리소스를 생성하기 위하여 필요하다.
 
 	bool						m_bMsaa4xEnable = false;
@@ -38,21 +39,25 @@ private:
 	UINT						m_nRtvDescriptorIncrementSize;
 	//렌더 타겟 버퍼, 서술자 힙 인터페이스 포인터, 렌더 타겟 서술자 원소의 크기이다.
 
-	ID3D12Resource* m_pd3dDepthStencilBuffer;
-	ID3D12DescriptorHeap* m_pd3dDsvDescriptorHeap;
+	ID3D12Resource*				m_pd3dDepthStencilBuffer;
+	ID3D12DescriptorHeap*		m_pd3dDsvDescriptorHeap;
 	UINT						m_nDsvDescriptorIncrementSize;
 	//깊이-스텐실 버퍼, 서술자 힙 인터페이스 포인터, 깊이-스텐실 서술자 원소의 크기이다.
 
-	ID3D12CommandQueue* m_pd3dCommandQueue;
-	ID3D12CommandAllocator* m_pd3dCommandAllocator;
-	ID3D12GraphicsCommandList* m_pd3dCommandList;
+	ID3D12CommandQueue*			m_pd3dCommandQueue;
+	ID3D12CommandAllocator*		m_pd3dCommandAllocator;
+	ID3D12GraphicsCommandList*	m_pd3dCommandList;
 	//명령 큐, 명령 할당자, 명령 리스트 인터페이스 포인터이다.
+
+#if defined(_DEBUG)
+	ID3D12Debug* m_pd3dDebugController;
+#endif
 
 	ID3D12Fence					*m_pd3dFence;
 	UINT64						m_nFenceValues[m_nSwapChainBuffers];
 	HANDLE						m_hFenceEvent;
 	//펜스 인터페이스 포인터, 펜스의 값, 이벤트 핸들이다.
-private:
+
 	//다음은 게임 프레임워크에서 사용할 타이머이다. 
 	
 

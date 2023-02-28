@@ -46,8 +46,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
         return 0;
     }
     // 전역 문자열을 초기화합니다.
-    LoadStringW(hInstance, IDS_APP_TITLE, szTitle, MAX_LOADSTRING);
-    LoadStringW(hInstance, IDC_AVOIDTHEBOSS, szWindowClass, MAX_LOADSTRING);
+    ::LoadString(hInstance, IDS_APP_TITLE, szTitle, MAX_LOADSTRING);
+    ::LoadString(hInstance, IDC_AVOIDTHEBOSS, szWindowClass, MAX_LOADSTRING);
     MyRegisterClass(hInstance);
 
     // 애플리케이션 초기화를 수행합니다:
@@ -57,8 +57,6 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     }
 
     HACCEL hAccelTable = LoadAccelerators(hInstance, MAKEINTRESOURCE(IDC_AVOIDTHEBOSS));
-
-    MSG msg;
 
     // 기본 메시지 루프입니다:
     GCThreadManager->Launch([=]()
@@ -114,15 +112,15 @@ ATOM MyRegisterClass(HINSTANCE hInstance)
     wcex.cbClsExtra = 0;
     wcex.cbWndExtra = 0;
     wcex.hInstance = hInstance;
-    wcex.hIcon = LoadIcon(hInstance, MAKEINTRESOURCE(IDI_AVOIDTHEBOSS));
-    wcex.hCursor = LoadCursor(nullptr, IDC_ARROW);
+    wcex.hIcon = ::LoadIcon(hInstance, MAKEINTRESOURCE(IDI_AVOIDTHEBOSS));
+    wcex.hCursor = ::LoadCursor(nullptr, IDC_ARROW);
     wcex.hbrBackground = (HBRUSH)(COLOR_WINDOW + 1);
     //주 윈도우의 메뉴가 나타나지 않도록 한다.
     wcex.lpszMenuName = NULL; //AKEINTRESOURCEW(IDC_AVOIDTHEBOSS);
     wcex.lpszClassName = szWindowClass;
-    wcex.hIconSm = LoadIcon(wcex.hInstance, MAKEINTRESOURCE(IDI_SMALL));
+    wcex.hIconSm = ::LoadIcon(wcex.hInstance, MAKEINTRESOURCE(IDI_SMALL));
 
-    return RegisterClassExW(&wcex);
+    return ::RegisterClassEx(&wcex);
 }
 
 
@@ -178,13 +176,13 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         switch (wmId)
         {
         case IDM_ABOUT:
-            DialogBox(hInst, MAKEINTRESOURCE(IDD_ABOUTBOX), hWnd, About);
+            ::DialogBox(hInst, MAKEINTRESOURCE(IDD_ABOUTBOX), hWnd, About);
             break;
         case IDM_EXIT:
             DestroyWindow(hWnd);
             break;
         default:
-            return DefWindowProc(hWnd, message, wParam, lParam);
+            return ::DefWindowProc(hWnd, message, wParam, lParam);
         }
     }
     break;

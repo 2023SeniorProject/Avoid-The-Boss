@@ -173,7 +173,7 @@ public:
 	//게임 객체의 위치를 설정한다. 
 	void SetPosition(float x, float y, float z);
 	void SetPosition(XMFLOAT3 xmf3Position);
-	void SetObjectInWorld(CGameObject** ppObjects, int i, XMFLOAT3 position, CMesh* pMesh, CMaterial* pMaterial, D3D12_GPU_DESCRIPTOR_HANDLE m_d3dCbvGPUDescriptorStartHandle, int nIndex);
+	void SetObjectInWorld(int nIndex, CMesh* pMesh, CMaterial* pMaterial, XMFLOAT3 position);
 
 	//게임 객체를 로컬 x-축, y-축, z-축 방향으로 이동한다.
 	void MoveStrafe(float fDistance = 1.0f);

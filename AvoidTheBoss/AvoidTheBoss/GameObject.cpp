@@ -415,13 +415,13 @@ void CGameObject::SetPosition(XMFLOAT3 xmf3Position)
 	SetPosition(xmf3Position.x, xmf3Position.y, xmf3Position.z);
 }
 
-void CGameObject::SetObjectInWorld(CGameObject** ppObjects, int i, XMFLOAT3 position, CMesh* pMesh,CMaterial* pMaterial,D3D12_GPU_DESCRIPTOR_HANDLE m_d3dCbvGPUDescriptorStartHandle, int nIndex)
+void CGameObject::SetObjectInWorld(int nIndex, CMesh* pMesh,CMaterial* pMaterial, XMFLOAT3 position)
 {
 	SetMesh(nIndex, pMesh);
 	SetMaterial(pMaterial);
-	SetPosition(position);
-	SetCbvGPUDescriptorHandlePtr(m_d3dCbvGPUDescriptorStartHandle.ptr + (::gnCbvSrvDescIncrementSize * i));
-	ppObjects[i] = this;
+	SetPosition(position.x,position.y,position.z);
+	//SetCbvGPUDescriptorHandlePtr(m_CbvGPUDescStartHandlePtr);
+	//ppObjects[i] = this;
 }
 
 //게임 객체를 로컬 x-축 방향으로 이동한다.

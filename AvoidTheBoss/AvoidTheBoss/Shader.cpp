@@ -206,7 +206,7 @@ void CShader::CreateCbvSrvDescriptorHeaps(ID3D12Device* pd3dDevice, int nCbv, in
 	CbvSrvDescriptorHeap.NumDescriptors = nCbv + nSrv;
 	CbvSrvDescriptorHeap.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
 	CbvSrvDescriptorHeap.NodeMask = 0;
-	gnCbvSrvDescIncrementSize = pd3dDevice->CreateDescriptorHeap(&CbvSrvDescriptorHeap, 
+	pd3dDevice->CreateDescriptorHeap(&CbvSrvDescriptorHeap, 
 		__uuidof(ID3D12DescriptorHeap), (void**)&m_pCbvSrvDescHeap);
 
 
@@ -299,13 +299,13 @@ D3D12_INPUT_LAYOUT_DESC CPlayerShader::CreateInputLayout()
 
 D3D12_SHADER_BYTECODE CPlayerShader::CreateVertexShader(ID3DBlob** ppd3dShaderBlob)
 {
-	return(CShader::CompileShaderFromFile(L"C:\\AvoidTheBoss\\AvoidTheBoss\\AvoidTheBoss\\Shaders.hlsl", "VSPlayer", "vs_5_1",
+	return(CShader::CompileShaderFromFile(L"Shaders.hlsl", "VSPlayer", "vs_5_1",
 		ppd3dShaderBlob));
 }
 
 D3D12_SHADER_BYTECODE CPlayerShader::CreatePixelShader(ID3DBlob** ppd3dShaderBlob)
 {
-	return(CShader::CompileShaderFromFile(L"C:\\AvoidTheBoss\\AvoidTheBoss\\AvoidTheBoss\\Shaders.hlsl", "PSPlayer", "ps_5_1",
+	return(CShader::CompileShaderFromFile(L"Shaders.hlsl", "PSPlayer", "ps_5_1",
 		ppd3dShaderBlob));
 }
 
@@ -327,17 +327,17 @@ void CObjectsShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsComman
 {
 	CTexture* ppTextures[TEXTURES];
 	ppTextures[0] = new CTexture( 1, RESOURCE_TEXTURE2D, 0, 1);
-	ppTextures[0]->LoadTextureFromDDSFile(pd3dDevice, pd3dCommandList, L"C:\\AvoidTheBoss\\AvoidTheBoss\\AvoidTheBoss\\Lava(Diffuse).dds", RESOURCE_TEXTURE2D, 0);
+	ppTextures[0]->LoadTextureFromDDSFile(pd3dDevice, pd3dCommandList, L"Floor.dds", RESOURCE_TEXTURE2D, 0);
 	ppTextures[1] = new CTexture(1, RESOURCE_TEXTURE2D, 0, 1);
-	ppTextures[1]->LoadTextureFromDDSFile(pd3dDevice, pd3dCommandList, L"C:\\AvoidTheBoss\\AvoidTheBoss\\AvoidTheBoss\\Stone01.dds", RESOURCE_TEXTURE2D, 0);
+	ppTextures[1]->LoadTextureFromDDSFile(pd3dDevice, pd3dCommandList, L"Stone01.dds", RESOURCE_TEXTURE2D, 0);
 	ppTextures[2] = new CTexture(1, RESOURCE_TEXTURE2D, 0, 1);
-	ppTextures[2]->LoadTextureFromDDSFile(pd3dDevice, pd3dCommandList, L"C:\\AvoidTheBoss\\AvoidTheBoss\\AvoidTheBoss\\Metal01.dds", RESOURCE_TEXTURE2D, 0);
+	ppTextures[2]->LoadTextureFromDDSFile(pd3dDevice, pd3dCommandList, L"Metal01.dds", RESOURCE_TEXTURE2D, 0);
 	ppTextures[3] = new CTexture(1, RESOURCE_TEXTURE2D, 0, 1);
-	ppTextures[3]->LoadTextureFromDDSFile(pd3dDevice, pd3dCommandList, L"C:\\AvoidTheBoss\\AvoidTheBoss\\AvoidTheBoss\\Metal02.dds", RESOURCE_TEXTURE2D, 0);
+	ppTextures[3]->LoadTextureFromDDSFile(pd3dDevice, pd3dCommandList, L"Metal02.dds", RESOURCE_TEXTURE2D, 0);
 	ppTextures[4] = new CTexture(1, RESOURCE_TEXTURE2D, 0, 1);
-	ppTextures[4]->LoadTextureFromDDSFile(pd3dDevice, pd3dCommandList, L"C:\\AvoidTheBoss\\AvoidTheBoss\\AvoidTheBoss\\Rock01.dds", RESOURCE_TEXTURE2D, 0);
+	ppTextures[4]->LoadTextureFromDDSFile(pd3dDevice, pd3dCommandList, L"Rock01.dds", RESOURCE_TEXTURE2D, 0);
 	ppTextures[5] = new CTexture(1, RESOURCE_TEXTURE2D, 0, 1);
-	ppTextures[5]->LoadTextureFromDDSFile(pd3dDevice, pd3dCommandList, L"C:\\AvoidTheBoss\\AvoidTheBoss\\AvoidTheBoss\\Lava(Emissive).dds", RESOURCE_TEXTURE2D, 0);
+	ppTextures[5]->LoadTextureFromDDSFile(pd3dDevice, pd3dCommandList, L"Lava(Emissive).dds", RESOURCE_TEXTURE2D, 0);
 
 	//1.0f = 1cm / 100.0f = 1m
 	float TileSize = (float)1 * UNIT;
@@ -346,7 +346,7 @@ void CObjectsShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsComman
 	//int nWidth = (int)Width / TileSize;
 	//int nDepth = (int)Depth / TileSize;
 
-	m_nObjects = 5 + 9;//nWidth * nDepth + 5 + 9;// +6;
+	m_nObjects = 6 + 9;//nWidth * nDepth + 5 + 9;// +6;
 
 	//----서술자 힙 생성 및 CBV/SRV서술자 생성
 	CreateCbvSrvDescriptorHeaps(pd3dDevice, m_nObjects, TEXTURES);
@@ -362,7 +362,6 @@ void CObjectsShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsComman
 		pMats[i] = new CMaterial();
 		pMats[i]->SetTexture(ppTextures[i]);
 	}
-	
 	//-------------------------------------------
 	
 	m_ppObjects = new CGameObject * [m_nObjects];
@@ -379,6 +378,7 @@ void CObjectsShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsComman
 			m_ppObjects[i++] = pMap;
 		}
 	}*/
+
 	//------ 공장 벽 생성 5개
 	int WarehouseSizeXZ = 60;
 	int WarehouseSizeY = 60;
@@ -388,19 +388,35 @@ void CObjectsShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsComman
 	CCubeMeshTextured* pSideYWall = new CCubeMeshTextured(pd3dDevice, pd3dCommandList, WarehouseSizeXZ * UNIT, 1 * UNIT, WarehouseSizeXZ * UNIT);
 
 	CGameObject* pWareHouseLeft = new CGameObject(1);
-	pWareHouseLeft->SetObjectInWorld( m_ppObjects, i++, XMFLOAT3(-WarehouseSizeXZ / 2 * UNIT, (WarehouseSizeY / 2 - 0.1f) * UNIT, 0.0f), pSideXWall, pMats[1], m_d3dCbvGPUDescStartHandle, 0);
+	pWareHouseLeft->SetObjectInWorld(0, pSideXWall, pMats[2], XMFLOAT3(-WarehouseSizeXZ / 2 * UNIT, (WarehouseSizeY / 2 - 0.1f) * UNIT, 0.0f));
+	pWareHouseLeft->SetCbvGPUDescriptorHandlePtr(m_d3dCbvGPUDescStartHandle.ptr + (::gnCbvSrvDescIncrementSize * i));
+	m_ppObjects[i++] = pWareHouseLeft;
 
 	CGameObject* pWareHouseRight = new CGameObject(1);
-	pWareHouseRight->SetObjectInWorld(m_ppObjects, i++, XMFLOAT3(WarehouseSizeXZ / 2 * UNIT, (WarehouseSizeY / 2 - 0.1f) * UNIT, 0.0f), pSideXWall, pMats[1], m_d3dCbvGPUDescStartHandle, 0);
+	pWareHouseRight->SetObjectInWorld(0, pSideXWall, pMats[2], XMFLOAT3(WarehouseSizeXZ / 2 * UNIT, (WarehouseSizeY / 2 - 0.1f) * UNIT, 0.0f) );
+	pWareHouseRight->SetCbvGPUDescriptorHandlePtr(m_d3dCbvGPUDescStartHandle.ptr + (::gnCbvSrvDescIncrementSize * i));
+	m_ppObjects[i++] = pWareHouseRight;
 
 	CGameObject* pWareHouseFront = new CGameObject(1);
-	pWareHouseFront->SetObjectInWorld(m_ppObjects, i++, XMFLOAT3(0.0f, (WarehouseSizeY / 2 - 0.1f) * UNIT, WarehouseSizeXZ / 2 * UNIT), pSideZWall, pMats[1], m_d3dCbvGPUDescStartHandle, 0);
+	pWareHouseFront->SetObjectInWorld(0, pSideZWall, pMats[2], XMFLOAT3(0.0f, (WarehouseSizeY / 2 - 0.1f) * UNIT, WarehouseSizeXZ / 2 * UNIT));
+	pWareHouseFront->SetCbvGPUDescriptorHandlePtr(m_d3dCbvGPUDescStartHandle.ptr + (::gnCbvSrvDescIncrementSize * i));
+	m_ppObjects[i++] = pWareHouseFront;
 
 	CGameObject* pWareHouseBack = new CGameObject(1);
-	pWareHouseBack->SetObjectInWorld(m_ppObjects, i++, XMFLOAT3(0.0f, (WarehouseSizeY / 2 - 0.1f) * UNIT, -WarehouseSizeXZ / 2 * UNIT), pSideZWall, pMats[1], m_d3dCbvGPUDescStartHandle, 0);
+	pWareHouseBack->SetObjectInWorld(0, pSideZWall, pMats[2], XMFLOAT3(0.0f, (WarehouseSizeY / 2 - 0.1f) * UNIT, -WarehouseSizeXZ / 2 * UNIT));
+	pWareHouseBack->SetCbvGPUDescriptorHandlePtr(m_d3dCbvGPUDescStartHandle.ptr + (::gnCbvSrvDescIncrementSize * i));
+	m_ppObjects[i++] = pWareHouseBack;
 
-	CGameObject* pWareHouseFloor = new CGameObject(1);
-	pWareHouseFloor->SetObjectInWorld( m_ppObjects, i++, XMFLOAT3(0.0f, (WarehouseSizeY / 2 + 0.5f) * UNIT, 0.0f), pSideYWall, pMats[0], m_d3dCbvGPUDescStartHandle, 0);
+	CGameObject* pWareHouseTopFloor = new CGameObject(1);
+	pWareHouseTopFloor->SetObjectInWorld(0,pSideYWall, pMats[0], XMFLOAT3(0.0f, (WarehouseSizeY / 2 + 0.5f) * UNIT, 0.0f));
+	pWareHouseTopFloor->SetCbvGPUDescriptorHandlePtr(m_d3dCbvGPUDescStartHandle.ptr + (::gnCbvSrvDescIncrementSize * i));
+	m_ppObjects[i++] = pWareHouseTopFloor;
+
+	CGameObject* pWareHouseBottomFloor = new CGameObject(1);
+	pWareHouseBottomFloor->SetObjectInWorld(0, pSideYWall, pMats[1], XMFLOAT3(0.0f, -0.5f * UNIT, 0.0f));
+	pWareHouseBottomFloor->SetCbvGPUDescriptorHandlePtr(m_d3dCbvGPUDescStartHandle.ptr + (::gnCbvSrvDescIncrementSize * i));
+	m_ppObjects[i++] = pWareHouseBottomFloor;
+
 
 	//------- 공장 기둥 생성 9개
 	CCubeMeshTextured* pRod = new CCubeMeshTextured(pd3dDevice, pd3dCommandList, 1 * UNIT, WarehouseSizeY * UNIT, 1 * UNIT);
@@ -411,7 +427,9 @@ void CObjectsShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsComman
 		for (float z = -l / 2; z <= l / 2; z += l / 2)
 		{
 			CGameObject* pPillar = new CGameObject(1);
-			pPillar->SetObjectInWorld(m_ppObjects, i++, XMFLOAT3(x, (WarehouseSizeY / 2 - 0.1f) * UNIT, z), pRod, pMats[1], m_d3dCbvGPUDescStartHandle, 0);
+			pPillar->SetObjectInWorld(0, pRod, pMats[1], XMFLOAT3(x, (WarehouseSizeY / 2 - 0.1f) * UNIT, z));
+			pPillar->SetCbvGPUDescriptorHandlePtr(m_d3dCbvGPUDescStartHandle.ptr + (::gnCbvSrvDescIncrementSize * i));
+			m_ppObjects[i++] = pPillar;
 		}
 	}
 
@@ -558,12 +576,12 @@ D3D12_INPUT_LAYOUT_DESC CTexturedShader::CreateInputLayout()
 
 D3D12_SHADER_BYTECODE CTexturedShader::CreateVertexShader(ID3DBlob** ppd3dShaderBlob)
 {
-	return(CShader::CompileShaderFromFile(L"C:\\AvoidTheBoss\\AvoidTheBoss\\AvoidTheBoss\\Shaders.hlsl", "VSTextured", "vs_5_1", ppd3dShaderBlob));
+	return(CShader::CompileShaderFromFile(L"Shaders.hlsl", "VSTextured", "vs_5_1", ppd3dShaderBlob));
 }
 
 D3D12_SHADER_BYTECODE CTexturedShader::CreatePixelShader(ID3DBlob** ppd3dShaderBlob)
 {
-	return(CShader::CompileShaderFromFile(L"C:\\AvoidTheBoss\\AvoidTheBoss\\AvoidTheBoss\\Shaders.hlsl", "PSTextured", "ps_5_1", ppd3dShaderBlob));
+	return(CShader::CompileShaderFromFile(L"Shaders.hlsl", "PSTextured", "ps_5_1", ppd3dShaderBlob));
 }
 
 void CTexturedShader::CreateShader(ID3D12Device* pd3dDevice, ID3D12RootSignature* pd3dGraphicsRootSignature)
@@ -596,10 +614,10 @@ D3D12_INPUT_LAYOUT_DESC CRectShader::CreateInputLayout()
 
 D3D12_SHADER_BYTECODE CRectShader::CreateVertexShader(ID3DBlob** ppd3dShaderBlob)
 {
-	return CShader::CompileShaderFromFile(L"C:\\AvoidTheBoss\\AvoidTheBoss\\AvoidTheBoss\\Shaders.hlsl", "VSDiffused", "vs_5_1", ppd3dShaderBlob);
+	return CShader::CompileShaderFromFile(L"Shaders.hlsl", "VSDiffused", "vs_5_1", ppd3dShaderBlob);
 }
 
 D3D12_SHADER_BYTECODE CRectShader::CreatePixelShader(ID3DBlob** ppd3dShaderBlob)
 {
-	return CShader::CompileShaderFromFile(L"C:\\AvoidTheBoss\\AvoidTheBoss\\AvoidTheBoss\\Shaders.hlsl", "PSDiffused", "vs_5_1", ppd3dShaderBlob);
+	return CShader::CompileShaderFromFile(L"Shaders.hlsl", "PSDiffused", "vs_5_1", ppd3dShaderBlob);
 }

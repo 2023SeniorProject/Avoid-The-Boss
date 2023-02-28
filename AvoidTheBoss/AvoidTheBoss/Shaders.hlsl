@@ -1,10 +1,10 @@
-float4 main(float4 pos : POSITION) : SV_POSITION
-{
-	return pos;
-}
+//float4 main(float4 pos : POSITION) : SV_POSITION
+//{
+//	return pos;
+//}
 
 // 플레이어 정보 상수 버퍼 선언
-cbuffer cbPlayerInfo : register (b0)
+cbuffer cbPlayerInfo : register(b0)
 {
 	matrix gmtxPlayerWorld : packoffset(c0);
 };
@@ -61,6 +61,7 @@ float4 PSPlayer(VS_DIFFUSED_OUTPUT input) : SV_TARGET
 {
 	//입력되는 픽셀의 색상을 그대로 출력-병합 단계(렌더 타겟)로 출력한다. 
 	return(input.color);
+	//return(float4(1.0f, 0.0f, 0.0f, 1.0f));
 }
 
 //---------------------------------------------------------텍스쳐 적용 게임 객체 출력
@@ -103,6 +104,7 @@ float4 PSTextured(VS_TEXTURED_OUTPUT input) : SV_TARGET
 {
 	float4 cColor = gtxtTexture.Sample(gSamplerState, input.uv);
 
-	//입력되는 픽셀의 색상을 출력한다. 
 	return(cColor);
+	//입력되는 픽셀의 색상을 출력한다. 
+	//return(float4(1.0f, 0.0f, 0.0f, 1.0f));
 }

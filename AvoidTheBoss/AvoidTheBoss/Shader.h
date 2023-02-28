@@ -38,8 +38,6 @@ public:
 	virtual void ReleaseShaderVariables();
 	virtual void ReleaseUploadBuffers();
 
-
-
 	virtual void BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, void* pContext = NULL) { }
 	virtual void AnimateObjects(float fTimeElapsed) { }
 	virtual void OnPrepareRender(ID3D12GraphicsCommandList* pd3dCommandList);
@@ -51,6 +49,14 @@ public:
 	void CreateShaderResourceViews(ID3D12Device* pd3dDevice, CTexture* pTexture, UINT nDescHeapIndex, UINT nRootParameStartIndex);
 
 	D3D12_GPU_DESCRIPTOR_HANDLE GetCbvGPUDescStartHandle() { return m_d3dCbvGPUDescStartHandle; }
+
+	D3D12_CPU_DESCRIPTOR_HANDLE GetCPUDescriptorHandleForHeapStart() { return(m_pCbvSrvDescHeap->GetCPUDescriptorHandleForHeapStart()); }
+	D3D12_GPU_DESCRIPTOR_HANDLE GetGPUDescriptorHandleForHeapStart() { return(m_pCbvSrvDescHeap->GetGPUDescriptorHandleForHeapStart()); }
+
+	D3D12_CPU_DESCRIPTOR_HANDLE GetCPUCbvDescriptorStartHandle() { return(m_d3dCbvCPUDescStartHandle); }
+	D3D12_GPU_DESCRIPTOR_HANDLE GetGPUCbvDescriptorStartHandle() { return(m_d3dCbvGPUDescStartHandle); }
+	D3D12_CPU_DESCRIPTOR_HANDLE GetCPUSrvDescriptorStartHandle() { return(m_d3dSrvCPUDescStartHandle); }
+	D3D12_GPU_DESCRIPTOR_HANDLE GetGPUSrvDescriptorStartHandle() { return(m_d3dSrvGPUDescStartHandle); }
 protected:
 	//파이프라인 상태 객체들의 리스트(배열)이다. 
 	ID3D12PipelineState* m_pd3dPipelineState = NULL;
@@ -60,13 +66,13 @@ protected:
 	//---CPU의 cbv/srv 시작주소
 	D3D12_CPU_DESCRIPTOR_HANDLE m_d3dCbvCPUDescStartHandle;
 	D3D12_CPU_DESCRIPTOR_HANDLE m_d3dSrvCPUDescStartHandle;
-
-	D3D12_CPU_DESCRIPTOR_HANDLE m_d3dCbvCPUDescNextHandle;
-	D3D12_CPU_DESCRIPTOR_HANDLE m_d3dSrvCPUDescNextHandle;
-
+	
 	//---GPU의 cbv/srv 시작주소
 	D3D12_GPU_DESCRIPTOR_HANDLE m_d3dCbvGPUDescStartHandle;
 	D3D12_GPU_DESCRIPTOR_HANDLE m_d3dSrvGPUDescStartHandle;
+
+	D3D12_CPU_DESCRIPTOR_HANDLE m_d3dCbvCPUDescNextHandle;
+	D3D12_CPU_DESCRIPTOR_HANDLE m_d3dSrvCPUDescNextHandle;
 
 	D3D12_GPU_DESCRIPTOR_HANDLE m_d3dCbvGPUDescNextHandle;
 	D3D12_GPU_DESCRIPTOR_HANDLE m_d3dSrvGPUDescNextHandle;

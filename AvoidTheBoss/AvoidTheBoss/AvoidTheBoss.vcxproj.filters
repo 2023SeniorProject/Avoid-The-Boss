@@ -135,10 +135,31 @@
     <Image Include="Stone.dds">
       <Filter>리소스 파일</Filter>
     </Image>
+    <Image Include="Floor.dds">
+      <Filter>리소스 파일</Filter>
+    </Image>
+    <Image Include="Lava(Diffuse).dds">
+      <Filter>리소스 파일</Filter>
+    </Image>
+    <Image Include="Lava(Emissive).dds">
+      <Filter>리소스 파일</Filter>
+    </Image>
+    <Image Include="Metal01.dds">
+      <Filter>리소스 파일</Filter>
+    </Image>
+    <Image Include="Metal02.dds">
+      <Filter>리소스 파일</Filter>
+    </Image>
+    <Image Include="Rock01.dds">
+      <Filter>리소스 파일</Filter>
+    </Image>
+    <Image Include="Stone01.dds">
+      <Filter>리소스 파일</Filter>
+    </Image>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Shaders.hlsl">
-      <Filter>리소스 파일</Filter>
+      <Filter>Shader</Filter>
     </FxCompile>
   </ItemGroup>
 </Project>

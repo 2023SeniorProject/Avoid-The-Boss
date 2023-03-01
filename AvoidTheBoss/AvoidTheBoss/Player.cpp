@@ -257,11 +257,10 @@ void CPlayer::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamer
 	}
 }
 
-CCubePlayer::CCubePlayer(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, int nMeshes) : CPlayer(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, NULL, nMeshes)
+CCubePlayer::CCubePlayer(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, int nMeshes) : CPlayer(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature)
 {
 	m_pCamera = ChangeCamera(THIRD_PERSON_CAMERA, 0.0f);
-
-	//CreateShaderVariables(pd3dDevice, pd3dCommandList);
+	CreateShaderVariables(pd3dDevice, pd3dCommandList);
 
 	CCubeMeshDiffused* pPlayerCubeMesh = new CCubeMeshDiffused(pd3dDevice, pd3dCommandList, 0.37f * UNIT, 1.5f * UNIT, 0.23f * UNIT);
 

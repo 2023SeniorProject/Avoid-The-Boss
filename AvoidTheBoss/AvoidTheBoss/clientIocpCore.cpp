@@ -243,6 +243,7 @@ void CIocpCore::DoConnect(void* loginInfo)
 void CIocpCore::Disconnect(int32 sid = 0)
 {
 	std::cout << "Disconnect Client" << std::endl;
+	DestroyGame();
 	delete _client;
 	_client = nullptr;
 }

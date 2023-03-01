@@ -3,7 +3,6 @@
 #include "clientIocpCore.h"
 
 // #define _WITH_PLAYER_TOP // 플레이어 깊이 버퍼값 1.0f
-CGameFramework gGameFramework;
 
 CGameFramework::CGameFramework()
 {

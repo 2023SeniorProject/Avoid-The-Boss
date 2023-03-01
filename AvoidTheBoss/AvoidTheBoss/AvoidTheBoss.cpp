@@ -93,7 +93,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
  
     GCThreadManager->Join();
     SocketUtil::Clear();
-    clientIocpCore.DestroyGame();
+    
     
  
     return (int)msg.wParam;

@@ -207,6 +207,7 @@
     <Image Include="Lava(Emissive).dds" />
     <Image Include="Metal01.dds" />
     <Image Include="Metal02.dds" />
+    <Image Include="plane.dds" />
     <Image Include="Rock01.dds" />
     <Image Include="small.ico" />
     <Image Include="Stone.dds" />

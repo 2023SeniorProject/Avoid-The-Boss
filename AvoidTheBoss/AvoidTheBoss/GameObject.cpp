@@ -16,11 +16,7 @@ CTexture::CTexture(int nTexture, UINT nTextureType,  int nSamplers, int nRootPar
 			m_ppUploadBuffer[i] = NULL;
 		}
 
-		/*m_pTextureType = new UINT*[nTextureType];
-		for (int i = 0; i < (int)nTextureType; i++)
-		{
-			m_pTextureType = NULL;
-		}*/
+	
 		m_pTextureName = new _TCHAR[m_nTexture][64];
 		for (int i = 0; i < m_nTexture; i++)
 		{

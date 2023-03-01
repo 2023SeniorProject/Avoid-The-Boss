@@ -3,13 +3,6 @@
 #include "Mesh.h"
 #include "Camera.h"
 
-#define DIR_FORWARD					0x01
-#define DIR_BACKWARD				0x02
-#define DIR_LEFT					0x04
-#define DIR_RIGHT					0x08
-#define DIR_UP						0x10
-#define DIR_DOWN					0x20
-
 #define RESOURCE_TEXTURE2D			0x01
 #define RESOURCE_TEXTURE2D_ARRAY	0x02	//[]
 #define RESOURCE_TEXTURE2DARRAY		0x03
@@ -42,8 +35,6 @@ private:
 	DXGI_FORMAT* m_pdxgiBufferFormats = NULL;
 	int* m_pnBufferElements = NULL;
 
-	//int m_nTexUploadBuf;
-	//ID3D12Resource** m_ppd3dTexUploadBuffers;
 
 	int m_nRootParameters = 0;
 	int* m_pnRootParamIndices = NULL;

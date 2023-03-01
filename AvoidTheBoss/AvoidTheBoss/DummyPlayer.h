@@ -21,6 +21,7 @@ protected:
 	// 업데이트 후처리 함수
 	LPVOID m_pPlayerUpdatedContext;
 	LPVOID m_pCameraUpdatedContext;
+	CShader* m_ppShaders;
 public:
 	DummyPlayer(int nMeshes = 1);
 	virtual ~DummyPlayer();

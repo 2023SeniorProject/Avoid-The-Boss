@@ -160,7 +160,6 @@
   <ItemGroup>
     <ClInclude Include="AvoidTheBoss.h" />
     <ClInclude Include="Camera.h" />
-    <ClInclude Include="d3dx12.h" />
     <ClInclude Include="DDSTextureLoader12.h" />
     <ClInclude Include="clientIocpCore.h" />
     <ClInclude Include="DummyPlayer.h" />

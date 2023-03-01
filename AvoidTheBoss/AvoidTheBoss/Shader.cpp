@@ -335,7 +335,7 @@ void CObjectsShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsComman
 	ppTextures[3] = new CTexture(1, RESOURCE_TEXTURE2D, 0, 1);
 	ppTextures[3]->LoadTextureFromDDSFile(pd3dDevice, pd3dCommandList, L"Industry_Pillar1_BaseColor.dds", RESOURCE_TEXTURE2D, 0);	//기둥
 	ppTextures[4] = new CTexture(1, RESOURCE_TEXTURE2D, 0, 1);
-	ppTextures[4]->LoadTextureFromDDSFile(pd3dDevice, pd3dCommandList, L"Industry_Pillar2_BaseColor.dds", RESOURCE_TEXTURE2D, 0); // 바닥
+	ppTextures[4]->LoadTextureFromDDSFile(pd3dDevice, pd3dCommandList, L"Industry_Pillar2_BaseColor.dds", RESOURCE_TEXTURE2D, 0); // 
 	ppTextures[5] = new CTexture(1, RESOURCE_TEXTURE2D, 0, 1);
 	ppTextures[5]->LoadTextureFromDDSFile(pd3dDevice, pd3dCommandList, L"Lava(Diffuse).dds", RESOURCE_TEXTURE2D, 0);
 
@@ -346,7 +346,7 @@ void CObjectsShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsComman
 	int nWidth = (int)Width / TileSize;
 	int nDepth = (int)Depth / TileSize;
 
-	m_nObjects = nWidth * nDepth + 5 +9;// +6;
+	m_nObjects = nWidth * nDepth + 5 + 360;// +6;
 
 	//----서술자 힙 생성 및 CBV/SRV서술자 생성
 	CreateCbvSrvDescriptorHeaps(pd3dDevice, m_nObjects, TEXTURES);
@@ -425,21 +425,21 @@ void CObjectsShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsComman
 
 
 	//------- 공장 기둥 생성 9개
-	float SizeOfBlock = 2 * UNIT;
-	CCubeMeshTextured* pRod = new CCubeMeshTextured(pd3dDevice, pd3dCommandList, SizeOfBlock, WarehouseSizeY*UNIT, SizeOfBlock);
+	float SizeOfBlock = 1.5 * UNIT;
+	CCubeMeshTextured* pRod = new CCubeMeshTextured(pd3dDevice, pd3dCommandList, SizeOfBlock, SizeOfBlock, SizeOfBlock);
 	float l = WarehouseSizeXZ / 2 * UNIT;
-	float nHeignt = (WarehouseSizeY*UNIT) / SizeOfBlock;
+	float nHeignt = (WarehouseSizeY * UNIT) / SizeOfBlock;
 	for (float x = -l / 2; x <= l / 2; x += l / 2)
 	{
 		for (float z = -l / 2; z <= l / 2; z += l / 2)
 		{
-			//for (float y = 0; y <= nHeignt; y++)
-			//{
+			for (float y = SizeOfBlock / 2; y < WarehouseSizeY* UNIT; y += SizeOfBlock)
+			{
 				CGameObject* pPillar = new CGameObject(1);
-				pPillar->SetObjectInWorld(0, pRod, pMats[4], XMFLOAT3(x, (WarehouseSizeY / 2 - 0.1f) * UNIT, z));// XMFLOAT3(x, (SizeOfBlock/2 + y*SizeOfBlock) * UNIT, z));// 
+				pPillar->SetObjectInWorld(0, pRod, pMats[4], XMFLOAT3(x, y, z));// XMFLOAT3(x, (WarehouseSizeY / 2 - 0.1f) * UNIT,ㅋ);// 
 				pPillar->SetCbvGPUDescriptorHandlePtr(m_d3dCbvGPUDescStartHandle.ptr + (::gnCbvSrvDescIncrementSize * i));
 				m_ppObjects[i++] = pPillar;
-			//}
+			}
 		}
 	}
 

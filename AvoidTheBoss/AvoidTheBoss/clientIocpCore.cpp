@@ -119,7 +119,7 @@ void CClientSession::ProcessPacket(char* packet)
 	{
 		S2C_MOVE* mp = reinterpret_cast<S2C_MOVE*>(packet);
 		std::lock_guard<std::mutex> lg(clientIocpCore._client->_otherLock);
-		if(_sid != mp->sid ) clientIocpCore._client->_other->Move(mp->key, (UNIT * 1.2f));
+		if(_sid != mp->sid && _mainGame.m_pScene->_curSceneStatus == SceneInfo::GAMEROOM) _mainGame.m_pScene->_other->Move(mp->key, (UNIT * 1.2f));
 	}
 	break;
 
@@ -128,19 +128,19 @@ void CClientSession::ProcessPacket(char* packet)
 		S2C_ROTATE* mp = reinterpret_cast<S2C_ROTATE*>(packet);
 		
 		std::lock_guard<std::mutex> lg(clientIocpCore._client->_otherLock);
-		if (_sid != mp->sid)
+		if (_sid != mp->sid && _mainGame.m_pScene->_curSceneStatus == SceneInfo::GAMEROOM)
 		{
-			clientIocpCore._client->_other->Rotate(0, mp->angle, 0);
+			_mainGame.m_pScene->_other->Rotate(0, mp->angle, 0);
 		}
 	}
 	break;
 	case S_PACKET_TYPE::POSITION:
 	{
 		S2C_POSITION* mp = reinterpret_cast<S2C_POSITION*>(packet);
-		if (_sid == mp->sid)
+		if (_sid == mp->sid && _mainGame.m_pScene->_curSceneStatus == SceneInfo::GAMEROOM)
 		{
 			clientIocpCore._client->_playerLock.lock();
-			clientIocpCore._client->_player->MakePosition(mp->position);
+			_mainGame.m_pScene->_player->MakePosition(mp->position);
 			clientIocpCore._client->_playerLock.unlock();
 		}
 		
@@ -173,8 +173,6 @@ void CClientSession::ProcessPacket(char* packet)
 		S2C_ROOM_ENTER* re = (S2C_ROOM_ENTER*)packet;
 		if (re->success)
 		{
-			_curScene = 1;
-
 			::system("cls");
 		}
 		else std::cout << "FAIL TO ENTER ROOM" << std::endl;

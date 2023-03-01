@@ -3,12 +3,12 @@
 //----1 Direct3D 디바이스 생성과 관리 
 //----2 화면 출력을 위한 처리 - 게임 객체 생성과 관리, 사용자 입력, 애니메이션 작업
 #include "Scene.h"
-#include "clientIocpCore.h"
 #include "Camera.h"
 
 
 class CGameFramework
 {
+	friend class CClientSession;
 private:
 	HINSTANCE m_hInstance;
 	HWND m_hWnd;
@@ -62,7 +62,7 @@ private:
 	//다음은 프레임 레이트를 주 윈도우의 캡션에 출력하기 위한 문자열이다. 
 	WCHAR					m_pszFrameRate[50];
 	
-private:
+protected:
 	CGameScene*				m_pScene;
 	
 public:
@@ -110,5 +110,3 @@ public:
 		LPARAM lParam);
 	//윈도우의 메시지(키보드, 마우스 입력)를 처리하는 함수이다. 
 };
-
-extern CGameFramework gGameFramework;

@@ -19,9 +19,6 @@
     <ClCompile Include="DDSTextureLoader12.cpp">
       <Filter>Texture</Filter>
     </ClCompile>
-    <ClCompile Include="DummyPlayer.cpp">
-      <Filter>DummyPlayer</Filter>
-    </ClCompile>
     <ClCompile Include="GameFramework.cpp">
       <Filter>GameFramework</Filter>
     </ClCompile>
@@ -39,6 +36,9 @@
     </ClCompile>
     <ClCompile Include="SceneInterface.cpp">
       <Filter>SceneInterface</Filter>
+    </ClCompile>
+    <ClCompile Include="DummyPlayer.cpp">
+      <Filter>DummyPlayer</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

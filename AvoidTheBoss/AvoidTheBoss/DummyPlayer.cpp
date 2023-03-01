@@ -2,7 +2,7 @@
 #include "Shader.h"
 #include "DummyPlayer.h"
 
-DummyPlayer::DummyPlayer(int nMeshes) : CGameObject(nMeshes)
+DummyPlayer::DummyPlayer(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, void* pContext, int nMeshes ) : CGameObject(nMeshes)
 {
 
 	m_xmf3Position = XMFLOAT3(0.0f, 0.0f, 0.0f);
@@ -120,17 +120,26 @@ void DummyPlayer::Update(float fTimeElapsed)
 
 void DummyPlayer::CreateShaderVariables(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList)
 {
-	CGameObject::CreateShaderVariables(pd3dDevice, pd3dCommandList);
+	UINT ncbElementBytes = ((sizeof(CB_DUMMYPLAYER_INFO) + 255) & ~255); //256의 배수
+	m_pd3dcbPlayer = ::CreateBufferResource(pd3dDevice, pd3dCommandList, NULL, ncbElementBytes, D3D12_HEAP_TYPE_UPLOAD, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER, NULL);
+	m_pd3dcbPlayer->Map(0, NULL, (void**)&m_pcbMappedPlayer);
 }
 
 void DummyPlayer::ReleaseShaderVariables()
 {
-	CGameObject::ReleaseShaderVariables();
+	if (m_pd3dcbPlayer)
+	{
+		m_pd3dcbPlayer->Unmap(0, NULL);
+		m_pd3dcbPlayer->Release();
+	}
 }
 
 void DummyPlayer::UpdateShaderVariables(ID3D12GraphicsCommandList* pd3dCommandList)
 {
-	CGameObject::UpdateShaderVariables(pd3dCommandList);
+	XMStoreFloat4x4(&m_pcbMappedPlayer->m_xmf4x4World, XMMatrixTranspose(XMLoadFloat4x4(&m_xmf4x4World)));
+
+	D3D12_GPU_VIRTUAL_ADDRESS d3dGpuVirtualAddress = m_pd3dcbPlayer->GetGPUVirtualAddress();
+	pd3dCommandList->SetGraphicsRootConstantBufferView(0, d3dGpuVirtualAddress);
 }
 
 
@@ -161,23 +170,27 @@ void DummyPlayer::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pC
 	//카메라 모드가 3인칭이면 플레이어 객체를 렌더링한다. 
 	if (nCameraMode == THIRD_PERSON_CAMERA)
 	{
-		if (m_pShader) m_pShader->Render(pd3dCommandList, pCamera);
 		CGameObject::Render(pd3dCommandList, pCamera);
 	}
 }
 
-DummyCubePlayer::DummyCubePlayer(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, int nMeshes) : DummyPlayer(nMeshes)
+DummyCubePlayer::DummyCubePlayer(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, int nMeshes) : DummyPlayer(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature)
 {
+	CreateShaderVariables(pd3dDevice, pd3dCommandList);
 	CMesh* pPlayerCubeMesh = new CCubeMeshDiffused(pd3dDevice, pd3dCommandList, 0.37f * UNIT, 1.5f * UNIT, 0.23f * UNIT);
 
 	SetMesh(0, pPlayerCubeMesh);
-
-	CreateShaderVariables(pd3dDevice, pd3dCommandList);
-
 	SetPosition(XMFLOAT3(0.0f, (1.5f / 2.0f) * UNIT, 0.0f));
+
+	UINT ncbElementBytes = ((sizeof(CB_DUMMYPLAYER_INFO) + 255) & ~255); //256의 배수
 
 	CPlayerShader* pShader = new CPlayerShader();
 	pShader->CreateShader(pd3dDevice, pd3dGraphicsRootSignature);
+	pShader->CreateShaderVariables(pd3dDevice, pd3dCommandList);// ++추가코드
+	pShader->CreateCbvSrvDescriptorHeaps(pd3dDevice, 1, 0);// ++추가코드
+	pShader->CreateConstantBufferViews(pd3dDevice, 1, m_pd3dcbPlayer, ncbElementBytes);// ++추가코드
+	SetCbvGPUDescriptorHandle(pShader->GetCbvGPUDescStartHandle());// ++추가코e드
+
 	SetShader(pShader);
 }
 

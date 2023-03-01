@@ -1,6 +1,11 @@
 #pragma once
 #include "GameObject.h"
 
+struct CB_DUMMYPLAYER_INFO
+{
+	XMFLOAT4X4					m_xmf4x4World;
+};
+
 class DummyPlayer : public CGameObject
 {
 protected:
@@ -21,8 +26,11 @@ protected:
 	// 업데이트 후처리 함수
 	LPVOID m_pPlayerUpdatedContext;
 	LPVOID m_pCameraUpdatedContext;
+
+	ID3D12Resource* m_pd3dcbPlayer = NULL;
+	CB_DUMMYPLAYER_INFO* m_pcbMappedPlayer = NULL;
 public:
-	DummyPlayer(int nMeshes = 1);
+	DummyPlayer(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, void* pContext = NULL, int nMeshes = 1);
 	virtual ~DummyPlayer();
 
 	XMFLOAT3 GetPosition() const { return(m_xmf3Position); }

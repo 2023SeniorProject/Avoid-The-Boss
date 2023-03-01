@@ -3,19 +3,13 @@
 
 CShader::CShader()
 {
+	m_d3dSrvCPUDescStartHandle.ptr = NULL;
+	m_d3dSrvGPUDescStartHandle.ptr = NULL;
 }
 
 CShader::~CShader()
 {
-	if (m_ppd3dPipelineStates)
-	{
-		for (int i = 0; i < m_nPipelineStates; i++)
-		{
-			if (m_ppd3dPipelineStates[i])
-				m_ppd3dPipelineStates[i]->Release();
-		}
-		delete[] m_ppd3dPipelineStates;
-	}
+	if (m_pd3dPipelineState) m_pd3dPipelineState->Release();
 }
 
 //입력 조립기에게 정점 버퍼의 구조를 알려주기 위한 구조체를 반환한다.
@@ -120,7 +114,7 @@ D3D12_SHADER_BYTECODE CShader::CompileShaderFromFile(const WCHAR* pszFileName, L
 #if defined(_DEBUG)
 	nCompileFlags = D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION;
 #endif //Microsoft HLSL(High Level Shader Language) 코드를 지정된 대상에 대한 바이트코드로 컴파일
-	::D3DCompileFromFile(pszFileName, NULL, NULL, pszShaderName, pszShaderProfile,
+	::D3DCompileFromFile(pszFileName, NULL, D3D_COMPILE_STANDARD_FILE_INCLUDE, pszShaderName, pszShaderProfile,
 		nCompileFlags, 0, ppd3dShaderBlob, NULL);
 
 	D3D12_SHADER_BYTECODE d3dShaderByteCode;
@@ -153,8 +147,8 @@ void CShader::CreateShader(ID3D12Device* pd3dDevice, ID3D12RootSignature* pd3dGr
 	d3dPipelineStateDesc.DSVFormat = DXGI_FORMAT_D24_UNORM_S8_UINT;
 	d3dPipelineStateDesc.SampleDesc.Count = 1;
 	d3dPipelineStateDesc.Flags = D3D12_PIPELINE_STATE_FLAG_NONE;
-	pd3dDevice->CreateGraphicsPipelineState(&d3dPipelineStateDesc,
-		__uuidof(ID3D12PipelineState), (void**)&m_ppd3dPipelineStates[0]);
+	HRESULT hResult = pd3dDevice->CreateGraphicsPipelineState(&d3dPipelineStateDesc,
+		__uuidof(ID3D12PipelineState), (void**)&m_pd3dPipelineState);
 
 	if (pd3dVertexShaderBlob) pd3dVertexShaderBlob->Release();
 	if (pd3dPixelShaderBlob) pd3dPixelShaderBlob->Release();
@@ -173,25 +167,108 @@ void CShader::UpdateShaderVariables(ID3D12GraphicsCommandList* pd3dCommandList)
 
 void CShader::ReleaseShaderVariables()
 {
+	if (m_pCbvSrvDescHeap) 
+		m_pCbvSrvDescHeap->Release();
+}
+
+void CShader::ReleaseUploadBuffers()
+{
 }
 
 void CShader::UpdateShaderVariable(ID3D12GraphicsCommandList* pd3dCommandList, XMFLOAT4X4* pxmf4x4World)
 {
-	XMFLOAT4X4 xmf4x4World;
-	XMStoreFloat4x4(&xmf4x4World, XMMatrixTranspose(XMLoadFloat4x4(pxmf4x4World)));
-	pd3dCommandList->SetGraphicsRoot32BitConstants(0, 16, &xmf4x4World, 0);
+	//XMFLOAT4X4 xmf4x4World;
+	//XMStoreFloat4x4(&xmf4x4World, XMMatrixTranspose(XMLoadFloat4x4(pxmf4x4World)));
+	//pd3dCommandList->SetGraphicsRoot32BitConstants(0, 16, &xmf4x4World, 0);
 }
 
 
 void CShader::OnPrepareRender(ID3D12GraphicsCommandList* pd3dCommandList)
 {
 	//파이프라인에 그래픽스 상태 객체를 설정한다. 
-	pd3dCommandList->SetPipelineState(m_ppd3dPipelineStates[0]);
+	//pd3dCommandList->SetPipelineState(m_ppd3dPipelineStates[0]);
+	if (m_pd3dPipelineState)
+		pd3dCommandList->SetPipelineState(m_pd3dPipelineState);
+	pd3dCommandList->SetDescriptorHeaps(1, &m_pCbvSrvDescHeap);
+
+	UpdateShaderVariables(pd3dCommandList);
 }
 
 void CShader::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera)
 {
 	OnPrepareRender(pd3dCommandList);
+}
+
+void CShader::CreateCbvSrvDescriptorHeaps(ID3D12Device* pd3dDevice, int nCbv, int nSrv)
+{
+	D3D12_DESCRIPTOR_HEAP_DESC CbvSrvDescriptorHeap;
+	CbvSrvDescriptorHeap.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
+	CbvSrvDescriptorHeap.NumDescriptors = nCbv + nSrv;
+	CbvSrvDescriptorHeap.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
+	CbvSrvDescriptorHeap.NodeMask = 0;
+	pd3dDevice->CreateDescriptorHeap(&CbvSrvDescriptorHeap, 
+		__uuidof(ID3D12DescriptorHeap), (void**)&m_pCbvSrvDescHeap);
+
+
+	m_d3dCbvCPUDescStartHandle = m_pCbvSrvDescHeap->GetCPUDescriptorHandleForHeapStart();
+	m_d3dCbvGPUDescStartHandle = m_pCbvSrvDescHeap->GetGPUDescriptorHandleForHeapStart();
+	
+	m_d3dSrvCPUDescStartHandle.ptr = m_d3dCbvCPUDescStartHandle.ptr + (::gnCbvSrvDescIncrementSize * nCbv);
+	m_d3dSrvGPUDescStartHandle.ptr = m_d3dCbvGPUDescStartHandle.ptr + (::gnCbvSrvDescIncrementSize * nCbv);
+
+	m_d3dSrvCPUDescNextHandle = m_d3dSrvCPUDescStartHandle;
+	m_d3dSrvGPUDescNextHandle = m_d3dSrvGPUDescStartHandle;
+}
+
+void CShader::CreateConstantBufferViews(ID3D12Device* pd3dDevice, int nConstantBufferViews, ID3D12Resource* pd3dConstantBuffers, UINT nStride)
+{
+	D3D12_GPU_VIRTUAL_ADDRESS d3dGpuVirtualAddress = pd3dConstantBuffers->GetGPUVirtualAddress();
+
+	D3D12_CONSTANT_BUFFER_VIEW_DESC d3dCBVDesc;
+	d3dCBVDesc.SizeInBytes = nStride;
+
+	for (int j = 0; j < nConstantBufferViews; j++)
+	{
+		d3dCBVDesc.BufferLocation = d3dGpuVirtualAddress + (nStride * j);
+
+		D3D12_CPU_DESCRIPTOR_HANDLE d3dCbvCPUDescriptorHandle;
+		d3dCbvCPUDescriptorHandle.ptr = m_d3dCbvCPUDescStartHandle.ptr + (::gnCbvSrvDescIncrementSize * j);
+
+		pd3dDevice->CreateConstantBufferView(&d3dCBVDesc, d3dCbvCPUDescriptorHandle);
+	}
+}
+
+void CShader::CreateShaderResourceViews(ID3D12Device* pd3dDevice, CTexture* pTexture, UINT nDescHeapIndex, UINT nRootParamStartIndex)
+{
+	m_d3dSrvCPUDescNextHandle.ptr += ::gnCbvSrvDescIncrementSize * nDescHeapIndex;
+	m_d3dSrvGPUDescNextHandle.ptr += ::gnCbvSrvDescIncrementSize * nDescHeapIndex;
+
+	int nTex = pTexture->GetTextureNum();
+	//텍스쳐 자원과 연결하여 각 자원을 CPU로 접근하여 SRV힙에 해당 텍스쳐 인덱스를 저장한다. SRV 힙 생성 과정이다.
+	for (int i = 0; i < nTex; i++)
+	{
+		//텍스쳐 자원을 CPU 핸들로 얻어 리소스뷰로 연결해준다.
+		ID3D12Resource* pShaderResource = pTexture->GetResource(i);
+
+		D3D12_SHADER_RESOURCE_VIEW_DESC SrvDescriptor = pTexture->GetShaderResourceViewDesc(i);
+
+		pd3dDevice->CreateShaderResourceView(pShaderResource, &SrvDescriptor, m_d3dSrvCPUDescNextHandle);
+
+		m_d3dSrvCPUDescNextHandle.ptr += ::gnCbvSrvDescIncrementSize;
+
+		//SRV 서술자 핸들로 SRV인덱스에 대한 GPU 서술 힙을 저장한다.
+		pTexture->SetSrvGPUDescHandles(i, m_d3dSrvGPUDescNextHandle);
+
+		m_d3dSrvGPUDescNextHandle.ptr += ::gnCbvSrvDescIncrementSize;
+	}
+
+	int nRootParam = pTexture->GetRootParamNum();
+	for (int i = 0; i < nRootParam; i++)
+	{
+		//루트파라미타 인덱스 버퍼에 인덱스 저장
+		pTexture->SetRootParamIndexBuf(i, nRootParamStartIndex + i);
+	}
+	
 }
 
 CPlayerShader::CPlayerShader()
@@ -222,21 +299,18 @@ D3D12_INPUT_LAYOUT_DESC CPlayerShader::CreateInputLayout()
 
 D3D12_SHADER_BYTECODE CPlayerShader::CreateVertexShader(ID3DBlob** ppd3dShaderBlob)
 {
-	return(CShader::CompileShaderFromFile(L"Shaders.hlsl", "VSDiffused", "vs_5_1",
+	return(CShader::CompileShaderFromFile(L"Shaders.hlsl", "VSPlayer", "vs_5_1",
 		ppd3dShaderBlob));
 }
 
 D3D12_SHADER_BYTECODE CPlayerShader::CreatePixelShader(ID3DBlob** ppd3dShaderBlob)
 {
-	return(CShader::CompileShaderFromFile(L"Shaders.hlsl", "PSDiffused", "ps_5_1",
+	return(CShader::CompileShaderFromFile(L"Shaders.hlsl", "PSPlayer", "ps_5_1",
 		ppd3dShaderBlob));
 }
 
 void CPlayerShader::CreateShader(ID3D12Device* pd3dDevice, ID3D12RootSignature* pd3dGraphicsRootSignature)
 {
-	m_nPipelineStates = 1;
-	m_ppd3dPipelineStates = new ID3D12PipelineState * [m_nPipelineStates];
-
 	CShader::CreateShader(pd3dDevice, pd3dGraphicsRootSignature);
 }
 
@@ -248,57 +322,108 @@ CObjectsShader::~CObjectsShader()
 {
 }
 
+#define TEXTURES 6
 void CObjectsShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, void* pContext)
 {
+	CTexture* ppTextures[TEXTURES];
+	ppTextures[0] = new CTexture( 1, RESOURCE_TEXTURE2D, 0, 1);
+	ppTextures[0]->LoadTextureFromDDSFile(pd3dDevice, pd3dCommandList, L"Floor.dds", RESOURCE_TEXTURE2D, 0);
+	ppTextures[1] = new CTexture(1, RESOURCE_TEXTURE2D, 0, 1);
+	ppTextures[1]->LoadTextureFromDDSFile(pd3dDevice, pd3dCommandList, L"plane.dds", RESOURCE_TEXTURE2D, 0);
+	ppTextures[2] = new CTexture(1, RESOURCE_TEXTURE2D, 0, 1);
+	ppTextures[2]->LoadTextureFromDDSFile(pd3dDevice, pd3dCommandList, L"Metal01.dds", RESOURCE_TEXTURE2D, 0);
+	ppTextures[3] = new CTexture(1, RESOURCE_TEXTURE2D, 0, 1);
+	ppTextures[3]->LoadTextureFromDDSFile(pd3dDevice, pd3dCommandList, L"Metal02.dds", RESOURCE_TEXTURE2D, 0);
+	ppTextures[4] = new CTexture(1, RESOURCE_TEXTURE2D, 0, 1);
+	ppTextures[4]->LoadTextureFromDDSFile(pd3dDevice, pd3dCommandList, L"Rock01.dds", RESOURCE_TEXTURE2D, 0);
+	ppTextures[5] = new CTexture(1, RESOURCE_TEXTURE2D, 0, 1);
+	ppTextures[5]->LoadTextureFromDDSFile(pd3dDevice, pd3dCommandList, L"Lava(Diffuse).dds", RESOURCE_TEXTURE2D, 0);
+
 	//1.0f = 1cm / 100.0f = 1m
-	float TileSize = (float)1 * UNIT;
+	float TileSize = (float)2.5 * UNIT;
 	float Width = 90 * UNIT;
 	float Depth = 90 * UNIT;
 	int nWidth = (int)Width / TileSize;
 	int nDepth = (int)Depth / TileSize;
 
 	m_nObjects = nWidth * nDepth + 5 + 9;// +6;
-	m_ppObjects = new CGameObject* [m_nObjects];
 
-	CRectangleMesh* pRect = new CRectangleMesh(pd3dDevice, pd3dCommandList, TileSize, TileSize, 1.0f);
+	//----서술자 힙 생성 및 CBV/SRV서술자 생성
+	CreateCbvSrvDescriptorHeaps(pd3dDevice, m_nObjects, TEXTURES);
+	CreateShaderVariables(pd3dDevice, pd3dCommandList);
+	CreateConstantBufferViews(pd3dDevice, m_nObjects, m_pd3dcbGameObjects, ((sizeof(CB_GAMEOBJECT_INFO) + 255) & ~255));
+	for (int i = 0; i < TEXTURES; i++)
+		CreateShaderResourceViews(pd3dDevice, ppTextures[i], 0, 3);
 
+	//-------------------------------------------
+	CMaterial* pMats[TEXTURES];
+	for (int i = 0; i < TEXTURES; i++)
+	{
+		pMats[i] = new CMaterial();
+		pMats[i]->SetTexture(ppTextures[i]);
+	}
+	//-------------------------------------------
+	
+	m_ppObjects = new CGameObject * [m_nObjects];
 	int i = 0;
+	CCubeMeshTextured* pTile = new CCubeMeshTextured(pd3dDevice, pd3dCommandList, TileSize, 1.0f, TileSize);
 	for (float x = -Width / 2 + TileSize / 2; x < Width / 2; x += TileSize)
 	{
 		for (float z = -Depth / 2 + TileSize / 2; z < Depth / 2; z += TileSize)
 		{
 			CGameObject* pMap = new CGameObject(1);
-			pMap->SetMesh(0, pRect);
-			pMap->SetPosition(x, 0.0f, z);
+			XMFLOAT3 pos = XMFLOAT3(x, 0.0f, z);
+			pMap->SetObjectInWorld(0, pTile, pMats[1], pos);
+			pMap->SetCbvGPUDescriptorHandlePtr(m_d3dCbvGPUDescStartHandle.ptr + (::gnCbvSrvDescIncrementSize * i));
 
 			m_ppObjects[i++] = pMap;
 		}
 	}
+
 	//------ 공장 벽 생성 5개
 	int WarehouseSizeXZ = 60;
 	int WarehouseSizeY = 60;
 
-	CCubeMeshDiffused* pSideXWall = new CCubeMeshDiffused(pd3dDevice, pd3dCommandList, 1 * UNIT, WarehouseSizeY * UNIT, WarehouseSizeXZ * UNIT);
-	CCubeMeshDiffused* pSideZWall = new CCubeMeshDiffused(pd3dDevice, pd3dCommandList, WarehouseSizeXZ * UNIT, WarehouseSizeY * UNIT, 1 * UNIT);
-	CCubeMeshDiffused* pSideYWall = new CCubeMeshDiffused(pd3dDevice, pd3dCommandList, WarehouseSizeXZ * UNIT, 1 * UNIT, WarehouseSizeXZ * UNIT);
+	CCubeMeshTextured* pSideXWall = new CCubeMeshTextured(pd3dDevice, pd3dCommandList, 1 * UNIT, WarehouseSizeY * UNIT, WarehouseSizeXZ * UNIT);
+	CCubeMeshTextured* pSideZWall = new CCubeMeshTextured(pd3dDevice, pd3dCommandList, WarehouseSizeXZ * UNIT, WarehouseSizeY * UNIT, 1 * UNIT);
+	CCubeMeshTextured* pSideYWall = new CCubeMeshTextured(pd3dDevice, pd3dCommandList, WarehouseSizeXZ * UNIT, 1 * UNIT, WarehouseSizeXZ * UNIT);
+	//CCubeMeshTextured* test = new CCubeMeshTextured(pd3dDevice, pd3dCommandList, 2.5f * UNIT, 1 * UNIT, 2.5f * UNIT);
+
 
 	CGameObject* pWareHouseLeft = new CGameObject(1);
-	pWareHouseLeft->SetObjectInWorld(m_ppObjects, i++, XMFLOAT3(-WarehouseSizeXZ / 2 * UNIT, (WarehouseSizeY / 2 - 0.1f) * UNIT, 0.0f), pSideXWall, 0);
+	pWareHouseLeft->SetObjectInWorld(0, pSideXWall, pMats[2], XMFLOAT3(-WarehouseSizeXZ / 2 * UNIT, (WarehouseSizeY / 2 - 0.1f) * UNIT, 0.0f));
+	pWareHouseLeft->SetCbvGPUDescriptorHandlePtr(m_d3dCbvGPUDescStartHandle.ptr + (::gnCbvSrvDescIncrementSize * i));
+	m_ppObjects[i++] = pWareHouseLeft;
 
 	CGameObject* pWareHouseRight = new CGameObject(1);
-	pWareHouseRight->SetObjectInWorld(m_ppObjects, i++, XMFLOAT3(WarehouseSizeXZ / 2 * UNIT, (WarehouseSizeY / 2 - 0.1f) * UNIT, 0.0f), pSideXWall, 0);
+	pWareHouseRight->SetObjectInWorld(0, pSideXWall, pMats[2], XMFLOAT3(WarehouseSizeXZ / 2 * UNIT, (WarehouseSizeY / 2 - 0.1f) * UNIT, 0.0f) );
+	pWareHouseRight->SetCbvGPUDescriptorHandlePtr(m_d3dCbvGPUDescStartHandle.ptr + (::gnCbvSrvDescIncrementSize * i));
+	m_ppObjects[i++] = pWareHouseRight;
 
 	CGameObject* pWareHouseFront = new CGameObject(1);
-	pWareHouseFront->SetObjectInWorld(m_ppObjects, i++, XMFLOAT3(0.0f, (WarehouseSizeY / 2 - 0.1f) * UNIT, WarehouseSizeXZ / 2 * UNIT), pSideZWall, 0);
+	pWareHouseFront->SetObjectInWorld(0, pSideZWall, pMats[2], XMFLOAT3(0.0f, (WarehouseSizeY / 2 - 0.1f) * UNIT, WarehouseSizeXZ / 2 * UNIT));
+	pWareHouseFront->SetCbvGPUDescriptorHandlePtr(m_d3dCbvGPUDescStartHandle.ptr + (::gnCbvSrvDescIncrementSize * i));
+	m_ppObjects[i++] = pWareHouseFront;
 
 	CGameObject* pWareHouseBack = new CGameObject(1);
-	pWareHouseBack->SetObjectInWorld(m_ppObjects, i++, XMFLOAT3(0.0f, (WarehouseSizeY / 2 - 0.1f) * UNIT, -WarehouseSizeXZ / 2 * UNIT), pSideZWall, 0);
+	pWareHouseBack->SetObjectInWorld(0, pSideZWall, pMats[2], XMFLOAT3(0.0f, (WarehouseSizeY / 2 - 0.1f) * UNIT, -WarehouseSizeXZ / 2 * UNIT));
+	pWareHouseBack->SetCbvGPUDescriptorHandlePtr(m_d3dCbvGPUDescStartHandle.ptr + (::gnCbvSrvDescIncrementSize * i));
+	m_ppObjects[i++] = pWareHouseBack;
 
-	CGameObject* pWareHouseFloor = new CGameObject(1);
-	pWareHouseFloor->SetObjectInWorld(m_ppObjects, i++, XMFLOAT3(0.0f, (WarehouseSizeY / 2 + 0.5f) * UNIT, 0.0f), pSideYWall, 0);
+	CGameObject* pWareHouseTopFloor = new CGameObject(1);
+	pWareHouseTopFloor->SetObjectInWorld(0,pSideYWall, pMats[0], XMFLOAT3(0.0f, (WarehouseSizeY / 2 + 0.5f) * UNIT, 0.0f));
+	pWareHouseTopFloor->SetCbvGPUDescriptorHandlePtr(m_d3dCbvGPUDescStartHandle.ptr + (::gnCbvSrvDescIncrementSize * i));
+	m_ppObjects[i++] = pWareHouseTopFloor;
+
+	//전체 바닥 1큐브
+	//CGameObject* pWareHouseBottomFloor = new CGameObject(1);
+	//pWareHouseBottomFloor->SetObjectInWorld(0, pSideYWall, pMats[1], XMFLOAT3(0.0f, -0.5f * UNIT, 0.0f));
+	//pWareHouseBottomFloor->SetCbvGPUDescriptorHandlePtr(m_d3dCbvGPUDescStartHandle.ptr + (::gnCbvSrvDescIncrementSize * i));
+	//m_ppObjects[i++] = pWareHouseBottomFloor;
+
 
 	//------- 공장 기둥 생성 9개
-	CCubeMeshDiffused* pRod = new CCubeMeshDiffused(pd3dDevice, pd3dCommandList, 1 * UNIT, WarehouseSizeY * UNIT, 1 * UNIT);
+	CCubeMeshTextured* pRod = new CCubeMeshTextured(pd3dDevice, pd3dCommandList, 1.5 * UNIT, WarehouseSizeY * UNIT, 1.5 * UNIT);
 	float l = WarehouseSizeXZ / 2 * UNIT;
 
 	for (float x = -l / 2; x <= l / 2; x += l / 2)
@@ -306,24 +431,27 @@ void CObjectsShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsComman
 		for (float z = -l / 2; z <= l / 2; z += l / 2)
 		{
 			CGameObject* pPillar = new CGameObject(1);
-			pPillar->SetObjectInWorld(m_ppObjects, i++, XMFLOAT3(x, (WarehouseSizeY / 2 - 0.1f) * UNIT, z), pRod, 0);
+			pPillar->SetObjectInWorld(0, pRod, pMats[5], XMFLOAT3(x, (WarehouseSizeY / 2 - 0.1f) * UNIT, z));
+			pPillar->SetCbvGPUDescriptorHandlePtr(m_d3dCbvGPUDescStartHandle.ptr + (::gnCbvSrvDescIncrementSize * i));
+			m_ppObjects[i++] = pPillar;
 		}
 	}
 
-	/*//------ 소량 택배 선반 6개
-	float tem = (float)(l / 2) * (float)(1 / 3);
+	//------ 소량 택배 선반 6개
+	/*float tem = (float)(l / 2) * (float)(1 / 3);
 	float blockHeight = 2.5f;
-	CCubeMeshDiffused* pBlock = new CCubeMeshDiffused(pd3dDevice, pd3dCommandList, (tem-0.3f) * UNIT, blockHeight * UNIT, 1 * UNIT);
+	CCubeMeshTextured* pBlock = new CCubeMeshTextured(pd3dDevice, pd3dCommandList, (tem-0.3f) * UNIT, blockHeight * UNIT, 1 * UNIT);
 	for (float x = tem; x < tem*3; x += tem)
 	{
 		for (float z = l/2-tem; z <= l/2+tem; z += tem)
 		{
 			CGameObject* pShelf = new CGameObject(1);
-			pShelf->SetObjectInWorld(m_ppObjects, i++, XMFLOAT3(x, (blockHeight/2-0.1f) * UNIT, z), pBlock, 0);
+			//pShelf->SetObjectInWorld(m_ppObjects, i++, XMFLOAT3(x, (blockHeight/2-0.1f) * UNIT, z), pBlock, 0);
+			pShelf->SetObjectInWorld(0, pBlock, pMats[5], XMFLOAT3(x, (blockHeight / 2 - 0.1f) * UNIT, z));
+			pShelf->SetCbvGPUDescriptorHandlePtr(m_d3dCbvGPUDescStartHandle.ptr + (::gnCbvSrvDescIncrementSize * i));
+			m_ppObjects[i++] = pShelf;
 		}
 	}*/
-
-	CreateShaderVariables(pd3dDevice, pd3dCommandList);
 }
 
 void CObjectsShader::AnimateObjects(float fTimeElapsed)
@@ -345,52 +473,80 @@ void CObjectsShader::ReleaseObjects()
 		delete[] m_ppObjects;
 	}
 }
-
-D3D12_INPUT_LAYOUT_DESC CObjectsShader::CreateInputLayout()
+void CObjectsShader::CreateShaderVariables(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList)
 {
-	UINT nInputElementDescs = 2;
-	D3D12_INPUT_ELEMENT_DESC* pd3dInputElementDescs = new D3D12_INPUT_ELEMENT_DESC[nInputElementDescs];
+	UINT ncbElementBytes = ((sizeof(CB_GAMEOBJECT_INFO) + 255) & ~255); //256의 배수
+	m_pd3dcbGameObjects = ::CreateBufferResource(pd3dDevice, pd3dCommandList, NULL, ncbElementBytes * m_nObjects, D3D12_HEAP_TYPE_UPLOAD, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER, NULL);
 
-	pd3dInputElementDescs[0] = { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0,
-	D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 };
-	pd3dInputElementDescs[1] = { "COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 12,
-	D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 };
-
-	D3D12_INPUT_LAYOUT_DESC d3dInputLayoutDesc;
-	d3dInputLayoutDesc.pInputElementDescs = pd3dInputElementDescs;
-	d3dInputLayoutDesc.NumElements = nInputElementDescs;
-	return(d3dInputLayoutDesc);
+	m_pd3dcbGameObjects->Map(0, NULL, (void**)&m_pcbMappedGameObjects);
 }
 
-D3D12_SHADER_BYTECODE CObjectsShader::CreateVertexShader(ID3DBlob** ppd3dShaderBlob)
+//D3D12_INPUT_LAYOUT_DESC CObjectsShader::CreateInputLayout()
+//{
+//	UINT nInputElementDescs = 2;
+//	D3D12_INPUT_ELEMENT_DESC* pd3dInputElementDescs = new D3D12_INPUT_ELEMENT_DESC[nInputElementDescs];
+//
+//	pd3dInputElementDescs[0] = { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0,
+//	D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 };
+//	pd3dInputElementDescs[1] = { "COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 12,
+//	D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 };
+//
+//	D3D12_INPUT_LAYOUT_DESC d3dInputLayoutDesc;
+//	d3dInputLayoutDesc.pInputElementDescs = pd3dInputElementDescs;
+//	d3dInputLayoutDesc.NumElements = nInputElementDescs;
+//	return(d3dInputLayoutDesc);
+//}
+//
+//D3D12_SHADER_BYTECODE CObjectsShader::CreateVertexShader(ID3DBlob** ppd3dShaderBlob)
+//{
+//	return(CShader::CompileShaderFromFile(L"Shaders.hlsl", "VSDiffused", "vs_5_1", ppd3dShaderBlob));
+//}
+//
+//D3D12_SHADER_BYTECODE CObjectsShader::CreatePixelShader(ID3DBlob** ppd3dShaderBlob)
+//{
+//	return(CShader::CompileShaderFromFile(L"Shaders.hlsl", "PSDiffused", "ps_5_1", ppd3dShaderBlob));
+//}
+//
+//void CObjectsShader::CreateShader(ID3D12Device* pd3dDevice, ID3D12RootSignature* pd3dGraphicsRootSignature)
+//{
+//	m_nPipelineStates = 1;
+//	m_ppd3dPipelineStates = new ID3D12PipelineState * [m_nPipelineStates];
+//
+//	CShader::CreateShader(pd3dDevice, pd3dGraphicsRootSignature);
+//}
+void CObjectsShader::UpdateShaderVariables(ID3D12GraphicsCommandList* pd3dCommandList)
 {
-	return(CShader::CompileShaderFromFile(L"Shaders.hlsl", "VSDiffused", "vs_5_1", ppd3dShaderBlob));
+	UINT ncbElementBytes = ((sizeof(CB_GAMEOBJECT_INFO) + 255) & ~255);
+	for (int j = 0; j < m_nObjects; j++)
+	{
+		CB_GAMEOBJECT_INFO* pbMappedcbGameObject = (CB_GAMEOBJECT_INFO*)((UINT8*)m_pcbMappedGameObjects + (j * ncbElementBytes));
+		XMStoreFloat4x4(&pbMappedcbGameObject->m_xmf4x4World, XMMatrixTranspose(XMLoadFloat4x4(&m_ppObjects[j]->m_xmf4x4World)));
+	}
 }
 
-D3D12_SHADER_BYTECODE CObjectsShader::CreatePixelShader(ID3DBlob** ppd3dShaderBlob)
+void CObjectsShader::ReleaseShaderVariables()
 {
-	return(CShader::CompileShaderFromFile(L"Shaders.hlsl", "PSDiffused", "ps_5_1", ppd3dShaderBlob));
-}
+	if (m_pd3dcbGameObjects)
+	{
+		m_pd3dcbGameObjects->Unmap(0, NULL);
+		m_pd3dcbGameObjects->Release();
+	}
 
-void CObjectsShader::CreateShader(ID3D12Device* pd3dDevice, ID3D12RootSignature* pd3dGraphicsRootSignature)
-{
-	m_nPipelineStates = 1;
-	m_ppd3dPipelineStates = new ID3D12PipelineState * [m_nPipelineStates];
-
-	CShader::CreateShader(pd3dDevice, pd3dGraphicsRootSignature);
+	CTexturedShader::ReleaseShaderVariables();
 }
 
 void CObjectsShader::ReleaseUploadBuffers()
 {
 	if (m_ppObjects)
 	{
-		for (int j = 0; j < m_nObjects; j++) m_ppObjects[j]->ReleaseUploadBuffers();
+		for (int j = 0; j < m_nObjects; j++) 
+			m_ppObjects[j]->ReleaseUploadBuffers();
 	}
 }
 
 void CObjectsShader::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera)
 {
-	CShader::Render(pd3dCommandList, pCamera);
+	CTexturedShader::Render(pd3dCommandList, pCamera);
 	for (int j = 0; j < m_nObjects; j++)
 	{
 		if (m_ppObjects[j])
@@ -400,6 +556,47 @@ void CObjectsShader::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera*
 	}
 }
 
+
+
+CTexturedShader::CTexturedShader()
+{
+}
+
+CTexturedShader::~CTexturedShader()
+{
+}
+
+D3D12_INPUT_LAYOUT_DESC CTexturedShader::CreateInputLayout()
+{
+	UINT nInputElementDescs = 2;
+	D3D12_INPUT_ELEMENT_DESC* pd3dInputElementDescs = new D3D12_INPUT_ELEMENT_DESC[nInputElementDescs];
+
+	pd3dInputElementDescs[0] = { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 };
+	pd3dInputElementDescs[1] = { "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 12, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 };
+
+	D3D12_INPUT_LAYOUT_DESC d3dInputLayoutDesc;
+	d3dInputLayoutDesc.pInputElementDescs = pd3dInputElementDescs;
+	d3dInputLayoutDesc.NumElements = nInputElementDescs;
+
+	return(d3dInputLayoutDesc);
+}
+
+D3D12_SHADER_BYTECODE CTexturedShader::CreateVertexShader(ID3DBlob** ppd3dShaderBlob)
+{
+	return(CShader::CompileShaderFromFile(L"Shaders.hlsl", "VSTextured", "vs_5_1", ppd3dShaderBlob));
+}
+
+D3D12_SHADER_BYTECODE CTexturedShader::CreatePixelShader(ID3DBlob** ppd3dShaderBlob)
+{
+	return(CShader::CompileShaderFromFile(L"Shaders.hlsl", "PSTextured", "ps_5_1", ppd3dShaderBlob));
+}
+
+void CTexturedShader::CreateShader(ID3D12Device* pd3dDevice, ID3D12RootSignature* pd3dGraphicsRootSignature)
+{
+	CShader::CreateShader(pd3dDevice, pd3dGraphicsRootSignature);
+}
+
+//------수정 필요
 CRectShader::CRectShader()
 {
 }

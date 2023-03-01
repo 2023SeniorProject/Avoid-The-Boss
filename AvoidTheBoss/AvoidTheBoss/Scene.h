@@ -2,9 +2,12 @@
 #include "CTimer.h"
 #include "SceneInterface.h"
 #include "Shader.h"
+#include "Player.h"
+#include "DummyPlayer.h"
 
 class CGameScene : public SceneInterface
 {
+	friend class CClientSession;
 public:
 	CGameScene();
 	~CGameScene();
@@ -20,25 +23,31 @@ public:
 	void InitScene();
 	void ReleaseObjects();
 
+	//그래픽 루트 시그너쳐를 생성한다. 
+	ID3D12RootSignature* CreateGraphicsRootSignature(ID3D12Device* pd3dDevice);
+	ID3D12RootSignature* GetGraphicsRootSignature();
+	void SetGraphicsRootSignature(ID3D12GraphicsCommandList* pd3dCommandList) { pd3dCommandList->SetGraphicsRootSignature(m_pd3dGraphicsRootSignature); }
+	
+	virtual void CreateShaderVariables(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList);
+	virtual void UpdateShaderVariables(ID3D12GraphicsCommandList* pd3dCommandList);
+	virtual void ReleaseShaderVariables();
+
 	virtual void ProcessInput(HWND hWnd);
 	void AnimateObjects();
 	void Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera);
 
 	void ReleaseUploadBuffers();
-
-	//그래픽 루트 시그너쳐를 생성한다. 
-	ID3D12RootSignature* CreateGraphicsRootSignature(ID3D12Device* pd3dDevice);
-	ID3D12RootSignature* GetGraphicsRootSignature();
-
 public:
 
 	Timer				m_Timer;
 	CCamera* m_pCamera = NULL;
-protected:
+public:
 	//배치(Batch) 처리를 하기 위하여 씬을 셰이더들의 리스트로 표현한다. 
-	CObjectsShader* m_pShaders = NULL;
+	CShader** m_ppShaders = NULL;
 	int m_nShaders = 0;
 
+	CCubePlayer* _player = nullptr;
+	DummyCubePlayer* _other = nullptr;
 	
 	DWORD				m_lastKeyInput = 0;
 	//마지막으로 마우스 버튼을 클릭할 때의 마우스 커서의 위치이다. 

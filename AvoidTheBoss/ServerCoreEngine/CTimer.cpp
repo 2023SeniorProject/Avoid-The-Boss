@@ -55,10 +55,8 @@ void Timer::Tick(float fLockFPS)
 	}
 	std::chrono::time_point curTimePoint = Clock::now();
 	float fTimeElapsed = std::chrono::duration<double>(curTimePoint - _lastTimePoint).count();
-	
-
 	_lastTimePoint = curTimePoint;
-
+	std::cout << fTimeElapsed << std::endl;
 	if (fabsf(fTimeElapsed - _fTimeElapsedAvg) < 1.0f) // 오차가 적다면
 	{
 		// 배열 값들을 한칸 씩 미룬다.
@@ -68,7 +66,6 @@ void Timer::Tick(float fLockFPS)
 		if (_nSampleCount < MAX_SAMPLE_COUNT) _nSampleCount++;
 	}
 	
-	if(fTimeElapsed )
 	_nFramePerSec++;
 	_nWorldFrame++;
 	_accumlateElapsedTime += fTimeElapsed;
@@ -89,6 +86,7 @@ void Timer::Tick(float fLockFPS)
 		(_fTimeElapsedAvg) /= _nSampleCount;
 	
 	}
+	
 }
 
 unsigned long  Timer::GetFrameRate(LPTSTR lpszString, int nCharacters)

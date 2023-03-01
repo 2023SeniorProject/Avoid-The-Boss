@@ -160,6 +160,7 @@
   <ItemGroup>
     <ClInclude Include="AvoidTheBoss.h" />
     <ClInclude Include="Camera.h" />
+    <ClInclude Include="DDSTextureLoader12.h" />
     <ClInclude Include="clientIocpCore.h" />
     <ClInclude Include="DummyPlayer.h" />
     <ClInclude Include="GameFramework.h" />
@@ -178,6 +179,7 @@
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="clientIocpCore.cpp" />
     <ClCompile Include="DummyPlayer.cpp" />
+    <ClCompile Include="DDSTextureLoader12.cpp" />
     <ClCompile Include="GameFramework.cpp" />
     <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="Mesh.cpp" />
@@ -197,7 +199,16 @@
   </ItemGroup>
   <ItemGroup>
     <Image Include="AvoidTheBoss.ico" />
+    <Image Include="Floor.dds" />
+    <Image Include="Lava(Diffuse).dds" />
+    <Image Include="Lava(Emissive).dds" />
+    <Image Include="Metal01.dds" />
+    <Image Include="Metal02.dds" />
+    <Image Include="plane.dds" />
+    <Image Include="Rock01.dds" />
     <Image Include="small.ico" />
+    <Image Include="Stone.dds" />
+    <Image Include="Stone01.dds" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Shaders.hlsl">
@@ -205,6 +216,7 @@
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Vertex</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Vertex</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </FxCompile>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

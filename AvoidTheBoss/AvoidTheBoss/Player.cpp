@@ -160,7 +160,7 @@ void CPlayer::Update(float fTimeElapsed)
 
 	//카메라의 카메라 변환 행렬을 다시 생성한다. 
 	m_pCamera->RegenerateViewMatrix();
-	std::cout << "x : " << m_xmf3Position.x << " y : " << m_xmf3Position.z << std::endl;
+	//std::cout << "x : " << m_xmf3Position.x << " y : " << m_xmf3Position.z << std::endl;
 	m_xmf3Velocity = XMFLOAT3(0, 0, 0);
 }
 
@@ -195,7 +195,7 @@ void CPlayer::UpdateShaderVariables(ID3D12GraphicsCommandList* pd3dCommandList)
 
 	D3D12_GPU_VIRTUAL_ADDRESS d3dGpuVirtualAddress = m_pd3dcbPlayer->GetGPUVirtualAddress();
 	pd3dCommandList->SetGraphicsRootConstantBufferView(0, d3dGpuVirtualAddress);
-	//CGameObject::UpdateShaderVariables(pd3dCommandList);
+
 }
 
 CCamera* CPlayer::OnChangeCamera(DWORD nNewCameraMode, DWORD nCurrentCameraMode)

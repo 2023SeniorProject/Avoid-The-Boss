@@ -9,11 +9,11 @@ private:
 	using Clock = std::chrono::high_resolution_clock;
 public:
 
-	int32					_fTimeElapsedAvg; // 한 프레임 처리하는데 걸리는 평균 시간
-	int32					_fTimeDuringPaused;
+	float					_fTimeElapsedAvg; // 한 프레임 처리하는데 걸리는 평균 시간
+	float					_fTimeDuringPaused;
 	
 
-	int32					_SampleFrameTime[MAX_SAMPLE_COUNT]; 
+	float					_SampleFrameTime[MAX_SAMPLE_COUNT]; 
 	ULONG					_nSampleCount; 
 
 	unsigned long			_curFrameRate;
@@ -24,7 +24,7 @@ public:
 	Clock::time_point		_initTimePoint;
 public:
 	uint64					_nWorldFrame;
-	int32					_accumlateElapsedTime;
+	float					_accumlateElapsedTime;
 
 	bool					_bStopped;
 public:

@@ -33,6 +33,7 @@
 #include <malloc.h>
 #include <memory.h>
 #include <tchar.h>
+#include <math.h>
 
 #include <timeapi.h>
 #include <MMSystem.h>
@@ -53,8 +54,17 @@
 #include <DXGIDebug.h>
 #include <D3d12SDKLayers.h>
 
+#include "d3dx12.h"
 
-#include <ppltasks.h>
+#include <algorithm>
+#include <cassert>
+#include <memory>
+#include <new>
+#include <cstddef>
+#include <cstdint>
+#include <memory>
+#include <fstream>
+#include <filesystem>
 
 
 //----DirectXMath 라이브러리
@@ -85,7 +95,7 @@ using Microsoft::WRL::ComPtr;
 
 
 //----클라이언트 영역 크기 및 후면 버퍼 크기
-#define FRAME_BUFFER_WIDTH 800
+#define FRAME_BUFFER_WIDTH  800
 #define FRAME_BUFFER_HEIGHT 600
 
 //----전체 화면 모드로 시작
@@ -106,12 +116,16 @@ using Microsoft::WRL::ComPtr;
 //1.0f = 1cm / 1000.0f = 1m
 #define UNIT 100.0f // 1m = 1 unit
 
+extern UINT gnCbvSrvDescIncrementSize;
+
 //----버퍼 리소스 생성 함수
 extern ID3D12Resource* CreateBufferResource(ID3D12Device* pd3dDevice,
 	ID3D12GraphicsCommandList* pd3dCommandList, void* pData, UINT nBytes, D3D12_HEAP_TYPE
 	d3dHeapType = D3D12_HEAP_TYPE_UPLOAD, D3D12_RESOURCE_STATES d3dResourceStates =
 	D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER, ID3D12Resource** ppd3dUploadBuffer =
 	NULL);
+
+extern ID3D12Resource* CreateTextureResourceFromDDSFile(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList,const wchar_t* pszFileName, ID3D12Resource** ppd3dUploadBuffer, D3D12_RESOURCE_STATES d3dResourceStates = D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
 
 #define			EPSILON 1.0e-10f
 
@@ -320,11 +334,20 @@ namespace Matrix4x4
 	}
 }
 
+namespace Triangle
+{
+	inline bool Intersect(XMFLOAT3& xmf3RayPosition, XMFLOAT3& xmf3RayDirection, XMFLOAT3& v0, XMFLOAT3& v1, XMFLOAT3& v2, float& fHitDistance)
+	{
+		return(TriangleTests::Intersects(XMLoadFloat3(&xmf3RayPosition), XMLoadFloat3(&xmf3RayDirection), XMLoadFloat3(&v0), XMLoadFloat3(&v1), XMLoadFloat3(&v2), fHitDistance));
+	}
+}
 
-
-#define DIR_FORWARD	 0x01
-#define DIR_BACKWARD 0x02
-#define DIR_LEFT	 0x04
-#define DIR_RIGHT	 0x08
-#define DIR_UP		 0x10
-#define DIR_DOWN	 0x20
+namespace Plane
+{
+	inline XMFLOAT4 Normalize(XMFLOAT4& xmf4Plane)
+	{
+		XMFLOAT4 xmf4Result;
+		XMStoreFloat4(&xmf4Result, XMPlaneNormalize(XMLoadFloat4(&xmf4Plane)));
+		return(xmf4Result);
+	}
+}

@@ -1,62 +1,64 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="Camera">
-      <UniqueIdentifier>{b4454136-855f-4e19-bee7-f5cc7b35f5c7}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Player">
-      <UniqueIdentifier>{3b0897d0-e438-4bfd-a14b-a76329afb36c}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="FrameWork">
-      <UniqueIdentifier>{55cbbf7f-a1b6-47a6-9633-00d8dc72369e}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Shader">
-      <UniqueIdentifier>{68c31b70-264f-4710-ba2d-2e8440cbd608}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Scene">
-      <UniqueIdentifier>{f946167c-d2da-4ed7-becb-dde552055302}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Mesh">
-      <UniqueIdentifier>{d71ba6c3-9697-4c5d-9036-5633ddbdf717}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="GameObject">
-      <UniqueIdentifier>{5f477567-9a26-4f76-b30f-20566a3c3a73}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Resource">
-      <UniqueIdentifier>{58264972-60ea-4db8-b6e4-3967c8ed7c7b}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Core">
-      <UniqueIdentifier>{8ad379e7-e43a-4126-b4d2-6aa34584f282}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="IocpCore">
-      <UniqueIdentifier>{e41ad9a1-45a4-4245-ab77-10b9b05eb4ff}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="MainGame">
-      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
-      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
-    </Filter>
+    <ClCompile Include="DDSTextureLoader12.cpp">
+      <Filter>Resource</Filter>
+    </ClCompile>
+    <ClCompile Include="AvoidTheBoss.cpp">
+      <Filter>AvoidTheBoss</Filter>
+    </ClCompile>
+    <ClCompile Include="Timer.cpp">
+      <Filter>GameTimer</Filter>
+    </ClCompile>
+    <ClCompile Include="Scene.cpp">
+      <Filter>GameScene</Filter>
+    </ClCompile>
+    <ClCompile Include="GameObject.cpp">
+      <Filter>GameObject</Filter>
+    </ClCompile>
+    <ClCompile Include="Camera.cpp">
+      <Filter>Camera</Filter>
+    </ClCompile>
+    <ClCompile Include="GameFramework.cpp">
+      <Filter>GameFramework</Filter>
+    </ClCompile>
+    <ClCompile Include="pch.cpp">
+      <Filter>AvoidTheBoss</Filter>
+    </ClCompile>
+    <ClCompile Include="DummyPlayer.cpp">
+      <Filter>DummyPlayer</Filter>
+    </ClCompile>
+    <ClCompile Include="Mesh.cpp">
+      <Filter>Mesh</Filter>
+    </ClCompile>
+    <ClCompile Include="Player.cpp">
+      <Filter>Player</Filter>
+    </ClCompile>
+    <ClCompile Include="SceneInterface.cpp">
+      <Filter>ScenInterface</Filter>
+    </ClCompile>
+    <ClCompile Include="Shader.cpp">
+      <Filter>Shader</Filter>
+    </ClCompile>
+    <ClCompile Include="clientIocpCore.cpp">
+      <Filter>ClientIocpCore</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Camera.h">
-      <Filter>Camera</Filter>
+    <ClInclude Include="DDSTextureLoader12.h">
+      <Filter>Resource</Filter>
     </ClInclude>
-    <ClInclude Include="Player.h">
-      <Filter>Player</Filter>
+    <ClInclude Include="d3dx12.h">
+      <Filter>Resource</Filter>
     </ClInclude>
-    <ClInclude Include="GameFramework.h">
-      <Filter>FrameWork</Filter>
+    <ClInclude Include="AvoidTheBoss.h">
+      <Filter>AvoidTheBoss</Filter>
     </ClInclude>
-    <ClInclude Include="targetver.h">
-      <Filter>Core</Filter>
-    </ClInclude>
-    <ClInclude Include="Shader.h">
-      <Filter>Shader</Filter>
+    <ClInclude Include="Timer.h">
+      <Filter>GameTimer</Filter>
     </ClInclude>
     <ClInclude Include="Scene.h">
-      <Filter>Scene</Filter>
-    </ClInclude>
-    <ClInclude Include="Mesh.h">
-      <Filter>Mesh</Filter>
+      <Filter>GameScene</Filter>
     </ClInclude>
     <ClInclude Include="GameObject.h">
       <Filter>GameObject</Filter>
@@ -65,19 +67,28 @@
       <Filter>MainGame</Filter>
     </ClInclude>
     <ClInclude Include="Resource.h">
-      <Filter>Core</Filter>
+      <Filter>Resource</Filter>
+    </ClInclude>
+    <ClInclude Include="Camera.h">
+      <Filter>Camera</Filter>
+    </ClInclude>
+    <ClInclude Include="GameFramework.h">
+      <Filter>GameFramework</Filter>
     </ClInclude>
     <ClInclude Include="pch.h">
-      <Filter>Core</Filter>
-    </ClInclude>
-    <ClInclude Include="clientIocpCore.h">
-      <Filter>IocpCore</Filter>
+      <Filter>AvoidTheBoss</Filter>
     </ClInclude>
     <ClInclude Include="DummyPlayer.h">
+      <Filter>DummyPlayer</Filter>
+    </ClInclude>
+    <ClInclude Include="Mesh.h">
+      <Filter>Mesh</Filter>
+    </ClInclude>
+    <ClInclude Include="Player.h">
       <Filter>Player</Filter>
     </ClInclude>
     <ClInclude Include="SceneInterface.h">
-      <Filter>Scene</Filter>
+      <Filter>ScenInterface</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -119,21 +130,89 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <Image Include="AvoidTheBoss.ico">
+    <Image Include="Metal01.dds">
+      <Filter>Resource</Filter>
+    </Image>
+    <Image Include="Lava(Emissive).dds">
+      <Filter>Resource</Filter>
+    </Image>
+    <Image Include="Lava(Diffuse).dds">
+      <Filter>Resource</Filter>
+    </Image>
+    <Image Include="Floor.dds">
+      <Filter>Resource</Filter>
+    </Image>
+    <Image Include="Rock01.dds">
+      <Filter>Resource</Filter>
+    </Image>
+    <Image Include="plane.dds">
+      <Filter>Resource</Filter>
+    </Image>
+    <Image Include="Metal02.dds">
+      <Filter>Resource</Filter>
+    </Image>
+    <Image Include="Stone01.dds">
+      <Filter>Resource</Filter>
+    </Image>
+    <Image Include="Stone.dds">
       <Filter>Resource</Filter>
     </Image>
     <Image Include="small.ico">
       <Filter>Resource</Filter>
     </Image>
+    <Image Include="AvoidTheBoss.ico">
+      <Filter>Resource</Filter>
+    </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Resource">
+      <UniqueIdentifier>{7e52bb48-1f91-4703-abf1-8299dd706789}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="AvoidTheBoss">
+      <UniqueIdentifier>{fee5a02e-4bd3-4a2c-88a2-f6827f98edcf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GameTimer">
+      <UniqueIdentifier>{74626a49-8ca6-4c69-8591-71e6903d59dc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GameObject">
+      <UniqueIdentifier>{05a326a8-f411-4096-844f-12c3de82e26f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GameScene">
+      <UniqueIdentifier>{e4ce9da3-bd68-4bfc-9cb8-45f800d6cd51}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Camera">
+      <UniqueIdentifier>{a881eff2-ecf9-4c10-930d-7777d38b72f0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GameFramework">
+      <UniqueIdentifier>{5f512bee-fa01-496f-928a-5ffe548e2624}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="DummyPlayer">
+      <UniqueIdentifier>{59073908-be5a-4415-8b58-557f521ea3b2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Mesh">
+      <UniqueIdentifier>{02eb4d02-2f0c-498f-9818-1e2fa2d61896}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Player">
+      <UniqueIdentifier>{c32e0765-a8d8-47c5-a3ee-a2edbf3a9f6e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ScenInterface">
+      <UniqueIdentifier>{694d1a9b-e9a4-4322-89ea-27279e5f83ec}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shader">
+      <UniqueIdentifier>{ce5abe85-1be1-4ab6-90e7-dd9b8e242c3d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ClientIocpCore">
+      <UniqueIdentifier>{b14711bd-5e60-4f7a-aa97-db4ecafd7931}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="Shaders.hlsl">
+      <Filter>Resource</Filter>
+    </FxCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="AvoidTheBoss.rc">
       <Filter>Resource</Filter>
     </ResourceCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <FxCompile Include="Shaders.hlsl">
-      <Filter>Shader</Filter>
-    </FxCompile>
   </ItemGroup>
 </Project>

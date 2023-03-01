@@ -2,7 +2,7 @@
 #include "Shader.h"
 #include "DummyPlayer.h"
 
-DummyPlayer::DummyPlayer(int nMeshes) : CGameObject(nMeshes)
+DummyPlayer::DummyPlayer(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, void* pContext, int nMeshes ) : CGameObject(nMeshes)
 {
 
 	m_xmf3Position = XMFLOAT3(0.0f, 0.0f, 0.0f);
@@ -161,23 +161,27 @@ void DummyPlayer::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pC
 	//카메라 모드가 3인칭이면 플레이어 객체를 렌더링한다. 
 	if (nCameraMode == THIRD_PERSON_CAMERA)
 	{
-		if (m_ppShaders) m_ppShaders->Render(pd3dCommandList, pCamera);
 		CGameObject::Render(pd3dCommandList, pCamera);
 	}
 }
 
-DummyCubePlayer::DummyCubePlayer(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, int nMeshes) : DummyPlayer(nMeshes)
+DummyCubePlayer::DummyCubePlayer(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, int nMeshes) : DummyPlayer(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, NULL, nMeshes)
 {
-	CMesh* pPlayerCubeMesh = new CCubeMeshDiffused(pd3dDevice, pd3dCommandList, 0.37f * UNIT, 1.5f * UNIT, 0.23f * UNIT);
+	//CreateShaderVariables(pd3dDevice, pd3dCommandList);
+	CCubeMeshDiffused* pPlayerCubeMesh = new CCubeMeshDiffused(pd3dDevice, pd3dCommandList, 0.37f * UNIT, 1.5f * UNIT, 0.23f * UNIT);
 
 	SetMesh(0, pPlayerCubeMesh);
-
-	CreateShaderVariables(pd3dDevice, pd3dCommandList);
-
 	SetPosition(XMFLOAT3(0.0f, (1.5f / 2.0f) * UNIT, 0.0f));
+
+	UINT ncbElementBytes = ((sizeof(CB_DUMMYPLAYER_INFO) + 255) & ~255); //256의 배수
 
 	CPlayerShader* pShader = new CPlayerShader();
 	pShader->CreateShader(pd3dDevice, pd3dGraphicsRootSignature);
+	pShader->CreateShaderVariables(pd3dDevice, pd3dCommandList);// ++추가코드
+	pShader->CreateCbvSrvDescriptorHeaps(pd3dDevice, 1, 0);// ++추가코드
+	pShader->CreateConstantBufferViews(pd3dDevice, 1, m_pd3dcbPlayer, ncbElementBytes);// ++추가코드
+	
+	SetCbvGPUDescriptorHandle(pShader->GetCbvGPUDescStartHandle());// ++추가코e드
 	SetShader(pShader);
 }
 

@@ -31,7 +31,7 @@ protected:
 
 	// 플레이어 카메라
 	CCamera* m_pCamera = nullptr;
-	CShader* m_ppShader;
+	
 
 public:
 	CPlayer(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, void* pContext = NULL, int nMeshes = 1);

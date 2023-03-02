@@ -160,7 +160,6 @@
   <ItemGroup>
     <ClInclude Include="AvoidTheBoss.h" />
     <ClInclude Include="Camera.h" />
-    <ClInclude Include="d3dx12.h" />
     <ClInclude Include="DDSTextureLoader12.h" />
     <ClInclude Include="clientIocpCore.h" />
     <ClInclude Include="DummyPlayer.h" />
@@ -174,7 +173,6 @@
     <ClInclude Include="Shader.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="targetver.h" />
-    <ClInclude Include="Timer.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AvoidTheBoss.cpp" />
@@ -195,7 +193,6 @@
     <ClCompile Include="Scene.cpp" />
     <ClCompile Include="SceneInterface.cpp" />
     <ClCompile Include="Shader.cpp" />
-    <ClCompile Include="Timer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="AvoidTheBoss.rc" />

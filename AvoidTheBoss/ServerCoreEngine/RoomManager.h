@@ -1,6 +1,6 @@
 #pragma once
 #define MAX_ROOM_USER 4 // 한 방당 최대 인원수
-#include "STimer.h"
+#include "CTimer.h"
 
 
 
@@ -32,7 +32,7 @@ public:
 	std::shared_mutex _jobQueueLock; // eventQueue 관리용 Lock
 	//
 	
-	STimer _rmTimer; // 해당 룸의 업데이트에 사용할 타이머
+	Timer _rmTimer; // 해당 룸의 업데이트에 사용할 타이머
 	int8 _status = ROOM_STATUS::EMPTY; // 방 상태
 	int32 _num = 0; // 방에 있는 인원 수
 };

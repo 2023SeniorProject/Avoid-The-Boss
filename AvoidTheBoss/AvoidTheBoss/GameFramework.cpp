@@ -3,7 +3,6 @@
 #include "clientIocpCore.h"
 
 // #define _WITH_PLAYER_TOP // 플레이어 깊이 버퍼값 1.0f
-CGameFramework gGameFramework;
 
 CGameFramework::CGameFramework()
 {
@@ -61,9 +60,6 @@ bool CGameFramework::OnCreate(HINSTANCE hInstance, HWND hMainWnd)
 
 	//렌더링할 게임 객체를 생성한다.
 	BuildObjects();
-
-	//m_pScene->CreateGraphicsRootSignature(m_pd3dDevice);
-
 	return(true);
 }
 
@@ -439,9 +435,11 @@ void CGameFramework::FrameAdvance() // 여기서 업데이트랑 렌더링 동시에 진행하는 
 		D3D12_CLEAR_FLAG_DEPTH | D3D12_CLEAR_FLAG_STENCIL, 1.0f, 0, 0, NULL);
 #endif
 	//3인칭 카메라일 때 플레이어를 렌더링한다. 
-	if (clientIocpCore._client->_player) clientIocpCore._client->_player->Render(m_pd3dCommandList, m_pScene->m_pCamera);
-	if (clientIocpCore._client->_other)  clientIocpCore._client->_other->Render(m_pd3dCommandList, m_pScene->m_pCamera);
-	
+	if (m_pScene->_curSceneStatus == SceneInfo::GAMEROOM)
+	{
+		if (m_pScene->_player) m_pScene->_player->Render(m_pd3dCommandList, m_pScene->m_pCamera);
+		if (m_pScene->_other)  m_pScene->_other->Render(m_pd3dCommandList, m_pScene->m_pCamera);
+	}
 	d3dResourceBarrier.Transition.StateBefore = D3D12_RESOURCE_STATE_RENDER_TARGET;
 	d3dResourceBarrier.Transition.StateAfter = D3D12_RESOURCE_STATE_PRESENT;
 	d3dResourceBarrier.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
@@ -518,56 +516,13 @@ void CGameFramework::MoveToNextFrame()
 
 void CGameFramework::OnProcessingMouseMessage(HWND hWnd, UINT nMessageID, WPARAM wParam, LPARAM lParam)
 {
-	//switch (nMessageID)
-	//{
-	//case WM_LBUTTONDOWN:
-	//case WM_RBUTTONDOWN:
-	//	//마우스 캡쳐를 하고 현재 마우스 위치를 가져온다. 
-	//	::SetCapture(hWnd);
-	//	::GetCursorPos(&m_ptOldCursorPos);
-	//	break;
-	//case WM_LBUTTONUP:
-	//case WM_RBUTTONUP:
-	//	//마우스 캡쳐를 해제한다. 
-	//	::ReleaseCapture();
-	//	break;
-	//case WM_MOUSEMOVE:
-	//	break;
-	//default:
-	//	break;
-	//}
+
 	m_pScene->OnProcessingMouseMessage(hWnd, nMessageID, wParam, lParam);
 }
 
 void CGameFramework::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPARAM wParam, LPARAM lParam)
 {
-	//switch (nMessageID)
-	//{
-	//case WM_KEYUP:
-	//	switch (wParam)
-	//	{
-	//	case VK_ESCAPE:
-	//		::PostQuitMessage(0);
-	//		break;
-	//	case VK_RETURN:
-	//		break;
-	//		/*‘F1’ 키를 누르면 1인칭 카메라, ‘F3’ 키를 누르면 3인칭 카메라로 변경한다.*/
-	//	case VK_F1:
-	//		if (clientIocpCore._client->_player) m_pCamera = clientIocpCore._client->_player->ChangeCamera(FIRST_PERSON_CAMERA, m_Timer.GetTimeElapsed());
-	//	case VK_F3:
-	//		if (clientIocpCore._client->_player) m_pCamera = clientIocpCore._client->_player->ChangeCamera(THIRD_PERSON_CAMERA, m_Timer.GetTimeElapsed());
-	//		break;
-	//	case VK_F9:
-	//		//“F9” 키가 눌려지면 윈도우 모드와 전체화면 모드의 전환을 처리한다. 
-	//		ChangeSwapChainState();
-	//		break;
-	//	default:
-	//		break;
-	//	}
-	//	break;
-	//default:
-	//	break;
-	//}
+	
 	m_pScene->OnProcessingKeyboardMessage(hWnd, nMessageID, wParam, lParam);
 }
 

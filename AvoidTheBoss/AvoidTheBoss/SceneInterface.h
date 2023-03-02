@@ -1,6 +1,10 @@
 #pragma once
+enum SceneInfo : int8 { LOGIN = 77,LOBBY = 78,ROOM = 79,GAMEROOM = 80};
 class SceneInterface
 {
+	friend class ClientIocpCore;
+public:
+	Atomic<int8> _curSceneStatus = -1;
 public:
 	SceneInterface() {}
 	virtual ~SceneInterface() {}

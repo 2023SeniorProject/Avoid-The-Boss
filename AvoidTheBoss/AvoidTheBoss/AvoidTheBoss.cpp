@@ -3,7 +3,7 @@
 
 #include "pch.h"
 #include "AvoidTheBoss.h"
-#include "GameFramework.h"
+#include "clientIocpCore.h"
 #include "SocketUtil.h"
 #include "ThreadManager.h"
 
@@ -86,17 +86,16 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
         else
         {
           
-            gGameFramework.FrameAdvance(); // 처리할 윈도우 메세지가 큐에 없을 때 게임프로그램이 CPU사용
+           clientIocpCore.GameLoop(); // 처리할 윈도우 메세지가 큐에 없을 때 게임프로그램이 CPU사용
         }
         std::this_thread::sleep_for(0ms);
     }
  
     GCThreadManager->Join();
     SocketUtil::Clear();
-    gGameFramework.OnDestroy();
     
-   
-
+    
+ 
     return (int)msg.wParam;
 }
 
@@ -138,7 +137,7 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
     if (!hMainWnd)return (FALSE);
 
     //----프레임워크 객체 초기화
-    gGameFramework.OnCreate(hInst, hMainWnd);
+   clientIocpCore.InitGameLoop(hInst, hMainWnd);
 
     ShowWindow(hMainWnd, nCmdShow);
     UpdateWindow(hMainWnd);
@@ -166,7 +165,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
     case WM_MOUSEMOVE:
     case WM_KEYDOWN:
     case WM_KEYUP:
-        gGameFramework.OnProcessingWindowMessage(hWnd, message, wParam, lParam);
+        clientIocpCore.InputProcessing(hWnd, message, wParam, lParam);
         break;
     case WM_COMMAND:
     {

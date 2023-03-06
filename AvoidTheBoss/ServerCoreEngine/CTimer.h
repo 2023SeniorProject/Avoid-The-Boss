@@ -23,15 +23,15 @@ public:
 	Clock::time_point		_StopTimePoint; // 멈춘 시점 
 	Clock::time_point		_initTimePoint;
 public:
-	uint64					_nWorldFrame;
 	float					_accumlateElapsedTime;
+	//float					_nWorldFrame;
 
 	bool					_bStopped;
 public:
 	Timer();
 	virtual ~Timer();
 
-	void Tick(float fLockFPS = 0.0f); // 타이머 시간 갱신
+	void Tick(float fLockFPS); // 타이머 시간 갱신
 	void Start();
 	void Stop();
 	void Reset();

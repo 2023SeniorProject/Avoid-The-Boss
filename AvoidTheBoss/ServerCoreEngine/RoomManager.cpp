@@ -93,23 +93,23 @@ void Room::BroadCasting(void* packet) // 방에 속하는 클라이언트에게만 전달하기
 
 void Room::Update()
 {
-	if(!_rmTimer._nWorldFrame % 1000)
-	{
-	
-		S2C_POSITION packet;
-		std::shared_lock<std::shared_mutex> rlock(_listLock);
-		for (auto i : _cList)
-		{
-			packet.sid = i;
-			packet.size = sizeof(S2C_POSITION);
-			packet.type = S_PACKET_TYPE::POSITION;
-			ServerIocpCore._clients[i]->_playerLock.lock();
-			packet.position = ServerIocpCore._clients[i]->_playerInfo.GetPosition();
-			ServerIocpCore._clients[i]->_playerLock.unlock();
-			ServerIocpCore._clients[i]->DoSend(&packet);
-		}
-	}
-	_rmTimer.Tick(0);
+	//if(!(_rmTimer._nWorldFrame % 10))
+	//{
+	//
+	//	S2C_POSITION packet;
+	//	std::shared_lock<std::shared_mutex> rlock(_listLock);
+	//	for (auto i : _cList)
+	//	{
+	//		packet.sid = i;
+	//		packet.size = sizeof(S2C_POSITION);
+	//		packet.type = S_PACKET_TYPE::POSITION;
+	//		ServerIocpCore._clients[i]->_playerLock.lock();
+	//		packet.position = ServerIocpCore._clients[i]->_playerInfo.GetPosition();
+	//		ServerIocpCore._clients[i]->_playerLock.unlock();
+	//		//ServerIocpCore._clients[i]->DoSend(&packet);	
+	//	}
+	//}
+	_rmTimer.Tick(60.f);
 	
 
 	{

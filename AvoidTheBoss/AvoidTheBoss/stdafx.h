@@ -44,7 +44,7 @@
 #include <vector>
 #include <fstream>
 #include <filesystem>
-
+#include <iosfwd>
 
 //----DirectXMath 라이브러리
 #include <DirectXMath.h> //벡터 행렬 관련 함수,구조체,클래스 제공

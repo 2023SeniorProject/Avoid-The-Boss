@@ -374,7 +374,7 @@ void CObjectsShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsComman
 		{
 			CGameObject* pMap = new CGameObject(1);
 			XMFLOAT3 pos = XMFLOAT3(x, 0.0f, z);
-			pMap->SetObjectInWorld(0, pTile, pMats[0], pos);
+			pMap->SetObjectInWorld(0, pTile,0, pMats[0], pos);
 			pMap->SetCbvGPUDescriptorHandlePtr(m_d3dCbvGPUDescStartHandle.ptr + (::gnCbvSrvDescIncrementSize * i));
 
 			m_ppObjects[i++] = pMap;
@@ -392,28 +392,28 @@ void CObjectsShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsComman
 
 	//º®
 	CGameObject* pWareHouseLeft = new CGameObject(1);
-	pWareHouseLeft->SetObjectInWorld(0, pSideXWall, pMats[1], XMFLOAT3(-WarehouseSizeXZ / 2 * UNIT, (WarehouseSizeY / 2 - 0.1f) * UNIT, 0.0f));
+	pWareHouseLeft->SetObjectInWorld(0, pSideXWall,1, pMats[1], XMFLOAT3(-WarehouseSizeXZ / 2 * UNIT, (WarehouseSizeY / 2 - 0.1f) * UNIT, 0.0f));
 	pWareHouseLeft->SetCbvGPUDescriptorHandlePtr(m_d3dCbvGPUDescStartHandle.ptr + (::gnCbvSrvDescIncrementSize * i));
 	m_ppObjects[i++] = pWareHouseLeft;
 
 	CGameObject* pWareHouseRight = new CGameObject(1);
-	pWareHouseRight->SetObjectInWorld(0, pSideXWall, pMats[1], XMFLOAT3(WarehouseSizeXZ / 2 * UNIT, (WarehouseSizeY / 2 - 0.1f) * UNIT, 0.0f) );
+	pWareHouseRight->SetObjectInWorld(0, pSideXWall, 1, pMats[1], XMFLOAT3(WarehouseSizeXZ / 2 * UNIT, (WarehouseSizeY / 2 - 0.1f) * UNIT, 0.0f) );
 	pWareHouseRight->SetCbvGPUDescriptorHandlePtr(m_d3dCbvGPUDescStartHandle.ptr + (::gnCbvSrvDescIncrementSize * i));
 	m_ppObjects[i++] = pWareHouseRight;
 
 	CGameObject* pWareHouseFront = new CGameObject(1);
-	pWareHouseFront->SetObjectInWorld(0, pSideZWall, pMats[1], XMFLOAT3(0.0f, (WarehouseSizeY / 2 - 0.1f) * UNIT, WarehouseSizeXZ / 2 * UNIT));
+	pWareHouseFront->SetObjectInWorld(0, pSideZWall, 1, pMats[1], XMFLOAT3(0.0f, (WarehouseSizeY / 2 - 0.1f) * UNIT, WarehouseSizeXZ / 2 * UNIT));
 	pWareHouseFront->SetCbvGPUDescriptorHandlePtr(m_d3dCbvGPUDescStartHandle.ptr + (::gnCbvSrvDescIncrementSize * i));
 	m_ppObjects[i++] = pWareHouseFront;
 
 	CGameObject* pWareHouseBack = new CGameObject(1);
-	pWareHouseBack->SetObjectInWorld(0, pSideZWall, pMats[1], XMFLOAT3(0.0f, (WarehouseSizeY / 2 - 0.1f) * UNIT, -WarehouseSizeXZ / 2 * UNIT));
+	pWareHouseBack->SetObjectInWorld(0, pSideZWall, 1, pMats[1], XMFLOAT3(0.0f, (WarehouseSizeY / 2 - 0.1f) * UNIT, -WarehouseSizeXZ / 2 * UNIT));
 	pWareHouseBack->SetCbvGPUDescriptorHandlePtr(m_d3dCbvGPUDescStartHandle.ptr + (::gnCbvSrvDescIncrementSize * i));
 	m_ppObjects[i++] = pWareHouseBack;
 
 	//ÃµÀå
 	CGameObject* pWareHouseTopFloor = new CGameObject(1);
-	pWareHouseTopFloor->SetObjectInWorld(0,pSideYWall, pMats[2], XMFLOAT3(0.0f, (WarehouseSizeY / 2 + 0.5f) * UNIT, 0.0f));
+	pWareHouseTopFloor->SetObjectInWorld(0,pSideYWall,2, pMats[2], XMFLOAT3(0.0f, (WarehouseSizeY / 2 + 0.5f) * UNIT, 0.0f));
 	pWareHouseTopFloor->SetCbvGPUDescriptorHandlePtr(m_d3dCbvGPUDescStartHandle.ptr + (::gnCbvSrvDescIncrementSize * i));
 	m_ppObjects[i++] = pWareHouseTopFloor;
 
@@ -436,7 +436,7 @@ void CObjectsShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsComman
 			for (float y = SizeOfBlock / 2; y < WarehouseSizeY* UNIT; y += SizeOfBlock)
 			{
 				CGameObject* pPillar = new CGameObject(1);
-				pPillar->SetObjectInWorld(0, pRod, pMats[4], XMFLOAT3(x, y, z));// XMFLOAT3(x, (WarehouseSizeY / 2 - 0.1f) * UNIT,¤»);// 
+				pPillar->SetObjectInWorld(0, pRod,4, pMats[4], XMFLOAT3(x, y, z));// XMFLOAT3(x, (WarehouseSizeY / 2 - 0.1f) * UNIT,¤»);// 
 				pPillar->SetCbvGPUDescriptorHandlePtr(m_d3dCbvGPUDescStartHandle.ptr + (::gnCbvSrvDescIncrementSize * i));
 				m_ppObjects[i++] = pPillar;
 			}
@@ -633,4 +633,58 @@ D3D12_SHADER_BYTECODE CRectShader::CreateVertexShader(ID3DBlob** ppd3dShaderBlob
 D3D12_SHADER_BYTECODE CRectShader::CreatePixelShader(ID3DBlob** ppd3dShaderBlob)
 {
 	return CShader::CompileShaderFromFile(L"Shaders.hlsl", "PSDiffused", "vs_5_1", ppd3dShaderBlob);
+}
+
+//========================================
+CIlluminatedShader::CIlluminatedShader()
+{
+}
+
+CIlluminatedShader::~CIlluminatedShader()
+{
+}
+
+D3D12_INPUT_LAYOUT_DESC CIlluminatedShader::CreateInputLayout()
+{
+	UINT nInputElementDescs = 2;
+	D3D12_INPUT_ELEMENT_DESC* pd3dInputElementDescs = new D3D12_INPUT_ELEMENT_DESC[nInputElementDescs];
+
+	pd3dInputElementDescs[0] = { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 };
+	pd3dInputElementDescs[1] = { "NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 1, 0, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 };
+
+	D3D12_INPUT_LAYOUT_DESC d3dInputLayoutDesc;
+	d3dInputLayoutDesc.pInputElementDescs = pd3dInputElementDescs;
+	d3dInputLayoutDesc.NumElements = nInputElementDescs;
+
+	return(d3dInputLayoutDesc);
+}
+
+D3D12_SHADER_BYTECODE CIlluminatedShader::CreateVertexShader()
+{
+	return(CShader::CompileShaderFromFile(L"Shaders.hlsl", "VSLighting", "vs_5_1", &m_pd3dVertexShaderBlob));
+}
+
+D3D12_SHADER_BYTECODE CIlluminatedShader::CreatePixelShader()
+{
+	return(CShader::CompileShaderFromFile(L"Shaders.hlsl", "PSLighting", "ps_5_1", &m_pd3dPixelShaderBlob));
+}
+
+void CIlluminatedShader::CreateShader(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature)
+{
+	//m_nPipelineStates = 2;
+	//m_pd3dPipelineState = new ID3D12PipelineState;
+
+	CShader::CreateShader(pd3dDevice, pd3dGraphicsRootSignature);
+
+	/*HRESULT hResult = pd3dDevice->CreateGraphicsPipelineState(&m_d3dPipelineStateDesc, __uuidof(ID3D12PipelineState), (void**)&m_ppd3dPipelineStates[1]);
+
+	if (m_pd3dVertexShaderBlob) m_pd3dVertexShaderBlob->Release();
+	if (m_pd3dPixelShaderBlob) m_pd3dPixelShaderBlob->Release();
+
+	if (m_d3dPipelineStateDesc.InputLayout.pInputElementDescs) delete[] m_d3dPipelineStateDesc.InputLayout.pInputElementDescs;*/
+}
+
+void CIlluminatedShader::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera, int nPipelineState)
+{
+	OnPrepareRender(pd3dCommandList);
 }

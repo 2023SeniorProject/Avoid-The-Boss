@@ -5,6 +5,7 @@
 #include "Player.h"
 #include "DummyPlayer.h"
 
+
 class CGameScene : public SceneInterface
 {
 	friend class CClientSession;

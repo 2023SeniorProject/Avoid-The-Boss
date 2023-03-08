@@ -31,9 +31,7 @@ CGameFramework::CGameFramework()
 	m_nWndClientHeight = FRAME_BUFFER_HEIGHT;
 
 	m_pScene = NULL;
-	//m_pPlayer = NULL;
-
-
+	
 	_tcscpy_s(m_pszFrameRate, _T("FPS : "));
 
 }

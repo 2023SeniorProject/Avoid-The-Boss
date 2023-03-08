@@ -1,6 +1,7 @@
 #pragma once
 #include "PlayerInfo.h"
 #include <chrono>
+#include <array>
 
 struct WorldStatus // 서버에서 가지고 있을 정보
 {
@@ -11,8 +12,7 @@ public:
 		_myWorldFrame = 0;
 	}
 public:
-	XMFLOAT3 _runnerPos; // 도망자 위치
-	XMFLOAT3 _chaserPos; // 술래 위치
+	XMFLOAT3 _pPos[4]; // 도망자 위치
 	XMFLOAT3 _attackLay; // 레이저 방향
 	uint32   _myWorldFrame; //자기 자신의 월드 프레임
 };
@@ -42,7 +42,7 @@ public:
 			return;
 		}
 
-		const T& prevWorld = _worldHistory[_frameIndex]; // 과거의 월드 상태
+		const WorldStatus& prevWorld = _worldHistory[_frameIndex]; // 과거의 월드 상태
 
 		// 현재 프레임 직전까지 바로전 최신값 채우기
 		while (_curFrame < frame)
@@ -75,16 +75,16 @@ public:
 		return _worldHistory[(_frameIndex + MAX_REWIND - delta) % MAX_REWIND];
 	}
 
-	void IsAttackAvailable(uint32 frame)
+	bool IsAttackAvailable(uint32 frame)
 	{
-		WorldStatus cw = GetWorldStatusByFrame(frame);
+		const WorldStatus& cw = GetWorldStatusByFrame(frame);
 		// 공격이 검증 가능한 것인지 확인하는 로직
 
 	}
 
 	void Clear()
 	{
-		_worldHistory.fill(T());
+		_worldHistory.fill(WorldStatus());
 		_curFrame = 0;
 		_frameIndex = 0;
 	}
@@ -97,6 +97,7 @@ private:
 
 
 enum class GameStatus { NONE_GAME, START_GAME, END_GAME};
+
 class GameLogic
 {
 	using Clock = std::chrono::high_resolution_clock;
@@ -111,7 +112,7 @@ public:
 		_lastTimePoint = Clock::now();
 		_initTimePoint = Clock::now();
 	}
-	void UpdateWorld(float fpsLock) 
+	void UpdateWorld(float fpsLock, PlayerInfo* p)
 	{
 		if (gs != GameStatus::START_GAME) return;
 		if (fpsLock != 0.0f) _fTimeElapsedAvg = (int)((1.f / fpsLock) * 1000.f);
@@ -119,29 +120,37 @@ public:
 		std::chrono::time_point curTimePoint = Clock::now();
 		float fTimeElapsed = std::chrono::duration_cast<std::chrono::milliseconds>(curTimePoint - _lastTimePoint).count();
 		_lastTimePoint = curTimePoint;
+
 		_accumlateElapsedTime += fTimeElapsed;
 		
-		_runner.Update(fTimeElapsed);
-		_chaser.Update(fTimeElapsed);
+		for(int i = 0; i < 4; ++i) p[i].Update(fTimeElapsed);
+		
 		// 일정 틱 값 이상 증가하면~
-		if (fTimeElapsed >= _accumlateElapsedTime)
+		if ( _accumlateElapsedTime >= _fTimeElapsedAvg)
 		{
+	
+			AddHistory(p); // 월드 프레임 상태를 기록한다.
 			_accumlateElapsedTime = 0.0f;
-			AddHistory(); // 월드 프레임 상태를 기록한다.
+			
 		}
 
 	};
-	void AddHistory() 
+	void AddHistory(PlayerInfo* p)
 	{
-		_lastWorldStatus._chaserPos = _chaser.GetPosition();
-		_lastWorldStatus._runnerPos = _runner.GetPosition();
-		_lastWorldStatus._attackLay = _chaser.m_xmf3Look; // 레이저 방향
+		
+		std::cout << " Add WorldStatus Frame : " << _curWorldFrame;
+		_lastWorldStatus._pPos[0] = p[0].GetPosition();
+		_lastWorldStatus._pPos[1] = p[1].GetPosition();
+		_lastWorldStatus._pPos[2] = p[2].GetPosition();
+		_lastWorldStatus._pPos[3] = p[3].GetPosition();
+		
+		//_lastWorldStatus._attackLay = _chaser.m_xmf3Look; // 레이저 방향
 		_lastWorldStatus._myWorldFrame = _curWorldFrame++;
 		_worldHistory.SetWorldStatusByFrame(_lastWorldStatus._myWorldFrame, _lastWorldStatus);
+		
 	};
 public:
-	PlayerInfo _runner;
-	PlayerInfo _chaser;
+	
 
 	uint32 _curWorldFrame = 0;
 	WorldStatus _lastWorldStatus; // 항상 최신의 월드 상태를 유지하고 있는다.
@@ -154,7 +163,8 @@ public:
 	Clock::time_point		_StopTimePoint; // 멈춘 시점 
 	Clock::time_point		_initTimePoint;
 
-	float					_fTimeElapsedAvg; // 한 프레임 처리하는데 걸리는 평균 시간
-	float					_accumlateElapsedTime; // 한 프레임 만큼 처리 됐는지 확인하는 용도
+	float					_fTimeElapsedAvg = 0.f; // 한 프레임 처리하는데 걸리는 평균 시간
+	float					_accumlateElapsedTime = 0.f; // 한 프레임 만큼 처리 됐는지 확인하는 용도
 };
 
+//  1. 클라랑 서버랑 프레임 싱크가 안맞을 때 어떻게 할건지 

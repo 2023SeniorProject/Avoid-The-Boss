@@ -61,6 +61,7 @@ void Room::UserIn(int32 sid)
 			std::unique_lock<std::shared_mutex> wll(_listLock);
 			_cList.push_back(sid);
 			if (_cList.size() == 4) _status = ROOM_STATUS::FULL;
+			
 		}
 			
 		ServerIocpCore._clients[sid]->_myRm = _num;
@@ -93,27 +94,10 @@ void Room::BroadCasting(void* packet) // 방에 속하는 클라이언트에게만 전달하기
 
 void Room::Update()
 {
-	//if(!(_rmTimer._nWorldFrame % 10))
-	//{
-	//
-	//	S2C_POSITION packet;
-	//	std::shared_lock<std::shared_mutex> rlock(_listLock);
-	//	for (auto i : _cList)
-	//	{
-	//		packet.sid = i;
-	//		packet.size = sizeof(S2C_POSITION);
-	//		packet.type = S_PACKET_TYPE::POSITION;
-	//		ServerIocpCore._clients[i]->_playerLock.lock();
-	//		packet.position = ServerIocpCore._clients[i]->_playerInfo.GetPosition();
-	//		ServerIocpCore._clients[i]->_playerLock.unlock();
-	//		//ServerIocpCore._clients[i]->DoSend(&packet);	
-	//	}
-	//}
-	_rmTimer.Tick(60.f);
-	
 
+	//_rmTimer.Tick(60.f);
 	{
-		std::unique_lock<std::shared_mutex> ql(_jobQueueLock); // Queue WLock 호출
+		std::unique_lock<std::shared_mutex> ql(_jobQueueLock);
 		while(!_jobQueue.empty())
 		{
 			queueEvent* qe = _jobQueue.front();
@@ -124,20 +108,21 @@ void Room::Update()
 				delete qe;
 			}
 		}
-	}
-	//RLock; // cList Lock 읽기 호출
-	
-	std::shared_lock<std::shared_mutex> rll(_listLock);
-	
-	for (auto i = _cList.begin(); i != _cList.end(); ++i)
-	{
-		if (ServerIocpCore._clients[*i] == nullptr)
-		{
-			continue;
-		}
-		std::lock_guard<std::mutex> pl(ServerIocpCore._clients[*i]->_playerLock);
-		ServerIocpCore._clients[*i]->_playerInfo.Update(_rmTimer.GetTimeElapsed());
-	}
+	}	
+
+	//std::shared_lock<std::shared_mutex> rll(_listLock);
+	//for (auto i = _cList.begin(); i != _cList.end(); ++i)
+	//{
+	//	if (ServerIocpCore._clients[*i] == nullptr)
+	//	{
+	//		continue;
+	//	}
+	//	// std::lock_guard<std::mutex> pl(ServerIocpCore._clients[*i]->_playerLock);
+	//	// ServerIocpCore._clients[*i]->_playerInfo.Update(_rmTimer.GetTimeElapsed());
+	//	
+	//}
+
+	_logic.UpdateWorld(60.f, _players);
 }
 
 void Room::AddEvent(queueEvent* qe)
@@ -178,6 +163,7 @@ void RoomManager::CreateRoom(int32 sid)
 		{
 			_rooms[i]._status = ROOM_STATUS::NOT_FULL;
 			_rooms[i]._rmTimer.Reset();
+			_rooms[i]._logic.StartGame();
 			_rooms[i].UserIn(sid);
 			_rmCnt.fetch_add(1);
 			break;

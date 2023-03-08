@@ -22,7 +22,13 @@ public:
 	virtual void Task()
 	{
 		std::lock_guard<std::mutex> plg(ServerIocpCore._clients[sid]->_playerLock);
-		ServerIocpCore._clients[sid]->_playerInfo.Move(key, UNIT * 1.2f);
+		
+		// to do move Player in gameLogic
+		int16 roomNum = ServerIocpCore._clients[sid]->_myRm;
+		//std::unique_lock<std::shared_mutex> _runnerLock(ServerIocpCore._rmgr->_rooms[roomNum]._logic._runnerLock);
+		//ServerIocpCore._rmgr->_rooms[roomNum]._logic._runner.Move(key, UNIT * 1.2f);
+		ServerIocpCore._rmgr->GetRoom(roomNum).GetMyPlayerFromRoom(sid).Move(key, UNIT * 1.2f);
+		//ServerIocpCore._clients[sid]->_playerInfo.Move(key, UNIT * 1.2f);
 	};
 	
 };
@@ -37,8 +43,12 @@ public:
 public:
 	virtual void Task()
 	{
-		std::lock_guard<std::mutex> plg(ServerIocpCore._clients[sid]->_playerLock);
-		ServerIocpCore._clients[sid]->_playerInfo.Rotate(0, angleY ,0);
+		// std::lock_guard<std::mutex> plg(ServerIocpCore._clients[sid]->_playerLock);
+		int16 roomNum = ServerIocpCore._clients[sid]->_myRm;
+		//std::unique_lock<std::shared_mutex> _runnerLock(ServerIocpCore._rmgr->_rooms[roomNum]._logic._runnerLock);
+		//ServerIocpCore._rmgr->_rooms[roomNum]._logic._runner.Rotate(0, angleY, 0);
+		ServerIocpCore._rmgr->GetRoom(roomNum).GetMyPlayerFromRoom(sid).Rotate(0,angleY,0);
+		//ServerIocpCore._clients[sid]->_playerInfo.Rotate(0, angleY ,0);
 	
 	};
 

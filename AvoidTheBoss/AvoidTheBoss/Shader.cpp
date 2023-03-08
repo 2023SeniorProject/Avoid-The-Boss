@@ -374,7 +374,9 @@ void CObjectsShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsComman
 		{
 			CGameObject* pMap = new CGameObject(1);
 			XMFLOAT3 pos = XMFLOAT3(x, 0.0f, z);
-			pMap->SetObjectInWorld(0, pTile,0, pMats[0], pos);
+			pMap->SetMesh(0, pTile);
+			pMap->SetPosition(pos);
+			pMap->SetMaterial(pMats[0]);
 			pMap->SetCbvGPUDescriptorHandlePtr(m_d3dCbvGPUDescStartHandle.ptr + (::gnCbvSrvDescIncrementSize * i));
 
 			m_ppObjects[i++] = pMap;
@@ -392,28 +394,43 @@ void CObjectsShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsComman
 
 	//º®
 	CGameObject* pWareHouseLeft = new CGameObject(1);
-	pWareHouseLeft->SetObjectInWorld(0, pSideXWall,1, pMats[1], XMFLOAT3(-WarehouseSizeXZ / 2 * UNIT, (WarehouseSizeY / 2 - 0.1f) * UNIT, 0.0f));
+	//pWareHouseLeft->SetObjectInWorld(0, pSideXWall,1, pMats[1],);
+	pWareHouseLeft->SetMesh(0, pSideXWall);
+	pWareHouseLeft->SetPosition(XMFLOAT3(-WarehouseSizeXZ / 2 * UNIT, (WarehouseSizeY / 2 - 0.1f) * UNIT, 0.0f));
+	pWareHouseLeft->SetMaterial(pMats[1]);
 	pWareHouseLeft->SetCbvGPUDescriptorHandlePtr(m_d3dCbvGPUDescStartHandle.ptr + (::gnCbvSrvDescIncrementSize * i));
 	m_ppObjects[i++] = pWareHouseLeft;
 
 	CGameObject* pWareHouseRight = new CGameObject(1);
-	pWareHouseRight->SetObjectInWorld(0, pSideXWall, 1, pMats[1], XMFLOAT3(WarehouseSizeXZ / 2 * UNIT, (WarehouseSizeY / 2 - 0.1f) * UNIT, 0.0f) );
+	//pWareHouseRight->SetObjectInWorld(0, pSideXWall, 1, pMats[1],) );
+	pWareHouseRight->SetMesh(0, pSideXWall);
+	pWareHouseRight->SetPosition(XMFLOAT3(WarehouseSizeXZ / 2 * UNIT, (WarehouseSizeY / 2 - 0.1f) * UNIT, 0.0f));
+	pWareHouseRight->SetMaterial(pMats[1]);
 	pWareHouseRight->SetCbvGPUDescriptorHandlePtr(m_d3dCbvGPUDescStartHandle.ptr + (::gnCbvSrvDescIncrementSize * i));
 	m_ppObjects[i++] = pWareHouseRight;
 
 	CGameObject* pWareHouseFront = new CGameObject(1);
-	pWareHouseFront->SetObjectInWorld(0, pSideZWall, 1, pMats[1], XMFLOAT3(0.0f, (WarehouseSizeY / 2 - 0.1f) * UNIT, WarehouseSizeXZ / 2 * UNIT));
+	//pWareHouseFront->SetObjectInWorld(0, pSideZWall, 1, pMats[1],);
+	pWareHouseFront->SetMesh(0, pSideZWall);
+	pWareHouseFront->SetPosition(XMFLOAT3(0.0f, (WarehouseSizeY / 2 - 0.1f) * UNIT, WarehouseSizeXZ / 2 * UNIT));
+	pWareHouseFront->SetMaterial(pMats[1]);
 	pWareHouseFront->SetCbvGPUDescriptorHandlePtr(m_d3dCbvGPUDescStartHandle.ptr + (::gnCbvSrvDescIncrementSize * i));
 	m_ppObjects[i++] = pWareHouseFront;
 
 	CGameObject* pWareHouseBack = new CGameObject(1);
-	pWareHouseBack->SetObjectInWorld(0, pSideZWall, 1, pMats[1], XMFLOAT3(0.0f, (WarehouseSizeY / 2 - 0.1f) * UNIT, -WarehouseSizeXZ / 2 * UNIT));
+	//pWareHouseBack->SetObjectInWorld(0, pSideZWall, 1, pMats[1],);
+	pWareHouseBack->SetMesh(0, pSideZWall);
+	pWareHouseBack->SetPosition(XMFLOAT3(0.0f, (WarehouseSizeY / 2 - 0.1f) * UNIT, -WarehouseSizeXZ / 2 * UNIT));
+	pWareHouseBack->SetMaterial(pMats[1]);
 	pWareHouseBack->SetCbvGPUDescriptorHandlePtr(m_d3dCbvGPUDescStartHandle.ptr + (::gnCbvSrvDescIncrementSize * i));
 	m_ppObjects[i++] = pWareHouseBack;
 
 	//ÃµÀå
 	CGameObject* pWareHouseTopFloor = new CGameObject(1);
-	pWareHouseTopFloor->SetObjectInWorld(0,pSideYWall,2, pMats[2], XMFLOAT3(0.0f, (WarehouseSizeY / 2 + 0.5f) * UNIT, 0.0f));
+	//pWareHouseTopFloor->SetObjectInWorld(0,pSideYWall,2, pMats[2], XMFLOAT3(0.0f, (WarehouseSizeY / 2 + 0.5f) * UNIT, 0.0f));
+	pWareHouseTopFloor->SetMesh(0, pSideYWall);
+	pWareHouseTopFloor->SetPosition(XMFLOAT3(0.0f, (WarehouseSizeY / 2 + 0.5f) * UNIT, 0.0f));
+	pWareHouseTopFloor->SetMaterial(pMats[2]);
 	pWareHouseTopFloor->SetCbvGPUDescriptorHandlePtr(m_d3dCbvGPUDescStartHandle.ptr + (::gnCbvSrvDescIncrementSize * i));
 	m_ppObjects[i++] = pWareHouseTopFloor;
 
@@ -436,7 +453,10 @@ void CObjectsShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsComman
 			for (float y = SizeOfBlock / 2; y < WarehouseSizeY* UNIT; y += SizeOfBlock)
 			{
 				CGameObject* pPillar = new CGameObject(1);
-				pPillar->SetObjectInWorld(0, pRod,4, pMats[4], XMFLOAT3(x, y, z));// XMFLOAT3(x, (WarehouseSizeY / 2 - 0.1f) * UNIT,¤»);// 
+				//pPillar->SetObjectInWorld(0, pRod,4, pMats[4], XMFLOAT3(x, y, z));// XMFLOAT3(x, (WarehouseSizeY / 2 - 0.1f) * UNIT,¤»);// 
+				pPillar->SetMesh(0, pRod);
+				pPillar->SetPosition(XMFLOAT3(x, y, z));
+				pPillar->SetMaterial(pMats[4]);
 				pPillar->SetCbvGPUDescriptorHandlePtr(m_d3dCbvGPUDescStartHandle.ptr + (::gnCbvSrvDescIncrementSize * i));
 				m_ppObjects[i++] = pPillar;
 			}

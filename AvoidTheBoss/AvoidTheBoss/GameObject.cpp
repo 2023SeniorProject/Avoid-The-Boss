@@ -197,6 +197,8 @@ CMaterial::~CMaterial()
 		m_pTexture->Release();
 	if (m_pShader)
 		m_pShader->Release();
+	if (m_pMaterialColors) 
+		m_pMaterialColors->Release();
 }
 
 void CMaterial::SetTexture(CTexture* pTex)
@@ -266,6 +268,11 @@ CGameObject::CGameObject(int nMeshes)
 		m_ppMeshes = new CMesh * [m_nMeshes];
 		for (int i = 0; i < m_nMeshes; i++) m_ppMeshes[i] = NULL;
 	}
+
+	m_nMaterials = 1;
+	m_ppMaterials = new CMaterial * [m_nMaterials];
+	for (int i = 0; i < m_nMaterials; i++) 
+		m_ppMaterials[i] = NULL;
 }
 
 CGameObject::~CGameObject()
@@ -281,28 +288,31 @@ CGameObject::~CGameObject()
 		}
 		delete[] m_ppMeshes;
 	}
+	if (m_ppMaterials[0])
+		delete[] m_ppMaterials;
+}
+
+void CGameObject::SetMaterial(CMaterial* pMaterial)
+{
 	if (m_ppMaterials)
 	{
-		for (int i = 0; i < m_nMaterials; i++)
-		{
-			if (m_ppMaterials[i]) m_ppMaterials[i]->Release();
-			m_ppMaterials[i] = NULL;
-		}
-		delete[] m_ppMaterials;
+		//m_nMaterials = nMaterial;
+		//m_ppMaterials = new CMaterial * [m_nMaterials];
+		//if (m_ppMaterials[0])
+		//	m_ppMaterials[0]->Release();
+		m_ppMaterials[0] = pMaterial;
+		//if (m_ppMaterials[0])
+		//	m_ppMaterials[0]->AddRef();
 	}
 }
 
 void CGameObject::SetMaterial(int nMaterial, CMaterial* pMaterial)
 {
-	if (m_ppMaterials)
-	{
-		if (m_ppMaterials[nMaterial])
-			m_ppMaterials[nMaterial]->Release();
-		m_ppMaterials[nMaterial] = pMaterial;
-
-		if (m_ppMaterials[nMaterial])
-			m_ppMaterials[nMaterial]->AddRef();
-	}
+	if (m_ppMaterials[nMaterial]) 
+		m_ppMaterials[nMaterial]->Release();
+	m_ppMaterials[nMaterial] = pMaterial;
+	if (m_ppMaterials[nMaterial]) 
+		m_ppMaterials[nMaterial]->AddRef();
 }
 
 void CGameObject::SetMesh(int nIndex, CMesh* pMesh)
@@ -317,13 +327,19 @@ void CGameObject::SetMesh(int nIndex, CMesh* pMesh)
 
 void CGameObject::SetShader(CShader* pShader)
 {
-	if (!m_nMaterials)
+	if (!m_ppMaterials)
 	{
-		m_nMaterials = 1;
-		m_ppMaterials = new CMaterial * [m_nMaterials];
-		m_ppMaterials[0] = new CMaterial();
+		//m_nMaterials = 1;
+		//m_ppMaterials = new CMaterial * [m_nMaterials];
+		//m_ppMaterials[0] = new CMaterial();
+		m_ppMaterials[0]->SetShader(pShader);
 	}
-	m_ppMaterials[0]->SetShader(pShader);
+}
+
+void CGameObject::SetShader(int nMaterial, CShader* pShader)
+{
+	if (m_ppMaterials[nMaterial]) 
+		m_ppMaterials[nMaterial]->SetShader(pShader);
 }
 
 void CGameObject::ReleaseUploadBuffers()
@@ -339,7 +355,8 @@ void CGameObject::ReleaseUploadBuffers()
 	}
 	for (int i = 0; i < m_nMaterials; i++)
 	{
-		if (m_ppMaterials[i]) m_ppMaterials[i]->ReleaseUploadBuffers();
+		if (m_ppMaterials[i])
+			m_ppMaterials[i]->ReleaseUploadBuffers();
 	}
 
 	if (m_pSibling) m_pSibling->ReleaseUploadBuffers();
@@ -355,23 +372,28 @@ void CGameObject::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pC
 	OnPrepareRender();
 
 	//게임 객체에 셰이더 객체가 연결되어 있으면 셰이더 상태 객체를 설정한다. 
-	if (m_nMaterials > 0)
+	if (m_ppMaterials[0])
 	{
-		for (int i = 0; i < m_nMaterials; i++)
+		if (m_ppMaterials[0]->m_pShader)
 		{
-			if (m_ppMaterials[i])
+			for (int i = 0; i < m_nMaterials; i++)
 			{
-				if (m_ppMaterials[i]->m_pShader) m_ppMaterials[i]->m_pShader->Render(pd3dCommandList, pCamera);
-				m_ppMaterials[i]->UpdateShaderVariables(pd3dCommandList);
-			}
-			UpdateShaderVariables(pd3dCommandList);
-
-			if (m_ppMaterials[i]->m_pTexture)
-			{
-				m_ppMaterials[i]->m_pTexture->UpdateShaderVariables(pd3dCommandList);
+				if (m_ppMaterials[i])
+				{
+					if (m_ppMaterials[i]->m_pShader) m_ppMaterials[i]->m_pShader->Render(pd3dCommandList, pCamera);
+					m_ppMaterials[i]->UpdateShaderVariables(pd3dCommandList);
+				}
+				UpdateShaderVariables(pd3dCommandList);
 			}
 		}
+			if (m_ppMaterials[0]->m_pTexture)
+			{
+				m_ppMaterials[0]->m_pTexture->UpdateShaderVariables(pd3dCommandList);
+			}
+		
 	}
+	if (m_pSibling) m_pSibling->Render(pd3dCommandList, pCamera);
+	if (m_pChild) m_pChild->Render(pd3dCommandList, pCamera);
 
 	pd3dCommandList->SetGraphicsRootDescriptorTable(2, m_d3dCbvGPUDescriptorHandle);
 
@@ -414,7 +436,7 @@ void CGameObject::Release()
 	if (m_pChild) m_pChild->Release();
 	if (m_pSibling) m_pSibling->Release();
 
-	if (--m_nReferences <= 0) delete this;
+	//if (--m_nReferences <= 0) delete this;
 }
 
 void CGameObject::SetChild(CGameObject* pChild, bool bReferenceUpdate)
@@ -470,12 +492,9 @@ void CGameObject::ReleaseShaderVariables()
 		m_pd3dcbGameObject->Unmap(0, NULL);
 		m_pd3dcbGameObject->Release();
 	}
-	if (m_ppMaterials)
+	if (m_ppMaterials[0])
 	{
-		for (int i = 0; i < m_nMaterials; i++)
-		{
-			m_ppMaterials[i]->ReleaseShaderVariables();
-		}
+		m_ppMaterials[0]->ReleaseShaderVariables();
 	}
 }
 
@@ -520,14 +539,11 @@ void CGameObject::SetPosition(XMFLOAT3 xmf3Position)
 	SetPosition(xmf3Position.x, xmf3Position.y, xmf3Position.z);
 }
 
-void CGameObject::SetObjectInWorld(int nIndex, CMesh* pMesh,int nMat,CMaterial* pMaterial, XMFLOAT3 position)
-{
-	SetMesh(nIndex, pMesh);
-	SetMaterial(nMat, pMaterial);
-	SetPosition(position.x,position.y,position.z);
-	//SetCbvGPUDescriptorHandlePtr(m_CbvGPUDescStartHandlePtr);
-	//ppObjects[i] = this;
-}
+//void CGameObject::SetObjectInWorld(int nIndex, CMesh* pMesh, XMFLOAT3 position)
+//{
+//	//SetCbvGPUDescriptorHandlePtr(m_CbvGPUDescStartHandlePtr);
+//	//ppObjects[i] = this;
+//}
 
 //게임 객체를 로컬 x-축 방향으로 이동한다.
 void CGameObject::MoveStrafe(float fDistance)
@@ -566,12 +582,12 @@ void CGameObject::Rotate(float fPitch, float fYaw, float fRoll)
 	m_xmf4x4World = Matrix4x4::Multiply(mtxRotate, m_xmf4x4World);
 }
 
-void CGameObject::SetMaterial(CMaterial* pMaterial)
-{
-	if (pMaterial) pMaterial->Release();
-	pMaterial = pMaterial;
-	if (pMaterial) pMaterial->AddRef();
-}
+//void CGameObject::SetMaterial(CMaterial* pMaterial)
+//{
+//	if (pMaterial) pMaterial->Release();
+//	pMaterial = pMaterial;
+//	if (pMaterial) pMaterial->AddRef();
+//}
 
 CMaterialColors::CMaterialColors(MATERIALLOADINFO* pMaterialInfo)
 {

@@ -55,18 +55,23 @@ void Room::UserIn(int32 sid)
 	}
 	else if(_cList.size() < MAX_ROOM_USER && _status != ROOM_STATUS::EMPTY) // 아니면 접속 성공
 	{
-		packet.success = 1;
-		{
-			//WLock; // cList Lock 쓰기 호출 
-			std::unique_lock<std::shared_mutex> wll(_listLock);
-			_cList.push_back(sid);
-			if (_cList.size() == 4) _status = ROOM_STATUS::FULL;
-			
-		}
-			
+		packet.success = 1;	
 		ServerIocpCore._clients[sid]->_myRm = _num;
 		ServerIocpCore._clients[sid]->_status = USER_STATUS::ROOM;
 		ServerIocpCore._clients[sid]->DoSend(&packet);
+		{
+			//cList Lock 쓰기 호출 
+			std::unique_lock<std::shared_mutex> wll(_listLock);
+			_cList.push_back(sid);
+			if (_cList.size() == 4) 
+			{
+				_status = ROOM_STATUS::FULL;
+
+				for (auto i : _cList)
+				_logic.StartGame();
+			}
+		}
+		
 		
 	}
 	std::cout << "RM [" << _num << "][" << _cList.size() << "/4]" << std::endl;
@@ -163,7 +168,7 @@ void RoomManager::CreateRoom(int32 sid)
 		{
 			_rooms[i]._status = ROOM_STATUS::NOT_FULL;
 			_rooms[i]._rmTimer.Reset();
-			_rooms[i]._logic.StartGame();
+			
 			_rooms[i].UserIn(sid);
 			_rmCnt.fetch_add(1);
 			break;
@@ -175,7 +180,7 @@ void RoomManager::UpdateRooms()
 {
 	for (int i = 0; i < _cap; ++i)
 	{
-		if (_rooms[i]._status == ROOM_STATUS::EMPTY) continue;
+		if (_rooms[i]._status != ROOM_STATUS::FULL) continue;
 		_rooms[i].Update();
 	}
 }

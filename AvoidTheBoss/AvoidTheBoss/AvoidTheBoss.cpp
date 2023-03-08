@@ -36,8 +36,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     
     UNREFERENCED_PARAMETER(hPrevInstance);
     UNREFERENCED_PARAMETER(lpCmdLine);
-   SocketUtil::Init();
-  
+   //SocketUtil::Init();
+   GCThreadManager = new ThreadManager;
     int retval = DialogBox(hInstance, MAKEINTRESOURCE(IDD_LOGINDIALOG), NULL, reinterpret_cast<DLGPROC>(MyDialogBox));
     if (retval == -1 || retval == 2)
     {
@@ -92,9 +92,9 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     }
  
     GCThreadManager->Join();
-    SocketUtil::Clear();
+   // SocketUtil::Clear();
     
-    
+    delete GCThreadManager;
  
     return (int)msg.wParam;
 }

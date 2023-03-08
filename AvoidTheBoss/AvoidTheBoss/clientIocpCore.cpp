@@ -151,6 +151,11 @@ void CClientSession::ProcessPacket(char* packet)
 		_CHAT* cp = reinterpret_cast<_CHAT*>(packet);
 	}
 	break;
+	case S_PACKET_TYPE::GAME_START:
+	{
+		_mainGame._curScene.store(SceneInfo::GAMEROOM);
+	}
+	break;
 	case S_PACKET_TYPE::LOGIN_OK:
 	{
 		S2C_LOGIN_OK* lo = (S2C_LOGIN_OK*)packet;

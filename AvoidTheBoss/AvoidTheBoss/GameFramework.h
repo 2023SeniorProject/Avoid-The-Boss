@@ -5,7 +5,6 @@
 #include "Scene.h"
 #include "Camera.h"
 
-
 class CGameFramework
 {
 	friend class CClientSession;
@@ -64,7 +63,7 @@ private:
 	
 protected:
 	CGameScene*				m_pScene;
-	
+	Atomic<int8> _curScene = 0;
 public:
 
 public:

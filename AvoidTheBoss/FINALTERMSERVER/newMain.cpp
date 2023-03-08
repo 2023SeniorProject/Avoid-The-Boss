@@ -4,10 +4,12 @@
 #include "AcceptManager.h"
 int main()
 {
+	std::ios::sync_with_stdio(false);
+	std::cout.tie(NULL);
 	::SetConsoleTitle(L"SERVER");
 	AcceptManager listener;
 	listener.InitAccept();
-
+	GThreadManager = new ThreadManager;
 	for (int32 i = 0; i < thread::hardware_concurrency() - 1; i++)
 	{
 		GThreadManager->Launch([=]()
@@ -29,5 +31,5 @@ int main()
 			}
 		});
 	GThreadManager->Join();
-
+	delete GThreadManager;
 }

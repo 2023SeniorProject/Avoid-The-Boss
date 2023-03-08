@@ -118,9 +118,9 @@ public:
 		if (fpsLock != 0.0f) _fTimeElapsedAvg = (int)((1.f / fpsLock) * 1000.f);
 
 		std::chrono::time_point curTimePoint = Clock::now();
-		float fTimeElapsed = std::chrono::duration_cast<std::chrono::milliseconds>(curTimePoint - _lastTimePoint).count();
+		std::chrono::duration<float, std::milli> fp_ms = (curTimePoint - _lastTimePoint); // 반 올림하지 않고 정확하게 출력하기
+		float fTimeElapsed = fp_ms.count();
 		_lastTimePoint = curTimePoint;
-
 		_accumlateElapsedTime += fTimeElapsed;
 		
 		for(int i = 0; i < 4; ++i) p[i].Update(fTimeElapsed);
@@ -130,7 +130,7 @@ public:
 		{
 	
 			AddHistory(p); // 월드 프레임 상태를 기록한다.
-			_accumlateElapsedTime = 0.0f;
+			_accumlateElapsedTime = 0.f;
 			
 		}
 
@@ -138,7 +138,8 @@ public:
 	void AddHistory(PlayerInfo* p)
 	{
 		
-		std::cout << " Add WorldStatus Frame : " << _curWorldFrame;
+		
+		std::cout << " Add WorldStatus Frame : " << _curWorldFrame << "\n";
 		_lastWorldStatus._pPos[0] = p[0].GetPosition();
 		_lastWorldStatus._pPos[1] = p[1].GetPosition();
 		_lastWorldStatus._pPos[2] = p[2].GetPosition();

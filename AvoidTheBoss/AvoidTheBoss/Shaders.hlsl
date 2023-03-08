@@ -61,7 +61,7 @@ float4 PSPlayer(VS_DIFFUSED_OUTPUT input) : SV_TARGET
 {
 	//입력되는 픽셀의 색상을 그대로 출력-병합 단계(렌더 타겟)로 출력한다. 
 	return(input.color);
-	//return(float4(1.0f, 0.0f, 0.0f, 1.0f));
+	return(float4(1.0f, 0.0f, 0.0f, 1.0f));
 }
 
 //---------------------------------------------------------텍스쳐 적용 게임 객체 출력

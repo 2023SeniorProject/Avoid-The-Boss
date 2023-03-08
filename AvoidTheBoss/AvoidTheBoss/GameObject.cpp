@@ -257,10 +257,22 @@ void CMaterial::ReleaseUploadBuffers()
 
 //=====================================
 
-CGameObject::CGameObject(int nMeshes)
+//CGameObject::CGameObject(int nMeshes)
+//{
+//	m_xmf4x4World = Matrix4x4::Identity();
+//	m_nMeshes = nMeshes;
+//	m_ppMeshes = NULL;
+//	if (m_nMeshes > 0)
+//	{
+//		m_ppMeshes = new CMesh * [m_nMeshes];
+//		for (int i = 0; i < m_nMeshes; i++) m_ppMeshes[i] = NULL;
+//	}
+//}
+
+
+CGameObject::CGameObject(int nMeshes, int nMaterials)
 {
 	m_xmf4x4World = Matrix4x4::Identity();
-
 	m_nMeshes = nMeshes;
 	m_ppMeshes = NULL;
 	if (m_nMeshes > 0)
@@ -269,10 +281,12 @@ CGameObject::CGameObject(int nMeshes)
 		for (int i = 0; i < m_nMeshes; i++) m_ppMeshes[i] = NULL;
 	}
 
-	m_nMaterials = 1;
-	m_ppMaterials = new CMaterial * [m_nMaterials];
-	for (int i = 0; i < m_nMaterials; i++) 
-		m_ppMaterials[i] = NULL;
+	m_nMaterials = nMaterials;
+	if (m_nMaterials > 0)
+	{
+		m_ppMaterials = new CMaterial * [m_nMaterials];
+		for (int i = 0; i < m_nMaterials; i++) m_ppMaterials[i] = NULL;
+	}
 }
 
 CGameObject::~CGameObject()
@@ -288,17 +302,18 @@ CGameObject::~CGameObject()
 		}
 		delete[] m_ppMeshes;
 	}
-	if (m_ppMaterials[0])
+	if (m_ppMaterials)
+	{
+		delete m_ppMaterials[0];
 		delete[] m_ppMaterials;
+	}
 }
 
 void CGameObject::SetMaterial(CMaterial* pMaterial)
 {
 	if (m_ppMaterials)
 	{
-		//m_nMaterials = nMaterial;
-		//m_ppMaterials = new CMaterial * [m_nMaterials];
-		//if (m_ppMaterials[0])
+		//if(m_ppMaterials[0])
 		//	m_ppMaterials[0]->Release();
 		m_ppMaterials[0] = pMaterial;
 		//if (m_ppMaterials[0])
@@ -329,11 +344,13 @@ void CGameObject::SetShader(CShader* pShader)
 {
 	if (!m_ppMaterials)
 	{
-		//m_nMaterials = 1;
-		//m_ppMaterials = new CMaterial * [m_nMaterials];
-		//m_ppMaterials[0] = new CMaterial();
-		m_ppMaterials[0]->SetShader(pShader);
+		m_nMaterials = 1;
+		m_ppMaterials = new CMaterial * [m_nMaterials];
+		CMaterial* pMaterial = new CMaterial();
+		SetMaterial(pMaterial);
 	}
+	if(m_ppMaterials)
+		m_ppMaterials[0]->SetShader(pShader);
 }
 
 void CGameObject::SetShader(int nMaterial, CShader* pShader)
@@ -372,7 +389,7 @@ void CGameObject::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pC
 	OnPrepareRender();
 
 	//게임 객체에 셰이더 객체가 연결되어 있으면 셰이더 상태 객체를 설정한다. 
-	if (m_ppMaterials[0])
+	if (m_ppMaterials&&m_ppMaterials[0])
 	{
 		if (m_ppMaterials[0]->m_pShader)
 		{
@@ -436,7 +453,7 @@ void CGameObject::Release()
 	if (m_pChild) m_pChild->Release();
 	if (m_pSibling) m_pSibling->Release();
 
-	//if (--m_nReferences <= 0) delete this;
+	if (--m_nReferences <= 0) delete this;
 }
 
 void CGameObject::SetChild(CGameObject* pChild, bool bReferenceUpdate)
@@ -492,7 +509,7 @@ void CGameObject::ReleaseShaderVariables()
 		m_pd3dcbGameObject->Unmap(0, NULL);
 		m_pd3dcbGameObject->Release();
 	}
-	if (m_ppMaterials[0])
+	if (m_ppMaterials && m_ppMaterials[0])
 	{
 		m_ppMaterials[0]->ReleaseShaderVariables();
 	}
@@ -789,7 +806,7 @@ CGameObject* CGameObject::LoadFrameHierarchyFromFile(ID3D12Device* pd3dDevice, I
 		::ReadStringFromFile(pInFile, pstrToken);
 		if (!strcmp(pstrToken, "<Frame>:"))
 		{
-			pGameObject = new CGameObject();
+			pGameObject = new CGameObject(1,1);
 
 			nFrame = ::ReadIntegerFromFile(pInFile);
 			::ReadStringFromFile(pInFile, pGameObject->m_pstrFrameName);

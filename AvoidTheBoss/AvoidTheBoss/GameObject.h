@@ -185,8 +185,8 @@ public:
 	void AddRef();
 	void Release();
 
-	//CGameObject();
 	CGameObject(int nMeshes = 1);
+	CGameObject(int nMeshes,int nMaterials);
 	virtual ~CGameObject();
 
 	XMFLOAT4X4 m_xmf4x4World;

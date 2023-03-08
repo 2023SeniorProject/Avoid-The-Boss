@@ -372,7 +372,7 @@ void CObjectsShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsComman
 	{
 		for (float z = -Depth / 2 + TileSize / 2; z < Depth / 2; z += TileSize)
 		{
-			CGameObject* pMap = new CGameObject(1);
+			CGameObject* pMap = new CGameObject(1,1);
 			XMFLOAT3 pos = XMFLOAT3(x, 0.0f, z);
 			pMap->SetMesh(0, pTile);
 			pMap->SetPosition(pos);
@@ -393,7 +393,7 @@ void CObjectsShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsComman
 	//CCubeMeshTextured* test = new CCubeMeshTextured(pd3dDevice, pd3dCommandList, 2.5f * UNIT, 1 * UNIT, 2.5f * UNIT);
 
 	//º®
-	CGameObject* pWareHouseLeft = new CGameObject(1);
+	CGameObject* pWareHouseLeft = new CGameObject(1,1);
 	//pWareHouseLeft->SetObjectInWorld(0, pSideXWall,1, pMats[1],);
 	pWareHouseLeft->SetMesh(0, pSideXWall);
 	pWareHouseLeft->SetPosition(XMFLOAT3(-WarehouseSizeXZ / 2 * UNIT, (WarehouseSizeY / 2 - 0.1f) * UNIT, 0.0f));
@@ -401,7 +401,7 @@ void CObjectsShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsComman
 	pWareHouseLeft->SetCbvGPUDescriptorHandlePtr(m_d3dCbvGPUDescStartHandle.ptr + (::gnCbvSrvDescIncrementSize * i));
 	m_ppObjects[i++] = pWareHouseLeft;
 
-	CGameObject* pWareHouseRight = new CGameObject(1);
+	CGameObject* pWareHouseRight = new CGameObject(1,1);
 	//pWareHouseRight->SetObjectInWorld(0, pSideXWall, 1, pMats[1],) );
 	pWareHouseRight->SetMesh(0, pSideXWall);
 	pWareHouseRight->SetPosition(XMFLOAT3(WarehouseSizeXZ / 2 * UNIT, (WarehouseSizeY / 2 - 0.1f) * UNIT, 0.0f));
@@ -409,7 +409,7 @@ void CObjectsShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsComman
 	pWareHouseRight->SetCbvGPUDescriptorHandlePtr(m_d3dCbvGPUDescStartHandle.ptr + (::gnCbvSrvDescIncrementSize * i));
 	m_ppObjects[i++] = pWareHouseRight;
 
-	CGameObject* pWareHouseFront = new CGameObject(1);
+	CGameObject* pWareHouseFront = new CGameObject(1,1);
 	//pWareHouseFront->SetObjectInWorld(0, pSideZWall, 1, pMats[1],);
 	pWareHouseFront->SetMesh(0, pSideZWall);
 	pWareHouseFront->SetPosition(XMFLOAT3(0.0f, (WarehouseSizeY / 2 - 0.1f) * UNIT, WarehouseSizeXZ / 2 * UNIT));
@@ -417,7 +417,7 @@ void CObjectsShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsComman
 	pWareHouseFront->SetCbvGPUDescriptorHandlePtr(m_d3dCbvGPUDescStartHandle.ptr + (::gnCbvSrvDescIncrementSize * i));
 	m_ppObjects[i++] = pWareHouseFront;
 
-	CGameObject* pWareHouseBack = new CGameObject(1);
+	CGameObject* pWareHouseBack = new CGameObject(1,1);
 	//pWareHouseBack->SetObjectInWorld(0, pSideZWall, 1, pMats[1],);
 	pWareHouseBack->SetMesh(0, pSideZWall);
 	pWareHouseBack->SetPosition(XMFLOAT3(0.0f, (WarehouseSizeY / 2 - 0.1f) * UNIT, -WarehouseSizeXZ / 2 * UNIT));
@@ -426,7 +426,7 @@ void CObjectsShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsComman
 	m_ppObjects[i++] = pWareHouseBack;
 
 	//ÃµÀå
-	CGameObject* pWareHouseTopFloor = new CGameObject(1);
+	CGameObject* pWareHouseTopFloor = new CGameObject(1,1);
 	//pWareHouseTopFloor->SetObjectInWorld(0,pSideYWall,2, pMats[2], XMFLOAT3(0.0f, (WarehouseSizeY / 2 + 0.5f) * UNIT, 0.0f));
 	pWareHouseTopFloor->SetMesh(0, pSideYWall);
 	pWareHouseTopFloor->SetPosition(XMFLOAT3(0.0f, (WarehouseSizeY / 2 + 0.5f) * UNIT, 0.0f));
@@ -452,7 +452,7 @@ void CObjectsShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsComman
 		{
 			for (float y = SizeOfBlock / 2; y < WarehouseSizeY* UNIT; y += SizeOfBlock)
 			{
-				CGameObject* pPillar = new CGameObject(1);
+				CGameObject* pPillar = new CGameObject(1,1);
 				//pPillar->SetObjectInWorld(0, pRod,4, pMats[4], XMFLOAT3(x, y, z));// XMFLOAT3(x, (WarehouseSizeY / 2 - 0.1f) * UNIT,¤»);// 
 				pPillar->SetMesh(0, pRod);
 				pPillar->SetPosition(XMFLOAT3(x, y, z));

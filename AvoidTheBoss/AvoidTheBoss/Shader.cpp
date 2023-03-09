@@ -58,7 +58,7 @@ D3D12_BLEND_DESC CShader::CreateBlendState()
 	d3dBlendDesc.RenderTarget[0].DestBlendAlpha = D3D12_BLEND_ZERO;
 	d3dBlendDesc.RenderTarget[0].BlendOpAlpha = D3D12_BLEND_OP_ADD;
 	d3dBlendDesc.RenderTarget[0].LogicOp = D3D12_LOGIC_OP_NOOP;
-	d3dBlendDesc.RenderTarget[0].RenderTargetWriteMask = D3D12_COLOR_WRITE_ENABLE_ALL; //렌더타겟 색상 지정 : rgba모든값 ( 렌더타겟마다 설정 가능)
+	d3dBlendDesc.RenderTarget[0].RenderTargetWriteMask = D3D12_COLOR_WRITE_ENABLE_ALL; //렌더타겟 색상 지정 : rgba모든값 ( 렌더타겟마다 설정 가능 )
 
 	return(d3dBlendDesc);
 }
@@ -325,6 +325,7 @@ CObjectsShader::~CObjectsShader()
 #define TEXTURES 6
 void CObjectsShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, void* pContext)
 {
+
 	CTexture* ppTextures[TEXTURES];
 	ppTextures[0] = new CTexture( 1, RESOURCE_TEXTURE2D, 0, 1);
 	ppTextures[0]->LoadTextureFromDDSFile(pd3dDevice, pd3dCommandList, L"Industry_Field_Tile_BaseColor.dds", RESOURCE_TEXTURE2D, 0);	//바닥
@@ -353,7 +354,7 @@ void CObjectsShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsComman
 	CreateShaderVariables(pd3dDevice, pd3dCommandList);
 	CreateConstantBufferViews(pd3dDevice, m_nObjects, m_pd3dcbGameObjects, ((sizeof(CB_GAMEOBJECT_INFO) + 255) & ~255));
 	for (int i = 0; i < TEXTURES; i++)
-		CreateShaderResourceViews(pd3dDevice, ppTextures[i], 0, 3);
+		CreateShaderResourceViews(pd3dDevice, ppTextures[i], 0, 4);
 
 	//-------------------------------------------
 	CMaterial* pMats[TEXTURES];
@@ -365,6 +366,7 @@ void CObjectsShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsComman
 	//-------------------------------------------
 	
 	m_ppObjects = new CGameObject * [m_nObjects];
+
 	int i = 0;
 	//타일 바닥
 	CCubeMeshTextured* pTile = new CCubeMeshTextured(pd3dDevice, pd3dCommandList, TileSize, 1.0f, TileSize);
@@ -463,21 +465,13 @@ void CObjectsShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsComman
 		}
 	}
 
-	//------ 소량 택배 선반 6개
-	/*float tem = (float)(l / 2) * (float)(1 / 3);
-	float blockHeight = 2.5f;
-	CCubeMeshTextured* pBlock = new CCubeMeshTextured(pd3dDevice, pd3dCommandList, (tem-0.3f) * UNIT, blockHeight * UNIT, 1 * UNIT);
-	for (float x = tem; x < tem*3; x += tem)
-	{
-		for (float z = l/2-tem; z <= l/2+tem; z += tem)
-		{
-			CGameObject* pShelf = new CGameObject(1);
-			//pShelf->SetObjectInWorld(m_ppObjects, i++, XMFLOAT3(x, (blockHeight/2-0.1f) * UNIT, z), pBlock, 0);
-			pShelf->SetObjectInWorld(0, pBlock, pMats[5], XMFLOAT3(x, (blockHeight / 2 - 0.1f) * UNIT, z));
-			pShelf->SetCbvGPUDescriptorHandlePtr(m_d3dCbvGPUDescStartHandle.ptr + (::gnCbvSrvDescIncrementSize * i));
-			m_ppObjects[i++] = pShelf;
-		}
-	}*/
+	//CGameObject* pMap = (CGameObject*)pContext;
+	//CGameObject* pMapObject = NULL;
+	//pMapObject->SetChild(pMap, true);
+	//pMapObject->SetPosition(0.0f, 0.0f, 0.0f);
+	//pMapObject->SetMaterial(pMats[4]);
+	//pMapObject->SetCbvGPUDescriptorHandlePtr(m_d3dCbvGPUDescStartHandle.ptr + //(::gnCbvSrvDescIncrementSize * i));
+	//m_ppObjects[i++] = pMap;
 }
 
 void CObjectsShader::AnimateObjects(float fTimeElapsed)
@@ -609,7 +603,7 @@ D3D12_INPUT_LAYOUT_DESC CTexturedShader::CreateInputLayout()
 
 D3D12_SHADER_BYTECODE CTexturedShader::CreateVertexShader(ID3DBlob** ppd3dShaderBlob)
 {
-	return(CShader::CompileShaderFromFile(L"Shaders.hlsl", "VSTextured", "vs_5_1", ppd3dShaderBlob));
+	return(CShader::CompileShaderFromFile(L"C:\\AvoidTheBoss\\AvoidTheBoss\\AvoidTheBoss\\Shaders.hlsl", "VSTextured", "vs_5_1", ppd3dShaderBlob));
 }
 
 D3D12_SHADER_BYTECODE CTexturedShader::CreatePixelShader(ID3DBlob** ppd3dShaderBlob)
@@ -670,7 +664,7 @@ D3D12_INPUT_LAYOUT_DESC CIlluminatedShader::CreateInputLayout()
 	D3D12_INPUT_ELEMENT_DESC* pd3dInputElementDescs = new D3D12_INPUT_ELEMENT_DESC[nInputElementDescs];
 
 	pd3dInputElementDescs[0] = { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 };
-	pd3dInputElementDescs[1] = { "NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 1, 0, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 };
+	pd3dInputElementDescs[1] = { "NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 12, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 };
 
 	D3D12_INPUT_LAYOUT_DESC d3dInputLayoutDesc;
 	d3dInputLayoutDesc.pInputElementDescs = pd3dInputElementDescs;
@@ -679,14 +673,14 @@ D3D12_INPUT_LAYOUT_DESC CIlluminatedShader::CreateInputLayout()
 	return(d3dInputLayoutDesc);
 }
 
-D3D12_SHADER_BYTECODE CIlluminatedShader::CreateVertexShader()
+D3D12_SHADER_BYTECODE CIlluminatedShader::CreateVertexShader(ID3DBlob** ppd3dShaderBlob)
 {
-	return(CShader::CompileShaderFromFile(L"Shaders.hlsl", "VSLighting", "vs_5_1", &m_pd3dVertexShaderBlob));
+	return(CShader::CompileShaderFromFile(L"Shaders.hlsl", "VSLighting", "vs_5_1", ppd3dShaderBlob));
 }
 
-D3D12_SHADER_BYTECODE CIlluminatedShader::CreatePixelShader()
+D3D12_SHADER_BYTECODE CIlluminatedShader::CreatePixelShader(ID3DBlob** ppd3dShaderBlob)
 {
-	return(CShader::CompileShaderFromFile(L"Shaders.hlsl", "PSLighting", "ps_5_1", &m_pd3dPixelShaderBlob));
+	return(CShader::CompileShaderFromFile(L"Shaders.hlsl", "PSLighting", "ps_5_1", ppd3dShaderBlob));
 }
 
 void CIlluminatedShader::CreateShader(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature)
@@ -704,7 +698,52 @@ void CIlluminatedShader::CreateShader(ID3D12Device* pd3dDevice, ID3D12GraphicsCo
 	if (m_d3dPipelineStateDesc.InputLayout.pInputElementDescs) delete[] m_d3dPipelineStateDesc.InputLayout.pInputElementDescs;*/
 }
 
-void CIlluminatedShader::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera, int nPipelineState)
+//void CIlluminatedShader::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera, int nPipelineState)
+//{
+//	OnPrepareRender(pd3dCommandList);
+//}
+
+
+
+CMapShader::CMapShader()
 {
-	OnPrepareRender(pd3dCommandList);
+}
+
+CMapShader::~CMapShader()
+{
+}
+
+D3D12_INPUT_LAYOUT_DESC CMapShader::CreateInputLayout()
+{
+	UINT nInputElementDescs = 2;
+	D3D12_INPUT_ELEMENT_DESC* pd3dInputElementDescs = new
+		D3D12_INPUT_ELEMENT_DESC[nInputElementDescs];
+
+	pd3dInputElementDescs[0] = { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0,
+	D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 };
+	pd3dInputElementDescs[1] = { "COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 12,
+	D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 };
+
+	D3D12_INPUT_LAYOUT_DESC d3dInputLayoutDesc;
+	d3dInputLayoutDesc.pInputElementDescs = pd3dInputElementDescs;
+	d3dInputLayoutDesc.NumElements = nInputElementDescs;
+
+	return(d3dInputLayoutDesc);
+}
+
+
+D3D12_SHADER_BYTECODE CMapShader::CreateVertexShader(ID3DBlob** ppd3dShaderBlob)
+{
+	return(CShader::CompileShaderFromFile(L"Shaders.hlsl", "VSLighting", "vs_5_1",
+		ppd3dShaderBlob));
+}
+D3D12_SHADER_BYTECODE CMapShader::CreatePixelShader(ID3DBlob** ppd3dShaderBlob)
+{
+	return(CShader::CompileShaderFromFile(L"Shaders.hlsl", "PSLighting", "ps_5_1",
+		ppd3dShaderBlob));
+}
+void CMapShader::CreateShader(ID3D12Device* pd3dDevice, ID3D12RootSignature
+	* pd3dGraphicsRootSignature)
+{
+	CShader::CreateShader(pd3dDevice, pd3dGraphicsRootSignature);
 }

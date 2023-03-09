@@ -20,6 +20,55 @@ bool CScene::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPARAM wPar
 }
 
 
+void CScene::BuildDefaultLightsAndMaterials()
+{
+	//m_nLights = 4;
+	//m_pLights = new LIGHT[m_nLights];
+	//::ZeroMemory(m_pLights, sizeof(LIGHT) * m_nLights);
+	//
+	//m_xmf4GlobalAmbient = XMFLOAT4(0.15f, 0.15f, 0.15f, 1.0f);
+	//
+	//m_pLights[0].m_bEnable = true;
+	//m_pLights[0].m_nType = POINT_LIGHT;
+	//m_pLights[0].m_fRange = 1000.0f;
+	//m_pLights[0].m_xmf4Ambient = XMFLOAT4(0.1f, 0.0f, 0.0f, 1.0f);
+	//m_pLights[0].m_xmf4Diffuse = XMFLOAT4(0.8f, 0.0f, 0.0f, 1.0f);
+	//m_pLights[0].m_xmf4Specular = XMFLOAT4(0.5f, 0.5f, 0.5f, 0.0f);
+	//m_pLights[0].m_xmf3Position = XMFLOAT3(30.0f, 30.0f, 30.0f);
+	//m_pLights[0].m_xmf3Direction = XMFLOAT3(0.0f, 0.0f, 0.0f);
+	//m_pLights[0].m_xmf3Attenuation = XMFLOAT3(1.0f, 0.001f, 0.0001f);
+	//m_pLights[1].m_bEnable = true;
+	//m_pLights[1].m_nType = SPOT_LIGHT;
+	//m_pLights[1].m_fRange = 500.0f;
+	//m_pLights[1].m_xmf4Ambient = XMFLOAT4(0.1f, 0.1f, 0.1f, 1.0f);
+	//m_pLights[1].m_xmf4Diffuse = XMFLOAT4(0.4f, 0.4f, 0.4f, 1.0f);
+	//m_pLights[1].m_xmf4Specular = XMFLOAT4(0.3f, 0.3f, 0.3f, 0.0f);
+	//m_pLights[1].m_xmf3Position = XMFLOAT3(-50.0f, 20.0f, -5.0f);
+	//m_pLights[1].m_xmf3Direction = XMFLOAT3(0.0f, 0.0f, 1.0f);
+	//m_pLights[1].m_xmf3Attenuation = XMFLOAT3(1.0f, 0.01f, 0.0001f);
+	//m_pLights[1].m_fFalloff = 8.0f;
+	//m_pLights[1].m_fPhi = (float)cos(XMConvertToRadians(40.0f));
+	//m_pLights[1].m_fTheta = (float)cos(XMConvertToRadians(20.0f));
+	//m_pLights[2].m_bEnable = true;
+	//m_pLights[2].m_nType = DIRECTIONAL_LIGHT;
+	//m_pLights[2].m_xmf4Ambient = XMFLOAT4(0.3f, 0.3f, 0.3f, 1.0f);
+	//m_pLights[2].m_xmf4Diffuse = XMFLOAT4(0.8f, 0.8f, 0.8f, 1.0f);
+	//m_pLights[2].m_xmf4Specular = XMFLOAT4(0.4f, 0.4f, 0.4f, 0.0f);
+	//m_pLights[2].m_xmf3Direction = XMFLOAT3(1.0f, 0.0f, 0.0f);
+	//m_pLights[3].m_bEnable = true;
+	//m_pLights[3].m_nType = SPOT_LIGHT;
+	//m_pLights[3].m_fRange = 600.0f;
+	//m_pLights[3].m_xmf4Ambient = XMFLOAT4(0.3f, 0.3f, 0.3f, 1.0f);
+	//m_pLights[3].m_xmf4Diffuse = XMFLOAT4(0.3f, 0.7f, 0.0f, 1.0f);
+	//m_pLights[3].m_xmf4Specular = XMFLOAT4(0.3f, 0.3f, 0.3f, 0.0f);
+	//m_pLights[3].m_xmf3Position = XMFLOAT3(50.0f, 30.0f, 30.0f);
+	//m_pLights[3].m_xmf3Direction = XMFLOAT3(0.0f, 1.0f, 1.0f);
+	//m_pLights[3].m_xmf3Attenuation = XMFLOAT3(1.0f, 0.01f, 0.0001f);
+	//m_pLights[3].m_fFalloff = 8.0f;
+	//m_pLights[3].m_fPhi = (float)cos(XMConvertToRadians(90.0f));
+	//m_pLights[3].m_fTheta = (float)cos(XMConvertToRadians(30.0f));
+}
+
 void CScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList)
 {
 	//그래픽 루트 시그너쳐를 생성한다. 
@@ -121,7 +170,7 @@ ID3D12RootSignature* CScene::CreateGraphicsRootSignature(ID3D12Device* pd3dDevic
 	D3D12_DESCRIPTOR_RANGE DescRange[2];
 	DescRange[0].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_CBV;
 	DescRange[0].NumDescriptors = 1;
-	DescRange[0].BaseShaderRegister = 2; // c : obj
+	DescRange[0].BaseShaderRegister = 3; // c : obj
 	DescRange[0].RegisterSpace = 0;
 	DescRange[0].OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;
 
@@ -132,8 +181,8 @@ ID3D12RootSignature* CScene::CreateGraphicsRootSignature(ID3D12Device* pd3dDevic
 	DescRange[1].OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;
 
 	// 루트서명의 슬롯 설명
-	D3D12_ROOT_PARAMETER RootParameters[4]; 
-	// b0 : player / b1 : camera / b2 : objectVertex / t0 : OnjectTexture
+	D3D12_ROOT_PARAMETER RootParameters[5]; 
+	// b0 : player / b1 : camera / b2 :	MapGameobject / b3 : objectVertex / t0 : OnjectTexture
 	RootParameters[0].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV; //32bit constant
 	RootParameters[0].Constants.ShaderRegister = 0;
 	RootParameters[0].Constants.RegisterSpace = 0;
@@ -144,16 +193,27 @@ ID3D12RootSignature* CScene::CreateGraphicsRootSignature(ID3D12Device* pd3dDevic
 	RootParameters[1].Constants.RegisterSpace = 0;
 	RootParameters[1].ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
 
-	RootParameters[2].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;
-	RootParameters[2].DescriptorTable.NumDescriptorRanges = 1;
-	RootParameters[2].DescriptorTable.pDescriptorRanges = &DescRange[0];
+	//Map
+	RootParameters[2].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;
+	RootParameters[2].Constants.ShaderRegister = 2; 
+	RootParameters[2].Constants.RegisterSpace = 0;
 	RootParameters[2].ShaderVisibility = D3D12_SHADER_VISIBILITY_VERTEX;
 
+	//GameObject
 	RootParameters[3].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;
-	RootParameters[3].DescriptorTable.NumDescriptorRanges = 1;
-	RootParameters[3].DescriptorTable.pDescriptorRanges = &DescRange[1];
-	RootParameters[3].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;
+	RootParameters[3].DescriptorTable.NumDescriptorRanges = 1; 
+	RootParameters[3].DescriptorTable.pDescriptorRanges = &DescRange[0];
+	RootParameters[3].ShaderVisibility = D3D12_SHADER_VISIBILITY_VERTEX;
 
+	RootParameters[4].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;
+	RootParameters[4].DescriptorTable.NumDescriptorRanges = 1;
+	RootParameters[4].DescriptorTable.pDescriptorRanges = &DescRange[1];
+	RootParameters[4].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;
+
+	//RootParameters[5].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;
+	//RootParameters[5].Descriptor.ShaderRegister = 4; //Lights
+	//RootParameters[5].Descriptor.RegisterSpace = 0;
+	//RootParameters[5].ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
 
 	D3D12_TEXTURE_ADDRESS_MODE textureMode = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
 	D3D12_STATIC_SAMPLER_DESC samplerDesc;
@@ -206,7 +266,7 @@ ID3D12RootSignature* CScene::CreateGraphicsRootSignature(ID3D12Device* pd3dDevic
 				pd3dSignatureBlob->GetBufferSize(),
 						__uuidof(ID3D12RootSignature), 
 				(void**)&pd3dGraphicsRootSignature
-	); 
+	);
 
 	if (pd3dSignatureBlob) 
 		pd3dSignatureBlob->Release();

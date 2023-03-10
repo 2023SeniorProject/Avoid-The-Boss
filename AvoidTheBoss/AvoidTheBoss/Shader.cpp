@@ -346,7 +346,7 @@ void CObjectsShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsComman
 	int nWidth = (int)Width / TileSize;
 	int nDepth = (int)Depth / TileSize;
 
-	m_nObjects = nWidth * nDepth + 5 + 360;// +6;
+	m_nObjects = nWidth * nDepth + 5 +360;// +6;
 
 	//----서술자 힙 생성 및 CBV/SRV서술자 생성
 	CreateCbvSrvDescriptorHeaps(pd3dDevice, m_nObjects, TEXTURES);
@@ -363,7 +363,7 @@ void CObjectsShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsComman
 		pMats[i]->SetTexture(ppTextures[i]);
 	}
 	//-------------------------------------------
-	
+
 	m_ppObjects = new CGameObject * [m_nObjects];
 	int i = 0;
 	//타일 바닥
@@ -397,7 +397,7 @@ void CObjectsShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsComman
 	m_ppObjects[i++] = pWareHouseLeft;
 
 	CGameObject* pWareHouseRight = new CGameObject(1);
-	pWareHouseRight->SetObjectInWorld(0, pSideXWall, pMats[1], XMFLOAT3(WarehouseSizeXZ / 2 * UNIT, (WarehouseSizeY / 2 - 0.1f) * UNIT, 0.0f) );
+	pWareHouseRight->SetObjectInWorld(0, pSideXWall, pMats[1], XMFLOAT3(WarehouseSizeXZ / 2 * UNIT, (WarehouseSizeY / 2 - 0.1f) * UNIT, 0.0f));
 	pWareHouseRight->SetCbvGPUDescriptorHandlePtr(m_d3dCbvGPUDescStartHandle.ptr + (::gnCbvSrvDescIncrementSize * i));
 	m_ppObjects[i++] = pWareHouseRight;
 
@@ -417,11 +417,6 @@ void CObjectsShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsComman
 	pWareHouseTopFloor->SetCbvGPUDescriptorHandlePtr(m_d3dCbvGPUDescStartHandle.ptr + (::gnCbvSrvDescIncrementSize * i));
 	m_ppObjects[i++] = pWareHouseTopFloor;
 
-	//전체 바닥 1큐브
-	//CGameObject* pWareHouseBottomFloor = new CGameObject(1);
-	//pWareHouseBottomFloor->SetObjectInWorld(0, pSideYWall, pMats[1], XMFLOAT3(0.0f, -0.5f * UNIT, 0.0f));
-	//pWareHouseBottomFloor->SetCbvGPUDescriptorHandlePtr(m_d3dCbvGPUDescStartHandle.ptr + (::gnCbvSrvDescIncrementSize * i));
-	//m_ppObjects[i++] = pWareHouseBottomFloor;
 
 
 	//------- 공장 기둥 생성 9개
@@ -433,7 +428,7 @@ void CObjectsShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsComman
 	{
 		for (float z = -l / 2; z <= l / 2; z += l / 2)
 		{
-			for (float y = SizeOfBlock / 2; y < WarehouseSizeY* UNIT; y += SizeOfBlock)
+			for (float y = SizeOfBlock / 2; y < WarehouseSizeY * UNIT; y += SizeOfBlock)
 			{
 				CGameObject* pPillar = new CGameObject(1);
 				pPillar->SetObjectInWorld(0, pRod, pMats[4], XMFLOAT3(x, y, z));// XMFLOAT3(x, (WarehouseSizeY / 2 - 0.1f) * UNIT,ㅋ);// 
@@ -443,21 +438,7 @@ void CObjectsShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsComman
 		}
 	}
 
-	//------ 소량 택배 선반 6개
-	/*float tem = (float)(l / 2) * (float)(1 / 3);
-	float blockHeight = 2.5f;
-	CCubeMeshTextured* pBlock = new CCubeMeshTextured(pd3dDevice, pd3dCommandList, (tem-0.3f) * UNIT, blockHeight * UNIT, 1 * UNIT);
-	for (float x = tem; x < tem*3; x += tem)
-	{
-		for (float z = l/2-tem; z <= l/2+tem; z += tem)
-		{
-			CGameObject* pShelf = new CGameObject(1);
-			//pShelf->SetObjectInWorld(m_ppObjects, i++, XMFLOAT3(x, (blockHeight/2-0.1f) * UNIT, z), pBlock, 0);
-			pShelf->SetObjectInWorld(0, pBlock, pMats[5], XMFLOAT3(x, (blockHeight / 2 - 0.1f) * UNIT, z));
-			pShelf->SetCbvGPUDescriptorHandlePtr(m_d3dCbvGPUDescStartHandle.ptr + (::gnCbvSrvDescIncrementSize * i));
-			m_ppObjects[i++] = pShelf;
-		}
-	}*/
+
 }
 
 void CObjectsShader::AnimateObjects(float fTimeElapsed)

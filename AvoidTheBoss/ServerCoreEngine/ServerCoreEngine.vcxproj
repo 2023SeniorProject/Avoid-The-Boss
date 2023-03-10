@@ -176,6 +176,7 @@
     <ClInclude Include="pch.h" />
     <ClInclude Include="protocol.h" />
     <ClInclude Include="RefCountable.h" />
+    <ClInclude Include="WorldRewinder.h" />
     <ClInclude Include="RoomManager.h" />
     <ClInclude Include="RWLock.h" />
     <ClInclude Include="Session.h" />
@@ -206,6 +207,7 @@
     </ClCompile>
     <ClCompile Include="protocol.cpp" />
     <ClCompile Include="RefCountable.cpp" />
+    <ClCompile Include="WorldRewinder.cpp" />
     <ClCompile Include="RoomManager.cpp" />
     <ClCompile Include="RWLock.cpp" />
     <ClCompile Include="Session.cpp" />

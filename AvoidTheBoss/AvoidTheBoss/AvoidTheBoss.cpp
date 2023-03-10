@@ -36,12 +36,12 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     
     UNREFERENCED_PARAMETER(hPrevInstance);
     UNREFERENCED_PARAMETER(lpCmdLine);
-   SocketUtil::Init();
-  
+   //SocketUtil::Init();
+   GCThreadManager = new ThreadManager;
     int retval = DialogBox(hInstance, MAKEINTRESOURCE(IDD_LOGINDIALOG), NULL, reinterpret_cast<DLGPROC>(MyDialogBox));
     if (retval == -1 || retval == 2)
     {
-        SocketUtil::Close(clientIocpCore._client->_sock);
+        SocketUtil::Close(clientCore._client->_sock);
         SocketUtil::Clear();
         return 0;
     }
@@ -63,7 +63,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
         {
             while (true)
             {
-                if (!clientIocpCore.Processing()) break;
+                if (!clientCore.Processing()) break;
                 std::this_thread::sleep_for(0ms);
             }
         }
@@ -74,7 +74,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
         {
             if (msg.message == WM_QUIT)
             {
-                SocketUtil::Close(clientIocpCore._client->_sock);
+                SocketUtil::Close(clientCore._client->_sock);
                 break;
             }
             if (!::TranslateAccelerator(msg.hwnd, hAccelTable, &msg))
@@ -86,15 +86,15 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
         else
         {
           
-           clientIocpCore.GameLoop(); // 처리할 윈도우 메세지가 큐에 없을 때 게임프로그램이 CPU사용
+           clientCore.GameLoop(); // 처리할 윈도우 메세지가 큐에 없을 때 게임프로그램이 CPU사용
         }
         std::this_thread::sleep_for(0ms);
     }
  
     GCThreadManager->Join();
-    SocketUtil::Clear();
+   // SocketUtil::Clear();
     
-    
+    delete GCThreadManager;
  
     return (int)msg.wParam;
 }
@@ -137,7 +137,7 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
     if (!hMainWnd)return (FALSE);
 
     //----프레임워크 객체 초기화
-   clientIocpCore.InitGameLoop(hInst, hMainWnd);
+   clientCore.InitGameLoop(hInst, hMainWnd);
 
     ShowWindow(hMainWnd, nCmdShow);
     UpdateWindow(hMainWnd);
@@ -165,7 +165,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
     case WM_MOUSEMOVE:
     case WM_KEYDOWN:
     case WM_KEYUP:
-        clientIocpCore.InputProcessing(hWnd, message, wParam, lParam);
+        clientCore.InputProcessing(hWnd, message, wParam, lParam);
         break;
     case WM_COMMAND:
     {
@@ -243,18 +243,18 @@ BOOL CALLBACK MyDialogBox(HWND hWndDlg, UINT message, WPARAM wParam, LPARAM lPar
             loginPacket.type = C_PACKET_TYPE::ACQ_LOGIN;
             GetDlgItemText(hWndDlg, IDC_ID, loginPacket.name, 10);
             GetDlgItemText(hWndDlg, IDC_PW, loginPacket.pw, 10);
-            clientIocpCore.InitConnect("127.0.0.1");
-            clientIocpCore.DoConnect(&loginPacket);
+            clientCore.InitConnect("127.0.0.1");
+            clientCore.DoConnect(&loginPacket);
             while (true)
             {
-                if (clientIocpCore.Processing())
+                if (clientCore.Processing())
                 {
-                    if (clientIocpCore._client->_curScene == 0)
+                    if (clientCore._client->_loginOk)
                     {
                         EndDialog(hWndDlg, 1);
                         return TRUE;
                     }
-                    else if (clientIocpCore._client->_curScene == -2)
+                    else if (!clientCore._client->_loginOk)
                     {
                         EndDialog(hWndDlg, -1);
                         return TRUE;

@@ -40,6 +40,9 @@
     <Filter Include="Shared\Main">
       <UniqueIdentifier>{eda0efdf-573e-4931-9f41-374ef493bbdd}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Shared\WorldRewinder">
+      <UniqueIdentifier>{7704c00c-b45b-4be8-9139-8411de3349a9}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CoreGlobal.h">
@@ -111,6 +114,9 @@
     <ClInclude Include="protocol.h">
       <Filter>Shared\Packet</Filter>
     </ClInclude>
+    <ClInclude Include="WorldRewinder.h">
+      <Filter>Shared\WorldRewinder</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CoreGlobal.cpp">
@@ -176,8 +182,11 @@
     <ClCompile Include="packetEvent.cpp">
       <Filter>Shared\Packet</Filter>
     </ClCompile>
+    <ClCompile Include="WorldRewinder.cpp">
+      <Filter>Shared\WorldRewinder</Filter>
+    </ClCompile>
     <ClCompile Include="protocol.cpp">
-      <Filter>ForServer\IocpCore</Filter>
+      <Filter>Shared\Packet</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

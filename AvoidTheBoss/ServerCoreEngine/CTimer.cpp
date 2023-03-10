@@ -48,29 +48,37 @@ void Timer::Reset()
 
 void Timer::Tick(float fLockFPS)
 {
+	if (fLockFPS != 0.0f) _fTimeElapsedAvg = (int)((1.f / fLockFPS) * 1000.f);
+	
 	if (_bStopped)
 	{
 		_fTimeElapsedAvg = 0.0f;
 		return;
 	}
+
 	std::chrono::time_point curTimePoint = Clock::now();
-	float fTimeElapsed = std::chrono::duration<double>(curTimePoint - _lastTimePoint).count();
+	float fTimeElapsed = std::chrono::duration_cast<std::chrono::milliseconds>(curTimePoint - _lastTimePoint).count();
+	//std::cout << fTimeElapsed << std::endl;
+	
 	_lastTimePoint = curTimePoint;
-	std::cout << fTimeElapsed << std::endl;
-	if (fabsf(fTimeElapsed - _fTimeElapsedAvg) < 1.0f) // 오차가 적다면
+
+	if (fabsf(fTimeElapsed - _fTimeElapsedAvg) < 100.f) // 오차가 1초 미만이라면
 	{
-		// 배열 값들을 한칸 씩 미룬다.
-		::memmove(&_SampleFrameTime[1], _SampleFrameTime, (MAX_SAMPLE_COUNT - 1) * sizeof(float));
+		::memmove(&_SampleFrameTime[1], _SampleFrameTime, (static_cast<unsigned long long>(MAX_SAMPLE_COUNT) - 1) * sizeof(float));
 		_SampleFrameTime[0] = fTimeElapsed;
-		
 		if (_nSampleCount < MAX_SAMPLE_COUNT) _nSampleCount++;
 	}
 	
-	_nFramePerSec++;
-	_nWorldFrame++;
+
+	if (fLockFPS != 0.0f && (fTimeElapsed > _fTimeElapsedAvg))
+	{
+		//_nWorldFrame++; // 실제 월드 프레임은 이렇게 증가한다.
+		_nFramePerSec++;
+	}
+
 	_accumlateElapsedTime += fTimeElapsed;
 	
-	if (_accumlateElapsedTime > 1.0f)
+	if (_accumlateElapsedTime >= 1000.f)
 	{
 		_curFrameRate = _nFramePerSec;
 		_nFramePerSec = 0;
@@ -102,7 +110,7 @@ unsigned long  Timer::GetFrameRate(LPTSTR lpszString, int nCharacters)
 
 float Timer::GetTimeElapsed()
 {
-	return(_fTimeElapsedAvg);
+	return (_fTimeElapsedAvg / 1000.f);
 }
 
 float Timer::GetTotalTime()

@@ -31,9 +31,7 @@ CGameFramework::CGameFramework()
 	m_nWndClientHeight = FRAME_BUFFER_HEIGHT;
 
 	m_pScene = NULL;
-	//m_pPlayer = NULL;
-
-
+	
 	_tcscpy_s(m_pszFrameRate, _T("FPS : "));
 
 }
@@ -385,7 +383,7 @@ void CGameFramework::AnimateObjects()
 void CGameFramework::FrameAdvance() // 여기서 업데이트랑 렌더링 동시에 진행하는 곳
 {
 	//타이머의 시간이 갱신되도록 하고 프레임 레이트를 계산한다. 
-	
+	if (_curScene != SceneInfo::GAMEROOM) return;
 	ProcessInput();
 	AnimateObjects();
 
@@ -435,10 +433,11 @@ void CGameFramework::FrameAdvance() // 여기서 업데이트랑 렌더링 동시에 진행하는 
 		D3D12_CLEAR_FLAG_DEPTH | D3D12_CLEAR_FLAG_STENCIL, 1.0f, 0, 0, NULL);
 #endif
 	//3인칭 카메라일 때 플레이어를 렌더링한다. 
-	if (m_pScene->_curSceneStatus == SceneInfo::GAMEROOM)
+	if (m_pScene && m_pScene->_curSceneStatus == SceneInfo::GAMEROOM)
 	{
-		if (m_pScene->_player) m_pScene->_player->Render(m_pd3dCommandList, m_pScene->m_pCamera);
-		if (m_pScene->_other)  m_pScene->_other->Render(m_pd3dCommandList, m_pScene->m_pCamera);
+		/*if (m_pScene->_player) m_pScene->_player->Render(m_pd3dCommandList, m_pScene->m_pCamera);
+		if (m_pScene->_other)  m_pScene->_other->Render(m_pd3dCommandList, m_pScene->m_pCamera);*/
+		for (int i = 0; i < 4; ++i) if (m_pScene->_players[i] != nullptr) m_pScene->_players[i]->Render(m_pd3dCommandList, m_pScene->m_pCamera);
 	}
 	d3dResourceBarrier.Transition.StateBefore = D3D12_RESOURCE_STATE_RENDER_TARGET;
 	d3dResourceBarrier.Transition.StateAfter = D3D12_RESOURCE_STATE_PRESENT;

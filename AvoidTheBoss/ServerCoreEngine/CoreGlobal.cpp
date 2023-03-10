@@ -11,15 +11,13 @@ class CoreGlobal
 public:
 	CoreGlobal() 
 	{
-		GThreadManager = new ThreadManager();
-		GCThreadManager = new ThreadManager();
+		
 		SocketUtil::Init();
 
 	};
 	~CoreGlobal() 
 	{
-		delete GThreadManager;
-		delete GCThreadManager;
+	
 		SocketUtil::Clear();
 	};
 }GCoreGlobal;

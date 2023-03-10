@@ -257,7 +257,7 @@ void CPlayer::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamer
 	}
 }
 
-CCubePlayer::CCubePlayer(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, int nMeshes) : CPlayer(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature)
+CMyPlayer::CMyPlayer(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, int nMeshes) : CPlayer(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature)
 {
 	m_pCamera = ChangeCamera(THIRD_PERSON_CAMERA, 0.0f);
 	CreateShaderVariables(pd3dDevice, pd3dCommandList);
@@ -280,11 +280,11 @@ CCubePlayer::CCubePlayer(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd
 }
 
 
-CCubePlayer::~CCubePlayer()
+CMyPlayer::~CMyPlayer()
 {
 }
 
-CCamera* CCubePlayer::ChangeCamera(DWORD nNewCameraMode, float fTimeElapsed)
+CCamera* CMyPlayer::ChangeCamera(DWORD nNewCameraMode, float fTimeElapsed)
 {
 	DWORD nCurrentCameraMode = (m_pCamera) ? m_pCamera->GetMode() : 0x00;
 	if (nCurrentCameraMode == nNewCameraMode)
@@ -319,8 +319,28 @@ CCamera* CCubePlayer::ChangeCamera(DWORD nNewCameraMode, float fTimeElapsed)
 	return(m_pCamera);
 }
 
-void CCubePlayer::OnPrepareRender()
+void CMyPlayer::OnPrepareRender()
 {
 	CPlayer::OnPrepareRender();
 }
 
+COtherPlayer::COtherPlayer(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, int nMeshes) : CPlayer(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature)
+{
+	CreateShaderVariables(pd3dDevice, pd3dCommandList);
+
+	CCubeMeshDiffused* pPlayerCubeMesh = new CCubeMeshDiffused(pd3dDevice, pd3dCommandList, 0.37f * UNIT, 1.5f * UNIT, 0.23f * UNIT);
+
+	SetMesh(0, pPlayerCubeMesh);
+	SetPosition(XMFLOAT3(0.0f, (1.5f / 2.0f) * UNIT, 0.0f));
+	UINT ncbElementBytes = ((sizeof(CB_PLAYER_INFO) + 255) & ~255); //256의 배수
+
+	CPlayerShader* pShader = new CPlayerShader();
+	pShader->CreateShader(pd3dDevice, pd3dGraphicsRootSignature);
+	pShader->CreateShaderVariables(pd3dDevice, pd3dCommandList);// ++추가코드
+	pShader->CreateCbvSrvDescriptorHeaps(pd3dDevice, 1, 0);// ++추가코드
+	pShader->CreateConstantBufferViews(pd3dDevice, 1, m_pd3dcbPlayer, ncbElementBytes);// ++추가코드
+
+	SetCbvGPUDescriptorHandle(pShader->GetCbvGPUDescStartHandle());// ++추가코드
+
+	SetShader(pShader);
+}

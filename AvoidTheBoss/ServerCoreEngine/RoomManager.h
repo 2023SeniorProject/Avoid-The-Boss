@@ -1,7 +1,7 @@
 #pragma once
 #define MAX_ROOM_USER 4 // 한 방당 최대 인원수
+#include "WorldRewinder.h"
 #include "CTimer.h"
-
 
 
 enum ROOM_STATUS : int8
@@ -22,6 +22,12 @@ public:
 	void UserIn(int32 sid);
 	void BroadCasting(void* packet);
 	void Update();
+	PlayerInfo& GetMyPlayerFromRoom(int32 sid) 
+	{ 
+		std::shared_lock<std::shared_mutex> ll(_listLock);
+		auto i = std::find(_cList.begin(), _cList.end(), sid);
+		if (i != _cList.end()) return _players[std::distance(_cList.begin(), i) - 1]; // 방에 있는 클라이언트들을 알아서 탐색
+	}
 	void AddEvent(queueEvent* packet); // 이벤트 패킷이 들어오면 큐에다가 추가를 할 것이다.
 public:
 	//RWLOCK;
@@ -31,10 +37,12 @@ public:
 	std::queue<queueEvent*> _jobQueue; // 방에 속해 있는 클라이언트가 야기한 이벤트 큐
 	std::shared_mutex _jobQueueLock; // eventQueue 관리용 Lock
 	//
-	
+	PlayerInfo _players[4];
+
 	Timer _rmTimer; // 해당 룸의 업데이트에 사용할 타이머
 	int8 _status = ROOM_STATUS::EMPTY; // 방 상태
 	int32 _num = 0; // 방에 있는 인원 수
+	GameLogic _logic;
 };
 
 class RoomManager
@@ -45,6 +53,7 @@ public:
 	void EnterRoom(int32 sid, int16 rmNum);
 	void CreateRoom(int32 sid);
 	void UpdateRooms();
+	Room& GetRoom(int32 rmNum) { return _rooms[rmNum]; }
 	void Init();
 public:
 	Room _rooms[100];

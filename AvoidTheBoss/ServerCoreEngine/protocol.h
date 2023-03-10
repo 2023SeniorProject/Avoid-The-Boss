@@ -101,7 +101,8 @@ struct S2C_GAMESTART
 {
 	uint8 size;
 	uint8 type;
-};
+	int16 sids[4];
+}; 
 
 struct S2C_MOVE
 {

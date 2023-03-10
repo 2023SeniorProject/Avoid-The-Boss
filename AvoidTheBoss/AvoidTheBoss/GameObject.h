@@ -107,6 +107,8 @@ public:
 };
 
 
+enum class OBJECT_TYPE { PLAYER, OTHER_PLAYER, NONE};
+
 class CGameObject
 {
 public:
@@ -124,6 +126,7 @@ public:
 
 	D3D12_GPU_DESCRIPTOR_HANDLE	m_d3dCbvGPUDescriptorHandle;
 
+	OBJECT_TYPE m_type = OBJECT_TYPE::NONE;
 protected:
 	ID3D12Resource* m_pd3dcbGameObject = NULL;
 	CB_GAMEOBJECT_INFO* m_pcbMappedGameObject = NULL;

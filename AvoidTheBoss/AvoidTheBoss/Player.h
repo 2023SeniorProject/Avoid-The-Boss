@@ -32,6 +32,8 @@ protected:
 	// 플레이어 카메라
 	CCamera* m_pCamera = nullptr;
 	
+public:
+	int16 m_sid = -1;
 
 public:
 	CPlayer(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, void* pContext = NULL, int nMeshes = 1);
@@ -100,14 +102,27 @@ protected:
 	CB_PLAYER_INFO* m_pcbMappedPlayer = NULL;
 };
 
-class CCubePlayer : public CPlayer
+
+class CMyPlayer : public CPlayer
 {
 public:
-	CCubePlayer(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, int nMeshes = 1);
-	virtual ~CCubePlayer();
+	CMyPlayer(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, int nMeshes = 1);
+	virtual ~CMyPlayer();
 
 	virtual CCamera* ChangeCamera(DWORD nNewCameraMode, float fTimeElapsed);
 
 	virtual void OnPrepareRender();
+
+};
+
+class COtherPlayer : public CPlayer
+{
+public:
+	COtherPlayer(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, int nMeshes = 1);
+	virtual ~COtherPlayer() {};
+
+	virtual CCamera* ChangeCamera(DWORD nNewCameraMode, float fTimeElapsed) { return nullptr; };
+
+	virtual void OnPrepareRender() {};
 
 };

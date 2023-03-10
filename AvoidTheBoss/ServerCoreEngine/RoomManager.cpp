@@ -53,9 +53,9 @@ void Room::UserIn(int32 sid)
 		packet.success = 0;
 		ServerIocpCore._clients[sid]->DoSend(&packet);
 	}
-	else if(_cList.size() < MAX_ROOM_USER && _status != ROOM_STATUS::EMPTY) // 아니면 접속 성공
+	else if (_cList.size() < MAX_ROOM_USER && _status != ROOM_STATUS::EMPTY) // 아니면 접속 성공
 	{
-		packet.success = 1;	
+		packet.success = 1;
 		ServerIocpCore._clients[sid]->_myRm = _num;
 		ServerIocpCore._clients[sid]->_status = USER_STATUS::ROOM;
 		ServerIocpCore._clients[sid]->DoSend(&packet);
@@ -63,17 +63,24 @@ void Room::UserIn(int32 sid)
 			//cList Lock 쓰기 호출 
 			std::unique_lock<std::shared_mutex> wll(_listLock);
 			_cList.push_back(sid);
-			if (_cList.size() == 4) 
-			{
-				_status = ROOM_STATUS::FULL;
-
-				for (auto i : _cList)
-				_logic.StartGame();
-			}
 		}
-		
-		
-	}
+		if (_cList.size() == 4)
+		{
+			_status = ROOM_STATUS::FULL;
+			S2C_GAMESTART packet;
+			packet.type = S_PACKET_TYPE::GAME_START;
+			packet.size = sizeof(S2C_GAMESTART);
+			int k = 0;
+			for (auto i : _cList)
+			{
+				packet.sids[k] = i;
+				++k;
+			}
+			BroadCasting(&packet);
+			_logic.StartGame();
+
+		}
+	}		
 	std::cout << "RM [" << _num << "][" << _cList.size() << "/4]" << std::endl;
 	// 갱신하는걸 보내줄지 말지 미정
 }
@@ -94,6 +101,7 @@ void Room::BroadCasting(void* packet) // 방에 속하는 클라이언트에게만 전달하기
 			cout << *i << "Client Error Occur" << endl;
 			continue;
 		}
+		//std::cout << *i << std::endl;
 	}
 }
 

@@ -8,7 +8,7 @@
 
 class CGameScene : public SceneInterface
 {
-	friend class CClientSession;
+	friend class CSession;
 public:
 	CGameScene();
 	~CGameScene();
@@ -37,6 +37,7 @@ public:
 	void AnimateObjects();
 	void Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera);
 
+	int16 GetPlayerIdx(int16 sid) { for (int i = 0; i < 4; ++i) if (_playersSid[i] == sid) return i; }
 	void ReleaseUploadBuffers();
 public:
 
@@ -47,8 +48,8 @@ public:
 	CShader** m_ppShaders = NULL;
 	int m_nShaders = 0;
 
-	CCubePlayer* _player = nullptr;
-	DummyCubePlayer* _other = nullptr;
+	int16 _playersSid[4];
+	CPlayer* _players[4];
 	
 	DWORD				m_lastKeyInput = 0;
 	//마지막으로 마우스 버튼을 클릭할 때의 마우스 커서의 위치이다. 

@@ -8,12 +8,12 @@
 // ===================================================
 // ===================================================
 
-class CClientSession : public IocpObject
+class CSession : public IocpObject
 {
 	
 public:
-	CClientSession();
-	virtual ~CClientSession();
+	CSession();
+	virtual ~CSession();
 public:
 	// 세션 인터페이스
 	virtual HANDLE GetHandle() override;
@@ -24,21 +24,14 @@ public:
 	bool DoSend(void* packet);
 	bool DoRecv();
 	void ProcessPacket(char*);
-	void PrintPInfo()
-	{
-		_mainGame.m_pScene->_player->GetPosition().x;
-	}
 public:
 	int32 _cid = -1;
 	int32 _sid = -1;
 	int16 _myRm = -1;
 	int32 _prev_remain = 0;
-	int8 _curScene = -1;
+	int16  _loginOk = -3;
 public:
 	SOCKET _sock = INVALID_SOCKET;
-
-	std::mutex _playerLock;
-	std::mutex _otherLock;
 	CGameFramework _mainGame;
 	RecvEvent _rev;
 	RWLOCK;
@@ -46,12 +39,12 @@ public:
 
 // ========= new Iocp Core ==============
 
-class CIocpCore : public IocpCore
+class ClientMananger : public IocpCore
 {
-	friend class CClientSession;
+	friend class CSession;
 public:
-	CIocpCore();
-	~CIocpCore();
+	ClientMananger();
+	~ClientMananger();
 	void InitConnect(const char* address);
 	void DoConnect(void* loginInfo);
 	void DestroyGame() { _client->_mainGame.OnDestroy(); }
@@ -60,9 +53,9 @@ public:
 	void InputProcessing(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) { _client->_mainGame.OnProcessingWindowMessage(hWnd, message, wParam, lParam); }
 	virtual void Disconnect(int32 sid) override;
 public:
-	CClientSession* _client;
+	CSession* _client;
 	SOCKADDR_IN _serveraddr;
 
 };
 
-extern class CIocpCore clientIocpCore;
+extern class ClientMananger clientCore;

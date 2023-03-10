@@ -182,11 +182,11 @@
     <ClCompile Include="packetEvent.cpp">
       <Filter>Shared\Packet</Filter>
     </ClCompile>
-    <ClCompile Include="protocol.cpp">
-      <Filter>ForServer\IocpCore</Filter>
-    </ClCompile>
     <ClCompile Include="WorldRewinder.cpp">
       <Filter>Shared\WorldRewinder</Filter>
+    </ClCompile>
+    <ClCompile Include="protocol.cpp">
+      <Filter>Shared\Packet</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

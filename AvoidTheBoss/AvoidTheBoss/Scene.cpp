@@ -47,15 +47,15 @@ void CGameScene::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPARAM 
 		case VK_RETURN:
 			break;
 			/*‘F1’ 키를 누르면 1인칭 카메라, ‘F3’ 키를 누르면 3인칭 카메라로 변경한다.*/
-		case VK_F1:
+	/*	case VK_F1:
 			if (_player)m_pCamera = _player->ChangeCamera(FIRST_PERSON_CAMERA, m_Timer.GetTimeElapsed());
 			break;
 		case VK_F3:
 			if (_player) m_pCamera = _player->ChangeCamera(THIRD_PERSON_CAMERA, m_Timer.GetTimeElapsed());
-			break;
+			break;*/
 		case VK_F9:
 			//“F9” 키가 눌려지면 윈도우 모드와 전체화면 모드의 전환을 처리한다. 
-			clientIocpCore._client->_mainGame.ChangeSwapChainState();
+			clientCore._client->_mainGame.ChangeSwapChainState();
 			break;
 		default:
 			break;
@@ -83,10 +83,23 @@ void CGameScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandLis
 	m_ppShaders[0] = pObjectShader;
 
 	CreateShaderVariables(pd3dDevice, pd3dCommandList);
-	_player = new CCubePlayer(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, 1);
-	_other = new DummyCubePlayer(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, 1);
-	_other->SetPosition(XMFLOAT3(0, 75, 0));
-	m_pCamera = _player->GetCamera();
+	
+	for (int i = 0; i < 4; ++i)
+	{
+		if (_playersSid[i] == clientCore._client->_sid)
+		{
+			_players[i] = new CMyPlayer(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, 1);
+			m_pCamera = _players[0]->GetCamera();
+			_players[i]->m_sid = _playersSid[i];
+		}
+		else
+		{
+			_players[i] = new COtherPlayer(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, 1);
+			_players[i]->SetPosition(XMFLOAT3(0, 75, 0));
+			_players[i]->m_sid = _playersSid[i];
+		}
+	}
+	
 	InitScene();
 }
 
@@ -129,6 +142,8 @@ void CGameScene::ProcessInput(HWND hWnd)
 	static UCHAR pKeyBuffer[256];
 	// 방향키를 바이트로 처리한다.
 
+	int myIdx = GetPlayerIdx(clientCore._client->_sid);
+
 	uint8 dwDirection = 0;
 	if (::GetKeyboardState(pKeyBuffer))
 	{
@@ -166,8 +181,8 @@ void CGameScene::ProcessInput(HWND hWnd)
 
 			/*cxDelta는 y-축의 회전을 나타내고 cyDelta는 x-축의 회전을 나타낸다. 오른쪽 마우스 버튼이 눌려진 경우
 			cxDelta는 z-축의 회전을 나타낸다.*/
-			if (pKeyBuffer[VK_RBUTTON] & 0xF0) _player->Rotate(cyDelta, 0.0f, -cxDelta);
-			else if (pKeyBuffer[VK_LBUTTON] & 0xF0) _player->Rotate(cyDelta, cxDelta, 0.0f);
+			if (pKeyBuffer[VK_RBUTTON] & 0xF0) _players[myIdx]->Rotate(cyDelta, 0.0f, -cxDelta);
+			else if (pKeyBuffer[VK_LBUTTON] & 0xF0) _players[myIdx]->Rotate(cyDelta, cxDelta, 0.0f);
 
 			if (pKeyBuffer[VK_LBUTTON] & 0xF0)
 			{
@@ -175,12 +190,12 @@ void CGameScene::ProcessInput(HWND hWnd)
 				packet.size = sizeof(C2S_ROTATE);
 				packet.type = C_PACKET_TYPE::ROTATE;
 				packet.angle = cxDelta;
-				clientIocpCore._client->DoSend(&packet);
+				clientCore._client->DoSend(&packet);
 			}
 		}
 
 		/*플레이어를 dwDirection 방향으로 이동한다(실제로는 속도 벡터를 변경한다). 이동 거리는 시간에 비례하도록 한다. 플레이어의 이동 속력은 (1.3UNIT/초)로 가정한다.*/
-		if (dwDirection) _player->Move(dwDirection, (1.2f * UNIT));
+		if (dwDirection) _players[myIdx]->Move(dwDirection, (1.2f * UNIT));
 		// 속도만 더해주고 
 
 	}
@@ -194,18 +209,20 @@ void CGameScene::ProcessInput(HWND hWnd)
 		packet.type = C_PACKET_TYPE::MOVE;
 		packet.key = dwDirection;
 
-		clientIocpCore._client->DoSend(&packet);
+		clientCore._client->DoSend(&packet);
 	}
 	m_lastKeyInput = dwDirection;
 
 	//카메라를 갱신한다. 중력과 마찰력의 영향을 속도 벡터에 적용한다.
-	{
-		std::lock_guard<std::mutex> lg(clientIocpCore._client->_otherLock);
-		_other->Update(m_Timer.GetTimeElapsed());
-	}
-	clientIocpCore._client->_playerLock.lock();
-	_player->Update(m_Timer.GetTimeElapsed());
-	clientIocpCore._client->_playerLock.unlock();
+	//{
+	//	//std::lock_guard<std::mutex> lg(clientCore._client->_otherLock);
+	//	//_other->Update(m_Timer.GetTimeElapsed());
+	//}
+	//clientCore._client->_playerLock.lock();
+	//_player->Update(m_Timer.GetTimeElapsed());
+	//clientCore._client->_playerLock.unlock();
+
+	for (int i = 0; i < 4; ++i) _players[i]->Update(m_Timer.GetTimeElapsed());
 }
 
 void CGameScene::AnimateObjects()

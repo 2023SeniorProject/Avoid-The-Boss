@@ -2,6 +2,7 @@
 
 #include "Timer.h"
 #include "Shader.h"
+#include "Player.h"
 
 #define MAX_LIGHTS			16 
 
@@ -66,14 +67,26 @@ public:
 	void ReleaseUploadBuffers();
 
 	CPlayer* m_pPlayer = NULL;
-	CMapObject* m_pMap = NULL;
 
-protected:
-	//배치(Batch) 처리를 하기 위하여 씬을 셰이더들의 리스트로 표현한다. 
-	CShader** m_ppShaders = NULL;
-	int m_nShaders = 0;
+//protected:
+//	//배치(Batch) 처리를 하기 위하여 씬을 셰이더들의 리스트로 표현한다. 
+//	CShader** m_ppShaders = NULL;
+//	int m_nShaders = 0;
 
 	ID3D12RootSignature* m_pd3dGraphicsRootSignature = NULL;
 	//루트 시그너쳐를 나타내는 인터페이스 포인터이다. 
+
+	CGameObject** m_ppGameObjects = NULL;
+	int							m_nGameObjects = 0;
+
+	LIGHT* m_pLights = NULL;
+	int							m_nLights = 0;
+
+	XMFLOAT4					m_xmf4GlobalAmbient;
+
+	ID3D12Resource* m_pd3dcbLights = NULL;
+	LIGHTS* m_pcbMappedLights = NULL;
+
+	float						m_fElapsedTime = 0.0f;
 };
 

@@ -27,10 +27,10 @@
 class CShader;
 
 //게임 객체의 정보를 셰이더에게 넘겨주기 위한 구조체(상수 버퍼)이다. 
-struct CB_GAMEOBJECT_INFO
-{
-	XMFLOAT4X4 m_xmf4x4World;
-};
+//struct CB_GAMEOBJECT_INFO
+//{
+//	XMFLOAT4X4 m_xmf4x4World;
+//};
 
 struct MATERIALLOADINFO
 {
@@ -74,7 +74,7 @@ public:
 };
 
 
-class CTexture
+/*class CTexture
 {
 private:
 	int m_nReferences = 0;
@@ -132,16 +132,10 @@ public:
 	//루트 서술자 힙에 텍스쳐 자원 입력
 	void UpdateShaderVariables(ID3D12GraphicsCommandList* pd3dCommandList);
 	void UpdateShaderVariable(ID3D12GraphicsCommandList* pd3dCommandList, int nRootParam, int nTexIndex);
-};
-
-
-
-
+};*/
 class CMaterial
 {
-private:
-	//int DiffuseSrvHeapIndex = -1;
-	
+private:	
 	int m_nReferences = 0;
 public:
 	CMaterial();
@@ -150,24 +144,20 @@ public:
 	void AddRef() { m_nReferences++; }
 	void Release() { if (--m_nReferences <= 0) delete this; }
 
-	CTexture* m_pTexture=NULL;
+	//CTexture* m_pTexture=NULL;
 	CShader* m_pShader=NULL;
-
-	XMFLOAT3 m_xmfAlbedo;
-
-	void SetAlbedo(XMFLOAT3 albedo) { m_xmfAlbedo = albedo; }
-	void SetTexture(CTexture* pTex);
-	void SetShader(CShader* pShader);
-
-	void UpdateShaderVariables(ID3D12GraphicsCommandList* pd3dCommandList);
-	void ReleaseShaderVariables();
-
-	void ReleaseUploadBuffers();
 
 	CMaterialColors* m_pMaterialColors = NULL;
 	void SetMaterialColors(CMaterialColors* pMaterialColors);
+	void SetShader(CShader* pShader);
 	void SetIlluminatedShader() { SetShader(m_pIlluminatedShader); }
+	//XMFLOAT3 m_xmfAlbedo;
+	//void SetAlbedo(XMFLOAT3 albedo) { m_xmfAlbedo = albedo; }
+	//void SetTexture(CTexture* pTex);
 
+	void UpdateShaderVariable(ID3D12GraphicsCommandList* pd3dCommandList);
+	//void ReleaseShaderVariables();
+	//void ReleaseUploadBuffers();
 protected:
 	static CShader* m_pIlluminatedShader;
 
@@ -185,15 +175,14 @@ public:
 	void AddRef();
 	void Release();
 
-	CGameObject(int nMeshes = 1);
-	CGameObject(int nMeshes,int nMaterials);
+	CGameObject();
+	//CGameObject(int nMeshes = 1);
+	//CGameObject(int nMeshes,int nMaterials);
 	virtual ~CGameObject();
 
-	XMFLOAT4X4 m_xmf4x4World;
-
 	//게임 객체는 여러 개의 메쉬를 포함하는 경우 게임 객체가 가지는 메쉬들에 대한 포인터와 그 개수이다.
-	CMesh** m_ppMeshes = NULL;
-	int m_nMeshes = 0;
+	CMesh* m_pMesh = NULL;
+	//int m_nMeshes = 0;
 
 	char							m_pstrFrameName[64];
 
@@ -202,24 +191,29 @@ public:
 
 	D3D12_GPU_DESCRIPTOR_HANDLE	m_d3dCbvGPUDescriptorHandle;
 
-protected:
-	ID3D12Resource* m_pd3dcbGameObject = NULL;
-	CB_GAMEOBJECT_INFO* m_pcbMappedGameObject = NULL;
+	CGameObject* m_pParent = NULL;
+	CGameObject* m_pChild = NULL;
+	CGameObject* m_pSibling = NULL;
+
+	XMFLOAT4X4 m_xmf4x4World;
+	XMFLOAT4X4	 m_xmf4x4Transform;
+//protected:
+//	ID3D12Resource* m_pd3dcbGameObject = NULL;
+//	CB_GAMEOBJECT_INFO* m_pcbMappedGameObject = NULL;
 
 public:
 	//virtual void SetMesh(CMesh* pMesh);
-	void SetMesh(int nIndex, CMesh* pMesh);
+	void SetMesh(CMesh* pMesh);
 	void SetShader(CShader* pShader);
 	void SetShader(int nMaterial, CShader* pShader);
 	void SetMaterial(int nMaterial, CMaterial* pMaterial);
-	void SetMaterial(CMaterial* pMaterial);
 
 	void SetChild(CGameObject* pChild, bool bReferenceUpdate = false);
 	virtual void BuildMaterials(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList) { }
 
-	void SetCbvGPUDescriptorHandle(D3D12_GPU_DESCRIPTOR_HANDLE d3dCbvGPUDescriptorHandle) { m_d3dCbvGPUDescriptorHandle = d3dCbvGPUDescriptorHandle; }
-	void SetCbvGPUDescriptorHandlePtr(UINT64 nCbvGPUDescriptorHandlePtr) { m_d3dCbvGPUDescriptorHandle.ptr = nCbvGPUDescriptorHandlePtr; }
-	D3D12_GPU_DESCRIPTOR_HANDLE GetCbvGPUDescriptorHandle() { return(m_d3dCbvGPUDescriptorHandle); }
+	//void SetCbvGPUDescriptorHandle(D3D12_GPU_DESCRIPTOR_HANDLE d3dCbvGPUDescriptorHandle) //{ m_d3dCbvGPUDescriptorHandle = d3dCbvGPUDescriptorHandle; }
+	//void SetCbvGPUDescriptorHandlePtr(UINT64 nCbvGPUDescriptorHandlePtr) { m_d3dCbvGPUDescriptorHandle.ptr = //nCbvGPUDescriptorHandlePtr; }
+	//D3D12_GPU_DESCRIPTOR_HANDLE GetCbvGPUDescriptorHandle() { return(m_d3dCbvGPUDescriptorHandle); }
 
 	//상수 버퍼를 생성한다. 
 	virtual void CreateShaderVariables(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList
@@ -233,9 +227,10 @@ public:
 
 	void ReleaseUploadBuffers();
 
-	virtual void Animate(float fTimeElapsed);
+	virtual void Animate(float fTimeElapsed, XMFLOAT4X4* pxmf4x4Parent = NULL);
+
 	virtual void OnPrepareRender() {}
-	virtual void Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera);
+	virtual void Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera=NULL);
 
 	//게임 객체의 월드 변환 행렬에서 위치 벡터와 방향(x-축, y-축, z-축) 벡터를 반환한다. 
 	XMFLOAT3 GetPosition();
@@ -247,6 +242,7 @@ public:
 	//게임 객체의 위치를 설정한다. 
 	void SetPosition(float x, float y, float z);
 	void SetPosition(XMFLOAT3 xmf3Position);
+	void SetScale(float x, float y, float z);
 	//void SetObjectInWorld(int nIndex, CMesh* pMesh, int nMat,CMaterial** pMaterial, XMFLOAT3 position);
 
 	//게임 객체를 로컬 x-축, y-축, z-축 방향으로 이동한다.
@@ -257,18 +253,14 @@ public:
 	//게임 객체를 회전(x-축, y-축, z-축)한다. 
 	void Rotate(float fPitch = 10.0f, float fYaw = 10.0f, float fRoll = 10.0f);
 	void Rotate(XMFLOAT3* pxmf3Axis, float fAngle);
+	void Rotate(XMFLOAT4* pxmf4Quaternion);
 
 	CGameObject* GetParent() { return(m_pParent); }
 	void UpdateTransform(XMFLOAT4X4* pxmf4x4Parent = NULL);
 	CGameObject* FindFrame(char* pstrFrameName);
 
-	UINT GetMeshType(int index = 0) { return((m_ppMeshes[index]) ? m_ppMeshes[index]->GetType() : 0); }
-public:
-	CGameObject* m_pParent = NULL;
-	CGameObject* m_pChild = NULL;
-	CGameObject* m_pSibling = NULL;
+	UINT GetMeshType() { return((m_pMesh) ? m_pMesh->GetType() : 0); }
 
-	XMFLOAT4X4	 m_xmf4x4Transform;
 public:
 	static MATERIALSLOADINFO* LoadMaterialsInfoFromFile(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, FILE* pInFile);
 	static CMeshLoadInfo* LoadMeshInfoFromFile(FILE* pInFile);
@@ -280,9 +272,9 @@ public:
 };
 
 
-class CMapObject : public CGameObject
-{
-public:
-	CMapObject(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, void* pContext, int nMeshes = 1);
-	virtual ~CMapObject() {}
-};
+//class CMapObject : public CGameObject
+//{
+//public:
+//	CMapObject(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* //pd3dGraphicsRootSignature, void* pContext, int nMeshes = 1);
+//	virtual ~CMapObject() {}
+//};

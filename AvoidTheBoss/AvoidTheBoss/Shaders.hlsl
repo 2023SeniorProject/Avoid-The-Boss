@@ -1,8 +1,8 @@
-//float4 main(float4 pos : POSITION) : SV_POSITION
-//{
-//	return pos;
-//}
-/*
+float4 main(float4 pos : POSITION) : SV_POSITION
+{
+	return pos;
+}
+
 struct MATERIAL
 {
 	float4					m_cAmbient;
@@ -11,65 +11,33 @@ struct MATERIAL
 	float4					m_cEmissive;
 };
 
-float4 Lighting(float3 vPosition, float3 vNormal)
-{
-	float3 vCameraPosition = float3(gvCameraPosition.x, gvCameraPosition.y, gvCameraPosition.z);
-	float3 vToCamera = normalize(vCameraPosition - vPosition);
-
-	float4 cColor = float4(0.0f, 0.0f, 0.0f, 0.0f);
-	[unroll(MAX_LIGHTS)] for (int i = 0; i < gnLights; i++)
-	{
-		if (gLights[i].m_bEnable)
-		{
-			if (gLights[i].m_nType == DIRECTIONAL_LIGHT)
-			{
-				cColor += DirectionalLight(i, vNormal, vToCamera);
-			}
-			else if (gLights[i].m_nType == POINT_LIGHT)
-			{
-				cColor += PointLight(i, vPosition, vNormal, vToCamera);
-			}
-			else if (gLights[i].m_nType == SPOT_LIGHT)
-			{
-				cColor += SpotLight(i, vPosition, vNormal, vToCamera);
-			}
-		}
-	}
-	cColor += (gcGlobalAmbientLight * gMaterial.m_cAmbient);
-	cColor.a = gMaterial.m_cDiffuse.a;
-
-	return(cColor);
-}*/
 
 // 플레이어 정보 상수 버퍼 선언
-cbuffer cbPlayerInfo : register(b0)
-{
-	matrix gmtxPlayerWorld : packoffset(c0);
-};
+//cbuffer cbPlayerInfo : register(b0)
+//{
+//	matrix gmtxPlayerWorld : packoffset(c0);
+//};
 
 //카메라의 정보를 위한 상수 버퍼를 선언한다. 
 cbuffer cbCameraInfo : register(b1)
 {
 	matrix gmtxView : packoffset(c0);
 	matrix gmtxProjection : packoffset(c4);
-};
-
-cbuffer cbMapObjectInfo : register(b2)
-{
-	matrix gmtxMapObject : packoffset(c0);
-	//MATERIAL gMaterial : packoffset(c4);
+	float3 gvCameraPosition : packoffset(c8);
 };
 
 //게임 객체의 정보를 위한 상수 버퍼를 선언한다. 
-cbuffer cbGameObjectInfo : register(b3)
+cbuffer cbGameObjectInfo : register(b2)
 {
 	matrix gmtxGameObject : packoffset(c0);
+	MATERIAL				gMaterial : packoffset(c4);
 };
 
+#include "Light.hlsl"
 //---------------------------------------------------------플레이어 출력
 
 //정점 셰이더의 입력을 위한 구조체를 선언한다. 
-struct VS_DIFFUSED_INPUT
+/*struct VS_DIFFUSED_INPUT
 {
 	float3 position : POSITION;
 	float4 color : COLOR;
@@ -153,7 +121,7 @@ float4 PSTextured(VS_TEXTURED_OUTPUT input) : SV_TARGET
 	//입력되는 픽셀의 색상을 출력한다. 
 	return(float4(1.0f, 0.0f, 0.0f, 1.0f));
 }
-
+*/
 
 struct VS_LIGHTING_INPUT
 {
@@ -175,8 +143,8 @@ VS_LIGHTING_OUTPUT VSLighting(VS_LIGHTING_INPUT input)
 {
 	VS_LIGHTING_OUTPUT output;
 
-	output.normalW = mul(input.normal, (float3x3)gmtxMapObject);
-	output.positionW = (float3)mul(float4(input.position, 1.0f), gmtxMapObject);
+	output.normalW = mul(input.normal, (float3x3)gmtxGameObject);
+	output.positionW = (float3)mul(float4(input.position, 1.0f), gmtxGameObject);
 	output.position = mul(mul(float4(output.positionW, 1.0f), gmtxView), gmtxProjection);
 #ifdef _WITH_VERTEX_LIGHTING
 	output.normalW = normalize(output.normalW);
@@ -187,15 +155,12 @@ VS_LIGHTING_OUTPUT VSLighting(VS_LIGHTING_INPUT input)
 
 float4 PSLighting(VS_LIGHTING_OUTPUT input) : SV_TARGET
 {
-//#ifdef _WITH_VERTEX_LIGHTING
-//	return(input.color);
-//#else
-//	input.normalW = normalize(input.normalW);
-//	float4 color = Lighting(input.positionW, input.normalW);
-//
-//	return(color);
-//	
-//
-//#endif
-	return(float4(1.0f, 0.0f, 1.0f, 1.0f));
+#ifdef _WITH_VERTEX_LIGHTING
+	return(input.color);
+#else
+	input.normalW = normalize(input.normalW);
+	float4 color = Lighting(input.positionW, input.normalW);
+
+	return(color);
+#endif
 }

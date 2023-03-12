@@ -5,13 +5,15 @@
 
 //카메라의 종류(모드: Mode)를 나타내는 상수를 다음과 같이 선언한다. 
 #define FIRST_PERSON_CAMERA		0x01
-#define THIRD_PERSON_CAMERA		0x02
+#define SPACESHIP_CAMERA		0x02
+#define THIRD_PERSON_CAMERA			0x03
 
 //---카메라 상수 버퍼를 위한 구조체
 struct VS_CB_CAMERA_INFO
 {
-	XMFLOAT4X4 m_xmf4x4View;
-	XMFLOAT4X4 m_xmf4x4Projection;
+	XMFLOAT4X4						m_xmf4x4View;
+	XMFLOAT4X4						m_xmf4x4Projection;
+	XMFLOAT3						m_xmf3Position;
 };
 
 class CPlayer;
@@ -86,7 +88,6 @@ public:
 
 	virtual void SetViewportsAndScissorRects(ID3D12GraphicsCommandList* pd3dCommandList);
 
-public:
 	void SetPlayer(CPlayer* pPlayer) { m_pPlayer = pPlayer; }
 	CPlayer* GetPlayer() { return(m_pPlayer); }
 

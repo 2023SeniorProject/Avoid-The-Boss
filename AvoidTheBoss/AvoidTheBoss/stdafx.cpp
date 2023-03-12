@@ -52,7 +52,7 @@ ID3D12Resource* CreateBufferResource(ID3D12Device* pd3dDevice, ID3D12GraphicsCom
 			{
 				d3dHeapPropertiesDesc.Type = D3D12_HEAP_TYPE_UPLOAD;
 				pd3dDevice->CreateCommittedResource(&d3dHeapPropertiesDesc, D3D12_HEAP_FLAG_NONE, &d3dResourceDesc, D3D12_RESOURCE_STATE_GENERIC_READ, NULL, __uuidof(ID3D12Resource), (void**)ppd3dUploadBuffer);
-#ifdef _WITH_MAPPING
+
 				D3D12_RANGE d3dReadRange = { 0, 0 };
 				UINT8* pBufferDataBegin = NULL;
 				(*ppd3dUploadBuffer)->Map(0, &d3dReadRange, (void**)&pBufferDataBegin);
@@ -60,14 +60,14 @@ ID3D12Resource* CreateBufferResource(ID3D12Device* pd3dDevice, ID3D12GraphicsCom
 				(*ppd3dUploadBuffer)->Unmap(0, NULL);
 
 				pd3dCommandList->CopyResource(pd3dBuffer, *ppd3dUploadBuffer);
-#else
-				D3D12_SUBRESOURCE_DATA d3dSubResourceData;
-				::ZeroMemory(&d3dSubResourceData, sizeof(D3D12_SUBRESOURCE_DATA));
-				d3dSubResourceData.pData = pData;
-				d3dSubResourceData.SlicePitch = d3dSubResourceData.RowPitch = nBytes;
-				::UpdateSubresources<1>(pd3dCommandList, pd3dBuffer, *ppd3dUploadBuffer, 0, 0, 1, &d3dSubResourceData);
 
-#endif
+				//D3D12_SUBRESOURCE_DATA d3dSubResourceData;
+				//::ZeroMemory(&d3dSubResourceData, sizeof(D3D12_SUBRESOURCE_DATA));
+				//d3dSubResourceData.pData = pData;
+				//d3dSubResourceData.SlicePitch = d3dSubResourceData.RowPitch = nBytes;
+				//::UpdateSubresources<1>(pd3dCommandList, pd3dBuffer, *ppd3dUploadBuffer, 0, 0, 1, &d3dSubResourceData);
+
+
 				D3D12_RESOURCE_BARRIER d3dResourceBarrier;
 				::ZeroMemory(&d3dResourceBarrier, sizeof(D3D12_RESOURCE_BARRIER));
 				d3dResourceBarrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;

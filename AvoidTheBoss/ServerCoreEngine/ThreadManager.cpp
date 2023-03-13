@@ -4,17 +4,6 @@
 // function --> void 인풋의 void 반환 함수를 받아준다.
 // 외에 여러가지 함수 포인터를 받을 수 있음.
 
-//void ThreadManager::Launch(function<void()> callback ,Args ...)
-//{
-//	_threads.push_back(thread([=]()
-//		{
-//			InitTLS();
-//			callback();
-//			DestroyTLS();
-//		}));
-//
-//}
-
 
 
 void ThreadManager::Launch(function<void(void)> callback)

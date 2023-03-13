@@ -137,9 +137,7 @@ public:
 	};
 	void AddHistory(PlayerInfo* p)
 	{
-		
-		
-		std::cout << " Add WorldStatus Frame : " << _curWorldFrame << "\n";
+		 std::cout << " Add WorldStatus Frame : " << _curWorldFrame << "\n";
 		_lastWorldStatus._pPos[0] = p[0].GetPosition();
 		_lastWorldStatus._pPos[1] = p[1].GetPosition();
 		_lastWorldStatus._pPos[2] = p[2].GetPosition();

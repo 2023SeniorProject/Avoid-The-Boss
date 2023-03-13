@@ -78,8 +78,19 @@ void Room::UserIn(int32 sid)
 			}
 			BroadCasting(&packet);
 			_logic.StartGame();
-
 		}
+		/*S2C_GAMESTART packet;
+		packet.type = S_PACKET_TYPE::GAME_START;
+		packet.size = sizeof(S2C_GAMESTART);
+		for (int i = 0; i < 4; ++i) packet.sids[i] = 0;
+		int k = 0;
+		for (auto i : _cList)
+		{
+			packet.sids[k] = i;
+			++k;
+		}
+		BroadCasting(&packet);
+		_logic.StartGame();*/
 	}		
 	std::cout << "RM [" << _num << "][" << _cList.size() << "/4]" << std::endl;
 	// 갱신하는걸 보내줄지 말지 미정
@@ -91,24 +102,21 @@ void Room::BroadCasting(void* packet) // 방에 속하는 클라이언트에게만 전달하기
 	std::shared_lock<std::shared_mutex> rll(_listLock);
 	for (auto i =  _cList.begin(); i != _cList.end(); ++i)
 	{
-		if (ServerIocpCore._clients[*i] == nullptr)
-		{
-			continue;
-		}
+		if (ServerIocpCore._clients[*i] == nullptr) continue;
 		if(!ServerIocpCore._clients[*i]->DoSend(packet))
 		{ 
 			// 비정상 접속 클라이언트 처리
 			cout << *i << "Client Error Occur" << endl;
 			continue;
 		}
-		//std::cout << *i << std::endl;
 	}
 }
 
+// 방에 있는 유저에 대한 게임 로직 업데이트 진행
 void Room::Update()
 {
+	if (_status != ROOM_STATUS::FULL) return;
 
-	//_rmTimer.Tick(60.f);
 	{
 		std::unique_lock<std::shared_mutex> ql(_jobQueueLock);
 		while(!_jobQueue.empty())
@@ -123,17 +131,6 @@ void Room::Update()
 		}
 	}	
 
-	//std::shared_lock<std::shared_mutex> rll(_listLock);
-	//for (auto i = _cList.begin(); i != _cList.end(); ++i)
-	//{
-	//	if (ServerIocpCore._clients[*i] == nullptr)
-	//	{
-	//		continue;
-	//	}
-	//	// std::lock_guard<std::mutex> pl(ServerIocpCore._clients[*i]->_playerLock);
-	//	// ServerIocpCore._clients[*i]->_playerInfo.Update(_rmTimer.GetTimeElapsed());
-	//	
-	//}
 
 	_logic.UpdateWorld(60.f, _players);
 }

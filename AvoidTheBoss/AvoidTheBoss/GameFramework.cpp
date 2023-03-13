@@ -2,6 +2,7 @@
 #include "GameFramework.h"
 #include "clientIocpCore.h"
 
+CGameFramework mainGame;
 // #define _WITH_PLAYER_TOP // 플레이어 깊이 버퍼값 1.0f
 
 CGameFramework::CGameFramework()
@@ -437,7 +438,7 @@ void CGameFramework::FrameAdvance() // 여기서 업데이트랑 렌더링 동시에 진행하는 
 	{
 		/*if (m_pScene->_player) m_pScene->_player->Render(m_pd3dCommandList, m_pScene->m_pCamera);
 		if (m_pScene->_other)  m_pScene->_other->Render(m_pd3dCommandList, m_pScene->m_pCamera);*/
-		for (int i = 0; i < 4; ++i) if (m_pScene->_players[i] != nullptr) m_pScene->_players[i]->Render(m_pd3dCommandList, m_pScene->m_pCamera);
+		for (int i = 0; i < PLAYERNUM; ++i) if (m_pScene->_players[i] != nullptr) m_pScene->_players[i]->Render(m_pd3dCommandList, m_pScene->m_pCamera);
 	}
 	d3dResourceBarrier.Transition.StateBefore = D3D12_RESOURCE_STATE_RENDER_TARGET;
 	d3dResourceBarrier.Transition.StateAfter = D3D12_RESOURCE_STATE_PRESENT;

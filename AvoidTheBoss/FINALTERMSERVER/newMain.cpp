@@ -4,9 +4,16 @@
 #include "AcceptManager.h"
 int main()
 {
+	
+
 	std::ios::sync_with_stdio(false);
 	std::cout.tie(NULL);
 	::SetConsoleTitle(L"SERVER");
+	SocketUtil::Init();
+	
+	ThreadManager* GThreadManager = nullptr;
+	GThreadManager = new ThreadManager;
+
 	AcceptManager listener;
 	listener.InitAccept();
 	GThreadManager = new ThreadManager;
@@ -32,4 +39,5 @@ int main()
 		});
 	GThreadManager->Join();
 	delete GThreadManager;
+	SocketUtil::Clear();
 }

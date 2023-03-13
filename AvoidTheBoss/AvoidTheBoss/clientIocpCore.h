@@ -47,9 +47,9 @@ public:
 	~ClientMananger();
 	void InitConnect(const char* address);
 	void DoConnect(void* loginInfo);
-	void DestroyGame() { _client->_mainGame.OnDestroy(); }
-	void InitGameLoop(HINSTANCE hInst, HWND hWnd) { _client->_mainGame.OnCreate(hInst, hWnd); }
-	void GameLoop() { _client->_mainGame.FrameAdvance(); }
+	//void DestroyGame() { _client->_mainGame.OnDestroy(); }
+	//void InitGameLoop(HINSTANCE hInst, HWND hWnd) { _client->_mainGame.OnCreate(hInst, hWnd); }
+	//void GameLoop() { _client->_mainGame.FrameAdvance(); }
 	void InputProcessing(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) { _client->_mainGame.OnProcessingWindowMessage(hWnd, message, wParam, lParam); }
 	virtual void Disconnect(int32 sid) override;
 public:

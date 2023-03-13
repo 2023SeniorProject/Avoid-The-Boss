@@ -116,6 +116,8 @@ using Microsoft::WRL::ComPtr;
 //1.0f = 1cm / 1000.0f = 1m
 #define UNIT 100.0f // 1m = 1 unit
 
+const float PLAYER_VELOCITY = UNIT * 1.2f;
+
 extern UINT gnCbvSrvDescIncrementSize;
 
 //----버퍼 리소스 생성 함수
@@ -357,3 +359,6 @@ namespace Plane
 #define DIR_RIGHT	 0x08
 #define DIR_UP		 0x10
 #define DIR_DOWN	 0x20
+
+
+#define PLAYERNUM 4

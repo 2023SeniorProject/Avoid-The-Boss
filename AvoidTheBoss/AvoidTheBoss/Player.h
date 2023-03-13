@@ -9,11 +9,6 @@
 #include "GameObject.h"
 #include "Camera.h"
 
-//struct CB_PLAYER_INFO
-//{
-//	XMFLOAT4X4					m_xmf4x4World;
-//};
-
 class CPlayer : public CGameObject
 {
 protected:
@@ -68,7 +63,7 @@ public:
 		Move(XMFLOAT3(xmf3Position.x - m_xmf3Position.x, xmf3Position.y - m_xmf3Position.y, xmf3Position.z - m_xmf3Position.z), false);
 	}
 
-	XMFLOAT3& GetVelocity() { return(m_xmf3Velocity); }
+	const XMFLOAT3& GetVelocity() const { return(m_xmf3Velocity); }
 	float GetYaw() { return(m_fYaw); }
 	float GetPitch() { return(m_fPitch); }
 	float GetRoll() { return(m_fRoll); }
@@ -79,7 +74,7 @@ public:
 	//플레이어를 이동하는 함수이다. 
 	void Move(DWORD dwDirection, float fDistance, bool bUpdateVelocity = false);
 	void Move(const XMFLOAT3& xmf3Shift, bool bUpdateVelocity = false);
-	//void Move(float fxOffset = 0.0f, float fyOffset = 0.0f, float fzOffset = 0.0f);
+	void Move(float fxOffset = 0.0f, float fyOffset = 0.0f, float fzOffset = 0.0f);
 
 	//플레이어를 회전하는 함수이다. 
 	void Rotate(float x, float y, float z);
@@ -106,13 +101,10 @@ public:
 	virtual CCamera* ChangeCamera(DWORD nNewCameraMode, float fTimeElapsed) {
 		return(NULL);
 	}
-
 	//플레이어의 위치와 회전축으로부터 월드 변환 행렬을 생성하는 함수이다. 
 	virtual void OnPrepareRender();
-
 	//플레이어의 카메라가 3인칭 카메라일 때 플레이어(메쉬)를 렌더링한다. 
-	virtual void Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera =
-		NULL);
+	virtual void Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera =NULL);
 //protected:
 //	ID3D12Resource* m_pd3dcbPlayer = NULL;
 //	CB_PLAYER_INFO* m_pcbMappedPlayer = NULL;
@@ -123,12 +115,12 @@ class CTilePlayer : public CPlayer
 public:
 	CTilePlayer(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature);
 	virtual ~CTilePlayer();
+
 private:
-	//virtual void OnInitialize();
+	virtual void OnInitialize();
 	virtual void Animate(float fTimeElapsed, XMFLOAT4X4* pxmf4x4Parent = NULL);
 public:
 	virtual CCamera* ChangeCamera(DWORD nNewCameraMode, float fTimeElapsed);
-
 	virtual void OnPrepareRender();
 
 };

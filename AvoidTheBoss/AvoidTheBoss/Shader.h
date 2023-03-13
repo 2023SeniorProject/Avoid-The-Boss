@@ -31,15 +31,17 @@ public:
 
 	virtual void CreateShader(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature
 		* pd3dGraphicsRootSignature);
+
 	virtual void CreateShaderVariables(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList
 		* pd3dCommandList);
 	virtual void UpdateShaderVariables(ID3D12GraphicsCommandList* pd3dCommandList);
-	virtual void UpdateShaderVariable(ID3D12GraphicsCommandList* pd3dCommandList,
-		XMFLOAT4X4* pxmf4x4World);
 	virtual void ReleaseShaderVariables();
+
+	virtual void UpdateShaderVariable(ID3D12GraphicsCommandList* pd3dCommandList,XMFLOAT4X4* pxmf4x4World);
+	virtual void UpdateShaderVariable(ID3D12GraphicsCommandList* pd3dCommandList, CMaterialColors* pMaterialColors);
 	//virtual void ReleaseUploadBuffers();
 
-	virtual void OnPrepareRender(ID3D12GraphicsCommandList* pd3dCommandList, int nPipelineState);
+	virtual void OnPrepareRender(ID3D12GraphicsCommandList* pd3dCommandList, int nPipelineState=0);
 	virtual void Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera, int nPipelineState=0);
 
 	/*void CreateCbvSrvDescriptorHeaps(ID3D12Device* pd3dDevice, int nCbv, int nSrv);
@@ -64,7 +66,6 @@ protected:
 	ID3D12PipelineState** m_ppd3dPipelineStates = NULL;
 
 	D3D12_GRAPHICS_PIPELINE_STATE_DESC	m_d3dPipelineStateDesc;
-
 	//D3D12_GRAPHICS_PIPELINE_STATE_DESC	m_d3dPipelineStateDesc;
 //
 //	ID3D12DescriptorHeap* m_pCbvSrvDescHeap = NULL;
@@ -82,7 +83,6 @@ protected:
 //
 //	D3D12_GPU_DESCRIPTOR_HANDLE m_d3dCbvGPUDescNextHandle;
 //	D3D12_GPU_DESCRIPTOR_HANDLE m_d3dSrvGPUDescNextHandle;
-
 };
 
 /*class CPlayerShader : public CShader // CDiffusedShader에서 CPlayerShader로 변경

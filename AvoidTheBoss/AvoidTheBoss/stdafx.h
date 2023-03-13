@@ -74,6 +74,7 @@ using Microsoft::WRL::ComPtr;
 #define FRAME_BUFFER_WIDTH  800
 #define FRAME_BUFFER_HEIGHT 600
 
+#define _WITH_CB_WORLD_MATRIX_DESCRIPTOR_TABLE
 //----전체 화면 모드로 시작
 //#define _WITH_SWAPCHAIN_FULLSCREEN_STATE
 
@@ -91,7 +92,7 @@ using Microsoft::WRL::ComPtr;
 //1.0f = 1cm / 100.0f = 1m
 #define UNIT 100.0f // 1m = 1 unit
 
-extern UINT gnCbvSrvDescIncrementSize;
+extern UINT gnCbvSrvDescriptorIncrementSize;
 
 //----버퍼 리소스 생성 함수
 extern ID3D12Resource* CreateBufferResource(ID3D12Device* pd3dDevice,
@@ -125,8 +126,7 @@ namespace Vector3
 		XMStoreFloat3(&xmf3Result, xmvVector);
 		return(xmf3Result);
 	}
-	inline XMFLOAT3 ScalarProduct(XMFLOAT3& xmf3Vector, float fScalar, bool bNormalize =
-		true)
+	inline XMFLOAT3 ScalarProduct(XMFLOAT3& xmf3Vector, float fScalar, bool bNormalize = true)
 	{
 		XMFLOAT3 xmf3Result;
 		if (bNormalize)

@@ -1,8 +1,3 @@
-float4 main(float4 pos : POSITION) : SV_POSITION
-{
-	return pos;
-}
-
 struct MATERIAL
 {
 	float4					m_cAmbient;
@@ -30,7 +25,7 @@ cbuffer cbCameraInfo : register(b1)
 cbuffer cbGameObjectInfo : register(b2)
 {
 	matrix gmtxGameObject : packoffset(c0);
-	MATERIAL				gMaterial : packoffset(c4);
+	MATERIAL gMaterial : packoffset(c4);
 };
 
 #include "Light.hlsl"
@@ -122,7 +117,7 @@ float4 PSTextured(VS_TEXTURED_OUTPUT input) : SV_TARGET
 	return(float4(1.0f, 0.0f, 0.0f, 1.0f));
 }
 */
-
+//#define _WITH_VERTEX_LIGHTING
 struct VS_LIGHTING_INPUT
 {
 	float3 position : POSITION;

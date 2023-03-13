@@ -6,7 +6,7 @@
 //카메라의 종류(모드: Mode)를 나타내는 상수를 다음과 같이 선언한다. 
 #define FIRST_PERSON_CAMERA		0x01
 #define SPACESHIP_CAMERA		0x02
-#define THIRD_PERSON_CAMERA			0x03
+#define THIRD_PERSON_CAMERA		0x03
 
 //---카메라 상수 버퍼를 위한 구조체
 struct VS_CB_CAMERA_INFO

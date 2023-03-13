@@ -151,13 +151,8 @@ public:
 	void SetMaterialColors(CMaterialColors* pMaterialColors);
 	void SetShader(CShader* pShader);
 	void SetIlluminatedShader() { SetShader(m_pIlluminatedShader); }
-	//XMFLOAT3 m_xmfAlbedo;
-	//void SetAlbedo(XMFLOAT3 albedo) { m_xmfAlbedo = albedo; }
-	//void SetTexture(CTexture* pTex);
 
 	void UpdateShaderVariable(ID3D12GraphicsCommandList* pd3dCommandList);
-	//void ReleaseShaderVariables();
-	//void ReleaseUploadBuffers();
 protected:
 	static CShader* m_pIlluminatedShader;
 

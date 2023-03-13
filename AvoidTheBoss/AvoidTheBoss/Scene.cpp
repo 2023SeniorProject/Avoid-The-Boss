@@ -16,24 +16,6 @@ bool CScene::OnProcessingMouseMessage(HWND hWnd, UINT nMessageID, WPARAM wParam,
 
 bool CScene::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPARAM wParam, LPARAM lParam)
 {
-	//switch (nMessageID)
-	//{
-	//case WM_KEYDOWN:
-	//	switch (wParam)
-	//	{
-	//	case 'W': m_ppGameObjects[0]->MoveForward(+1.0f); break;
-	//	case 'S': m_ppGameObjects[0]->MoveForward(-1.0f); break;
-	//	case 'A': m_ppGameObjects[0]->MoveStrafe(-1.0f); break;
-	//	case 'D': m_ppGameObjects[0]->MoveStrafe(+1.0f); break;
-	//	case 'Q': m_ppGameObjects[0]->MoveUp(+1.0f); break;
-	//	case 'R': m_ppGameObjects[0]->MoveUp(-1.0f); break;
-	//	default:
-	//		break;
-	//	}
-	//	break;
-	//default:
-	//	break;
-	//}
 	return(false);
 }
 
@@ -52,7 +34,7 @@ void CScene::BuildDefaultLightsAndMaterials()
 	m_pLights[0].m_xmf4Ambient = XMFLOAT4(0.3f, 0.3f, 0.3f, 1.0f);
 	m_pLights[0].m_xmf4Diffuse = XMFLOAT4(0.8f, 0.8f, 0.8f, 1.0f);
 	m_pLights[0].m_xmf4Specular = XMFLOAT4(0.4f, 0.4f, 0.4f, 0.0f);
-	m_pLights[0].m_xmf3Direction = XMFLOAT3(1.0f, 0.0f, 0.0f);
+	m_pLights[0].m_xmf3Direction = XMFLOAT3(0.0f, 1.0f, -1.0f);
 
 	/*m_pLights[0].m_bEnable = true;
 	m_pLights[0].m_nType = POINT_LIGHT;
@@ -116,13 +98,13 @@ void CScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* p
 	m_ppGameObjects = new CGameObject * [m_nGameObjects];
 
 	CGameObject* pMap = CGameObject::LoadGeometryFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "Map.bin");
+	
 	CGameObject* pMapObject = NULL;
-
 	pMapObject = new CGameObject();
 	pMapObject->SetChild(pMap, true);
-	pMapObject->SetPosition(0.0f, -50.0f, 0.0f);
-	//pMapObject->SetScale(1.0f, 1.0f, 1.0f);
-	//pMapObject->Rotate(0.0f, 0.0f, 0.0f);
+	pMapObject->SetPosition(0.0f, 0.0f, 0.0f);
+	pMapObject->SetScale(1.0f, 1.0f, 1.0f);
+	pMapObject->Rotate(0.0f, 0.0f, 0.0f);
 	m_ppGameObjects[0] = pMapObject;
 
 	CreateShaderVariables(pd3dDevice, pd3dCommandList);
@@ -157,17 +139,10 @@ void CScene::ReleaseObjects()
 	if (m_pd3dGraphicsRootSignature)
 		m_pd3dGraphicsRootSignature->Release();
 
-	//for (int i = 0; i < m_nShaders; i++)
-	//{
-	//	m_ppShaders[i]->ReleaseShaderVariables();
-	//	m_ppShaders[i]->ReleaseObjects();
-	//	m_ppShaders[i]->Release();
-	//}
-	//delete[] m_ppShaders;
-
 	if (m_ppGameObjects)
 	{
-		for (int i = 0; i < m_nGameObjects; i++) if (m_ppGameObjects[i]) m_ppGameObjects[i]->Release();
+		for (int i = 0; i < m_nGameObjects; i++) 
+			if (m_ppGameObjects[i]) m_ppGameObjects[i]->Release();
 		delete[] m_ppGameObjects;
 	}
 
@@ -256,73 +231,7 @@ void CScene::ReleaseUploadBuffers()
 }
 
 ID3D12RootSignature* CScene::CreateGraphicsRootSignature(ID3D12Device* pd3dDevice)
-{
-	/*// 서술자 범위 지정
-	D3D12_DESCRIPTOR_RANGE DescRange[2];
-	DescRange[0].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_CBV;
-	DescRange[0].NumDescriptors = 1;
-	DescRange[0].BaseShaderRegister = 3; // c : obj
-	DescRange[0].RegisterSpace = 0;
-	DescRange[0].OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;
-	
-	DescRange[1].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
-	DescRange[1].NumDescriptors = 1;
-	DescRange[1].BaseShaderRegister = 0;  // ? : texture
-	DescRange[1].RegisterSpace = 0;
-	DescRange[1].OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;
-
-	// 루트서명의 슬롯 설명
-	D3D12_ROOT_PARAMETER RootParameters[5]; 
-	// b0 : player / b1 : camera / b2 :	MapGameobject / b3 : objectVertex / t0 : OnjectTexture
-	RootParameters[0].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV; //32bit constant
-	RootParameters[0].Constants.ShaderRegister = 0;
-	RootParameters[0].Constants.RegisterSpace = 0;
-	RootParameters[0].ShaderVisibility = D3D12_SHADER_VISIBILITY_VERTEX;
-
-	RootParameters[1].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;
-	RootParameters[1].Constants.ShaderRegister = 1;
-	RootParameters[1].Constants.RegisterSpace = 0;
-	RootParameters[1].ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
-
-	//Map
-	RootParameters[2].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;
-	RootParameters[2].Constants.ShaderRegister = 2; 
-	RootParameters[2].Constants.RegisterSpace = 0;
-	RootParameters[2].ShaderVisibility = D3D12_SHADER_VISIBILITY_VERTEX;
-
-	//GameObject
-	RootParameters[3].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;
-	RootParameters[3].DescriptorTable.NumDescriptorRanges = 1; 
-	RootParameters[3].DescriptorTable.pDescriptorRanges = &DescRange[0];
-	RootParameters[3].ShaderVisibility = D3D12_SHADER_VISIBILITY_VERTEX;
-
-	RootParameters[4].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;
-	RootParameters[4].DescriptorTable.NumDescriptorRanges = 1;
-	RootParameters[4].DescriptorTable.pDescriptorRanges = &DescRange[1];
-	RootParameters[4].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;
-
-	//RootParameters[5].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;
-	//RootParameters[5].Descriptor.ShaderRegister = 4; //Lights
-	//RootParameters[5].Descriptor.RegisterSpace = 0;
-	//RootParameters[5].ShaderVisibility = D3D12_SHADER_VISIBILITY_ALL;
-
-	D3D12_TEXTURE_ADDRESS_MODE textureMode = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
-	D3D12_STATIC_SAMPLER_DESC samplerDesc;
-	::ZeroMemory(&samplerDesc, sizeof(D3D12_STATIC_SAMPLER_DESC));
-	samplerDesc.Filter = D3D12_FILTER_MIN_MAG_MIP_LINEAR;
-	samplerDesc.AddressU = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
-	samplerDesc.AddressV = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
-	samplerDesc.AddressW = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
-	samplerDesc.MipLODBias = 0;
-	samplerDesc.MaxAnisotropy = 1;
-	samplerDesc.ComparisonFunc = D3D12_COMPARISON_FUNC_ALWAYS; //깊이-스텐실
-	//samplerDesc.BorderColor = ;
-	samplerDesc.MinLOD = 0;
-	samplerDesc.MaxLOD = D3D12_FLOAT32_MAX;
-	samplerDesc.ShaderRegister = 0; //s0
-	samplerDesc.RegisterSpace = 0; //0이 기본값
-	samplerDesc.ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;*/
-		
+{		
 	ID3D12RootSignature* pd3dGraphicsRootSignature = NULL;
 
 	D3D12_ROOT_PARAMETER pd3dRootParameters[3];
@@ -360,7 +269,6 @@ ID3D12RootSignature* CScene::CreateGraphicsRootSignature(ID3D12Device* pd3dDevic
 
 	ID3DBlob* pd3dSignatureBlob = NULL;
 	ID3DBlob* pd3dErrorBlob = NULL;
-
 	// ID3D12Device::CreateRootSignature 에 전달할 수 있는 루트 서명 버전 1.0을 직렬화
 	D3D12SerializeRootSignature(
 				&RootSignatureDesc, 

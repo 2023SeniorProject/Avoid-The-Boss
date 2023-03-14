@@ -105,7 +105,10 @@ using Microsoft::WRL::ComPtr;
 //1.0f = 1m 
 #define UNIT 1.0f // 1m = 1 unit
 
-extern UINT gnCbvSrvDescriptorIncrementSize;
+
+const float PLAYER_VELOCITY = UNIT * 1.2f;
+
+extern UINT gnCbvSrvDescIncrementSize;
 
 //----버퍼 리소스 생성 함수
 extern ID3D12Resource* CreateBufferResource(ID3D12Device* pd3dDevice,
@@ -345,3 +348,6 @@ namespace Plane
 #define DIR_RIGHT	 0x08
 #define DIR_UP		 0x10
 #define DIR_DOWN	 0x20
+
+
+#define PLAYERNUM 4

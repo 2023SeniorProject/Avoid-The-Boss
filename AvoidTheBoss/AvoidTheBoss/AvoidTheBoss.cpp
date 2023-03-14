@@ -7,8 +7,6 @@
 #include "SocketUtil.h"
 #include "ThreadManager.h"
 
-
-
 #define MAX_LOADSTRING 100
 
 // 전역 변수:
@@ -31,18 +29,19 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     _In_ int       nCmdShow)
 {
     ::SetConsoleTitle(L"Client");
-   
+    ThreadManager* GCThreadManager = nullptr;
     MSG msg;
     
     UNREFERENCED_PARAMETER(hPrevInstance);
     UNREFERENCED_PARAMETER(lpCmdLine);
-   //SocketUtil::Init();
+   SocketUtil::Init();
    GCThreadManager = new ThreadManager;
     int retval = DialogBox(hInstance, MAKEINTRESOURCE(IDD_LOGINDIALOG), NULL, reinterpret_cast<DLGPROC>(MyDialogBox));
     if (retval == -1 || retval == 2)
     {
         SocketUtil::Close(clientCore._client->_sock);
         SocketUtil::Clear();
+        delete GCThreadManager;
         return 0;
     }
     // 전역 문자열을 초기화합니다.
@@ -64,38 +63,35 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
             while (true)
             {
                 if (!clientCore.Processing()) break;
-                std::this_thread::sleep_for(0ms);
             }
         }
     );
-    while (true)
-    {
-        if (::PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
-        {
-            if (msg.message == WM_QUIT)
-            {
-                SocketUtil::Close(clientCore._client->_sock);
-                break;
-            }
-            if (!::TranslateAccelerator(msg.hwnd, hAccelTable, &msg))
-            {
-                ::TranslateMessage(&msg);
-                ::DispatchMessage(&msg);
-            }
-        }
-        else
-        {
-          
-           clientCore.GameLoop(); // 처리할 윈도우 메세지가 큐에 없을 때 게임프로그램이 CPU사용
-        }
-        std::this_thread::sleep_for(0ms);
-    }
- 
+
+   while (true)
+   {
+       if (::PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
+       {
+           if (msg.message == WM_QUIT)
+           {
+               SocketUtil::Close(clientCore._client->_sock);
+               break;
+           }
+           if (!::TranslateAccelerator(msg.hwnd, hAccelTable, &msg))
+           {
+               ::TranslateMessage(&msg);
+               ::DispatchMessage(&msg);
+           }
+       }
+       else
+       {
+          mainGame.FrameAdvance(); // 처리할 윈도우 메세지가 큐에 없을 때 게임프로그램이 CPU사용
+       }
+       std::this_thread::sleep_for(0ms);
+   }
+  
     GCThreadManager->Join();
-   // SocketUtil::Clear();
-    
     delete GCThreadManager;
- 
+    mainGame.OnDestroy();
     return (int)msg.wParam;
 }
 
@@ -115,7 +111,7 @@ ATOM MyRegisterClass(HINSTANCE hInstance)
     wcex.hCursor = ::LoadCursor(nullptr, IDC_ARROW);
     wcex.hbrBackground = (HBRUSH)(COLOR_WINDOW + 1);
     //주 윈도우의 메뉴가 나타나지 않도록 한다.
-    wcex.lpszMenuName = NULL; //AKEINTRESOURCEW(IDC_AVOIDTHEBOSS);
+    wcex.lpszMenuName = NULL; 
     wcex.lpszClassName = szWindowClass;
     wcex.hIconSm = ::LoadIcon(wcex.hInstance, MAKEINTRESOURCE(IDI_SMALL));
 
@@ -137,7 +133,8 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
     if (!hMainWnd)return (FALSE);
 
     //----프레임워크 객체 초기화
-   clientCore.InitGameLoop(hInst, hMainWnd);
+    mainGame.OnCreate(hInst, hMainWnd);
+    //clientCore.InitGameLoop(hInst, hMainWnd);
 
     ShowWindow(hMainWnd, nCmdShow);
     UpdateWindow(hMainWnd);
@@ -165,7 +162,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
     case WM_MOUSEMOVE:
     case WM_KEYDOWN:
     case WM_KEYUP:
-        clientCore.InputProcessing(hWnd, message, wParam, lParam);
+        mainGame.OnProcessingWindowMessage(hWnd, message, wParam, lParam);
         break;
     case WM_COMMAND:
     {
@@ -193,6 +190,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
     }
     break;
     case WM_DESTROY:
+
         ::PostQuitMessage(0);
         break;
     default:
@@ -249,16 +247,17 @@ BOOL CALLBACK MyDialogBox(HWND hWndDlg, UINT message, WPARAM wParam, LPARAM lPar
             {
                 if (clientCore.Processing())
                 {
-                    if (clientCore._client->_loginOk)
+                    if (clientCore._client->_loginOk == 1)
                     {
                         EndDialog(hWndDlg, 1);
                         return TRUE;
                     }
-                    else if (!clientCore._client->_loginOk)
+                    else if (clientCore._client->_loginOk == 0)
                     {
                         EndDialog(hWndDlg, -1);
                         return TRUE;
                     }
+                    else if (clientCore._client->_loginOk == -3) continue;
                 }
             }
             return TRUE;
@@ -266,7 +265,6 @@ BOOL CALLBACK MyDialogBox(HWND hWndDlg, UINT message, WPARAM wParam, LPARAM lPar
         case IDCANCEL:
             EndDialog(hWndDlg, IDCANCEL);
             return TRUE;
-       
         }
 
     }

@@ -26,21 +26,21 @@ protected:
 
 	// 플레이어 카메라
 	CCamera* m_pCamera = nullptr;
-	
-public:
-	int16 m_sid = -1;
 
+public:
+	int16 m_sid = -1; // 자신으 Session Id
+	std::mutex m_lock; // 자신의 Lock
 public:
 	CPlayer();
 	virtual ~CPlayer();
-
+	
 	XMFLOAT3 GetPosition() const { return(m_xmf3Position); }
 	XMFLOAT3 GetLookVector() { return(m_xmf3Look); }
 	XMFLOAT3 GetUpVector() { return(m_xmf3Up); }
 	XMFLOAT3 GetRightVector() { return(m_xmf3Right); }
 
 	void SetVelocity(const XMFLOAT3& xmf3Velocity) { m_xmf3Velocity = xmf3Velocity; }
-
+	void SetPlayerSid(const int16& sid) { m_sid = sid; }
 	void SetPosition(const XMFLOAT3& xmf3Position) 
 	{
 		UpdateMove(XMFLOAT3(xmf3Position.x - m_xmf3Position.x, xmf3Position.y - m_xmf3Position.y, xmf3Position.z - m_xmf3Position.z));

@@ -1,13 +1,10 @@
 #include "pch.h"
 #include "clientIocpCore.h"
-
-ClientMananger clientCore;
-
-// ================= new Client Session ==================
-// =======================================================
-// =======================================================
 #include "SocketUtil.h"
 #include "IocpEvent.h"
+
+
+ClientMananger clientCore;
 
 CSession::CSession()
 {
@@ -40,7 +37,6 @@ void CSession::Processing(IocpEvent* iocpEvent, int32 numOfBytes)
 	break;
 	case EventType::Recv:
 	{
-		WLock;
 		RecvEvent* rev = static_cast<RecvEvent*>(iocpEvent);
 		int remain_data = numOfBytes + _prev_remain;
 		char* p = rev->_rbuf;
@@ -117,45 +113,57 @@ void CSession::ProcessPacket(char* packet)
 	{
 	case S_PACKET_TYPE::SMOVE:
 	{
-		S2C_MOVE* mp = reinterpret_cast<S2C_MOVE*>(packet);
-		//std::lock_guard<std::mutex> lg(clientCore._client->_otherLock);
-		//if(_sid != mp->sid && _mainGame.m_pScene->_curSceneStatus == SceneInfo::GAMEROOM) _mainGame.m_pScene->_other->Move(mp->key, (UNIT * 1.2f));
+		S2C_MOVE* movePacket = reinterpret_cast<S2C_MOVE*>(packet);
+		CPlayer* player = mainGame.m_pScene->GetScenePlayer(movePacket->sid);
+		if (player != nullptr  && movePacket->sid != _sid)
+		{
+			player->m_lock.lock();
+			player->Move(movePacket->key, PLAYER_VELOCITY);
+			player->m_lock.unlock();
+		}
 	}
 	break;
 
 	case S_PACKET_TYPE::SROTATE:
 	{
-		S2C_ROTATE* mp = reinterpret_cast<S2C_ROTATE*>(packet);
+		S2C_ROTATE* rotatePacket = reinterpret_cast<S2C_ROTATE*>(packet);	
+		CPlayer* player = mainGame.m_pScene->GetScenePlayer(rotatePacket->sid);
+		if (player != nullptr  && rotatePacket->sid != _sid)
+		{
+			player->m_lock.lock();
+			player->Rotate(0, rotatePacket->angle, 0);
+			player->m_lock.unlock();
+		}
 		
-		//std::lock_guard<std::mutex> lg(clientCore._client->_otherLock);
-		//if (_sid != mp->sid && _mainGame.m_pScene->_curSceneStatus == SceneInfo::GAMEROOM)
-		//{
-		//	_mainGame.m_pScene->_other->Rotate(0, mp->angle, 0);
-		//}
 	}
 	break;
 	case S_PACKET_TYPE::POSITION:
 	{
-		S2C_POSITION* mp = reinterpret_cast<S2C_POSITION*>(packet);
-		//if (_sid == mp->sid && _mainGame.m_pScene->_curSceneStatus == SceneInfo::GAMEROOM)
-		//{
-		//	clientCore._client->_playerLock.lock();
-		//	_mainGame.m_pScene->_player->MakePosition(mp->position);
-		//	clientCore._client->_playerLock.unlock();
-		//}
+		S2C_POSITION* posPacket = reinterpret_cast<S2C_POSITION*>(packet);
+		CPlayer* player = mainGame.m_pScene->GetScenePlayer(posPacket->sid);
+		if (player != nullptr && mainGame._curScene == SceneInfo::GAMEROOM)
+		{
+			player->m_lock.lock();
+			player->MakePosition(posPacket->position);
+			player->m_lock.unlock();
+		}
 		
 	}
 	break;
 	case S_PACKET_TYPE::SCHAT:
 	{
-		//_CHAT* cp = reinterpret_cast<_CHAT*>(packet);
 	}
 	break;
 	case S_PACKET_TYPE::GAME_START:
 	{
 		S2C_GAMESTART* gsp = reinterpret_cast<S2C_GAMESTART*>(packet);
-		_mainGame._curScene.store(SceneInfo::GAMEROOM);
-		for (int i = 0; i < 4; ++i) _mainGame.m_pScene->_playersSid[i] = gsp->sids[i];
+		for (int i = 0; i < PLAYERNUM; ++i)
+		{
+			if (gsp->sids[i] == _sid) mainGame.m_pScene->_playerIdx = i;
+			mainGame.m_pScene->_players[i]->SetPlayerSid(gsp->sids[i]);
+		}
+		mainGame.m_pScene->m_pCamera = mainGame.m_pScene->_players[mainGame.m_pScene->_playerIdx]->GetCamera();
+		mainGame._curScene.store(SceneInfo::GAMEROOM);
 	}
 	break;
 	case S_PACKET_TYPE::LOGIN_OK:
@@ -250,7 +258,6 @@ void ClientMananger::DoConnect(void* loginInfo)
 void ClientMananger::Disconnect(int32 sid = 0)
 {
 	std::cout << "Disconnect Client" << std::endl;
-	DestroyGame();
 	delete _client;
 	_client = nullptr;
 }

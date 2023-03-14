@@ -131,6 +131,7 @@ void CPlayer::Rotate(float x, float y, float z)
 //이 함수는 매 프레임마다 호출된다. 플레이어의 속도 벡터에 중력과 마찰력 등을 적용한다.
 void CPlayer::Update(float fTimeElapsed)
 {
+	
 	//플레이어를 속도 벡터 만큼 실제로 이동한다(카메라를 이동할 것이다). 
 	XMFLOAT3 xmf3Velocity = Vector3::ScalarProduct(m_xmf3Velocity, fTimeElapsed, false); // 1/60 초 변경 속도를
 	
@@ -156,8 +157,8 @@ void CPlayer::Update(float fTimeElapsed)
 
 	//카메라의 카메라 변환 행렬을 다시 생성한다. 
 	m_pCamera->RegenerateViewMatrix();
-	//std::cout << "x : " << m_xmf3Position.x << " y : " << m_xmf3Position.z << std::endl;
 	m_xmf3Velocity = XMFLOAT3(0, 0, 0);
+	
 }
 
 void CPlayer::CreateShaderVariables(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList)

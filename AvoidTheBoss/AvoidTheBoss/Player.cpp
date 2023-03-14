@@ -2,7 +2,7 @@
 #include "Shader.h"
 #include "Player.h"
 
-CPlayer::CPlayer(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, void* pContext, int nMeshes) : CGameObject(nMeshes)
+CPlayer::CPlayer()
 {
 	m_pCamera = NULL;
 
@@ -44,14 +44,10 @@ void CPlayer::Move(DWORD dwDirection, float fDistance)
 			xmf3Shift = Vector3::Add(xmf3Shift, m_xmf3Look,fDistance);
 		if (dwDirection & DIR_BACKWARD) 
 			xmf3Shift = Vector3::Add(xmf3Shift, m_xmf3Look,-fDistance);
-
-		//화살표 키 ‘→’를 누르면 로컬 x-축 방향으로 이동한다. ‘←’를 누르면 반대 방향으로 이동한다. 
 		if (dwDirection & DIR_RIGHT)
 			xmf3Shift = Vector3::Add(xmf3Shift, m_xmf3Right,fDistance);
 		if (dwDirection & DIR_LEFT)	
 			xmf3Shift = Vector3::Add(xmf3Shift, m_xmf3Right,-fDistance);
-
-		//‘Page Up’을 누르면 로컬 y-축 방향으로 이동한다. ‘Page Down’을 누르면 반대 방향으로 이동한다. 
 		if (dwDirection & DIR_UP)
 			xmf3Shift = Vector3::Add(xmf3Shift, m_xmf3Up, fDistance);
 		if (dwDirection & DIR_DOWN) 
@@ -170,10 +166,10 @@ void CPlayer::CreateShaderVariables(ID3D12Device* pd3dDevice, ID3D12GraphicsComm
 
 	if (m_pCamera) m_pCamera->CreateShaderVariables(pd3dDevice, pd3dCommandList);
 
-	UINT ncbElementBytes = ((sizeof(CB_PLAYER_INFO) + 255) & ~255); //256의 배수
-	m_pd3dcbPlayer = ::CreateBufferResource(pd3dDevice, pd3dCommandList, NULL, ncbElementBytes, D3D12_HEAP_TYPE_UPLOAD, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER, NULL);
-
-	m_pd3dcbPlayer->Map(0, NULL, (void**)&m_pcbMappedPlayer);
+	//UINT ncbElementBytes = ((sizeof(CB_PLAYER_INFO) + 255) & ~255); //256의 배수
+	//m_pd3dcbPlayer = ::CreateBufferResource(pd3dDevice, pd3dCommandList, NULL, ncbElementBytes, //D3D12_HEAP_TYPE_UPLOAD, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER, NULL);
+	//
+	//m_pd3dcbPlayer->Map(0, NULL, (void**)&m_pcbMappedPlayer);
 }
 
 void CPlayer::ReleaseShaderVariables()
@@ -182,20 +178,20 @@ void CPlayer::ReleaseShaderVariables()
 
 	if (m_pCamera) m_pCamera->ReleaseShaderVariables();
 
-	if (m_pd3dcbPlayer)
-	{
-		m_pd3dcbPlayer->Unmap(0, NULL);
-		m_pd3dcbPlayer->Release();
-	}
+	//if (m_pd3dcbPlayer)
+	//{
+	//	m_pd3dcbPlayer->Unmap(0, NULL);
+	//	m_pd3dcbPlayer->Release();
+	//}
 }
 
 void CPlayer::UpdateShaderVariables(ID3D12GraphicsCommandList* pd3dCommandList)
 {
-	XMStoreFloat4x4(&m_pcbMappedPlayer->m_xmf4x4World, XMMatrixTranspose(XMLoadFloat4x4(&m_xmf4x4World)));
-
-	D3D12_GPU_VIRTUAL_ADDRESS d3dGpuVirtualAddress = m_pd3dcbPlayer->GetGPUVirtualAddress();
-	pd3dCommandList->SetGraphicsRootConstantBufferView(0, d3dGpuVirtualAddress);
-
+	//XMStoreFloat4x4(&m_pcbMappedPlayer->m_xmf4x4World, XMMatrixTranspose(XMLoadFloat4x4(&m_xmf4x4World)));
+	//
+	//D3D12_GPU_VIRTUAL_ADDRESS d3dGpuVirtualAddress = m_pd3dcbPlayer->GetGPUVirtualAddress();
+	//pd3dCommandList->SetGraphicsRootConstantBufferView(0, d3dGpuVirtualAddress);
+	//CGameObject::UpdateShaderVariables(pd3dCommandList);
 }
 
 CCamera* CPlayer::OnChangeCamera(DWORD nNewCameraMode, DWORD nCurrentCameraMode)
@@ -223,31 +219,30 @@ CCamera* CPlayer::OnChangeCamera(DWORD nNewCameraMode, DWORD nCurrentCameraMode)
 	return(pNewCamera);
 }
 
-/*플레이어의 위치와 회전축으로부터 월드 변환 행렬을 생성하는 함수이다. 플레이어의 Right 벡터가 월드 변환 행렬
-의 첫 번째 행 벡터, Up 벡터가 두 번째 행 벡터, Look 벡터가 세 번째 행 벡터, 플레이어의 위치 벡터가 네 번째 행
-벡터가 된다.*/
 void CPlayer::OnPrepareRender()
 {
-	m_xmf4x4World._11 = m_xmf3Right.x;
-	m_xmf4x4World._12 = m_xmf3Right.y;
-	m_xmf4x4World._13 = m_xmf3Right.z;
+	m_xmf4x4Transform._11 = m_xmf3Right.x;
+	m_xmf4x4Transform._12 = m_xmf3Right.y;
+	m_xmf4x4Transform._13 = m_xmf3Right.z;
 
-	m_xmf4x4World._21 = m_xmf3Up.x;
-	m_xmf4x4World._22 = m_xmf3Up.y;
-	m_xmf4x4World._23 = m_xmf3Up.z;
+	m_xmf4x4Transform._21 = m_xmf3Up.x;		   
+	m_xmf4x4Transform._22 = m_xmf3Up.y;
+	m_xmf4x4Transform._23 = m_xmf3Up.z;
+	
+	m_xmf4x4Transform._31 = m_xmf3Look.x;
+	m_xmf4x4Transform._32 = m_xmf3Look.y;
+	m_xmf4x4Transform._33 = m_xmf3Look.z;
+	
+	m_xmf4x4Transform._41 = m_xmf3Position.x;
+	m_xmf4x4Transform._42 = m_xmf3Position.y;
+	m_xmf4x4Transform._43 = m_xmf3Position.z;
 
-	m_xmf4x4World._31 = m_xmf3Look.x;
-	m_xmf4x4World._32 = m_xmf3Look.y;
-	m_xmf4x4World._33 = m_xmf3Look.z;
-
-	m_xmf4x4World._41 = m_xmf3Position.x;
-	m_xmf4x4World._42 = m_xmf3Position.y;
-	m_xmf4x4World._43 = m_xmf3Position.z;
+	UpdateTransform(NULL);
 }
 
 void CPlayer::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera)
 {
-	DWORD nCameraMode = (pCamera) ? pCamera->GetMode() : 0x00;
+	DWORD nCameraMode = (pCamera) ? pCamera->GetMode() : 0x03;
 
 	//카메라 모드가 3인칭이면 플레이어 객체를 렌더링한다. 
 	if (nCameraMode == THIRD_PERSON_CAMERA)
@@ -257,26 +252,19 @@ void CPlayer::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamer
 	}
 }
 
-CMyPlayer::CMyPlayer(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, int nMeshes) : CPlayer(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature)
+CMyPlayer::CMyPlayer(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature)
 {
 	m_pCamera = ChangeCamera(THIRD_PERSON_CAMERA, 0.0f);
+
+	CGameObject* pGameObject = CGameObject::LoadGeometryFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "Character_Boss_(1).bin");
+
+	float scale = 1.0f;
+	pGameObject->Rotate(0.0f,0.0f,0.0f);
+	pGameObject->SetScale(scale, scale, scale);
+	pGameObject->SetPosition(0.0f, 1.25f, 0.0f);
+	SetChild(pGameObject, true);
+
 	CreateShaderVariables(pd3dDevice, pd3dCommandList);
-
-	CCubeMeshDiffused* pPlayerCubeMesh = new CCubeMeshDiffused(pd3dDevice, pd3dCommandList, 0.37f * UNIT, 1.5f * UNIT, 0.23f * UNIT);
-
-	SetMesh(0, pPlayerCubeMesh);
-	SetPosition(XMFLOAT3(0.0f, (1.5f / 2.0f) * UNIT, 0.0f));
-	UINT ncbElementBytes = ((sizeof(CB_PLAYER_INFO) + 255) & ~255); //256의 배수
-
-	CPlayerShader* pShader = new CPlayerShader();
-	pShader->CreateShader(pd3dDevice, pd3dGraphicsRootSignature);
-	pShader->CreateShaderVariables(pd3dDevice, pd3dCommandList);// ++추가코드
-	pShader->CreateCbvSrvDescriptorHeaps(pd3dDevice, 1, 0);// ++추가코드
-	pShader->CreateConstantBufferViews(pd3dDevice, 1, m_pd3dcbPlayer, ncbElementBytes);// ++추가코드
-	
-	SetCbvGPUDescriptorHandle(pShader->GetCbvGPUDescStartHandle());// ++추가코드
-
-	SetShader(pShader);
 }
 
 
@@ -290,7 +278,7 @@ CCamera* CMyPlayer::ChangeCamera(DWORD nNewCameraMode, float fTimeElapsed)
 	if (nCurrentCameraMode == nNewCameraMode)
 		return(m_pCamera);
 
-	float MaxDepthofMap = sqrt(2) * 60 * UNIT + 2 * UNIT;
+	float MaxDepthofMap = sqrt(2) * 50 * UNIT + 2 * UNIT;
 	switch (nNewCameraMode)
 	{
 	case FIRST_PERSON_CAMERA:
@@ -322,6 +310,15 @@ CCamera* CMyPlayer::ChangeCamera(DWORD nNewCameraMode, float fTimeElapsed)
 void CMyPlayer::OnPrepareRender()
 {
 	CPlayer::OnPrepareRender();
+}
+
+void CTilePlayer::OnInitialize()
+{
+}
+
+void CTilePlayer::Animate(float fTimeElapsed, XMFLOAT4X4* pxmf4x4Parent)
+{
+	CPlayer::Animate(fTimeElapsed, pxmf4x4Parent);
 }
 
 COtherPlayer::COtherPlayer(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, int nMeshes) : CPlayer(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature)

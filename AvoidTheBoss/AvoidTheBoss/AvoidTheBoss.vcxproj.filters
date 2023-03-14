@@ -207,6 +207,9 @@
     <FxCompile Include="Shaders.hlsl">
       <Filter>Resource</Filter>
     </FxCompile>
+    <FxCompile Include="Light.hlsl">
+      <Filter>Shader</Filter>
+    </FxCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="AvoidTheBoss.rc">

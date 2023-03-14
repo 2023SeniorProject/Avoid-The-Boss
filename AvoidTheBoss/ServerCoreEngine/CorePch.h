@@ -65,7 +65,7 @@
 #include <memory>
 #include <fstream>
 #include <filesystem>
-
+#include <iosfwd>
 
 //----DirectXMath 라이브러리
 #include <DirectXMath.h> //벡터 행렬 관련 함수,구조체,클래스 제공
@@ -98,25 +98,14 @@ using Microsoft::WRL::ComPtr;
 #define FRAME_BUFFER_WIDTH  800
 #define FRAME_BUFFER_HEIGHT 600
 
+#define _WITH_CB_WORLD_MATRIX_DESCRIPTOR_TABLE
 //----전체 화면 모드로 시작
 //#define _WITH_SWAPCHAIN_FULLSCREEN_STATE
 
-//#define assert(!XMVector3Equal(EyeDirection, XMVectorZero()));
+//1.0f = 1m 
+#define UNIT 1.0f // 1m = 1 unit
 
-
-/*정점의 색상을 무작위로(Random) 설정하기 위해 사용한다. 각 정점의 색상은 난수(Random Number)를 생성하여
-지정한다.*/
-#define RANDOM_COLOR XMFLOAT4(rand() / float(RAND_MAX), rand() / float(RAND_MAX), rand() / float(RAND_MAX), rand() / float(RAND_MAX))
-
-#define DEFAULT_MAP_COLOR XMFLOAT4(217.0f/260.0f,202.0f/260.0f,175.0f/260.0f,0.0f)
-#define MAP_COLOR_2		  XMFLOAT4(200.0f/260.0f,201.0f/260.0f,163.0f/260.0f,0.0f)
-#define MAP_COLOR_3		  XMFLOAT4(50.0f/260.0f,60.0f/260.0f,40.0f/260.0f,0.0f)
-#define MAP_COLOR_4		  XMFLOAT4(133.0f/260.0f,140.0f/260.0f,119.0f/260.0f,0.0f)
-
-//1.0f = 1cm / 1000.0f = 1m
-#define UNIT 100.0f // 1m = 1 unit
-
-extern UINT gnCbvSrvDescIncrementSize;
+extern UINT gnCbvSrvDescriptorIncrementSize;
 
 //----버퍼 리소스 생성 함수
 extern ID3D12Resource* CreateBufferResource(ID3D12Device* pd3dDevice,
@@ -150,8 +139,7 @@ namespace Vector3
 		XMStoreFloat3(&xmf3Result, xmvVector);
 		return(xmf3Result);
 	}
-	inline XMFLOAT3 ScalarProduct(XMFLOAT3& xmf3Vector, float fScalar, bool bNormalize =
-		true)
+	inline XMFLOAT3 ScalarProduct(XMFLOAT3& xmf3Vector, float fScalar, bool bNormalize = true)
 	{
 		XMFLOAT3 xmf3Result;
 		if (bNormalize)

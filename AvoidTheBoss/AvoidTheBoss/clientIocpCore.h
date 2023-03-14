@@ -32,7 +32,6 @@ public:
 	int16  _loginOk = -3;
 public:
 	SOCKET _sock = INVALID_SOCKET;
-	CGameFramework _mainGame;
 	RecvEvent _rev;
 	RWLOCK;
 };
@@ -50,7 +49,7 @@ public:
 	//void DestroyGame() { _client->_mainGame.OnDestroy(); }
 	//void InitGameLoop(HINSTANCE hInst, HWND hWnd) { _client->_mainGame.OnCreate(hInst, hWnd); }
 	//void GameLoop() { _client->_mainGame.FrameAdvance(); }
-	void InputProcessing(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) { _client->_mainGame.OnProcessingWindowMessage(hWnd, message, wParam, lParam); }
+	//void InputProcessing(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam) { _client->_mainGame.OnProcessingWindowMessage(hWnd, message, wParam, lParam); }
 	virtual void Disconnect(int32 sid) override;
 public:
 	CSession* _client;

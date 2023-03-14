@@ -73,7 +73,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
        {
            if (msg.message == WM_QUIT)
            {
-               //SocketUtil::Close(clientCore._client->_sock);
+               SocketUtil::Close(clientCore._client->_sock);
                break;
            }
            if (!::TranslateAccelerator(msg.hwnd, hAccelTable, &msg))

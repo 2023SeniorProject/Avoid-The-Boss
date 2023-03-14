@@ -64,7 +64,7 @@ void Room::UserIn(int32 sid)
 			std::unique_lock<std::shared_mutex> wll(_listLock);
 			_cList.push_back(sid);
 		}
-		if (_cList.size() == 4)
+		if (_cList.size() == PLAYERNUM)
 		{
 			_status = ROOM_STATUS::FULL;
 			S2C_GAMESTART packet;
@@ -79,18 +79,6 @@ void Room::UserIn(int32 sid)
 			BroadCasting(&packet);
 			_logic.StartGame();
 		}
-		/*S2C_GAMESTART packet;
-		packet.type = S_PACKET_TYPE::GAME_START;
-		packet.size = sizeof(S2C_GAMESTART);
-		for (int i = 0; i < 4; ++i) packet.sids[i] = 0;
-		int k = 0;
-		for (auto i : _cList)
-		{
-			packet.sids[k] = i;
-			++k;
-		}
-		BroadCasting(&packet);
-		_logic.StartGame();*/
 	}		
 	std::cout << "RM [" << _num << "][" << _cList.size() << "/4]" << std::endl;
 	// 갱신하는걸 보내줄지 말지 미정

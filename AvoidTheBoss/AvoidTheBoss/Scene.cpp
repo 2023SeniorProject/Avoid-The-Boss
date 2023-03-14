@@ -55,7 +55,7 @@ void CGameScene::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPARAM 
 			break;*/
 		case VK_F9:
 			//“F9” 키가 눌려지면 윈도우 모드와 전체화면 모드의 전환을 처리한다. 
-			clientCore._client->_mainGame.ChangeSwapChainState();
+			mainGame.ChangeSwapChainState();
 			break;
 		default:
 			break;

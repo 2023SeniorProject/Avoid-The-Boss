@@ -244,11 +244,12 @@ CTilePlayer::CTilePlayer(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd
 {
 	m_pCamera = ChangeCamera(THIRD_PERSON_CAMERA, 0.0f);
 
-	CGameObject* pGameObject = CGameObject::LoadGeometryFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "Character_Boss.bin");
+	CGameObject* pGameObject = CGameObject::LoadGeometryFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "Character_Boss_(1).bin");
 
-	pGameObject->Rotate(0.0f, 0.0f, 0.0f);
-	pGameObject->SetScale(100.0f, 100.0f, 100.0f);
-	pGameObject->SetPosition(0, 0, 0);
+	float scale = 1.0f;
+	pGameObject->Rotate(0.0f,0.0f,0.0f);
+	pGameObject->SetScale(scale, scale, scale);
+	pGameObject->SetPosition(0.0f, 1.25f, 0.0f);
 	SetChild(pGameObject, true);
 
 	CreateShaderVariables(pd3dDevice, pd3dCommandList);

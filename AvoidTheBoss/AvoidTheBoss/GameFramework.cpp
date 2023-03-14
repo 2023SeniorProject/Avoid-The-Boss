@@ -440,7 +440,7 @@ void CGameFramework::AnimateObjects()
 	m_pPlayer->Animate(fTimeElapsed, NULL);
 
 }
-#define _WITH_PLAYER_TOP
+//#define _WITH_PLAYER_TOP
 void CGameFramework::FrameAdvance()
 {
 	//타이머의 시간이 갱신되도록 하고 프레임 레이트를 계산한다. 

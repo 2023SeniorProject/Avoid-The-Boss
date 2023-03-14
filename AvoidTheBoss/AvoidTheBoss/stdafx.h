@@ -78,19 +78,8 @@ using Microsoft::WRL::ComPtr;
 //----전체 화면 모드로 시작
 //#define _WITH_SWAPCHAIN_FULLSCREEN_STATE
 
-//#define assert(!XMVector3Equal(EyeDirection, XMVectorZero()));
-
-/*정점의 색상을 무작위로(Random) 설정하기 위해 사용한다. 각 정점의 색상은 난수(Random Number)를 생성하여
-지정한다.*/
-#define RANDOM_COLOR XMFLOAT4(rand() / float(RAND_MAX), rand() / float(RAND_MAX), rand() / float(RAND_MAX), rand() / float(RAND_MAX))
-
-#define DEFAULT_MAP_COLOR XMFLOAT4(217.0f/260.0f,202.0f/260.0f,175.0f/260.0f,0.0f)
-#define MAP_COLOR_2		  XMFLOAT4(200.0f/260.0f,201.0f/260.0f,163.0f/260.0f,0.0f)
-#define MAP_COLOR_3		  XMFLOAT4(50.0f/260.0f,60.0f/260.0f,40.0f/260.0f,0.0f)
-#define MAP_COLOR_4		  XMFLOAT4(133.0f/260.0f,140.0f/260.0f,119.0f/260.0f,0.0f)
-
-//1.0f = 1cm / 100.0f = 1m
-#define UNIT 100.0f // 1m = 1 unit
+//1.0f = 1m 
+#define UNIT 1.0f // 1m = 1 unit
 
 extern UINT gnCbvSrvDescriptorIncrementSize;
 

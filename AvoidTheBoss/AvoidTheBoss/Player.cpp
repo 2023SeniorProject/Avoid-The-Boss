@@ -80,9 +80,7 @@ void CPlayer::Rotate(float x, float y, float z)
 	//1인칭 카메라 또는 3인칭 카메라의 경우 플레이어의 회전은 약간의 제약이 따른다. 
 	if ((nCameraMode == FIRST_PERSON_CAMERA) || (nCameraMode == THIRD_PERSON_CAMERA))
 	{
-		/*로컬 x-축을 중심으로 회전하는 것은 고개를 앞뒤로 숙이는 동작에 해당한다. 그러므로 x-축을 중심으로 회전하는
-		각도는 -89.0~+89.0도 사이로 제한한다. x는 현재의 m_fPitch에서 실제 회전하는 각도이므로 x만큼 회전한 다음
-		Pitch가 +89도 보다 크거나 -89도 보다 작으면 m_fPitch가 +89도 또는 -89도가 되도록 회전각도(x)를 수정한다.*/
+
 		if (x != 0.0f)
 		{
 			m_fPitch += x;
@@ -91,17 +89,14 @@ void CPlayer::Rotate(float x, float y, float z)
 		}
 		if (y != 0.0f)
 		{
-			//로컬 y-축을 중심으로 회전하는 것은 몸통을 돌리는 것이므로 회전 각도의 제한이 없다.
+			
 			m_fYaw += y;
 			if (m_fYaw > 360.0f) m_fYaw -= 360.0f;
 			if (m_fYaw < 0.0f) m_fYaw += 360.0f;
 		}
 		if (z != 0.0f)
 		{
-			/*로컬 z-축을 중심으로 회전하는 것은 몸통을 좌우로 기울이는 것이므로 회전 각도는 -20.0~+20.0도 사이로 제한된
-			다. z는 현재의 m_fRoll에서 실제 회전하는 각도이므로 z만큼 회전한 다음 m_fRoll이 +20도 보다 크거나 -20도보다
-			작으면 m_fRoll이 +20도 또는 -20도가 되도록 회전각도(z)를 수정한다.*/
-			m_fRoll += z;
+			
 			if (m_fRoll > +20.0f) { z -= (m_fRoll - 20.0f); m_fRoll = +20.0f; }
 			if (m_fRoll < -20.0f) { z -= (m_fRoll + 20.0f); m_fRoll = -20.0f; }
 		}
@@ -121,8 +116,7 @@ void CPlayer::Rotate(float x, float y, float z)
 		}
 	}
 	
-	/*회전으로 인해 플레이어의 로컬 x-축, y-축, z-축이 서로 직교하지 않을 수 있으므로 z-축(Look 벡터)을 기준으로
-	하여 서로 직교하고 단위벡터가 되도록 한다.*/
+	
 	m_xmf3Look = Vector3::Normalize(m_xmf3Look);
 	m_xmf3Right = Vector3::CrossProduct(m_xmf3Up, m_xmf3Look, true);
 	m_xmf3Up = Vector3::CrossProduct(m_xmf3Look, m_xmf3Right, true);
@@ -159,6 +153,35 @@ void CPlayer::Update(float fTimeElapsed)
 	m_pCamera->RegenerateViewMatrix();
 	m_xmf3Velocity = XMFLOAT3(0, 0, 0);
 	
+}
+
+void CPlayer::OtherUpdate(float fTimeElapsed)
+{
+	//플레이어를 속도 벡터 만큼 실제로 이동한다(카메라를 이동할 것이다). 
+	XMFLOAT3 xmf3Velocity = Vector3::ScalarProduct(m_xmf3Velocity, fTimeElapsed, false); // 1/60 초 변경 속도를
+
+	UpdateMove(xmf3Velocity);
+	if (m_pCamera == NULL) return;
+
+	/*플레이어의 위치가 변경될 때 추가로 수행할 작업을 수행한다. 플레이어의 새로운 위치가 유효한 위치가 아닐 수도
+	있고 또는 플레이어의 충돌 검사 등을 수행할 필요가 있다. 이러한 상황에서 플레이어의 위치를 유효한 위치로 다시
+	변경할 수 있다.*/
+	if (m_pPlayerUpdatedContext) OnPlayerUpdateCallback(fTimeElapsed);
+
+	DWORD nCameraMode = m_pCamera->GetMode();
+
+	//플레이어의 위치가 변경되었으므로 3인칭 카메라를 갱신한다. 
+	if (nCameraMode == THIRD_PERSON_CAMERA) m_pCamera->Update(m_xmf3Position,
+		fTimeElapsed);
+
+	//카메라의 위치가 변경될 때 추가로 수행할 작업을 수행한다. 
+	if (m_pCameraUpdatedContext) OnCameraUpdateCallback(fTimeElapsed);
+
+	//카메라가 3인칭 카메라이면 카메라가 변경된 플레이어 위치를 바라보도록 한다. 
+	if (nCameraMode == THIRD_PERSON_CAMERA) m_pCamera->SetLookAt(m_xmf3Position);
+
+	//카메라의 카메라 변환 행렬을 다시 생성한다. 
+	m_pCamera->RegenerateViewMatrix();
 }
 
 void CPlayer::CreateShaderVariables(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList)
@@ -248,7 +271,6 @@ void CPlayer::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamer
 	//카메라 모드가 3인칭이면 플레이어 객체를 렌더링한다. 
 	if (nCameraMode == THIRD_PERSON_CAMERA)
 	{
-		//if (m_pShader) m_pShader->Render(pd3dCommandList, pCamera);
 		CGameObject::Render(pd3dCommandList, pCamera);
 	}
 }
@@ -257,7 +279,7 @@ CMyPlayer::CMyPlayer(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCo
 {
 	m_pCamera = ChangeCamera(THIRD_PERSON_CAMERA, 0.0f);
 
-	CGameObject* pGameObject = CGameObject::LoadGeometryFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "Character_Boss_(1).bin");
+	CGameObject* pGameObject = CGameObject::LoadGeometryFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "Character_Boss.bin");
 
 	float scale = 1.0f;
 	pGameObject->Rotate(0.0f,0.0f,0.0f);
@@ -267,7 +289,6 @@ CMyPlayer::CMyPlayer(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCo
 
 	CreateShaderVariables(pd3dDevice, pd3dCommandList);
 }
-
 
 CMyPlayer::~CMyPlayer()
 {
@@ -322,3 +343,31 @@ void CMyPlayer::Animate(float fTimeElapsed, XMFLOAT4X4* pxmf4x4Parent)
 	CPlayer::Animate(fTimeElapsed, pxmf4x4Parent);
 }
 
+void CPlayer::OtherMove(DWORD dwDirection, float fDistance)
+{
+	XMFLOAT3 xmf3Shift = XMFLOAT3(0, 0, 0);
+	if (dwDirection)
+	{
+		// xmf3Shift == 방향 벡터
+
+		//화살표 키 ‘↑’를 누르면 로컬 z-축 방향으로 이동(전진)한다. ‘↓’를 누르면 반대 방향으로 이동한다. 
+		if (dwDirection & DIR_FORWARD) xmf3Shift = Vector3::Add(xmf3Shift, m_xmf3Look,
+			fDistance);
+		if (dwDirection & DIR_BACKWARD) xmf3Shift = Vector3::Add(xmf3Shift, m_xmf3Look,
+			-fDistance);
+
+		//화살표 키 ‘→’를 누르면 로컬 x-축 방향으로 이동한다. ‘←’를 누르면 반대 방향으로 이동한다. 
+		if (dwDirection & DIR_RIGHT)
+			xmf3Shift = Vector3::Add(xmf3Shift, m_xmf3Right,
+				fDistance);
+		if (dwDirection & DIR_LEFT) xmf3Shift = Vector3::Add(xmf3Shift, m_xmf3Right,
+			-fDistance);
+		//플레이어를 현재 위치 벡터에서 xmf3Shift 벡터만큼 이동한다. 
+		m_xmf3Velocity = XMFLOAT3(0, 0, 0);
+		SetSpeed(xmf3Shift);
+	}
+	else
+	{
+		SetVelocity(xmf3Shift);
+	}
+}

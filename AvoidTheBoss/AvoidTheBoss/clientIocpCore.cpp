@@ -118,7 +118,7 @@ void CSession::ProcessPacket(char* packet)
 		if (player != nullptr  && movePacket->sid != _sid)
 		{
 			player->m_lock.lock();
-			player->Move(movePacket->key, PLAYER_VELOCITY);
+			player->OtherMove(movePacket->key, PLAYER_VELOCITY);
 			player->m_lock.unlock();
 		}
 	}
@@ -162,6 +162,7 @@ void CSession::ProcessPacket(char* packet)
 			if (gsp->sids[i] == _sid) mainGame.m_pScene->_playerIdx = i;
 			mainGame.m_pScene->_players[i]->SetPlayerSid(gsp->sids[i]);
 		}
+		std::cout << mainGame.m_pScene->_playerIdx << "\n";
 		mainGame.m_pScene->m_pCamera = mainGame.m_pScene->_players[mainGame.m_pScene->_playerIdx]->GetCamera();
 		mainGame._curScene.store(SceneInfo::GAMEROOM);
 	}

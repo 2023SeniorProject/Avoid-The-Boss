@@ -40,6 +40,7 @@
 
 #pragma comment(lib, "winmm.lib")
 #define BUFSIZE 512
+
 // ============ D3D Library ===========================
 //----D3D 라이브러리 헤더 포함
 
@@ -80,7 +81,7 @@
 using namespace DirectX;
 using namespace DirectX::PackedVector;
 
-
+#define PLAYERNUM 2
 
 
 bool XMVerifyCPUSupport(); // 응용프로그램에서 SIMD 기능(벡터 연산 명령집합 확장 기능 / 벡터의 병렬 연산 ) 제공여부 확인 
@@ -349,5 +350,3 @@ namespace Plane
 #define DIR_UP		 0x10
 #define DIR_DOWN	 0x20
 
-
-#define PLAYERNUM 4

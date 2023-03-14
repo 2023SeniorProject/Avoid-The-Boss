@@ -6,7 +6,6 @@
 
 CGameScene::CGameScene()
 {
-	_curSceneStatus = SceneInfo::GAMEROOM;
 }
 
 CGameScene::~CGameScene()
@@ -48,12 +47,6 @@ void CGameScene::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPARAM 
 		case VK_RETURN:
 			break;
 			/*‘F1’ 키를 누르면 1인칭 카메라, ‘F3’ 키를 누르면 3인칭 카메라로 변경한다.*/
-	/*	case VK_F1:
-			if (_player)m_pCamera = _player->ChangeCamera(FIRST_PERSON_CAMERA, m_Timer.GetTimeElapsed());
-			break;
-		case VK_F3:
-			if (_player) m_pCamera = _player->ChangeCamera(THIRD_PERSON_CAMERA, m_Timer.GetTimeElapsed());
-			break;*/
 		case VK_F9:
 			//“F9” 키가 눌려지면 윈도우 모드와 전체화면 모드의 전환을 처리한다. 
 			mainGame.ChangeSwapChainState();
@@ -132,29 +125,20 @@ void CGameScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandLis
 	//그래픽 루트 시그너쳐를 생성한다. 
 	m_pd3dGraphicsRootSignature = CreateGraphicsRootSignature(pd3dDevice);
 
-	/*m_nShaders = 1;
-	m_ppShaders = new CShader*[m_nShaders];
-
-	CObjectsShader* pObjectShader = new CObjectsShader();
-	pObjectShader->CreateShader(pd3dDevice, m_pd3dGraphicsRootSignature);
-	pObjectShader->BuildObjects(pd3dDevice, pd3dCommandList, NULL);
-	m_ppShaders[0] = pObjectShader;*/
-	
 	CMaterial::PrepareShaders(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature);
 	BuildDefaultLightsAndMaterials();
 
-	for (int i = 0; i < PLAYERNUM; ++i)
-	{
-		_players[i] = new CMyPlayer(pd3dDevice, pd3dCommandList, GetGraphicsRootSignature());
-		_players[i]->SetPosition(XMFLOAT3(0, 75, 0));
-	}
-
-	m_pCamera = _players[0]->GetCamera();
-
 	m_nGameObjects = 1;
 	m_ppGameObjects = new CGameObject * [m_nGameObjects];
+	CGameObject* pMap = CGameObject::LoadGeometryFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "Industry_Map.bin");
 
-	CGameObject* pMap = CGameObject::LoadGeometryFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "Industry_Map_(1).bin");
+	for (int i = 0; i < PLAYERNUM; ++i)
+	{
+		_players[i] = new CMyPlayer(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature);
+	}
+	m_pCamera = _players[0]->GetCamera();
+
+
 
 	CGameObject* pMapObject = NULL;
 	pMapObject = new CGameObject();
@@ -165,8 +149,6 @@ void CGameScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandLis
 	m_ppGameObjects[0] = pMapObject;
 
 	CreateShaderVariables(pd3dDevice, pd3dCommandList);
-	
-	m_Timer.Reset();
 }
 
 void CGameScene::CreateShaderVariables(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList)
@@ -197,14 +179,6 @@ void CGameScene::ReleaseObjects()
 {
 	if (m_pd3dGraphicsRootSignature)
 		m_pd3dGraphicsRootSignature->Release();
-
-	//for (int i = 0; i < m_nShaders; i++)
-	//{
-	//	m_ppShaders[i]->ReleaseShaderVariables();
-	//	m_ppShaders[i]->ReleaseObjects();
-	//	m_ppShaders[i]->Release();
-	//}
-	//delete[] m_ppShaders;
 
 	if (m_ppGameObjects)
 	{
@@ -252,32 +226,33 @@ void CGameScene::ProcessInput(HWND hWnd)
 
 
 	}
-	std::cout << "_playerIdx\n";
-	_players[_playerIdx]->m_lock.lock();
-	if ((dwDirection != 0) || (cxDelta != 0.0f) || (cyDelta != 0.0f))
 	{
-		if (cxDelta || cyDelta)
+		std::lock_guard<std::mutex> lg(_players[_playerIdx]->m_lock);
+		if ((dwDirection != 0) || (cxDelta != 0.0f) || (cyDelta != 0.0f))
 		{
-
-			/*cxDelta는 y-축의 회전을 나타내고 cyDelta는 x-축의 회전을 나타낸다. 오른쪽 마우스 버튼이 눌려진 경우
-			cxDelta는 z-축의 회전을 나타낸다.*/
-			if (pKeyBuffer[VK_RBUTTON] & 0xF0) _players[_playerIdx]->Rotate(cyDelta, 0.0f, -cxDelta);
-			else if (pKeyBuffer[VK_LBUTTON] & 0xF0) _players[_playerIdx]->Rotate(cyDelta, cxDelta, 0.0f);
-
-			if (pKeyBuffer[VK_LBUTTON] & 0xF0)
+			if (cxDelta || cyDelta)
 			{
-				C2S_ROTATE packet;
-				packet.size = sizeof(C2S_ROTATE);
-				packet.type = C_PACKET_TYPE::ROTATE;
-				packet.angle = cxDelta;
-				clientCore._client->DoSend(&packet);
+
+				/*cxDelta는 y-축의 회전을 나타내고 cyDelta는 x-축의 회전을 나타낸다. 오른쪽 마우스 버튼이 눌려진 경우
+				cxDelta는 z-축의 회전을 나타낸다.*/
+				if (pKeyBuffer[VK_RBUTTON] & 0xF0) _players[_playerIdx]->Rotate(cyDelta, 0.0f, -cxDelta);
+				else if (pKeyBuffer[VK_LBUTTON] & 0xF0) _players[_playerIdx]->Rotate(cyDelta, cxDelta, 0.0f);
+
+				if (pKeyBuffer[VK_LBUTTON] & 0xF0)
+				{
+					C2S_ROTATE packet;
+					packet.size = sizeof(C2S_ROTATE);
+					packet.type = C_PACKET_TYPE::ROTATE;
+					packet.angle = cxDelta;
+					clientCore._client->DoSend(&packet);
+				}
 			}
+
+			/*플레이어를 dwDirection 방향으로 이동한다(실제로는 속도 벡터를 변경한다). 이동 거리는 시간에 비례하도록 한다. 플레이어의 이동 속력은 (1.3UNIT/초)로 가정한다.*/
+			if (dwDirection) _players[_playerIdx]->Move(dwDirection, PLAYER_VELOCITY);
+			// 속도만 더해주고 
+
 		}
-
-		/*플레이어를 dwDirection 방향으로 이동한다(실제로는 속도 벡터를 변경한다). 이동 거리는 시간에 비례하도록 한다. 플레이어의 이동 속력은 (1.3UNIT/초)로 가정한다.*/
-		if (dwDirection) _players[_playerIdx]->Move(dwDirection, PLAYER_VELOCITY);
-		// 속도만 더해주고 
-
 	}
 
 
@@ -292,28 +267,24 @@ void CGameScene::ProcessInput(HWND hWnd)
 		clientCore._client->DoSend(&packet);
 	}
 	m_lastKeyInput = dwDirection;
-	_players[_playerIdx]->m_lock.unlock();
+	
+
 	//카메라를 갱신한다. 중력과 마찰력의 영향을 속도 벡터에 적용한다.
 	for (int k = 0; k < PLAYERNUM; ++k)
-	{
-		_players[k]->Update(m_Timer.GetTimeElapsed());
+	{	
+		if (k == _playerIdx) _players[k]->Update(m_Timer.GetTimeElapsed());
+		else _players[k]->OtherUpdate(m_Timer.GetTimeElapsed());
 	}
 }
 
 void CGameScene::AnimateObjects()
 {
-	/*for (int i = 0; i < m_nShaders; i++)
-	{
-		m_ppShaders[i]->AnimateObjects(m_Timer.GetTimeElapsed());
-	}*/
-	m_fElapsedTime = m_Timer.GetTimeElapsed();
-
-	for (int i = 0; i < m_nGameObjects; i++) m_ppGameObjects[i]->Animate(m_fElapsedTime, NULL);
+	for (int i = 0; i < m_nGameObjects; i++) m_ppGameObjects[i]->Animate(m_Timer.GetTimeElapsed(), NULL);
 
 	if (m_pLights)
 	{
-		m_pLights[1].m_xmf3Position = _players[]->GetPosition();
-		m_pLights[1].m_xmf3Direction = _players[]->GetLookVector();
+		m_pLights[1].m_xmf3Position = _players[_playerIdx]->GetPosition();
+		m_pLights[1].m_xmf3Direction = _players[_playerIdx]->GetLookVector();
 	}
 }
 
@@ -331,27 +302,21 @@ void CGameScene::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCa
 	pd3dCommandList->SetGraphicsRootConstantBufferView(2, d3dcbLightsGpuVirtualAddress); //Lights
 
 
-	//씬을 렌더링하는 것은 씬을 구성하는 게임 객체(셰이더를 포함하는 객체)들을 렌더링하는 것이다. 
-	//for (int i = 0; i < m_nShaders; i++)
-	//{
-	//	m_ppShaders[i]->Render(pd3dCommandList, pCamera);
-	//}
-
 	for (int i = 0; i < m_nGameObjects; i++)
 	{
 		if (m_ppGameObjects[i])
 		{
-			m_ppGameObjects[i]->Animate(m_fElapsedTime, NULL);
+			m_ppGameObjects[i]->Animate(m_Timer.GetTimeElapsed(), NULL);
 			m_ppGameObjects[i]->UpdateTransform(NULL);
 			m_ppGameObjects[i]->Render(pd3dCommandList, pCamera);
 		}
 	}
+
+	for (int i = 0; i < PLAYERNUM; ++i) _players[i]->Render(pd3dCommandList, pCamera);
 }
 
 void CGameScene::ReleaseUploadBuffers()
 {
-	//for (int i = 0; i < m_nShaders; i++) 
-	//	m_ppShaders[i]->ReleaseUploadBuffers();
 
 	for (int i = 0; i < m_nGameObjects; i++)
 		m_ppGameObjects[i]->ReleaseUploadBuffers();

@@ -15,11 +15,11 @@ private:
 	int	m_nWndClientWidth = FRAME_BUFFER_WIDTH;
 	int	m_nWndClientHeight = FRAME_BUFFER_HEIGHT;
 
-	IDXGIFactory4* m_pdxgiFactory = NULL;
+	IDXGIFactory4*				m_pdxgiFactory = NULL;
 	//DXGI 팩토리 인터페이스에 대한 포인터이다. 
-	IDXGISwapChain3* m_pdxgiSwapChain = NULL;
+	IDXGISwapChain3*			m_pdxgiSwapChain = NULL;
 	//스왑 체인 인터페이스에 대한 포인터이다. 주로 디스플레이를 제어하기 위하여 필요하다. 
-	ID3D12Device* m_pd3dDevice = NULL;
+	ID3D12Device*				m_pd3dDevice = NULL;
 	//Direct3D 디바이스 인터페이스에 대한 포인터이다. 주로 리소스를 생성하기 위하여 필요하다.
 
 	bool						m_bMsaa4xEnable = false;
@@ -31,8 +31,8 @@ private:
 	UINT						m_nSwapChainBufferIndex = 0;
 	//현재 스왑 체인의 후면 버퍼 인덱스이다.
 
-	ID3D12Resource* m_ppd3dSwapChainBackBuffers[m_nSwapChainBuffers];
-	ID3D12DescriptorHeap* m_pd3dRtvDescriptorHeap;
+	ID3D12Resource*				m_ppd3dSwapChainBackBuffers[m_nSwapChainBuffers];
+	ID3D12DescriptorHeap*		m_pd3dRtvDescriptorHeap;
 	UINT						m_nRtvDescriptorIncrementSize;
 	//렌더 타겟 버퍼, 서술자 힙 인터페이스 포인터, 렌더 타겟 서술자 원소의 크기이다.
 

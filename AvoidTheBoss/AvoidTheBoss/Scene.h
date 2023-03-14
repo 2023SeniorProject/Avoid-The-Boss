@@ -81,14 +81,12 @@ public:
 
 //protected:
 //	//배치(Batch) 처리를 하기 위하여 씬을 셰이더들의 리스트로 표현한다. 
-//	CShader** m_ppShaders = NULL;
-//	int m_nShaders = 0;
+
 	CCamera* m_pCamera;
 	Timer m_Timer;
 
 	CPlayer*					_players[4];
 	int16						_playerIdx = -1;
-	int16						_playerNum = PLAYERNUM;
 	DWORD						m_lastKeyInput = 0;
 
 	//마지막으로 마우스 버튼을 클릭할 때의 마우스 커서의 위치이다. 

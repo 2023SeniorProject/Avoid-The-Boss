@@ -353,8 +353,7 @@ void CGameFramework::BuildObjects()
 
 		//씬 객체를 생성하고 씬에 포함될 게임 객체들을 생성한다. 
 	m_pScene = new CGameScene();
-	if (m_pScene) 
-		m_pScene->BuildObjects(m_pd3dDevice, m_pd3dCommandList);
+	if (m_pScene) m_pScene->BuildObjects(m_pd3dDevice, m_pd3dCommandList);
 
 	//씬 객체를 생성하기 위하여 필요한 그래픽 명령 리스트들을 명령 큐에 추가한다. 
 	m_pd3dCommandList->Close();
@@ -389,6 +388,7 @@ void CGameFramework::FrameAdvance() // 여기서 업데이트랑 렌더링 동시에 진행하는 
 {
 	//타이머의 시간이 갱신되도록 하고 프레임 레이트를 계산한다. 
 	if (_curScene != SceneInfo::GAMEROOM) return;
+	
 	ProcessInput();
 	AnimateObjects();
 
@@ -437,13 +437,6 @@ void CGameFramework::FrameAdvance() // 여기서 업데이트랑 렌더링 동시에 진행하는 
 	m_pd3dCommandList->ClearDepthStencilView(d3dDsvCPUDescriptorHandle,
 		D3D12_CLEAR_FLAG_DEPTH | D3D12_CLEAR_FLAG_STENCIL, 1.0f, 0, 0, NULL);
 #endif
-	//3인칭 카메라일 때 플레이어를 렌더링한다. 
-	if (m_pScene && m_pScene->_curSceneStatus == SceneInfo::GAMEROOM)
-	{
-		/*if (m_pScene->_player) m_pScene->_player->Render(m_pd3dCommandList, m_pScene->m_pCamera);
-		if (m_pScene->_other)  m_pScene->_other->Render(m_pd3dCommandList, m_pScene->m_pCamera);*/
-		for (int i = 0; i < PLAYERNUM; ++i) if (m_pScene->_players[i] != nullptr) m_pScene->_players[i]->Render(m_pd3dCommandList, m_pScene->m_pCamera);
-	}
 	d3dResourceBarrier.Transition.StateBefore = D3D12_RESOURCE_STATE_RENDER_TARGET;
 	d3dResourceBarrier.Transition.StateAfter = D3D12_RESOURCE_STATE_PRESENT;
 	d3dResourceBarrier.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
@@ -485,8 +478,7 @@ void CGameFramework::FrameAdvance() // 여기서 업데이트랑 렌더링 동시에 진행하는 
 	//	*/
 
 	MoveToNextFrame();
-	m_pScene->m_Timer.GetFrameRate(m_pszFrameRate + 11, 27);
-	::SetWindowText(m_hWnd, m_pszFrameRate);
+	
 }
 
 void CGameFramework::WaitForGpuComplete()

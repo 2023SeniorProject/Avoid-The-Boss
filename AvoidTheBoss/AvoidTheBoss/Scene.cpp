@@ -67,6 +67,10 @@ void CGameScene::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPARAM 
 }
 
 
+void CGameScene::BuildDefaultLightsAndMaterials()
+{
+}
+
 void CGameScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList)
 {
 	
@@ -74,22 +78,38 @@ void CGameScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandLis
 	//그래픽 루트 시그너쳐를 생성한다. 
 	m_pd3dGraphicsRootSignature = CreateGraphicsRootSignature(pd3dDevice);
 
-	m_nShaders = 1;
+	/*m_nShaders = 1;
 	m_ppShaders = new CShader*[m_nShaders];
 
 	CObjectsShader* pObjectShader = new CObjectsShader();
 	pObjectShader->CreateShader(pd3dDevice, m_pd3dGraphicsRootSignature);
 	pObjectShader->BuildObjects(pd3dDevice, pd3dCommandList, NULL);
-	m_ppShaders[0] = pObjectShader;
+	m_ppShaders[0] = pObjectShader;*/
+	
+	CMaterial::PrepareShaders(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature);
+	BuildDefaultLightsAndMaterials();
+
+	for (int i = 0; i < PLAYERNUM; ++i)
+	{
+		_players[i] = new CMyPlayer(pd3dDevice, pd3dCommandList, GetGraphicsRootSignature());
+		_players[i]->SetPosition(XMFLOAT3(0, 75, 0));
+	}
+
+	m_pCamera = _players[0]->GetCamera();
+
+	CGameObject* pMap = CGameObject::LoadGeometryFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "Industry_Map_(1).bin");
+
+	CGameObject* pMapObject = NULL;
+	pMapObject = new CGameObject();
+	pMapObject->SetChild(pMap, true);
+	pMapObject->SetPosition(0.0f, 0.0f, 0.0f);
+	pMapObject->SetScale(1.0f, 1.0f, 1.0f);
+	pMapObject->Rotate(0.0f, 0.0f, 0.0f);
+	m_ppGameObjects[0] = pMapObject;
 
 	CreateShaderVariables(pd3dDevice, pd3dCommandList);
 	
-	for (int i = 0; i < PLAYERNUM; ++i)
-	{
-		_players[i] = new CMyPlayer(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, 1);
-		_players[i]->SetPosition(XMFLOAT3(0, 0, 0));
-	}
-	m_pCamera = _players[0]->GetCamera();
+	
 	m_Timer.Reset();
 }
 
@@ -110,13 +130,13 @@ void CGameScene::ReleaseObjects()
 	if (m_pd3dGraphicsRootSignature)
 		m_pd3dGraphicsRootSignature->Release();
 
-	for (int i = 0; i < m_nShaders; i++)
-	{
-		m_ppShaders[i]->ReleaseShaderVariables();
-		m_ppShaders[i]->ReleaseObjects();
-		m_ppShaders[i]->Release();
-	}
-	delete[] m_ppShaders;
+	//for (int i = 0; i < m_nShaders; i++)
+	//{
+	//	m_ppShaders[i]->ReleaseShaderVariables();
+	//	m_ppShaders[i]->ReleaseObjects();
+	//	m_ppShaders[i]->Release();
+	//}
+	//delete[] m_ppShaders;
 
 	ReleaseShaderVariables();
 }
@@ -205,10 +225,10 @@ void CGameScene::ProcessInput(HWND hWnd)
 
 void CGameScene::AnimateObjects()
 {
-	for (int i = 0; i < m_nShaders; i++)
+	/*for (int i = 0; i < m_nShaders; i++)
 	{
 		m_ppShaders[i]->AnimateObjects(m_Timer.GetTimeElapsed());
-	}
+	}*/
 }
 
 void CGameScene::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera)
@@ -222,17 +242,17 @@ void CGameScene::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCa
 	UpdateShaderVariables(pd3dCommandList);
 	
 	//씬을 렌더링하는 것은 씬을 구성하는 게임 객체(셰이더를 포함하는 객체)들을 렌더링하는 것이다. 
-	for (int i = 0; i < m_nShaders; i++)
-	{
-		m_ppShaders[i]->Render(pd3dCommandList, pCamera);
-	}
+	//for (int i = 0; i < m_nShaders; i++)
+	//{
+	//	m_ppShaders[i]->Render(pd3dCommandList, pCamera);
+	//}
 }
 
 void CGameScene::ReleaseUploadBuffers()
 {
 	
-	for (int i = 0; i < m_nShaders; i++) 
-		m_ppShaders[i]->ReleaseUploadBuffers();
+	//for (int i = 0; i < m_nShaders; i++) 
+	//	m_ppShaders[i]->ReleaseUploadBuffers();
 
 }
 

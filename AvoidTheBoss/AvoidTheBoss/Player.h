@@ -109,15 +109,3 @@ public:
 	virtual void OnPrepareRender();
 
 };
-
-class COtherPlayer : public CPlayer
-{
-public:
-	COtherPlayer(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, int nMeshes = 1);
-	virtual ~COtherPlayer() {};
-
-	virtual CCamera* ChangeCamera(DWORD nNewCameraMode, float fTimeElapsed) { return nullptr; };
-
-	virtual void OnPrepareRender() {};
-
-};

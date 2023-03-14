@@ -83,26 +83,29 @@ public:
 //	//배치(Batch) 처리를 하기 위하여 씬을 셰이더들의 리스트로 표현한다. 
 //	CShader** m_ppShaders = NULL;
 //	int m_nShaders = 0;
+	CCamera* m_pCamera;
+	Timer m_Timer;
 
-	CPlayer* _players[4];
-	int16 _playerIdx = -1;
-	int16 _playerNum = PLAYERNUM;
-	DWORD				m_lastKeyInput = 0;
+	CPlayer*					_players[4];
+	int16						_playerIdx = -1;
+	int16						_playerNum = PLAYERNUM;
+	DWORD						m_lastKeyInput = 0;
+
 	//마지막으로 마우스 버튼을 클릭할 때의 마우스 커서의 위치이다. 
-	POINT				m_ptOldCursorPos;
-	ID3D12RootSignature* m_pd3dGraphicsRootSignature = NULL;
+	POINT						m_ptOldCursorPos;
+	ID3D12RootSignature*		m_pd3dGraphicsRootSignature = NULL;
 	//루트 시그너쳐를 나타내는 인터페이스 포인터이다. 
 
-	CGameObject**			m_ppGameObjects = NULL;
+	CGameObject**				m_ppGameObjects = NULL;
 	int							m_nGameObjects = 0;
 
-	LIGHT*					m_pLights = NULL;
+	LIGHT*						m_pLights = NULL;
 	int							m_nLights = 0;
 
 	XMFLOAT4					m_xmf4GlobalAmbient;
 
-	ID3D12Resource* m_pd3dcbLights = NULL;
-	LIGHTS* m_pcbMappedLights = NULL;
+	ID3D12Resource*				m_pd3dcbLights = NULL;
+	LIGHTS*						m_pcbMappedLights = NULL;
 
 	float						m_fElapsedTime = 0.0f;
 };

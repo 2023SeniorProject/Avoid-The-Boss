@@ -43,6 +43,9 @@
     <Filter Include="Shared\WorldRewinder">
       <UniqueIdentifier>{7704c00c-b45b-4be8-9139-8411de3349a9}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Shared\Physics">
+      <UniqueIdentifier>{2d536aaa-b98c-4ad0-bdf5-9ebe1ce03758}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CoreGlobal.h">
@@ -117,6 +120,9 @@
     <ClInclude Include="WorldRewinder.h">
       <Filter>Shared\WorldRewinder</Filter>
     </ClInclude>
+    <ClInclude Include="CollisionChecker.h">
+      <Filter>Shared\Physics</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CoreGlobal.cpp">
@@ -187,6 +193,9 @@
     </ClCompile>
     <ClCompile Include="protocol.cpp">
       <Filter>Shared\Packet</Filter>
+    </ClCompile>
+    <ClCompile Include="CollisionChecker.cpp">
+      <Filter>Shared\Physics</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

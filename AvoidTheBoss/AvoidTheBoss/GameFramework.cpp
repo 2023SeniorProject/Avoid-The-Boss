@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "GameFramework.h"
 #include "clientIocpCore.h"
+#include <string>
 
 CGameFramework mainGame;
 // #define _WITH_PLAYER_TOP // 플레이어 깊이 버퍼값 1.0f
@@ -473,10 +474,12 @@ void CGameFramework::FrameAdvance() // 여기서 업데이트랑 렌더링 동시에 진행하는 
 	//	/*현재의 프레임 레이트를 문자열로 가져와서 주 윈도우의 타이틀로 출력한다. m_pszBuffer 문자열이
 	//	"LapProject ("으로 초기화되었으므로 (m_pszFrameRate+12)에서부터 프레임 레이트를 문자열로 출력
 	//	하여 “ FPS)” 문자열과 합친다.
-	//	::_itow_s(m_nCurrentFrameRate, (m_pszFrameRate+12), 37, 10);
-	//	::wcscat_s((m_pszFrameRate+12), 37, _T(" FPS)"));
+	std::wstring str = std::to_wstring(m_pScene->_players[m_pScene->_playerIdx]->GetPosition().x);
+	str.append(L" ");
+	str.append(std::to_wstring(m_pScene->_players[m_pScene->_playerIdx]->GetPosition().z));
+	_tcscpy_s(m_pszFrameRate,500,str.c_str());
 	//	*/
-
+	::SetWindowText(m_hWnd, m_pszFrameRate);
 	MoveToNextFrame();
 	
 }

@@ -37,9 +37,6 @@
     <ClCompile Include="SceneInterface.cpp">
       <Filter>SceneInterface</Filter>
     </ClCompile>
-    <ClCompile Include="DummyPlayer.cpp">
-      <Filter>DummyPlayer</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Scene.h">
@@ -59,9 +56,6 @@
     </ClInclude>
     <ClInclude Include="pch.h">
       <Filter>AvoidTheBoss</Filter>
-    </ClInclude>
-    <ClInclude Include="DummyPlayer.h">
-      <Filter>DummyPlayer</Filter>
     </ClInclude>
     <ClInclude Include="Mesh.h">
       <Filter>Mesh</Filter>
@@ -120,9 +114,6 @@
     <ClCompile Include="clientIocpCore.cpp">
       <Filter>ClientIocpCore</Filter>
     </ClCompile>
-    <ClCompile Include="DummyPlayer.cpp">
-      <Filter>Player</Filter>
-    </ClCompile>
     <ClCompile Include="SceneInterface.cpp">
       <Filter>SceneInterface</Filter>
     </ClCompile>
@@ -180,9 +171,6 @@
     </Filter>
     <Filter Include="GameFramework">
       <UniqueIdentifier>{5f512bee-fa01-496f-928a-5ffe548e2624}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="DummyPlayer">
-      <UniqueIdentifier>{59073908-be5a-4415-8b58-557f521ea3b2}</UniqueIdentifier>
     </Filter>
     <Filter Include="Mesh">
       <UniqueIdentifier>{02eb4d02-2f0c-498f-9818-1e2fa2d61896}</UniqueIdentifier>

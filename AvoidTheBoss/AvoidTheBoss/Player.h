@@ -30,6 +30,7 @@ protected:
 public:
 	int16 m_sid = -1; // 切重生 Session Id
 	std::mutex m_lock; // 切重税 Lock
+	BoundingSphere m_playerBV; // BV = bounding volume
 public:
 	CPlayer();
 	virtual ~CPlayer();
@@ -100,12 +101,11 @@ public:
 };
 
 
-class CMyPlayer : public CPlayer
+class CWorker : public CPlayer
 {
 public:
-	CMyPlayer(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature);
-	virtual ~CMyPlayer();
-
+	CWorker(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature);
+	virtual ~CWorker();
 private:
 	virtual void OnInitialize();
 	virtual void Animate(float fTimeElapsed, XMFLOAT4X4* pxmf4x4Parent = NULL);
@@ -114,3 +114,5 @@ public:
 	virtual void OnPrepareRender();
 
 };
+
+

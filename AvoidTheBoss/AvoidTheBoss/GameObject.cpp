@@ -66,6 +66,11 @@ CGameObject::CGameObject()
 {
 	m_xmf4x4Transform = Matrix4x4::Identity();
 	m_xmf4x4World = Matrix4x4::Identity();
+
+	for (int i = 0; i < 64; i++)
+	{
+		m_pstrFrameName[i] = { '\0' };
+	}
 }
 
 CGameObject::~CGameObject()
@@ -181,10 +186,10 @@ void CGameObject::UpdateTransform(XMFLOAT4X4* pxmf4x4Parent)
 	if (m_pChild) m_pChild->UpdateTransform(&m_xmf4x4World);
 }
 
-CGameObject* CGameObject::FindFrame(char* pstrFrameName)
+CGameObject* CGameObject::FindFrame(const char* pstrFrameName)
 {
 	CGameObject* pFrameObject = NULL;
-	if (!strncmp(m_pstrFrameName, pstrFrameName, strlen(pstrFrameName))) 
+	if (!strcmp(m_pstrFrameName, pstrFrameName)) //, strlen(pstrFrameName)
 		return(this);
 
 	if (m_pSibling) 
@@ -394,6 +399,9 @@ CMeshLoadInfo* CGameObject::LoadMeshInfoFromFile(FILE* pInFile)
 		{
 			nReads = (UINT)::fread(&(pMeshInfo->m_xmf3AABBCenter), sizeof(XMFLOAT3), 1, pInFile);
 			nReads = (UINT)::fread(&(pMeshInfo->m_xmf3AABBExtents), sizeof(XMFLOAT3), 1, pInFile);
+			//m_pAABB.Center = pMeshInfo->m_xmf3AABBCenter;
+			//m_pAABB.Extents = pMeshInfo->m_xmf3AABBExtents;
+
 		}
 		else if (!strcmp(pstrToken, "<Positions>:"))
 		{
@@ -569,6 +577,9 @@ CGameObject* CGameObject::LoadFrameHierarchyFromFile(ID3D12Device* pd3dDevice, I
 					pMesh = new CMeshIlluminatedFromFile(pd3dDevice, pd3dCommandList, pMeshInfo);
 				}
 				if (pMesh) pGameObject->SetMesh(pMesh);
+				pGameObject->m_pAABB.Center = pMeshInfo->m_xmf3AABBCenter;
+				pGameObject->m_pAABB.Extents = pMeshInfo->m_xmf3AABBExtents;
+
 				delete pMeshInfo;
 			}
 		}
@@ -598,6 +609,8 @@ CGameObject* CGameObject::LoadFrameHierarchyFromFile(ID3D12Device* pd3dDevice, I
 		else if (!strcmp(pstrToken, "<Children>:"))
 		{
 			int nChilds = ::ReadIntegerFromFile(pInFile);
+			if (nFrame == 0)
+				pGameObject->m_nChild = nChilds;
 			if (nChilds > 0)
 			{
 				for (int i = 0; i < nChilds; i++)
@@ -608,8 +621,11 @@ CGameObject* CGameObject::LoadFrameHierarchyFromFile(ID3D12Device* pd3dDevice, I
 					TCHAR pstrDebug[256] = { 0 };
 					_stprintf_s(pstrDebug, 256, _T("(Child Frame: %p) (Parent Frame: %p)\n"), pChild, pGameObject);
 					OutputDebugString(pstrDebug);
-#endif
+					if (pChild)
+						pChild->Parents->m_nChild = nChilds;
+#endif				
 				}
+
 			}
 		}
 		else if (!strcmp(pstrToken, "</Frame>"))

@@ -519,6 +519,16 @@ void CGameFramework::OnProcessingMouseMessage(HWND hWnd, UINT nMessageID, WPARAM
 	m_pScene->OnProcessingMouseMessage(hWnd, nMessageID, wParam, lParam);
 }
 
+bool CGameFramework::CollisionCheck()
+{
+	if (m_pScene)
+	{
+		if (m_pScene->CollisionCheck())
+			return true;
+	}
+	return false;
+}
+
 void CGameFramework::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPARAM wParam, LPARAM lParam)
 {
 	

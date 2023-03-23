@@ -67,6 +67,7 @@ public:
 	virtual void ProcessInput(HWND hWnd);
 	void AnimateObjects();
 	void Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera);
+	bool CollisionCheck();
 
 	void ReleaseUploadBuffers();
 

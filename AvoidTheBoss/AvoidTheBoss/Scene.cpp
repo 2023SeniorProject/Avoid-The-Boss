@@ -130,23 +130,34 @@ void CGameScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandLis
 
 	m_nGameObjects = 1;
 	m_ppGameObjects = new CGameObject * [m_nGameObjects];
-	CGameObject* pMap = CGameObject::LoadGeometryFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "Industry_Map.bin");
+	// CGameObject* pMap = CGameObject::LoadGeometryFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "Industry_Map.bin");
 
 	for (int i = 0; i < PLAYERNUM; ++i)
 	{
-		_players[i] = new CMyPlayer(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature);
+		_players[i] = new CWorker(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature);
 	}
 	m_pCamera = _players[0]->GetCamera();
 
 
 
-	CGameObject* pMapObject = NULL;
+	/*CGameObject* pMapObject = NULL;
 	pMapObject = new CGameObject();
 	pMapObject->SetChild(pMap, true);
 	pMapObject->SetPosition(0.0f, 0.0f, 0.0f);
 	pMapObject->SetScale(1.0f, 1.0f, 1.0f);
 	pMapObject->Rotate(0.0f, 0.0f, 0.0f);
-	m_ppGameObjects[0] = pMapObject;
+	m_ppGameObjects[0] = pMapObject;*/
+
+
+	CGameObject* pBVMap = CGameObject::LoadGeometryFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "Map_Bounding_Box.bin");
+	pBVMap->SetPosition(0.0f, 0.0f, 0.0f);
+	CGameObject* pBVObject = NULL;
+	pBVObject = new CGameObject();
+	pBVObject->SetChild(pBVMap, true);
+	pBVObject->SetPosition(0.0f, 0.0f, 0.0f);
+	pBVObject->SetScale(1.0f, 1.0f, 1.0f);
+	pBVObject->Rotate(0.0f, 0.0f, 0.0f);
+	m_ppGameObjects[0] = pBVObject;
 
 	CreateShaderVariables(pd3dDevice, pd3dCommandList);
 }
@@ -250,8 +261,6 @@ void CGameScene::ProcessInput(HWND hWnd)
 
 			/*플레이어를 dwDirection 방향으로 이동한다(실제로는 속도 벡터를 변경한다). 이동 거리는 시간에 비례하도록 한다. 플레이어의 이동 속력은 (1.3UNIT/초)로 가정한다.*/
 			if (dwDirection) _players[_playerIdx]->Move(dwDirection, PLAYER_VELOCITY);
-			// 속도만 더해주고 
-
 		}
 	}
 
@@ -311,12 +320,35 @@ void CGameScene::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCa
 			m_ppGameObjects[i]->Render(pd3dCommandList, pCamera);
 		}
 	}
-
 	for (int i = 0; i < PLAYERNUM; ++i) _players[i]->Render(pd3dCommandList, pCamera);
+}
+
+bool CGameScene::CollisionCheck()
+{
+	_players[_playerIdx]->m_playerBV.Center = _players[_playerIdx]->GetPosition();
+	_players[_playerIdx]->m_playerBV.Radius = 3.0f;
+	return false;
 }
 
 void CGameScene::ReleaseUploadBuffers()
 {
+	/*if (m_ppShaders)
+	{
+		for (int j = 0; j < m_nShaders; j++)
+		{
+			if (m_ppShaders[j])
+				m_ppShaders[j]->ReleaseUploadBuffers();
+		}
+	}*/
+	/*if (m_ppObjects)
+	{
+		for (int j = 0; j < m_nObjects; j++) if (m_ppObjects[j])
+			m_ppObjects[j]->ReleaseUploadBuffers();
+	}*/
+	//for (int i = 0; i < m_nShaders; i++) 
+		//m_ppShaders[i]->ReleaseUploadBuffers();
+	//for (int i = 0; i < m_nShaders; i++) 
+	//	m_ppShaders[i]->ReleaseUploadBuffers();
 
 	for (int i = 0; i < m_nGameObjects; i++)
 		m_ppGameObjects[i]->ReleaseUploadBuffers();

@@ -1,4 +1,6 @@
 #pragma once
+
+#pragma once
 #include <array>
 
 class LeafNode
@@ -16,32 +18,28 @@ class OcTree
 
 	struct Sector
 	{
-		DirectX::XMFLOAT3 scenter;
-		DirectX::BoundingBox area;
+		DirectX::XMFLOAT3 _center;
+		DirectX::XMFLOAT3 _leftTopBack;
+		DirectX::XMFLOAT3 _rightBottomFront;
 	public:
 		Sector()
 		{
 
-			scenter = { 0,0,0 };
+			_center = { 0,0,0 };
 		}
 		Sector(DirectX::XMFLOAT3 center, float volume)
 		{
-			area.Center = center;
-			scenter = center;
-			area.Extents = XMFLOAT3(volume, volume, volume);
+			_center = center;
+
 		}
-		bool IsIncludePoint(const DirectX::XMFLOAT3 pos)
+		bool IsIncludePoint(const XMFLOAT3 pos)
 		{
-			DirectX::XMVECTOR vpos{ pos.x, pos.y, pos.z };
-			return (area.Contains(vpos) == CONTAINS);
+
 		}
 
 		void print()
 		{
-			printf("center(%f %f %f) extend(%f %f %f)\n",
-				area.Center.x, area.Center.y, area.Center.z
-				, area.Extents.x, area.Extents.y, area.Extents.z
-			);
+
 		}
 	};
 
@@ -94,17 +92,17 @@ public:
 	void BuildChildTree()
 	{
 		XMFLOAT3 centers[8];
-		centers[0] = { _area.scenter.x + (_volume / 4),  _area.scenter.y + (_volume / 4), _area.scenter.z - (_volume / 4) };
-		centers[1] = { _area.scenter.x - (_volume / 4),  _area.scenter.y + (_volume / 4), _area.scenter.z - (_volume / 4) };
+		centers[0] = { _area._center.x + (_volume / 4),  _area._center.y + (_volume / 4), _area._center.z - (_volume / 4) };
+		centers[1] = { _area._center.x - (_volume / 4),  _area._center.y + (_volume / 4), _area._center.z - (_volume / 4) };
 
-		centers[2] = { _area.scenter.x + (_volume / 4),  _area.scenter.y + (_volume / 4), _area.scenter.z + (_volume / 4) };
-		centers[3] = { _area.scenter.x - (_volume / 4),  _area.scenter.y + (_volume / 4), _area.scenter.z + (_volume / 4) };
+		centers[2] = { _area._center.x + (_volume / 4),  _area._center.y + (_volume / 4), _area._center.z + (_volume / 4) };
+		centers[3] = { _area._center.x - (_volume / 4),  _area._center.y + (_volume / 4), _area._center.z + (_volume / 4) };
 
-		centers[4] = { _area.scenter.x + (_volume / 4),  _area.scenter.y - (_volume / 4), _area.scenter.z + (_volume / 4) };
-		centers[5] = { _area.scenter.x - (_volume / 4),  _area.scenter.y - (_volume / 4), _area.scenter.z + (_volume / 4) };
+		centers[4] = { _area._center.x + (_volume / 4),  _area._center.y - (_volume / 4), _area._center.z + (_volume / 4) };
+		centers[5] = { _area._center.x - (_volume / 4),  _area._center.y - (_volume / 4), _area._center.z + (_volume / 4) };
 
-		centers[6] = { _area.scenter.x + (_volume / 4),  _area.scenter.y - (_volume / 4), _area.scenter.z - (_volume / 4) };
-		centers[7] = { _area.scenter.x - (_volume / 4),  _area.scenter.y - (_volume / 4), _area.scenter.z - (_volume / 4) };
+		centers[6] = { _area._center.x + (_volume / 4),  _area._center.y - (_volume / 4), _area._center.z - (_volume / 4) };
+		centers[7] = { _area._center.x - (_volume / 4),  _area._center.y - (_volume / 4), _area._center.z - (_volume / 4) };
 
 		for (int i = 0; i < 8; ++i)
 		{

@@ -189,7 +189,7 @@
   <ItemGroup>
     <ClCompile Include="AcceptManager.cpp" />
     <ClCompile Include="Allocator.cpp" />
-    <ClCompile Include="CollisionDetector.cpp" />
+    <ClCompile Include="CollisionDectector.cpp" />
     <ClCompile Include="CoreGlobal.cpp" />
     <ClCompile Include="CoreMacro.cpp" />
     <ClCompile Include="CorePch.cpp" />

@@ -128,9 +128,9 @@ void CGameScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandLis
 	CMaterial::PrepareShaders(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature);
 	BuildDefaultLightsAndMaterials();
 
-	m_nGameObjects = 2;
+	m_nGameObjects = 1;
 	m_ppGameObjects = new CGameObject * [m_nGameObjects];
-	CGameObject* pMap = CGameObject::LoadGeometryFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "Industry_Map.bin");
+	// CGameObject* pMap = CGameObject::LoadGeometryFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "Industry_Map.bin");
 
 	for (int i = 0; i < PLAYERNUM; ++i)
 	{
@@ -140,13 +140,13 @@ void CGameScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandLis
 
 
 
-	CGameObject* pMapObject = NULL;
+	/*CGameObject* pMapObject = NULL;
 	pMapObject = new CGameObject();
 	pMapObject->SetChild(pMap, true);
 	pMapObject->SetPosition(0.0f, 0.0f, 0.0f);
 	pMapObject->SetScale(1.0f, 1.0f, 1.0f);
 	pMapObject->Rotate(0.0f, 0.0f, 0.0f);
-	m_ppGameObjects[0] = pMapObject;
+	m_ppGameObjects[0] = pMapObject;*/
 
 
 	CGameObject* pBVMap = CGameObject::LoadGeometryFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "Map_Bounding_Box.bin");
@@ -157,7 +157,7 @@ void CGameScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandLis
 	pBVObject->SetPosition(0.0f, 0.0f, 0.0f);
 	pBVObject->SetScale(1.0f, 1.0f, 1.0f);
 	pBVObject->Rotate(0.0f, 0.0f, 0.0f);
-	m_ppGameObjects[1] = pBVObject;
+	m_ppGameObjects[0] = pBVObject;
 
 	CreateShaderVariables(pd3dDevice, pd3dCommandList);
 }

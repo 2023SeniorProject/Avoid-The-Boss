@@ -94,10 +94,10 @@ void CScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* p
 
 	BuildDefaultLightsAndMaterials();
 
-	m_nGameObjects = 1;
+	m_nGameObjects = 2;
 	m_ppGameObjects = new CGameObject * [m_nGameObjects];
 
-	CGameObject* pMap = CGameObject::LoadGeometryFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "Industry_Map_(1).bin");
+	CGameObject* pMap = CGameObject::LoadGeometryFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "Industry_Map.bin");
 	
 	CGameObject* pMapObject = NULL;
 	pMapObject = new CGameObject();
@@ -106,6 +106,17 @@ void CScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* p
 	pMapObject->SetScale(1.0f, 1.0f, 1.0f);
 	pMapObject->Rotate(0.0f, 0.0f, 0.0f);
 	m_ppGameObjects[0] = pMapObject;
+
+
+	CGameObject* pBVMap = CGameObject::LoadGeometryFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "Map_Bounding_Box.bin");
+	pBVMap->SetPosition(0.0f, 0.0f, 0.0f);
+	CGameObject* pBVObject = NULL;
+	pBVObject = new CGameObject();
+	pBVObject->SetChild(pBVMap, true);
+	pBVObject->SetPosition(0.0f, 0.0f, 0.0f);
+	pBVObject->SetScale(1.0f, 1.0f, 1.0f);
+	pBVObject->Rotate(0.0f, 0.0f, 0.0f);
+	m_ppGameObjects[1] = pBVObject;
 
 	CreateShaderVariables(pd3dDevice, pd3dCommandList);
 }
@@ -203,6 +214,49 @@ void CScene::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera
 			m_ppGameObjects[i]->Render(pd3dCommandList, pCamera);
 		}
 	}
+}
+
+bool CScene::CollisionCheck()
+{
+	m_pPlayer->m_pAABB.Center = m_pPlayer->GetPosition();
+	//m_pPlayer->m_pAABB.Extents = XMFLOAT3(2.0f, 2.0f, 2.0f);
+
+	if (m_ppGameObjects[1])
+	{
+		CGameObject* leftWall[5];
+		leftWall[0] = m_ppGameObjects[1]->FindFrame("left_wall0");
+		leftWall[1] = m_ppGameObjects[1]->FindFrame("left_wall1");
+		leftWall[2] = m_ppGameObjects[1]->FindFrame("left_wall2");
+		leftWall[3] = m_ppGameObjects[1]->FindFrame("left_wall3");
+		leftWall[4] = m_ppGameObjects[1]->FindFrame("left_wall4");
+
+		CGameObject* rightWall[5];
+		rightWall[0] = m_ppGameObjects[1]->FindFrame("right_wall0");
+		rightWall[1] = m_ppGameObjects[1]->FindFrame("right_wall1");
+		rightWall[2] = m_ppGameObjects[1]->FindFrame("right_wall2");
+		rightWall[3] = m_ppGameObjects[1]->FindFrame("right_wall3");
+		rightWall[4] = m_ppGameObjects[1]->FindFrame("right_wall4");
+
+		CGameObject* frontWall = m_ppGameObjects[1]->FindFrame("front_wall");
+		CGameObject* backWall = m_ppGameObjects[1]->FindFrame("back_wall");
+
+		for (int i = 0; i < 5; i++)
+		{
+			if (DISJOINT != leftWall[i]->m_pAABB.Contains(m_pPlayer->m_pAABB) || DISJOINT != rightWall[i]->m_pAABB.Contains(m_pPlayer->m_pAABB))
+				return true;
+		}
+
+		ContainmentType result2 = frontWall->m_pAABB.Contains(m_pPlayer->m_pAABB);
+		ContainmentType result3 = backWall->m_pAABB.Contains(m_pPlayer->m_pAABB);
+
+		if (result2 != DirectX::DISJOINT || result3 != DirectX::DISJOINT)
+			return true;
+		//XMFLOAT3 pos = m_pPlayer->GetPosition();
+		//if (pos.x < -25.0f || pos.x>25.0f ||
+		//	pos.z < -25.0f || pos.z>25.0f)
+		//	return true;
+	}
+	return false;
 }
 
 void CScene::ReleaseUploadBuffers()

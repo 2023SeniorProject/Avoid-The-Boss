@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "GameFramework.h"
 
-//#define _WITH_PLAYER_TOP // 플레이어 깊이 버퍼값 1.0f
+#define _WITH_PLAYER_TOP // 플레이어 깊이 버퍼값 1.0f
 
 CGameFramework::CGameFramework()
 {
@@ -424,10 +424,17 @@ void CGameFramework::ProcessInput()
 			}
 
 			/*플레이어를 dwDirection 방향으로 이동한다(실제로는 속도 벡터를 변경한다). 이동 거리는 시간에 비례하도록 한다. 플레이어의 이동 속력은 (1.3UNIT/초)로 가정한다.*/
-			if (dwDirection) 
-				m_pPlayer->Move(dwDirection, (60.0f * UNIT) * m_Timer.GetTimeElapsed() ,true);
+			if (dwDirection)
+			{
+				m_pPlayer->Move(dwDirection, (60.0f * UNIT) * m_Timer.GetTimeElapsed(), true);
+
+				if(CollisionCheck())
+					m_pPlayer->Move(dwDirection, -(60.0f * UNIT) * m_Timer.GetTimeElapsed(), false);
+			}
+
 		}
 	}
+
 	//플레이어를 실제로 이동하고 카메라를 갱신한다. 중력과 마찰력의 영향을 속도 벡터에 적용한다.
 	m_pPlayer->Update(m_Timer.GetTimeElapsed());
 }
@@ -447,6 +454,7 @@ void CGameFramework::FrameAdvance()
 	m_Timer.Tick(0.0f);
 
 	ProcessInput();
+
 
 	AnimateObjects();
 
@@ -596,6 +604,16 @@ void CGameFramework::OnProcessingMouseMessage(HWND hWnd, UINT nMessageID, WPARAM
 	default:
 		break;
 	}
+}
+
+bool CGameFramework::CollisionCheck()
+{
+	if (m_pScene)
+	{
+		if (m_pScene->CollisionCheck())
+			return true;
+	}
+	return false;
 }
 
 void CGameFramework::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPARAM wParam, LPARAM lParam)

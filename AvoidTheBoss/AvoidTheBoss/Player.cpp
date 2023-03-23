@@ -244,13 +244,16 @@ CTilePlayer::CTilePlayer(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd
 {
 	m_pCamera = ChangeCamera(THIRD_PERSON_CAMERA, 0.0f);
 
-	CGameObject* pGameObject = CGameObject::LoadGeometryFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "Character_Boss_(1).bin");
+	CGameObject* pGameObject = CGameObject::LoadGeometryFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "Character_Boss.bin");
 
 	float scale = 1.0f;
 	pGameObject->Rotate(0.0f,0.0f,0.0f);
 	pGameObject->SetScale(scale, scale, scale);
-	pGameObject->SetPosition(0.0f, 1.25f, 0.0f);
+	//m_Bounds.Center = pGameObject->m_pAABB.Center;
+	//m_Bounds.Radius = 0.5f;
+
 	SetChild(pGameObject, true);
+	SetPosition(XMFLOAT3(0.0f, 1.25f, 0.0f));
 
 	CreateShaderVariables(pd3dDevice, pd3dCommandList);
 }
@@ -280,7 +283,7 @@ CCamera* CTilePlayer::ChangeCamera(DWORD nNewCameraMode, float fTimeElapsed)
 	case THIRD_PERSON_CAMERA:
 		m_pCamera = OnChangeCamera(THIRD_PERSON_CAMERA, nCurrentCameraMode);
 		m_pCamera->SetTimeLag(0.0f);
-		m_pCamera->SetTimeLag(0.25f);
+		//m_pCamera->SetTimeLag(0.25f);
 		//m_pCamera->SetOffset(XMFLOAT3(0.0f, 0.5f, -1.0f));
 		m_pCamera->SetOffset(XMFLOAT3(0.0f, 1.7f * UNIT, -5.0f * UNIT));
 		m_pCamera->GenerateProjectionMatrix(1.01f, MaxDepthofMap, ASPECT_RATIO, 60.0f);

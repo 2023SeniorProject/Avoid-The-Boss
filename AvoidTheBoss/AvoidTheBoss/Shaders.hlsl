@@ -155,7 +155,7 @@ float4 PSLighting(VS_LIGHTING_OUTPUT input) : SV_TARGET
 #else
 	input.normalW = normalize(input.normalW);
 	float4 color = Lighting(input.positionW, input.normalW);
-
+	//float4 color = (1.0f, 0.0f, 0.0f, 1.0f);
 	return(color);
 #endif
 }

@@ -97,6 +97,8 @@ public:
 	void AnimateObjects();
 	void FrameAdvance();
 
+	bool CollisionCheck();
+
 	void WaitForGpuComplete();
 	//CPU와 GPU를 동기화하는 함수이다. 
 	void MoveToNextFrame();

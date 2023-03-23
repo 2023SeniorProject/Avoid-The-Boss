@@ -284,8 +284,11 @@ CMyPlayer::CMyPlayer(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCo
 	float scale = 1.0f;
 	pGameObject->Rotate(0.0f,0.0f,0.0f);
 	pGameObject->SetScale(scale, scale, scale);
-	pGameObject->SetPosition(0.0f, 1.25f, 0.0f);
+	//m_Bounds.Center = pGameObject->m_pAABB.Center;
+	//m_Bounds.Radius = 0.5f;
+
 	SetChild(pGameObject, true);
+	SetPosition(XMFLOAT3(0.0f, 1.25f, 0.0f));
 
 	CreateShaderVariables(pd3dDevice, pd3dCommandList);
 }

@@ -180,11 +180,16 @@ public:
 	D3D12_GPU_DESCRIPTOR_HANDLE	m_d3dCbvGPUDescriptorHandle;
 
 	CGameObject* m_pParent = NULL;
-	CGameObject* m_pChild = NULL;
+
+	//int m_IndexFrame = 0;
+	int m_nChild = 0;
+	CGameObject* m_pChild = NULL;	
 	CGameObject* m_pSibling = NULL;
 
+	BoundingBox m_pAABB;
+
 	XMFLOAT4X4 m_xmf4x4World;
-	XMFLOAT4X4	 m_xmf4x4Transform;
+	XMFLOAT4X4 m_xmf4x4Transform;
 //protected:
 //	ID3D12Resource* m_pd3dcbGameObject = NULL;
 //	CB_GAMEOBJECT_INFO* m_pcbMappedGameObject = NULL;
@@ -245,13 +250,13 @@ public:
 
 	CGameObject* GetParent() { return(m_pParent); }
 	void UpdateTransform(XMFLOAT4X4* pxmf4x4Parent = NULL);
-	CGameObject* FindFrame(char* pstrFrameName);
+	CGameObject* FindFrame(const char* pstrFrameName);
 
 	UINT GetMeshType() { return((m_pMesh) ? m_pMesh->GetType() : 0); }
 
 public:
 	static MATERIALSLOADINFO* LoadMaterialsInfoFromFile(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, FILE* pInFile);
-	static CMeshLoadInfo* LoadMeshInfoFromFile(FILE* pInFile);
+	CMeshLoadInfo* LoadMeshInfoFromFile(FILE* pInFile);
 
 	static CGameObject* LoadFrameHierarchyFromFile(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, FILE* pInFile);
 	static CGameObject* LoadGeometryFromFile(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, const char* pstrFileName);

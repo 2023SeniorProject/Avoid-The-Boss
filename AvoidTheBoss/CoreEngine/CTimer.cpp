@@ -57,7 +57,7 @@ void Timer::Tick(float fLockFPS)
 	}
 
 	std::chrono::time_point curTimePoint = Clock::now();
-	float fTimeElapsed = std::chrono::duration_cast<std::chrono::milliseconds>(curTimePoint - _lastTimePoint).count();
+	double fTimeElapsed = std::chrono::duration<double , std::milli>(curTimePoint - _lastTimePoint).count();
 	//std::cout << fTimeElapsed << std::endl;
 	
 	_lastTimePoint = curTimePoint;

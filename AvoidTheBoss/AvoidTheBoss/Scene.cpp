@@ -134,7 +134,7 @@ void CGameScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandLis
 
 	for (int i = 0; i < PLAYERNUM; ++i)
 	{
-		_players[i] = new CMyPlayer(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature);
+		_players[i] = new CWorker(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature);
 	}
 	m_pCamera = _players[0]->GetCamera();
 
@@ -261,13 +261,6 @@ void CGameScene::ProcessInput(HWND hWnd)
 
 			/*플레이어를 dwDirection 방향으로 이동한다(실제로는 속도 벡터를 변경한다). 이동 거리는 시간에 비례하도록 한다. 플레이어의 이동 속력은 (1.3UNIT/초)로 가정한다.*/
 			if (dwDirection) _players[_playerIdx]->Move(dwDirection, PLAYER_VELOCITY);
-			// 속도만 더해주고 
-//			if (dwDirection)
-//			{
-//				m_pPlayer->Move(dwDirection, (60.0f * UNIT) * m_Timer.GetTimeElapsed(), true);
-//				if (CollisionCheck())
-//					m_pPlayer->Move(dwDirection, -(60.0f * UNIT) * m_Timer.GetTimeElapsed(), false);				
-//			}
 		}
 	}
 
@@ -332,44 +325,8 @@ void CGameScene::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCa
 
 bool CGameScene::CollisionCheck()
 {
-	m_pPlayer->m_pAABB.Center = m_pPlayer->GetPosition();
-	//m_pPlayer->m_pAABB.Extents = XMFLOAT3(2.0f, 2.0f, 2.0f);
-
-	if (m_ppGameObjects[1])
-	{
-		CGameObject* leftWall[5];
-		leftWall[0] = m_ppGameObjects[1]->FindFrame("left_wall0");
-		leftWall[1] = m_ppGameObjects[1]->FindFrame("left_wall1");
-		leftWall[2] = m_ppGameObjects[1]->FindFrame("left_wall2");
-		leftWall[3] = m_ppGameObjects[1]->FindFrame("left_wall3");
-		leftWall[4] = m_ppGameObjects[1]->FindFrame("left_wall4");
-
-		CGameObject* rightWall[5];
-		rightWall[0] = m_ppGameObjects[1]->FindFrame("right_wall0");
-		rightWall[1] = m_ppGameObjects[1]->FindFrame("right_wall1");
-		rightWall[2] = m_ppGameObjects[1]->FindFrame("right_wall2");
-		rightWall[3] = m_ppGameObjects[1]->FindFrame("right_wall3");
-		rightWall[4] = m_ppGameObjects[1]->FindFrame("right_wall4");
-
-		CGameObject* frontWall = m_ppGameObjects[1]->FindFrame("front_wall");
-		CGameObject* backWall = m_ppGameObjects[1]->FindFrame("back_wall");
-
-		for (int i = 0; i < 5; i++)
-		{
-			if (DISJOINT != leftWall[i]->m_pAABB.Contains(m_pPlayer->m_pAABB) || DISJOINT != rightWall[i]->m_pAABB.Contains(m_pPlayer->m_pAABB))
-				return true;
-		}
-
-		ContainmentType result2 = frontWall->m_pAABB.Contains(m_pPlayer->m_pAABB);
-		ContainmentType result3 = backWall->m_pAABB.Contains(m_pPlayer->m_pAABB);
-
-		if (result2 != DirectX::DISJOINT || result3 != DirectX::DISJOINT)
-			return true;
-		//XMFLOAT3 pos = m_pPlayer->GetPosition();
-		//if (pos.x < -25.0f || pos.x>25.0f ||
-		//	pos.z < -25.0f || pos.z>25.0f)
-		//	return true;
-	}
+	_players[_playerIdx]->m_playerBV.Center = _players[_playerIdx]->GetPosition();
+	_players[_playerIdx]->m_playerBV.Radius = 3.0f;
 	return false;
 }
 

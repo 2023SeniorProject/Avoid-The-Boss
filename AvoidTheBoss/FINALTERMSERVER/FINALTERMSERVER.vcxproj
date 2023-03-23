@@ -87,13 +87,13 @@
     <LinkIncremental>true</LinkIncremental>
     <OutDir>$(SolutionDir)Binary\$(Configuration)\</OutDir>
     <LibraryPath>$(SolutionDir)Library\;$(LibraryPath)</LibraryPath>
-    <IncludePath>$(SolutionDir)ServerCoreEngine\;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)CoreEngine\;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
     <OutDir>$(SolutionDir)Binary\$(Configuration)\</OutDir>
     <LibraryPath>$(SolutionDir)Library\;$(LibraryPath)</LibraryPath>
-    <IncludePath>$(SolutionDir)ServerCoreEngine\;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)CoreEngine\;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>

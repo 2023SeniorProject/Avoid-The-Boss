@@ -81,7 +81,7 @@
 using namespace DirectX;
 using namespace DirectX::PackedVector;
 
-#define PLAYERNUM 2
+#define PLAYERNUM 1
 
 
 bool XMVerifyCPUSupport(); // 응용프로그램에서 SIMD 기능(벡터 연산 명령집합 확장 기능 / 벡터의 병렬 연산 ) 제공여부 확인 

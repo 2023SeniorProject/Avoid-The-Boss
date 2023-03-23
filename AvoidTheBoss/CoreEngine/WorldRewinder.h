@@ -123,7 +123,7 @@ public:
 		_lastTimePoint = curTimePoint;
 		_accumlateElapsedTime += fTimeElapsed;
 		
-		for(int i = 0; i < 4; ++i) p[i].Update(fTimeElapsed);
+		for(int i = 0; i < 4; ++i) p[i].Update(fTimeElapsed / 1000.f);
 		
 		// 일정 틱 값 이상 증가하면~
 		if ( _accumlateElapsedTime >= _fTimeElapsedAvg)

@@ -330,7 +330,7 @@ void CGameScene::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCa
 	for (int i = 0; i < PLAYERNUM; ++i) _players[i]->Render(pd3dCommandList, pCamera);
 }
 
-bool CScene::CollisionCheck()
+bool CGameScene::CollisionCheck()
 {
 	m_pPlayer->m_pAABB.Center = m_pPlayer->GetPosition();
 	//m_pPlayer->m_pAABB.Extents = XMFLOAT3(2.0f, 2.0f, 2.0f);
@@ -373,7 +373,7 @@ bool CScene::CollisionCheck()
 	return false;
 }
 
-void CScene::ReleaseUploadBuffers()
+void CGameScene::ReleaseUploadBuffers()
 {
 	/*if (m_ppShaders)
 	{

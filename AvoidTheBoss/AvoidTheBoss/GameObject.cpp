@@ -202,26 +202,6 @@ CGameObject* CGameObject::FindFrame(const char* pstrFrameName)
 	return(NULL);
 }
 
-CGameObject* CGameObject::FindChild(const char* pstrFrameName)
-{
-	if (m_nChild > 0)
-	{
-		if (m_pChild)
-		{
-			for (int i = 0; i < m_nChild; i++)
-			{
-				if (strcmp(m_pChild->m_pstrFrameName, pstrFrameName))
-					return m_pChild;
-				m_pChild = m_pChild->m_pChild;
-			}
-		}
-		else
-		{
-			m_pSibling->FindChild(pstrFrameName);
-		}
-	}
-	return NULL;
-}
 void CGameObject::AddRef()
 {
 	m_nReferences++;

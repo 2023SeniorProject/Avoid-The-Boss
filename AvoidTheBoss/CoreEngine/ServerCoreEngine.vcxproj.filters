@@ -194,7 +194,7 @@
     <ClCompile Include="protocol.cpp">
       <Filter>Shared\Packet</Filter>
     </ClCompile>
-    <ClCompile Include="CollisionDectector.cpp">
+    <ClCompile Include="CollisionDetector.cpp">
       <Filter>Shared\Physics</Filter>
     </ClCompile>
   </ItemGroup>

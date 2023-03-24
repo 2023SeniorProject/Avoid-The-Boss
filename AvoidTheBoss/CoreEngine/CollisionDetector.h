@@ -1,6 +1,4 @@
 #pragma once
-
-#pragma once
 #include <array>
 
 class LeafNode
@@ -24,22 +22,23 @@ class OcTree
 	public:
 		Sector()
 		{
-
 			_center = { 0,0,0 };
 		}
 		Sector(DirectX::XMFLOAT3 center, float volume)
 		{
 			_center = center;
+			_leftTopBack = XMFLOAT3(_center.x - (volume / 2), _center.y + (volume / 2), _center.z - (volume / 2));
+			_rightBottomFront = XMFLOAT3(_center.x + (volume / 2), _center.y - (volume / 2), _center.z + (volume / 2));
 
 		}
 		bool IsIncludePoint(const XMFLOAT3 pos)
 		{
-
+			return ((_leftTopBack.x <= pos.x && pos.x <= _rightBottomFront.x) && (_leftTopBack.y >= pos.y && pos.y >= _rightBottomFront.y) && (_leftTopBack.z <= pos.z && pos.z <= _rightBottomFront.z));
 		}
-
 		void print()
 		{
-
+			std::cout << "center : " << _center.x << " " << _center.y << " " << _center.z << std::endl;
+		
 		}
 	};
 
@@ -64,78 +63,10 @@ public:
 		_area = Sector(center, _volume);
 		if (_curLevel == _maxLevel) _node = new LeafNode();
 	};
-	void AddBoundingBox(const DirectX::BoundingBox& aabb)
-	{
-		if (_curLevel == _maxLevel)
-		{
-			if (_area.IsIncludePoint(aabb.Center))
-			{
-				_area.print();
-				_node->addBoxs(aabb);
-			}
-		}
-		else if (_curLevel < _maxLevel)
-		{
-			if (_area.IsIncludePoint(aabb.Center))
-			{
-				for (auto i : _childTree) i->AddBoundingBox(aabb);
-			}
-		}
-	}
-	void BuildTree()
-	{
-		if (_curLevel < _maxLevel)
-		{
-			BuildChildTree();
-		}
-	}
-	void BuildChildTree()
-	{
-		XMFLOAT3 centers[8];
-		centers[0] = { _area._center.x + (_volume / 4),  _area._center.y + (_volume / 4), _area._center.z - (_volume / 4) };
-		centers[1] = { _area._center.x - (_volume / 4),  _area._center.y + (_volume / 4), _area._center.z - (_volume / 4) };
-
-		centers[2] = { _area._center.x + (_volume / 4),  _area._center.y + (_volume / 4), _area._center.z + (_volume / 4) };
-		centers[3] = { _area._center.x - (_volume / 4),  _area._center.y + (_volume / 4), _area._center.z + (_volume / 4) };
-
-		centers[4] = { _area._center.x + (_volume / 4),  _area._center.y - (_volume / 4), _area._center.z + (_volume / 4) };
-		centers[5] = { _area._center.x - (_volume / 4),  _area._center.y - (_volume / 4), _area._center.z + (_volume / 4) };
-
-		centers[6] = { _area._center.x + (_volume / 4),  _area._center.y - (_volume / 4), _area._center.z - (_volume / 4) };
-		centers[7] = { _area._center.x - (_volume / 4),  _area._center.y - (_volume / 4), _area._center.z - (_volume / 4) };
-
-		for (int i = 0; i < 8; ++i)
-		{
-			_childTree[i] = new OcTree(this, _curLevel + 1, centers[i], (_volume / 2));
-			_childTree[i]->BuildTree();
-		}
-	}
-	void CheckCollision(const DirectX::BoundingBox& aabb)
-	{
-		if (_curLevel == _maxLevel)
-		{
-			if (_area.IsIncludePoint(aabb.Center))
-			{
-				for (auto& i : _node->boxs)
-				{
-					if (i.Intersects(aabb))
-					{
-						std::cout << "collision" << std::endl;
-
-					}
-				}
-			}
-		}
-		else if (_curLevel < _maxLevel)
-		{
-			if (_area.IsIncludePoint(aabb.Center))
-			{
-				for (auto i : _childTree) i->CheckCollision(aabb);
-			}
-		}
-
-	}
+	void AddBoundingBox(DirectX::BoundingBox& aabb);
+	void BuildTree();
+	void BuildChildTree();
+	void CheckCollision(DirectX::BoundingBox& aabb);
 
 };
 
-int32 OcTree::_maxLevel = 3;

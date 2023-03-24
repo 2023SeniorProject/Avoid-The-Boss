@@ -149,7 +149,7 @@ void CGameScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandLis
 	m_ppGameObjects[0] = pMapObject;*/
 
 
-	CGameObject* pBVMap = CGameObject::LoadGeometryFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "Map_Bounding_Box.bin");
+	CGameObject* pBVMap = CGameObject::LoadGeometryFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "Industry_Map.bin");
 	pBVMap->SetPosition(0.0f, 0.0f, 0.0f);
 	CGameObject* pBVObject = NULL;
 	pBVObject = new CGameObject();

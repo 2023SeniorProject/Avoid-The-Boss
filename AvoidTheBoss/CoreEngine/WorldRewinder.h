@@ -3,13 +3,18 @@
 #include <chrono>
 #include <array>
 
-struct WorldStatus // 서버에서 가지고 있을 정보
+class WorldStatus // 서버에서 가지고 있을 정보
 {
 public:
 	WorldStatus() { ResetWorldState(); }
 	void ResetWorldState()
 	{
 		_myWorldFrame = 0;
+	}
+	void PrintWorldInfo()
+	{
+		for (int i = 0; i < PLAYERNUM; ++i) std::cout << "[" << _myWorldFrame << "]" << "(" << _pPos[i].x << " " << _pPos[i].z << ")";
+		std::cout << "\n";
 	}
 public:
 	XMFLOAT3 _pPos[4]; // 도망자 위치
@@ -54,7 +59,7 @@ public:
 			_worldHistory[_frameIndex] = prevWorld;
 			++_curFrame;
 		}
-
+		_worldHistory[_frameIndex].PrintWorldInfo();
 		_worldHistory[_frameIndex] = obj;
 	}
 
@@ -137,7 +142,7 @@ public:
 	};
 	void AddHistory(PlayerInfo* p)
 	{
-		 std::cout << " Add WorldStatus Frame : " << _curWorldFrame << "\n";
+		 //std::cout << " Add WorldStatus Frame : " << _curWorldFrame << "\n";
 		_lastWorldStatus._pPos[0] = p[0].GetPosition();
 		_lastWorldStatus._pPos[1] = p[1].GetPosition();
 		_lastWorldStatus._pPos[2] = p[2].GetPosition();

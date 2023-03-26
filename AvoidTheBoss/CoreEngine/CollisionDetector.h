@@ -1,5 +1,5 @@
 #pragma once
-#include <array>
+
 
 class LeafNode
 {
@@ -37,7 +37,7 @@ class OcTree
 		}
 		void print()
 		{
-			std::cout << "center : " << _center.x << " " << _center.y << " " << _center.z << std::endl;
+			//std::cout << "center : " << _center.x << " " << _center.y << " " << _center.z << std::endl;
 		
 		}
 	};
@@ -49,24 +49,38 @@ public:
 	OcTree* _parentTree;
 	std::array<OcTree*, 8> _childTree;
 	LeafNode* _node;
-	Sector _area;
+	
+	DirectX::BoundingBox _area;
+	DirectX::XMFLOAT3 _center;
+
+	Atomic<int32> _cnt = 0 ;
 public:
 	OcTree() { };
 	OcTree(DirectX::XMFLOAT3 center, float volume) : _volume(volume)
 	{
 		if (_curLevel == 0) _parentTree = this;
-		_area = Sector(center, volume);
+		if (_curLevel == _maxLevel) _node = new LeafNode();
+		//_area = Sector(center, volume);
+		_center = center;
 
+		_area.Center = center;
+		_area.Extents = XMFLOAT3(volume / 2 , volume / 2, volume / 2);
 	};
 	OcTree(OcTree* parent, float level, XMFLOAT3 center, float volume) : _parentTree(parent), _curLevel(level), _volume(volume)
 	{
-		_area = Sector(center, _volume);
+		//_area = Sector(center, _volume);
+		_center = center;
+		_area.Center = center;
+		_area.Extents = XMFLOAT3(volume / 2, volume / 2, volume / 2);
+
 		if (_curLevel == _maxLevel) _node = new LeafNode();
 	};
-	void AddBoundingBox(DirectX::BoundingBox& aabb);
+	void AddBoundingBox(DirectX::BoundingBox aabb);
 	void BuildTree();
 	void BuildChildTree();
 	void CheckCollision(DirectX::BoundingBox& aabb);
 
 };
+
+extern class OcTree* BoxTree;
 

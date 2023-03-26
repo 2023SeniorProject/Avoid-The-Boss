@@ -1,21 +1,26 @@
 #include "pch.h"
 #include "CollisionDetector.h"
 
-int32 OcTree::_maxLevel = 2;
+OcTree* BoxTree = nullptr;
 
-void OcTree::AddBoundingBox(DirectX::BoundingBox& aabb)
+
+int32 OcTree::_maxLevel = 0;
+
+void OcTree::AddBoundingBox(DirectX::BoundingBox aabb)
 {
 	if (_curLevel == _maxLevel)
 	{
-		if (_area.IsIncludePoint(aabb.Center))
+		//if (_area.IsIncludePoint(aabb.Center))
+		if (_area.Intersects(aabb))
 		{
-			_area.print();
+			std::cout << "[" << _cnt << "]" << "(" << aabb.Center.x << " " << aabb.Center.y << ") ";
+			std::cout << "(" << aabb.Extents.x << " " << aabb.Extents.z << ")\n";
 			_node->addBoxs(aabb);
 		}
 	}
 	else if (_curLevel < _maxLevel)
 	{
-		if (_area.IsIncludePoint(aabb.Center))
+		if (_area.Intersects(aabb))
 		{
 			for (auto& i : _childTree) i->AddBoundingBox(aabb);
 		}
@@ -30,17 +35,14 @@ void OcTree::BuildTree()
 void OcTree::BuildChildTree()
 {
 	XMFLOAT3 centers[8];
-	centers[0] = { _area._center.x + (_volume / 4),  _area._center.y + (_volume / 4), _area._center.z - (_volume / 4) };
-	centers[1] = { _area._center.x - (_volume / 4),  _area._center.y + (_volume / 4), _area._center.z - (_volume / 4) };
-
-	centers[2] = { _area._center.x + (_volume / 4),  _area._center.y + (_volume / 4), _area._center.z + (_volume / 4) };
-	centers[3] = { _area._center.x - (_volume / 4),  _area._center.y + (_volume / 4), _area._center.z + (_volume / 4) };
-
-	centers[4] = { _area._center.x + (_volume / 4),  _area._center.y - (_volume / 4), _area._center.z + (_volume / 4) };
-	centers[5] = { _area._center.x - (_volume / 4),  _area._center.y - (_volume / 4), _area._center.z + (_volume / 4) };
-
-	centers[6] = { _area._center.x + (_volume / 4),  _area._center.y - (_volume / 4), _area._center.z - (_volume / 4) };
-	centers[7] = { _area._center.x - (_volume / 4),  _area._center.y - (_volume / 4), _area._center.z - (_volume / 4) };
+	centers[0] = { _center.x + (_volume / 4),  _center.y + (_volume / 4), _center.z - (_volume / 4) };
+	centers[1] = { _center.x - (_volume / 4),  _center.y + (_volume / 4), _center.z - (_volume / 4) };
+	centers[2] = { _center.x + (_volume / 4),  _center.y + (_volume / 4), _center.z + (_volume / 4) };
+	centers[3] = { _center.x - (_volume / 4),  _center.y + (_volume / 4), _center.z + (_volume / 4) };
+	centers[4] = { _center.x + (_volume / 4),  _center.y - (_volume / 4), _center.z + (_volume / 4) };
+	centers[5] = { _center.x - (_volume / 4),  _center.y - (_volume / 4), _center.z + (_volume / 4) };
+	centers[6] = { _center.x + (_volume / 4),  _center.y - (_volume / 4), _center.z - (_volume / 4) };
+	centers[7] = { _center.x - (_volume / 4),  _center.y - (_volume / 4), _center.z - (_volume / 4) };
 
 	for (int i = 0; i < 8; ++i)
 	{
@@ -54,21 +56,20 @@ void OcTree::CheckCollision(DirectX::BoundingBox& aabb)
 	{
 		if (_curLevel == _maxLevel)
 		{
-			if (_area.IsIncludePoint(aabb.Center))
+			if (_area.Intersects(aabb))
 			{
 				for (auto& i : _node->boxs)
 				{
 					if (i.Intersects(aabb))
 					{
-						std::cout << "collision" << std::endl;
-
+						std::cout  << "Mbox (" << i.Center.x << "," << i.Center.z << ")\n";
 					}
 				}
 			}
 		}
 		else if (_curLevel < _maxLevel)
 		{
-			if (_area.IsIncludePoint(aabb.Center))
+			if (_area.Intersects(aabb))
 			{
 				for (auto& i : _childTree) i->CheckCollision(aabb);
 			}

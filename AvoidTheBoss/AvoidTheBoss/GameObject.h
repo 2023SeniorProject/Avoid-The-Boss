@@ -1,7 +1,9 @@
 #pragma once
 
 #include "Mesh.h"
+
 #include "Camera.h"
+extern std::vector<DirectX::BoundingBox> bv;
 
 #define RESOURCE_TEXTURE2D			0x01
 #define RESOURCE_TEXTURE2D_ARRAY	0x02	//[]
@@ -194,6 +196,7 @@ public:
 //	ID3D12Resource* m_pd3dcbGameObject = NULL;
 //	CB_GAMEOBJECT_INFO* m_pcbMappedGameObject = NULL;
 
+	int m_type = 1; // 0 = PLAYER , 1 = MAP;
 public:
 	//virtual void SetMesh(CMesh* pMesh);
 	void SetMesh(CMesh* pMesh);
@@ -264,7 +267,7 @@ public:
 	static void PrintFrameInfo(CGameObject* pGameObject, CGameObject* pParent);
 };
 
-
+extern std::vector<BoundingBox> bv;
 //class CMapObject : public CGameObject
 //{
 //public:

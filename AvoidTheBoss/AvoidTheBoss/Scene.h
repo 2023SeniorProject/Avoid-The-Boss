@@ -3,7 +3,6 @@
 #include "SceneInterface.h"
 #include "Shader.h"
 #include "Player.h"
-#include "DummyPlayer.h"
 
 #define MAX_LIGHTS			16 
 
@@ -107,5 +106,7 @@ public:
 	LIGHTS*						m_pcbMappedLights = NULL;
 
 	float						m_fElapsedTime = 0.0f;
+
+
 };
 

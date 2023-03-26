@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "GameFramework.h"
 #include "clientIocpCore.h"
+
 #include <string>
 
 CGameFramework mainGame;
@@ -58,7 +59,7 @@ bool CGameFramework::OnCreate(HINSTANCE hInstance, HWND hMainWnd)
 	CreateRenderTargetViews();
 #endif
 	CreateDepthStencilView();
-
+	
 	//렌더링할 게임 객체를 생성한다.
 	BuildObjects();
 	return(true);

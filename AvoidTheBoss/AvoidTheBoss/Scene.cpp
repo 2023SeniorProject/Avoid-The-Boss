@@ -3,9 +3,11 @@
 #include "GameFramework.h"
 #include "clientIocpCore.h"
 
+#define MAPVOLUME 50
 
 CGameScene::CGameScene()
 {
+
 }
 
 CGameScene::~CGameScene()
@@ -120,8 +122,8 @@ void CGameScene::BuildDefaultLightsAndMaterials()
 
 void CGameScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList)
 {
-	
-
+	BoxTree = new OcTree(XMFLOAT3(0, 0, 0), 100);
+	BoxTree->BuildTree();
 	//그래픽 루트 시그너쳐를 생성한다. 
 	m_pd3dGraphicsRootSignature = CreateGraphicsRootSignature(pd3dDevice);
 
@@ -149,7 +151,7 @@ void CGameScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandLis
 	m_ppGameObjects[0] = pMapObject;*/
 
 
-	CGameObject* pBVMap = CGameObject::LoadGeometryFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "Industry_Map.bin");
+	CGameObject* pBVMap = CGameObject::LoadGeometryFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "Map_Bounding_Box.bin");
 	pBVMap->SetPosition(0.0f, 0.0f, 0.0f);
 	CGameObject* pBVObject = NULL;
 	pBVObject = new CGameObject();
@@ -281,9 +283,11 @@ void CGameScene::ProcessInput(HWND hWnd)
 	//카메라를 갱신한다. 중력과 마찰력의 영향을 속도 벡터에 적용한다.
 	for (int k = 0; k < PLAYERNUM; ++k)
 	{	
-		if (k == _playerIdx) _players[k]->Update(m_Timer.GetTimeElapsed());
-		else _players[k]->OtherUpdate(m_Timer.GetTimeElapsed());
+		if (k == _playerIdx) _players[k]->Update(m_Timer.GetTimeElapsed(),PLAYER_TYPE::OWNER);
+		else _players[k]->Update(m_Timer.GetTimeElapsed(),PLAYER_TYPE::OTHER_PLAYER);
 	}
+
+
 }
 
 void CGameScene::AnimateObjects()
@@ -325,9 +329,8 @@ void CGameScene::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCa
 
 bool CGameScene::CollisionCheck()
 {
-	_players[_playerIdx]->m_playerBV.Center = _players[_playerIdx]->GetPosition();
-	_players[_playerIdx]->m_playerBV.Radius = 3.0f;
-	return false;
+	for(auto& i : bv) if(i.Intersects(_players[_playerIdx]->m_playerBV)) return true;
+ 	return false;
 }
 
 void CGameScene::ReleaseUploadBuffers()

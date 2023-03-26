@@ -56,8 +56,7 @@
 #include <D3d12SDKLayers.h>
 
 #include "d3dx12.h"
-
-#include <algorithm>
+#include <array>
 #include <cassert>
 #include <memory>
 #include <new>
@@ -74,6 +73,7 @@
 #include <DirectXColors.h>//색상 정의 제공
 #include <DirectXCollision.h>//충돌 검사 관련 함수,구조체,클래스 제공 
 #include "protocol.h"
+
 //C:\Program Files(x86)\Windows Kits\10\Include\10.0.17763.0\um 에서  DirectX로 시작하는 파일들 - 특히 “DirectXCollision.h”와 “DirectXCollision.inl” 내용 보기
 //심드 성능상 벡터 연산 오버로드 하지말자
 
@@ -81,6 +81,8 @@
 using namespace DirectX;
 using namespace DirectX::PackedVector;
 
+
+#include "CollisionDetector.h"
 #define PLAYERNUM 1
 
 
@@ -107,7 +109,7 @@ using Microsoft::WRL::ComPtr;
 #define UNIT 1.0f // 1m = 1 unit
 
 
-const float PLAYER_VELOCITY = UNIT * 1.2f;
+const float PLAYER_VELOCITY = UNIT * 4.0f;
 
 extern UINT gnCbvSrvDescIncrementSize;
 

@@ -2,6 +2,11 @@
 
 #include "GameObject.h"
 
+enum class PLAYER_TYPE
+{
+	OWNER,OTHER_PLAYER,NONE
+};
+
 class CPlayer : public CGameObject
 {
 protected:
@@ -30,7 +35,8 @@ protected:
 public:
 	int16 m_sid = -1; // 자신으 Session Id
 	std::mutex m_lock; // 자신의 Lock
-	BoundingSphere m_playerBV; // BV = bounding volume
+	BoundingBox m_playerBV; // BV = bounding volume
+
 public:
 	CPlayer();
 	virtual ~CPlayer();
@@ -74,9 +80,9 @@ public:
 	void Rotate(float x, float y, float z);
 
 	//플레이어의 위치와 회전 정보를 경과 시간에 따라 갱신하는 함수이다.
-	void Update(float fTimeElapsed);
+	void Update(float fTimeElapsed, PLAYER_TYPE pt);
 
-	virtual void OnPlayerUpdateCallback(float fTimeElapsed) { }
+	virtual void OnPlayerUpdateCallback();
 	void SetPlayerUpdatedContext(LPVOID pContext) { m_pPlayerUpdatedContext = pContext; }
 
 	virtual void OnCameraUpdateCallback(float fTimeElapsed) { }

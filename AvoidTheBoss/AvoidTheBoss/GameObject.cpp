@@ -1,6 +1,9 @@
 #include "pch.h"
 #include "GameObject.h"
 #include "Shader.h"
+#include "CollisionDetector.h"
+
+std::vector<BoundingBox> bv;
 
 CMaterialColors::CMaterialColors(MATERIALLOADINFO* pMaterialInfo)
 {
@@ -399,9 +402,14 @@ CMeshLoadInfo* CGameObject::LoadMeshInfoFromFile(FILE* pInFile)
 		{
 			nReads = (UINT)::fread(&(pMeshInfo->m_xmf3AABBCenter), sizeof(XMFLOAT3), 1, pInFile);
 			nReads = (UINT)::fread(&(pMeshInfo->m_xmf3AABBExtents), sizeof(XMFLOAT3), 1, pInFile);
-			//m_pAABB.Center = pMeshInfo->m_xmf3AABBCenter;
-			//m_pAABB.Extents = pMeshInfo->m_xmf3AABBExtents;
-
+			
+			if (m_type == 1)
+			{
+				m_pAABB.Center = pMeshInfo->m_xmf3AABBCenter;
+				m_pAABB.Extents = pMeshInfo->m_xmf3AABBExtents;
+				BoxTree->AddBoundingBox(m_pAABB);
+				bv.push_back(m_pAABB);
+			}
 		}
 		else if (!strcmp(pstrToken, "<Positions>:"))
 		{

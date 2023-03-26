@@ -7,13 +7,6 @@
 
 int main()
 {
-	DirectX::BoundingBox abc;
-	abc.Center = XMFLOAT3(0,0,0);
-	abc.Extents = XMFLOAT3(1, 1, 1);
-	OcTree* tree = new OcTree(XMFLOAT3{0,0,0},40);
-	tree->BuildTree();
-	tree->AddBoundingBox(abc);
-
 	std::ios::sync_with_stdio(false);
 	std::cout.tie(NULL);
 	::SetConsoleTitle(L"SERVER");

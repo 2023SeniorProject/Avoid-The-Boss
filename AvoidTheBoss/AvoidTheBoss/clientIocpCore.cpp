@@ -189,7 +189,7 @@ void CSession::ProcessPacket(char* packet)
 		S2C_ROOM_ENTER* re = (S2C_ROOM_ENTER*)packet;
 		if (re->success)
 		{
-			::system("cls");
+			//::system("cls");
 		}
 		else std::cout << "FAIL TO ENTER ROOM" << std::endl;
 	}

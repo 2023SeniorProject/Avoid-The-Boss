@@ -44,6 +44,7 @@ class OcTree
 
 public:
 	static int32 _maxLevel;
+	static int32 _idx;
 	int32 _curLevel = 0;
 	float _volume = 0;
 	OcTree* _parentTree;
@@ -52,23 +53,19 @@ public:
 	
 	DirectX::BoundingBox _area;
 	DirectX::XMFLOAT3 _center;
-
 	Atomic<int32> _cnt = 0 ;
 public:
 	OcTree() { };
 	OcTree(DirectX::XMFLOAT3 center, float volume) : _volume(volume)
 	{
-		if (_curLevel == 0) _parentTree = this;
-		if (_curLevel == _maxLevel) _node = new LeafNode();
-		//_area = Sector(center, volume);
 		_center = center;
-
 		_area.Center = center;
 		_area.Extents = XMFLOAT3(volume / 2 , volume / 2, volume / 2);
+		if (_curLevel == 0) _parentTree = this;
+		if (_curLevel == _maxLevel) _node = new LeafNode();
 	};
 	OcTree(OcTree* parent, float level, XMFLOAT3 center, float volume) : _parentTree(parent), _curLevel(level), _volume(volume)
 	{
-		//_area = Sector(center, _volume);
 		_center = center;
 		_area.Center = center;
 		_area.Extents = XMFLOAT3(volume / 2, volume / 2, volume / 2);
@@ -78,8 +75,7 @@ public:
 	void AddBoundingBox(DirectX::BoundingBox aabb);
 	void BuildTree();
 	void BuildChildTree();
-	void CheckCollision(DirectX::BoundingBox& aabb);
-
+	bool CheckCollision(DirectX::BoundingBox& playerBox);
 };
 
 extern class OcTree* BoxTree;

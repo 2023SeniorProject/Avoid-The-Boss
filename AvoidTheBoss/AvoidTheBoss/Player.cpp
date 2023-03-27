@@ -7,7 +7,7 @@ CPlayer::CPlayer()
 	m_type = 0;
 	m_pCamera = NULL;
 	m_playerBV.Center = GetPosition();
-	m_playerBV.Extents = XMFLOAT3(0.02,1.0f,0.02);
+	m_playerBV.Extents = XMFLOAT3(0.02,0.02f,0.02);
 	m_xmf3Position = XMFLOAT3(0.0f, 0.0f, 0.0f);
 
 	m_xmf3Right = XMFLOAT3(1.0f, 0.0f, 0.0f);
@@ -154,20 +154,14 @@ void CPlayer::UpdateMove(const XMFLOAT3& xmf3Shift)
 void CPlayer::Update(float fTimeElapsed,PLAYER_TYPE ptype)
 {
 
-	//플레이어를 속도 벡터 만큼 실제로 이동한다(카메라를 이동할 것이다). 
+	//플레이어를 속도 벡터 만큼 실제로 이동한다(카메라를 이동할 것이다).
 	XMFLOAT3 xmf3Velocity = Vector3::ScalarProduct(m_xmf3Velocity, fTimeElapsed, false); // 1/60 초 변경 속도를
-
 	UpdateMove(xmf3Velocity);
 	m_playerBV.Center = GetPosition();
-	
-
 	/*플레이어의 위치가 변경될 때 추가로 수행할 작업을 수행한다. 플레이어의 새로운 위치가 유효한 위치가 아닐 수도
 	있고 또는 플레이어의 충돌 검사 등을 수행할 필요가 있다. 이러한 상황에서 플레이어의 위치를 유효한 위치로 다시
 	변경할 수 있다.*/
-	/*for (auto& i : bv)
-		if (i.Intersects(m_playerBV)) std::cout << "Collision\n";*/
-	BoxTree->CheckCollision(m_playerBV);
-
+	
 	if (m_pCamera == NULL) return;
 	DWORD nCameraMode = m_pCamera->GetMode();
 
@@ -184,14 +178,14 @@ void CPlayer::Update(float fTimeElapsed,PLAYER_TYPE ptype)
 	//카메라의 카메라 변환 행렬을 다시 생성한다. 
 	m_pCamera->RegenerateViewMatrix();
 	if(ptype == PLAYER_TYPE::OWNER) m_xmf3Velocity = XMFLOAT3(0, 0, 0);
-
+	OnPlayerUpdateCallback();
+	
 }
 
 void CPlayer::OtherUpdate(float fTimeElapsed)
 {
 	//플레이어를 속도 벡터 만큼 실제로 이동한다(카메라를 이동할 것이다). 
 	XMFLOAT3 xmf3Velocity = Vector3::ScalarProduct(m_xmf3Velocity, fTimeElapsed, false); // 1/60 초 변경 속도를
-
 	UpdateMove(xmf3Velocity);
 
 	if (m_pCamera == NULL) return;
@@ -213,7 +207,7 @@ void CPlayer::OtherUpdate(float fTimeElapsed)
 
 void CPlayer::OnPlayerUpdateCallback()
 {
-	//BoxTree->CheckCollision(m_pAABB);
+	if (BoxTree->CheckCollision(m_playerBV)) SetPosition(m_playerBV.Center);
 }
 
 //플레이어를 로컬 x-축, y-축, z-축을 중심으로 회전한다.

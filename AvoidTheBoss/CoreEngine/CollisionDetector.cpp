@@ -1,20 +1,17 @@
 #include "pch.h"
 #include "CollisionDetector.h"
-
+#include <math.h>
 OcTree* BoxTree = nullptr;
 
 
-int32 OcTree::_maxLevel = 0;
+int32 OcTree::_maxLevel = 3;
 
 void OcTree::AddBoundingBox(DirectX::BoundingBox aabb)
 {
 	if (_curLevel == _maxLevel)
 	{
-		//if (_area.IsIncludePoint(aabb.Center))
 		if (_area.Intersects(aabb))
 		{
-			std::cout << "[" << _cnt << "]" << "(" << aabb.Center.x << " " << aabb.Center.y << ") ";
-			std::cout << "(" << aabb.Extents.x << " " << aabb.Extents.z << ")\n";
 			_node->addBoxs(aabb);
 		}
 	}
@@ -51,29 +48,50 @@ void OcTree::BuildChildTree()
 	}
 }
 
-void OcTree::CheckCollision(DirectX::BoundingBox& aabb)
+bool OcTree::CheckCollision(DirectX::BoundingBox& playerBox)
 {
-	{
+		bool rVal = false;
 		if (_curLevel == _maxLevel)
 		{
-			if (_area.Intersects(aabb))
+			if (_area.Intersects(playerBox))
 			{
+				std::cout << "collision" << std::endl;
+				XMFLOAT3 pCorner[8];
+				XMFLOAT3 iCorner[8];
+
+				XMFLOAT3 centerOffset;
+				
+
 				for (auto& i : _node->boxs)
 				{
-					if (i.Intersects(aabb))
+					if (i.Intersects(playerBox))
 					{
-						std::cout  << "Mbox (" << i.Center.x << "," << i.Center.z << ")\n";
+						centerOffset.x = playerBox.Center.x - i.Center.x;
+						centerOffset.z = playerBox.Center.z - i.Center.z;
+						float offsetX = playerBox.Extents.x + i.Extents.x - ::fabsf(centerOffset.x);
+						float offsetZ = playerBox.Extents.z + i.Extents.z - ::fabsf(centerOffset.z);
+
+						if (centerOffset.x > 0) playerBox.Center.x += offsetX;
+						else playerBox.Center.x -= offsetX;
+						if (centerOffset.z > 0) playerBox.Center.z += offsetZ;
+						else playerBox.Center.z -= offsetZ;
+						return true;
 					}
 				}
+				return false;
 			}
+			else return false;
 		}
 		else if (_curLevel < _maxLevel)
 		{
-			if (_area.Intersects(aabb))
+			
+			if (_area.Intersects(playerBox))
 			{
-				for (auto& i : _childTree) i->CheckCollision(aabb);
+				for (auto& i : _childTree)
+				{
+					rVal |= i->CheckCollision(playerBox);
+				}
 			}
+			return rVal;
 		}
-
-	}
 }

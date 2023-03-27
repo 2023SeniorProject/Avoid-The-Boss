@@ -522,11 +522,7 @@ void CGameFramework::OnProcessingMouseMessage(HWND hWnd, UINT nMessageID, WPARAM
 
 bool CGameFramework::CollisionCheck()
 {
-	if (m_pScene)
-	{
-		if (m_pScene->CollisionCheck())
-			return true;
-	}
+	
 	return false;
 }
 

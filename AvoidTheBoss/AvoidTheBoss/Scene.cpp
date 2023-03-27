@@ -122,7 +122,7 @@ void CGameScene::BuildDefaultLightsAndMaterials()
 
 void CGameScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList)
 {
-	BoxTree = new OcTree(XMFLOAT3(0, 0, 0), 100);
+	BoxTree = new OcTree(XMFLOAT3(0, 0, 0), 60);
 	BoxTree->BuildTree();
 	//그래픽 루트 시그너쳐를 생성한다. 
 	m_pd3dGraphicsRootSignature = CreateGraphicsRootSignature(pd3dDevice);
@@ -139,7 +139,7 @@ void CGameScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandLis
 		_players[i] = new CWorker(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature);
 	}
 	m_pCamera = _players[0]->GetCamera();
-
+	
 
 
 	/*CGameObject* pMapObject = NULL;
@@ -156,7 +156,7 @@ void CGameScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandLis
 	CGameObject* pBVObject = NULL;
 	pBVObject = new CGameObject();
 	pBVObject->SetChild(pBVMap, true);
-	pBVObject->SetPosition(0.0f, 0.0f, 0.0f);
+	pBVObject->SetPosition(0.0f, 0.f, 0.0f);
 	pBVObject->SetScale(1.0f, 1.0f, 1.0f);
 	pBVObject->Rotate(0.0f, 0.0f, 0.0f);
 	m_ppGameObjects[0] = pBVObject;

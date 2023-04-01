@@ -1,5 +1,5 @@
 #pragma once
-#include "CTimer.h"
+#include "WorldRewinder.h"
 #include "SceneInterface.h"
 #include "Shader.h"
 #include "Player.h"
@@ -51,7 +51,7 @@ public:
 	void BuildDefaultLightsAndMaterials();
 	void BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList
 		* pd3dCommandList);
-	void InitScene() { m_Timer.Reset(); };
+	void InitScene() { _logic.StartGame(); };
 	void ReleaseObjects();
 
 	//그래픽 루트 시그너쳐를 생성한다. 
@@ -83,29 +83,29 @@ public:
 //	//배치(Batch) 처리를 하기 위하여 씬을 셰이더들의 리스트로 표현한다. 
 
 	CCamera* m_pCamera;
-	Timer m_Timer;
-
+	
 	CPlayer*					_players[4];
+	PlayerInfo					_playerInfo[4]; // 자신의 플레이어 인포 
+	
 	int16						_playerIdx = -1;
-	DWORD						m_lastKeyInput = 0;
+	GameLogic					_logic;
 
+	DWORD						m_lastKeyInput = 0;
 	//마지막으로 마우스 버튼을 클릭할 때의 마우스 커서의 위치이다. 
 	POINT						m_ptOldCursorPos;
 	ID3D12RootSignature*		m_pd3dGraphicsRootSignature = NULL;
 	//루트 시그너쳐를 나타내는 인터페이스 포인터이다. 
 
 	CGameObject**				m_ppGameObjects = NULL;
-	int							m_nGameObjects = 0;
+	int32							m_nGameObjects = 0;
 
 	LIGHT*						m_pLights = NULL;
-	int							m_nLights = 0;
+	int32							m_nLights = 0;
 
 	XMFLOAT4					m_xmf4GlobalAmbient;
 
 	ID3D12Resource*				m_pd3dcbLights = NULL;
 	LIGHTS*						m_pcbMappedLights = NULL;
-
-	float						m_fElapsedTime = 0.0f;
 
 
 };

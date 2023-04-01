@@ -539,9 +539,9 @@ LRESULT CGameFramework::OnProcessingWindowMessage(HWND hWnd, UINT nMessageID, WP
 	case WM_ACTIVATE:
 	{
 		if (LOWORD(wParam) == WA_INACTIVE)
-			m_pScene->m_Timer.Stop();
+			m_pScene->_logic.StopTimer();
 		else
-			m_pScene->m_Timer.Start();
+			m_pScene->_logic.StartTimer();
 		break;
 	}
 	case WM_SIZE:

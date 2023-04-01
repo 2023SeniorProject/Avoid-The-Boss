@@ -104,7 +104,7 @@ void Room::BroadCasting(void* packet) // 방에 속하는 클라이언트에게만 전달하기
 void Room::Update()
 {
 	if (_status != ROOM_STATUS::FULL) return;
-
+	_logic.TickTimer(60.f);
 	{
 		std::unique_lock<std::shared_mutex> ql(_jobQueueLock);
 		while(!_jobQueue.empty())
@@ -117,10 +117,8 @@ void Room::Update()
 				delete qe;
 			}
 		}
-	}	
-
-
-	_logic.UpdateWorld(60.f, _players);
+	}	// JobQueue 작업
+	_logic.UpdateWorld(_players);
 }
 
 void Room::AddEvent(queueEvent* qe)

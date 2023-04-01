@@ -1,5 +1,6 @@
 #pragma once
 #include "PlayerInfo.h"
+#include "CTimer.h"
 #include <chrono>
 #include <array>
 
@@ -113,46 +114,42 @@ public:
 	void StartGame() 
 	{ 
 		gs = GameStatus::START_GAME;
-		_accumlateElapsedTime = 0.f;
-		_lastTimePoint = Clock::now();
-		_initTimePoint = Clock::now();
+		_timer.Reset();
 	}
-	void UpdateWorld(float fpsLock, PlayerInfo* p)
+
+	// 호출 순서
+	// TickTimer -> UpdateWorld -> AddHistory
+
+	void TickTimer(float fpsLock) { _timer.Tick(fpsLock); }
+	float GetTimeElapsed() { return _timer.GetTimeElapsed(); }
+	void UpdateWorld(PlayerInfo* p)
 	{
 		if (gs != GameStatus::START_GAME) return;
-		if (fpsLock != 0.0f) _fTimeElapsedAvg = (int)((1.f / fpsLock) * 1000.f);
-
-		std::chrono::time_point curTimePoint = Clock::now();
-		std::chrono::duration<float, std::milli> fp_ms = (curTimePoint - _lastTimePoint); // 반 올림하지 않고 정확하게 출력하기
-		float fTimeElapsed = fp_ms.count();
-		_lastTimePoint = curTimePoint;
-		_accumlateElapsedTime += fTimeElapsed;
-		
-		for(int i = 0; i < 4; ++i) p[i].Update(fTimeElapsed / 1000.f);
-		
+		for (int i = 0; i < 4; ++i) p[i].Update(_timer.GetTimeElapsed());
 		// 일정 틱 값 이상 증가하면~
-		if ( _accumlateElapsedTime >= _fTimeElapsedAvg)
+		if ( _timer._accumulateElapsedTimeForWorldFrame >= _timer._fTimeElapsedAvg)
 		{
-	
 			AddHistory(p); // 월드 프레임 상태를 기록한다.
-			_accumlateElapsedTime = 0.f;
+			_timer._accumulateElapsedTimeForWorldFrame = 0.f;
 			
 		}
 
 	};
 	void AddHistory(PlayerInfo* p)
 	{
-		 //std::cout << " Add WorldStatus Frame : " << _curWorldFrame << "\n";
+	
 		_lastWorldStatus._pPos[0] = p[0].GetPosition();
 		_lastWorldStatus._pPos[1] = p[1].GetPosition();
 		_lastWorldStatus._pPos[2] = p[2].GetPosition();
 		_lastWorldStatus._pPos[3] = p[3].GetPosition();
 		
 		//_lastWorldStatus._attackLay = _chaser.m_xmf3Look; // 레이저 방향
-		_lastWorldStatus._myWorldFrame = _curWorldFrame++;
+		_lastWorldStatus._myWorldFrame = _nWorldFrame++;
 		_worldHistory.SetWorldStatusByFrame(_lastWorldStatus._myWorldFrame, _lastWorldStatus);
 		
 	};
+	void StopTimer() { _timer.Stop(); }
+	void StartTimer() { _timer.Start(); }
 public:
 	
 
@@ -163,12 +160,8 @@ public:
 //
 	GameStatus gs = GameStatus::NONE_GAME;
 // 타이머 관련 멤버 변수
-	Clock::time_point		_lastTimePoint; // 마지막 시점 시간
-	Clock::time_point		_StopTimePoint; // 멈춘 시점 
-	Clock::time_point		_initTimePoint;
-
-	float					_fTimeElapsedAvg = 0.f; // 한 프레임 처리하는데 걸리는 평균 시간
-	float					_accumlateElapsedTime = 0.f; // 한 프레임 만큼 처리 됐는지 확인하는 용도
+	Timer _timer;
+	uint32 _nWorldFrame = 0;
 };
 
 //  1. 클라랑 서버랑 프레임 싱크가 안맞을 때 어떻게 할건지 

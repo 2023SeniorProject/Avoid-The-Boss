@@ -408,7 +408,6 @@ CMeshLoadInfo* CGameObject::LoadMeshInfoFromFile(FILE* pInFile)
 				m_pAABB.Center = pMeshInfo->m_xmf3AABBCenter;
 				m_pAABB.Extents = pMeshInfo->m_xmf3AABBExtents;
 				BoxTree->AddBoundingBox(m_pAABB);
-				bv.push_back(m_pAABB);
 			}
 		}
 		else if (!strcmp(pstrToken, "<Positions>:"))

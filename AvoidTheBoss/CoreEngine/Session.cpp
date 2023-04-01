@@ -146,8 +146,7 @@ void ServerSession::ProcessPacket(char* packet)
 			packet.key = key;
 			ServerIocpCore._rmgr->GetRoom(_myRm).BroadCasting(&packet);
 			ServerIocpCore._rmgr->GetRoom(_myRm).AddEvent(me);
-			//ServerIocpCore._rmgr->_rooms[_myRm].BroadCasting(&packet);
-			//ServerIocpCore._rmgr->_rooms[_myRm].AddEvent(me);
+		
 		}
 		break;
 		case C_PACKET_TYPE::ROTATE:
@@ -169,9 +168,7 @@ void ServerSession::ProcessPacket(char* packet)
 
 			ServerIocpCore._rmgr->GetRoom(_myRm).BroadCasting(&packet);
 			ServerIocpCore._rmgr->GetRoom(_myRm).AddEvent(me);
-			//ServerIocpCore._rmgr->_rooms[_myRm].BroadCasting(&packet);
-			//ServerIocpCore._rmgr->_rooms[_myRm].AddEvent(me);
-
+		
 		}
 		break;
 		case C_PACKET_TYPE::CCHAT:

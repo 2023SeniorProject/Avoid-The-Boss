@@ -151,7 +151,7 @@ void CPlayer::UpdateMove(const XMFLOAT3& xmf3Shift)
 		if (m_pCamera) m_pCamera->Move(xmf3Shift);
 }
 
-void CPlayer::Update(float fTimeElapsed,PLAYER_TYPE ptype)
+void CPlayer::Update(float fTimeElapsed, PLAYER_TYPE ptype)
 {
 
 	//플레이어를 속도 벡터 만큼 실제로 이동한다(카메라를 이동할 것이다).
@@ -207,7 +207,7 @@ void CPlayer::OtherUpdate(float fTimeElapsed)
 
 void CPlayer::OnPlayerUpdateCallback()
 {
-	if (BoxTree->CheckCollision(m_playerBV)) SetPosition(m_playerBV.Center);
+	if (BoxTree->CheckCollision(m_playerBV,m_xmf3Look,m_xmf3Right,m_xmf3Up)) SetPosition(m_playerBV.Center);
 }
 
 //플레이어를 로컬 x-축, y-축, z-축을 중심으로 회전한다.

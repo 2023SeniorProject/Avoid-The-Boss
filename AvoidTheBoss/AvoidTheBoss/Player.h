@@ -1,6 +1,6 @@
 #pragma once
-
 #include "GameObject.h"
+#include "PlayerInfo.h"
 
 enum class PLAYER_TYPE
 {
@@ -35,9 +35,9 @@ protected:
 public:
 	int16 m_sid = -1; // 切重生 Session Id
 	std::mutex m_lock; // 切重税 Lock
-	BoundingBox m_playerBV; // BV = bounding volume
-
+	BoundingOrientedBox m_playerBV; // BV = bounding volume
 public:
+public: 
 	CPlayer();
 	virtual ~CPlayer();
 	
@@ -52,11 +52,11 @@ public:
 	{
 		UpdateMove(XMFLOAT3(xmf3Position.x - m_xmf3Position.x, xmf3Position.y - m_xmf3Position.y, xmf3Position.z - m_xmf3Position.z));
 	}
-
 	void MakePosition(const XMFLOAT3& xmf3Position)
 	{
 		m_xmf3Position = xmf3Position;
 	}
+
 
 	const XMFLOAT3& GetVelocity() const { return(m_xmf3Velocity); }
 	float GetYaw() { return(m_fYaw); }

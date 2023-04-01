@@ -207,7 +207,7 @@ void CGameScene::ReleaseObjects()
 
 void CGameScene::ProcessInput(HWND hWnd)
 {
-	m_Timer.Tick(0.0f);
+	_logic.TickTimer(0.f);
 	static UCHAR pKeyBuffer[256];
 	// 방향키를 바이트로 처리한다.
 
@@ -220,9 +220,7 @@ void CGameScene::ProcessInput(HWND hWnd)
 		if (pKeyBuffer[VK_RIGHT] & 0xF0) dwDirection |= DIR_RIGHT;
 
 	}
-
-
-
+	
 	float cxDelta = 0.0f, cyDelta = 0.0f;
 	POINT ptCursorPos;
 	if (::GetCapture() == hWnd)
@@ -236,9 +234,8 @@ void CGameScene::ProcessInput(HWND hWnd)
 		cyDelta = (float)(ptCursorPos.y - m_ptOldCursorPos.y) / 3.0f;
 		//마우스 커서의 위치를 마우스가 눌려졌던 위치로 설정한다. 
 		::SetCursorPos(m_ptOldCursorPos.x, m_ptOldCursorPos.y);
-
-
 	}
+
 	{
 		std::lock_guard<std::mutex> lg(_players[_playerIdx]->m_lock);
 		if ((dwDirection != 0) || (cxDelta != 0.0f) || (cyDelta != 0.0f))
@@ -283,16 +280,23 @@ void CGameScene::ProcessInput(HWND hWnd)
 	//카메라를 갱신한다. 중력과 마찰력의 영향을 속도 벡터에 적용한다.
 	for (int k = 0; k < PLAYERNUM; ++k)
 	{	
-		if (k == _playerIdx) _players[k]->Update(m_Timer.GetTimeElapsed(),PLAYER_TYPE::OWNER);
-		else _players[k]->Update(m_Timer.GetTimeElapsed(),PLAYER_TYPE::OTHER_PLAYER);
+		if (k == _playerIdx) _players[k]->Update(_logic.GetTimeElapsed(),PLAYER_TYPE::OWNER);
+		else _players[k]->Update(_logic.GetTimeElapsed(),PLAYER_TYPE::OTHER_PLAYER);
+
+		// 플레이어 인포로 변환
+		_playerInfo[k].m_xmf3Look = _players[k]->GetLook();
+		_playerInfo[k].m_xmf3Right = _players[k]->GetRight();
+		_playerInfo[k].m_xmf3Up = _players[k]->GetUp();
+		_playerInfo[k].m_xmf3Position = _players[k]->GetPosition();
 	}
 
+	_logic.UpdateWorld(_playerInfo);
 
 }
 
 void CGameScene::AnimateObjects()
 {
-	for (int i = 0; i < m_nGameObjects; i++) m_ppGameObjects[i]->Animate(m_Timer.GetTimeElapsed(), NULL);
+	for (int i = 0; i < m_nGameObjects; i++) m_ppGameObjects[i]->Animate(_logic.GetTimeElapsed(), NULL);
 
 	if (m_pLights)
 	{
@@ -319,7 +323,7 @@ void CGameScene::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCa
 	{
 		if (m_ppGameObjects[i])
 		{
-			m_ppGameObjects[i]->Animate(m_Timer.GetTimeElapsed(), NULL);
+			m_ppGameObjects[i]->Animate(_logic.GetTimeElapsed(), NULL);
 			m_ppGameObjects[i]->UpdateTransform(NULL);
 			m_ppGameObjects[i]->Render(pd3dCommandList, pCamera);
 		}
@@ -329,8 +333,7 @@ void CGameScene::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCa
 
 bool CGameScene::CollisionCheck()
 {
-	for(auto& i : bv) if(i.Intersects(_players[_playerIdx]->m_playerBV)) return true;
- 	return false;
+	return false;
 }
 
 void CGameScene::ReleaseUploadBuffers()

@@ -188,7 +188,7 @@ public:
 	CGameObject* m_pChild = NULL;	
 	CGameObject* m_pSibling = NULL;
 
-	BoundingBox m_pAABB;
+	BoundingOrientedBox m_pAABB;
 
 	XMFLOAT4X4 m_xmf4x4World;
 	XMFLOAT4X4 m_xmf4x4Transform;
@@ -267,7 +267,6 @@ public:
 	static void PrintFrameInfo(CGameObject* pGameObject, CGameObject* pParent);
 };
 
-extern std::vector<BoundingBox> bv;
 //class CMapObject : public CGameObject
 //{
 //public:

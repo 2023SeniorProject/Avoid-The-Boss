@@ -1,12 +1,37 @@
 #include "pch.h"
 #include "CollisionDetector.h"
-#include <math.h>
+
 OcTree* BoxTree = nullptr;
 
 
 int32 OcTree::_maxLevel = 3;
 
-void OcTree::AddBoundingBox(DirectX::BoundingBox aabb)
+
+
+float DotProduct(XMFLOAT3 point, XMFLOAT3 axis)
+{
+	return point.x * axis.x + point.y * axis.y + point.z * axis.z;
+
+}
+
+XMFLOAT3 Project(XMFLOAT3 center, XMFLOAT3 axis, XMFLOAT3 extents) {
+	XMFLOAT3 projection;
+	float projectionLength = DotProduct(center, axis);
+	projection.x = projectionLength + extents.x * ::abs(axis.x);
+	projection.y = projectionLength + extents.y * ::abs(axis.y);
+	projection.z = projectionLength + extents.z * ::abs(axis.z);
+	return projection;
+}
+
+
+float overlap(XMFLOAT3 projA, XMFLOAT3 projB, XMFLOAT3 axis) 
+{
+	float dist = abs(DotProduct(XMFLOAT3(projA.x - projB.x , projA.y - projB.y, projA.z - projB.z), axis));
+	float totalExtent = projA.x + projA.y + projA.z + projB.x + projB.y + projB.z;
+	return totalExtent - 2.0f * dist;
+}
+
+void OcTree::AddBoundingBox(DirectX::BoundingOrientedBox aabb)
 {
 	if (_curLevel == _maxLevel)
 	{
@@ -48,37 +73,60 @@ void OcTree::BuildChildTree()
 	}
 }
 
-bool OcTree::CheckCollision(DirectX::BoundingBox& playerBox)
+bool OcTree::CheckCollision(DirectX::BoundingOrientedBox& playerBox, XMFLOAT3& look, XMFLOAT3& right, XMFLOAT3& up)
 {
 		bool rVal = false;
 		if (_curLevel == _maxLevel)
 		{
 			if (_area.Intersects(playerBox))
 			{
-				std::cout << "collision" << std::endl;
-				XMFLOAT3 pCorner[8];
-				XMFLOAT3 iCorner[8];
-
-				XMFLOAT3 centerOffset;
+				bool rVal2 = false;
 				
-
+				
 				for (auto& i : _node->boxs)
 				{
 					if (i.Intersects(playerBox))
 					{
-						centerOffset.x = playerBox.Center.x - i.Center.x;
-						centerOffset.z = playerBox.Center.z - i.Center.z;
-						float offsetX = playerBox.Extents.x + i.Extents.x - ::fabsf(centerOffset.x);
-						float offsetZ = playerBox.Extents.z + i.Extents.z - ::fabsf(centerOffset.z);
+						
+						// To Do Collision Response
 
-						if (centerOffset.x > 0) playerBox.Center.x += offsetX;
-						else playerBox.Center.x -= offsetX;
-						if (centerOffset.z > 0) playerBox.Center.z += offsetZ;
-						else playerBox.Center.z -= offsetZ;
-						return true;
+						// 1. 자기의 로컬 좌표계 기준으로 min max 값을 구한다.
+						// 플레이어의 자기 로컬 좌표계에 투영했을 때 가장 큰 좌표값과 가장 작은 좌표값을 구한다.
+						// look = z
+						// up = y
+						// right = x
+						std::cout << look.x << " " << look.z << "\n";
+						XMFLOAT3 iCenterInPlayerAxis;
+						iCenterInPlayerAxis.x = i.Center.x - playerBox.Center.x;
+						iCenterInPlayerAxis.y = i.Center.y - playerBox.Center.y;
+						iCenterInPlayerAxis.z = i.Center.z - playerBox.Center.z;
+
+			
+						float CenterDistX = DotProduct(iCenterInPlayerAxis, right);
+						float CenterDistZ = DotProduct(iCenterInPlayerAxis, look);
+						
+						float extentDistX = DotProduct(i.Extents, right);
+						float extentDistZ = DotProduct(i.Extents, look);
+
+						float xover = (::fabs(extentDistX) + playerBox.Extents.x) - ::fabs(CenterDistX);
+						float zover = (::fabs(extentDistZ) + playerBox.Extents.z) - ::fabs(CenterDistZ);
+
+						if (zover > xover)
+						{
+							if (iCenterInPlayerAxis.x >= 0) playerBox.Center.x -= xover * 1.3f;
+							else playerBox.Center.x += xover * 1.3f;
+						}
+						if (xover > zover)
+						{
+							if (iCenterInPlayerAxis.z >= 0) playerBox.Center.z -= zover * 1.3f;
+							else playerBox.Center.z += zover * 1.3f;
+						}
+						
+						return rVal2 |= true;
 					}
 				}
-				return false;
+
+				return rVal2;
 			}
 			else return false;
 		}
@@ -89,7 +137,7 @@ bool OcTree::CheckCollision(DirectX::BoundingBox& playerBox)
 			{
 				for (auto& i : _childTree)
 				{
-					rVal |= i->CheckCollision(playerBox);
+					rVal |= i->CheckCollision(playerBox,look,right,up);
 				}
 			}
 			return rVal;

@@ -319,7 +319,7 @@ CWorker::CWorker(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dComman
 	pGameObject->Rotate(0.0f,0.0f,0.0f);
 	pGameObject->SetScale(scale, scale, scale);
 	SetChild(pGameObject, true);
-	SetPosition(XMFLOAT3(0.0f, 1.25f, 0.0f));
+	SetPosition(XMFLOAT3(0.0f, 1.25f, -50.0f));
 
 	CreateShaderVariables(pd3dDevice, pd3dCommandList);
 }

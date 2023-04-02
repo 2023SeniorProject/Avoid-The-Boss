@@ -95,7 +95,6 @@ bool OcTree::CheckCollision(DirectX::BoundingOrientedBox& playerBox, XMFLOAT3& l
 						// look = z
 						// up = y
 						// right = x
-						std::cout << look.x << " " << look.z << "\n";
 						XMFLOAT3 iCenterInPlayerAxis;
 						iCenterInPlayerAxis.x = i.Center.x - playerBox.Center.x;
 						iCenterInPlayerAxis.y = i.Center.y - playerBox.Center.y;

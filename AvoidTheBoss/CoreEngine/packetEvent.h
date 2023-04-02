@@ -24,7 +24,7 @@ public:
 		std::lock_guard<std::mutex> plg(ServerIocpCore._clients[sid]->_playerLock);
 		// to do move Player in gameLogic
 		int16 roomNum = ServerIocpCore._clients[sid]->_myRm;
-		ServerIocpCore._rmgr->GetRoom(roomNum).GetMyPlayerFromRoom(sid).Move(key, UNIT * 1.2f);
+		ServerIocpCore._rmgr->GetRoom(roomNum).GetMyPlayerFromRoom(sid).Move(key, PLAYER_VELOCITY);
 	};
 	
 };

@@ -9,6 +9,7 @@ private:
 	using Clock = std::chrono::high_resolution_clock;
 public:
 	float					_fTimeDuringPaused;
+	float					_fTimeElapsed;
 	bool					_bStopped;
 
 	float					_SampleFrameTime[MAX_SAMPLE_COUNT]; 

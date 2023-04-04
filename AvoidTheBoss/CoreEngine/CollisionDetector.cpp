@@ -58,7 +58,7 @@ float clamp(float pos, float min , float max)
 {
 	float val = (pos < min ? min : pos);
 	val =  val > max ? max : val;
-	if (val > min && val < max) return ((val - min) > (max - val) ? max : min);
+	if (val != min && val != max) return ((val - min) > (max - val) ? max : min);
 	else return val;
 }
 bool OcTree::CheckCollision(DirectX::BoundingSphere& playerBox, XMFLOAT3& look, XMFLOAT3& right, XMFLOAT3& up)
@@ -89,24 +89,22 @@ bool OcTree::CheckCollision(DirectX::BoundingSphere& playerBox, XMFLOAT3& look, 
 						float closeX = clamp(centerVec.x,  -1 * i.Extents.x, i.Extents.x);
 						float closeZ = clamp(centerVec.z,  -1 * i.Extents.z, i.Extents.z);
 						
-						if (closeX != (i.Extents.x * -1) && closeX != i.Extents.x) std::cout << closeX <<"\n";
-						if (closeZ!= (i.Extents.z * -1) && closeZ != i.Extents.z) std::cout << closeZ <<"\n";
 						// 플레이어 좌표기준으로 얼만큼 거리인지 구한다.
 						XMFLOAT3 closeDist { centerVec.x - closeX , 0.f , centerVec.z - closeZ }; // 방향 계산
 						
-						float cd = Vector3::Length(closeDist); // 거리 계산
-						float offsetdist = ::fabs(playerBox.Radius - cd); // offset 거리 계산. 구의 반지름 - 가장 가까운 점과 구의 중심의 거리
+						//float cd = Vector3::Length(closeDist); // 거리 계산
+						//float offsetdist = ::fabs(playerBox.Radius - cd); // offset 거리 계산. 구의 반지름 - 가장 가까운 점과 구의 중심의 거리
 
-						XMFLOAT3 a = Vector3::ScalarProduct(closeDist, offsetdist, true); // 해당 방향으로 스칼라곱
-						if (::fabs(a.x) < ::fabs(a.z)) // offset 수치가 작은 쪽으로 계산.
+						//XMFLOAT3 a = Vector3::ScalarProduct(closeDist, offsetdist, true); // 해당 방향으로 스칼라곱
+						if (::fabs(playerBox.Radius - closeDist.x) < ::fabs(playerBox.Radius - closeDist.z)) // offset 수치가 작은 쪽으로 계산.
 						{
-							playerBox.Center.x += closeDist.x;
+							playerBox.Center.x += (playerBox.Radius - closeDist.x);
 						}
 						else
 						{
-							 playerBox.Center.z += closeDist.z;
+							 playerBox.Center.z += (playerBox.Radius - closeDist.z);
 						}
-						return rVal2 |= true;
+						rVal2 |= true;
 					}
 				}
 

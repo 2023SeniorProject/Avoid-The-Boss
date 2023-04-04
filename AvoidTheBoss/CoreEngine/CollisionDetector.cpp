@@ -57,7 +57,9 @@ void OcTree::BuildChildTree()
 float clamp(float pos, float min , float max)
 {
 	float val = (pos < min ? min : pos);
-	return  val > max ? max : val;
+	val =  val > max ? max : val;
+	if (val > min && val < max) return ((val - min) > (max - val) ? max : min);
+	else return val;
 }
 bool OcTree::CheckCollision(DirectX::BoundingSphere& playerBox, XMFLOAT3& look, XMFLOAT3& right, XMFLOAT3& up)
 {
@@ -84,20 +86,21 @@ bool OcTree::CheckCollision(DirectX::BoundingSphere& playerBox, XMFLOAT3& look, 
 						XMFLOAT3 centerVec{ playerBox.Center.x - i.Center.x, 0.f , playerBox.Center.z - i.Center.z }; // 상자 중심으로 플레이어 상대적인 위치 벡터.
 						
 						// 지형의 사각형 영역 중 구의 중심과 가장 가까운 정점의 x , z 좌표를 구한다.
-						float closeX = clamp(centerVec.x, i.Center.x - i.Extents.x, i.Center.x + i.Extents.x);
-						float closeZ = clamp(centerVec.z, i.Center.z - i.Extents.z, i.Center.z + i.Extents.z);
+						float closeX = clamp(centerVec.x,  -1 * i.Extents.x, i.Extents.x);
+						float closeZ = clamp(centerVec.z,  -1 * i.Extents.z, i.Extents.z);
 						
+						if (closeX != (i.Extents.x * -1) && closeX != i.Extents.x) std::cout << closeX <<"\n";
+						if (closeZ!= (i.Extents.z * -1) && closeZ != i.Extents.z) std::cout << closeZ <<"\n";
 						// 플레이어 좌표기준으로 얼만큼 거리인지 구한다.
-						XMFLOAT3 closeDist { playerBox.Center.x - closeX , 0.f , playerBox.Center.z - closeZ }; // 방향 계산
+						XMFLOAT3 closeDist { centerVec.x - closeX , 0.f , centerVec.z - closeZ }; // 방향 계산
 						
 						float cd = Vector3::Length(closeDist); // 거리 계산
 						float offsetdist = ::fabs(playerBox.Radius - cd); // offset 거리 계산. 구의 반지름 - 가장 가까운 점과 구의 중심의 거리
 
 						XMFLOAT3 a = Vector3::ScalarProduct(closeDist, offsetdist, true); // 해당 방향으로 스칼라곱
-						if (a.x < a.z) // offset 수치가 작은 쪽으로 계산.
+						if (::fabs(a.x) < ::fabs(a.z)) // offset 수치가 작은 쪽으로 계산.
 						{
-							  playerBox.Center.x += closeDist.x;
-							
+							playerBox.Center.x += closeDist.x;
 						}
 						else
 						{

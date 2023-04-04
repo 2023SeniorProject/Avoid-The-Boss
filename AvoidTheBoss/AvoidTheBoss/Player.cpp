@@ -207,7 +207,7 @@ void CPlayer::OtherUpdate(float fTimeElapsed)
 
 void CPlayer::OnPlayerUpdateCallback()
 {
-	if (BoxTree->CheckCollision(m_playerBV,m_xmf3Look,m_xmf3Right,m_xmf3Up)) SetPosition(m_playerBV.Center);
+	if (BoxTree->CheckCollision(m_playerBV,m_xmf3Look,m_xmf3Right,m_xmf3Up)) MakePosition(m_playerBV.Center);
 }
 
 //플레이어를 로컬 x-축, y-축, z-축을 중심으로 회전한다.

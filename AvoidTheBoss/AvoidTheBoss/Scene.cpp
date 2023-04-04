@@ -238,7 +238,7 @@ void CGameScene::ProcessInput(HWND hWnd)
 
 	}
 	{
-		std::lock_guard<std::mutex> lg(_players[_playerIdx]->m_lock);
+		//std::lock_guard<std::mutex> lg(_players[_playerIdx]->m_lock);
 		if ((dwDirection != 0) || (cxDelta != 0.0f) || (cyDelta != 0.0f))
 		{
 			if (cxDelta || cyDelta)
@@ -255,7 +255,7 @@ void CGameScene::ProcessInput(HWND hWnd)
 					packet.size = sizeof(C2S_ROTATE);
 					packet.type = C_PACKET_TYPE::ROTATE;
 					packet.angle = cxDelta;
-					clientCore._client->DoSend(&packet);
+					//clientCore._client->DoSend(&packet);
 				}
 			}
 
@@ -273,7 +273,7 @@ void CGameScene::ProcessInput(HWND hWnd)
 		packet.type = C_PACKET_TYPE::MOVE;
 		packet.key = dwDirection;
 
-		clientCore._client->DoSend(&packet);
+		//clientCore._client->DoSend(&packet);
 	}
 	m_lastKeyInput = dwDirection;
 	
@@ -282,7 +282,7 @@ void CGameScene::ProcessInput(HWND hWnd)
 	for (int k = 0; k < PLAYERNUM; ++k)
 	{	
 		if (k == _playerIdx) _players[k]->Update(m_Timer.GetTimeElapsed());
-		else _players[k]->OtherUpdate(m_Timer.GetTimeElapsed());
+		//else _players[k]->OtherUpdate(m_Timer.GetTimeElapsed());
 	}
 }
 

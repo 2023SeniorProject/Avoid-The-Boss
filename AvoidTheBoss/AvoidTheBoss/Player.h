@@ -6,10 +6,11 @@ class CPlayer : public CGameObject
 {
 protected:
 	 
-	XMFLOAT3 m_xmf3Position;
-	XMFLOAT3 m_xmf3Right;
-	XMFLOAT3 m_xmf3Up;
-	XMFLOAT3 m_xmf3Look;
+	XMFLOAT3					m_xmf3Position = XMFLOAT3(0.0f, 0.0f, 0.0f);
+	XMFLOAT3					m_xmf3Right = XMFLOAT3(1.0f, 0.0f, 0.0f);
+	XMFLOAT3					m_xmf3Up = XMFLOAT3(0.0f, 1.0f, 0.0f);
+	XMFLOAT3					m_xmf3Look = XMFLOAT3(0.0f, 0.0f, 1.0f);
+	XMFLOAT3					m_xmf3Scale = XMFLOAT3(1.0f, 1.0f, 1.0f);
 
 
 	float m_fPitch;
@@ -46,7 +47,7 @@ public:
 	{
 		UpdateMove(XMFLOAT3(xmf3Position.x - m_xmf3Position.x, xmf3Position.y - m_xmf3Position.y, xmf3Position.z - m_xmf3Position.z));
 	}
-
+	void SetScale(const XMFLOAT3& xmf3Scale) { m_xmf3Scale = xmf3Scale; }
 	void MakePosition(const XMFLOAT3& xmf3Position)
 	{
 		m_xmf3Position = xmf3Position;
@@ -61,7 +62,7 @@ public:
 	CCamera* GetCamera() { return(m_pCamera); }
 
 	//플레이어를 이동하는 함수이다. 
-	void Move(DWORD dwDirection, float fDistance);
+	virtual void Move(DWORD dwDirection, float fDistance);
 	void SetSpeed(const XMFLOAT3& xmf3Shift);
 	void UpdateMove(const XMFLOAT3& velocity);
 	
@@ -69,12 +70,11 @@ public:
 	void OtherMove(DWORD dwDirection, float fDistance);
 	void OtherUpdate(float fTimeElapsed);
 
-
 	//플레이어를 회전하는 함수이다. 
 	void Rotate(float x, float y, float z);
 
 	//플레이어의 위치와 회전 정보를 경과 시간에 따라 갱신하는 함수이다.
-	void Update(float fTimeElapsed);
+	virtual void Update(float fTimeElapsed);
 
 	virtual void OnPlayerUpdateCallback(float fTimeElapsed) { }
 	void SetPlayerUpdatedContext(LPVOID pContext) { m_pPlayerUpdatedContext = pContext; }
@@ -95,9 +95,6 @@ public:
 	virtual void OnPrepareRender();
 	//플레이어의 카메라가 3인칭 카메라일 때 플레이어(메쉬)를 렌더링한다. 
 	virtual void Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera =NULL);
-//protected:
-//	ID3D12Resource* m_pd3dcbPlayer = NULL;
-//	CB_PLAYER_INFO* m_pcbMappedPlayer = NULL;
 };
 
 
@@ -106,13 +103,25 @@ class CWorker : public CPlayer
 public:
 	CWorker(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature);
 	virtual ~CWorker();
-private:
-	virtual void OnInitialize();
-	virtual void Animate(float fTimeElapsed, XMFLOAT4X4* pxmf4x4Parent = NULL);
 public:
 	virtual CCamera* ChangeCamera(DWORD nNewCameraMode, float fTimeElapsed);
-	virtual void OnPrepareRender();
+	virtual void OnPlayerUpdateCallback(float fTimeElapsed);
+	virtual void OnCameraUpdateCallback(float fTimeElapsed);
+
+	virtual void Move(DWORD dwDirection, float fDistance);
+
+	virtual void Update(float fTimeElapsed);
 
 };
 
+
+class CSoundCallbackHandler : public CAnimationCallbackHandler
+{
+public:
+	CSoundCallbackHandler() { }
+	~CSoundCallbackHandler() { }
+
+public:
+	virtual void HandleCallback(void* pCallbackData, float fTrackPosition);
+};
 

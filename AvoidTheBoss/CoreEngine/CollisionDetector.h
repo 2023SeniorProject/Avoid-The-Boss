@@ -3,10 +3,10 @@
 class LeafNode
 {
 public:
-	std::vector<DirectX::BoundingOrientedBox> boxs;
+	std::vector<DirectX::BoundingBox> boxs;
 public:
 	LeafNode() {}
-	void addBoxs(DirectX::BoundingOrientedBox aabb) { boxs.push_back(aabb); }
+	void addBoxs(DirectX::BoundingBox aabb) { boxs.push_back(aabb); }
 	virtual ~LeafNode() { boxs.clear(); }
 };
 
@@ -71,10 +71,10 @@ public:
 
 		if (_curLevel == _maxLevel) _node = new LeafNode();
 	};
-	void AddBoundingBox(DirectX::BoundingOrientedBox aabb);
+	void AddBoundingBox(DirectX::BoundingBox aabb);
 	void BuildTree();
 	void BuildChildTree();
-	bool CheckCollision(DirectX::BoundingOrientedBox& playerBox, XMFLOAT3& look, XMFLOAT3& right, XMFLOAT3& up);
+	bool CheckCollision(DirectX::BoundingSphere& playerBox, XMFLOAT3& look, XMFLOAT3& right, XMFLOAT3& up);
 };
 
 extern class OcTree* BoxTree;

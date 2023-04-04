@@ -7,7 +7,7 @@ CPlayer::CPlayer()
 	m_type = 0;
 	m_pCamera = NULL;
 	m_playerBV.Center = GetPosition();
-	m_playerBV.Extents = XMFLOAT3(0.02,0.02f,0.02);
+	m_playerBV.Radius = 0.02f;
 	m_xmf3Position = XMFLOAT3(0.0f, 0.0f, 0.0f);
 
 	m_xmf3Right = XMFLOAT3(1.0f, 0.0f, 0.0f);

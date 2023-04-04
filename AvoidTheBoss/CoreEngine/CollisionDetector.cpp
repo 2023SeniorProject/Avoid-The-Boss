@@ -7,31 +7,12 @@ OcTree* BoxTree = nullptr;
 int32 OcTree::_maxLevel = 3;
 
 
-
-float DotProduct(XMFLOAT3 point, XMFLOAT3 axis)
+float DotProduct(XMFLOAT3 a, XMFLOAT3 b) 
 {
-	return point.x * axis.x + point.y * axis.y + point.z * axis.z;
-
+	return  a.x * b.x + a.y + b.y + a.z * b.z;
 }
 
-XMFLOAT3 Project(XMFLOAT3 center, XMFLOAT3 axis, XMFLOAT3 extents) {
-	XMFLOAT3 projection;
-	float projectionLength = DotProduct(center, axis);
-	projection.x = projectionLength + extents.x * ::abs(axis.x);
-	projection.y = projectionLength + extents.y * ::abs(axis.y);
-	projection.z = projectionLength + extents.z * ::abs(axis.z);
-	return projection;
-}
-
-
-float overlap(XMFLOAT3 projA, XMFLOAT3 projB, XMFLOAT3 axis) 
-{
-	float dist = abs(DotProduct(XMFLOAT3(projA.x - projB.x , projA.y - projB.y, projA.z - projB.z), axis));
-	float totalExtent = projA.x + projA.y + projA.z + projB.x + projB.y + projB.z;
-	return totalExtent - 2.0f * dist;
-}
-
-void OcTree::AddBoundingBox(DirectX::BoundingOrientedBox aabb)
+void OcTree::AddBoundingBox(DirectX::BoundingBox aabb)
 {
 	if (_curLevel == _maxLevel)
 	{
@@ -73,7 +54,12 @@ void OcTree::BuildChildTree()
 	}
 }
 
-bool OcTree::CheckCollision(DirectX::BoundingOrientedBox& playerBox, XMFLOAT3& look, XMFLOAT3& right, XMFLOAT3& up)
+float clamp(float pos, float min , float max)
+{
+	float val = (pos < min ? min : pos);
+	return  val > max ? max : val;
+}
+bool OcTree::CheckCollision(DirectX::BoundingSphere& playerBox, XMFLOAT3& look, XMFLOAT3& right, XMFLOAT3& up)
 {
 		bool rVal = false;
 		if (_curLevel == _maxLevel)
@@ -95,32 +81,28 @@ bool OcTree::CheckCollision(DirectX::BoundingOrientedBox& playerBox, XMFLOAT3& l
 						// look = z
 						// up = y
 						// right = x
-						XMFLOAT3 iCenterInPlayerAxis;
-						iCenterInPlayerAxis.x = i.Center.x - playerBox.Center.x;
-						iCenterInPlayerAxis.y = i.Center.y - playerBox.Center.y;
-						iCenterInPlayerAxis.z = i.Center.z - playerBox.Center.z;
-
-			
-						float CenterDistX = DotProduct(iCenterInPlayerAxis, right);
-						float CenterDistZ = DotProduct(iCenterInPlayerAxis, look);
+						XMFLOAT3 centerVec{ playerBox.Center.x - i.Center.x, 0.f , playerBox.Center.z - i.Center.z }; // 상자 중심으로 플레이어 상대적인 위치 벡터.
 						
-						float extentDistX = DotProduct(i.Extents, right);
-						float extentDistZ = DotProduct(i.Extents, look);
-
-						float xover = (::fabs(extentDistX) + playerBox.Extents.x) - ::fabs(CenterDistX);
-						float zover = (::fabs(extentDistZ) + playerBox.Extents.z) - ::fabs(CenterDistZ);
-
-						if (zover > xover)
-						{
-							if (iCenterInPlayerAxis.x >= 0) playerBox.Center.x -= xover * 1.3f;
-							else playerBox.Center.x += xover * 1.3f;
-						}
-						if (xover > zover)
-						{
-							if (iCenterInPlayerAxis.z >= 0) playerBox.Center.z -= zover * 1.3f;
-							else playerBox.Center.z += zover * 1.3f;
-						}
+						// 지형의 사각형 영역 중 구의 중심과 가장 가까운 정점의 x , z 좌표를 구한다.
+						float closeX = clamp(centerVec.x, i.Center.x - i.Extents.x, i.Center.x + i.Extents.x);
+						float closeZ = clamp(centerVec.z, i.Center.z - i.Extents.z, i.Center.z + i.Extents.z);
 						
+						// 플레이어 좌표기준으로 얼만큼 거리인지 구한다.
+						XMFLOAT3 closeDist { playerBox.Center.x - closeX , 0.f , playerBox.Center.z - closeZ }; // 방향 계산
+						
+						float cd = Vector3::Length(closeDist); // 거리 계산
+						float offsetdist = ::fabs(playerBox.Radius - cd); // offset 거리 계산. 구의 반지름 - 가장 가까운 점과 구의 중심의 거리
+
+						XMFLOAT3 a = Vector3::ScalarProduct(closeDist, offsetdist, true); // 해당 방향으로 스칼라곱
+						if (a.x < a.z) // offset 수치가 작은 쪽으로 계산.
+						{
+							  playerBox.Center.x += closeDist.x;
+							
+						}
+						else
+						{
+							 playerBox.Center.z += closeDist.z;
+						}
 						return rVal2 |= true;
 					}
 				}

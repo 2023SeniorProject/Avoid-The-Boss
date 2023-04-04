@@ -35,7 +35,7 @@ protected:
 public:
 	int16 m_sid = -1; // 切重生 Session Id
 	std::mutex m_lock; // 切重税 Lock
-	BoundingOrientedBox m_playerBV; // BV = bounding volume
+	BoundingSphere m_playerBV; // BV = bounding volume
 public:
 public: 
 	CPlayer();

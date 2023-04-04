@@ -188,7 +188,7 @@ public:
 	CGameObject* m_pChild = NULL;	
 	CGameObject* m_pSibling = NULL;
 
-	BoundingOrientedBox m_pAABB;
+	BoundingBox m_pAABB;
 
 	XMFLOAT4X4 m_xmf4x4World;
 	XMFLOAT4X4 m_xmf4x4Transform;

@@ -2,6 +2,7 @@
 
 #include "GameObject.h"
 
+#define INTERACTION_TIME 60
 class CPlayer : public CGameObject
 {
 protected:
@@ -32,6 +33,9 @@ public:
 	int16 m_sid = -1; // 자신으 Session Id
 	std::mutex m_lock; // 자신의 Lock
 	BoundingSphere m_playerBV; // BV = bounding volume
+
+	bool m_OnInteraction = false;
+	int m_InteractionCountTime = INTERACTION_TIME;
 public:
 	CPlayer();
 	virtual ~CPlayer();
@@ -69,6 +73,14 @@ public:
 	// 다른 플레이어를 이동하는 함수
 	void OtherMove(DWORD dwDirection, float fDistance);
 	void OtherUpdate(float fTimeElapsed);
+
+	void ProcesesInput();
+
+	void SetOnInteraction(bool value) 
+	{
+		m_OnInteraction = value; 
+	}
+	void OnInteractive();
 
 	//플레이어를 회전하는 함수이다. 
 	void Rotate(float x, float y, float z);

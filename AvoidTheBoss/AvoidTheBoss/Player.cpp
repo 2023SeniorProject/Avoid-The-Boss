@@ -108,6 +108,9 @@ void CPlayer::Update(float fTimeElapsed)
 	/*플레이어의 위치가 변경될 때 추가로 수행할 작업을 수행한다. 플레이어의 새로운 위치가 유효한 위치가 아닐 수도
 	있고 또는 플레이어의 충돌 검사 등을 수행할 필요가 있다. 이러한 상황에서 플레이어의 위치를 유효한 위치로 다시
 	변경할 수 있다.*/
+	
+	if (m_OnInteraction) OnInteractive();
+
 	if (m_pPlayerUpdatedContext) OnPlayerUpdateCallback(fTimeElapsed);
 
 	DWORD nCameraMode = m_pCamera->GetMode();
@@ -125,6 +128,24 @@ void CPlayer::Update(float fTimeElapsed)
 	//카메라의 카메라 변환 행렬을 다시 생성한다. 
 	m_pCamera->RegenerateViewMatrix();
 	//m_xmf3Velocity = XMFLOAT3(0.0f, 0.0f, 0.0f);
+}
+
+void CPlayer::OnInteractive()
+{
+	if (m_OnInteraction == true && m_InteractionCountTime > 0)
+	{
+		m_pSkinnedAnimationController->SetTrackEnable(0, false);
+		m_pSkinnedAnimationController->SetTrackEnable(1, false);
+		m_pSkinnedAnimationController->SetTrackEnable(3, true);
+
+		m_InteractionCountTime -= 1;
+	}
+	else
+	{
+		m_pSkinnedAnimationController->SetTrackEnable(3, false);
+		m_OnInteraction = false;
+		m_InteractionCountTime = INTERACTION_TIME;
+	}
 }
 
 //플레이어를 로컬 x-축, y-축, z-축을 중심으로 회전한다.
@@ -208,6 +229,11 @@ void CPlayer::OtherUpdate(float fTimeElapsed)
 	m_pCamera->RegenerateViewMatrix();
 }
 
+void CPlayer::ProcesesInput()
+{
+
+}
+
 void CPlayer::CreateShaderVariables(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList)
 {
 	if (m_pCamera) m_pCamera->CreateShaderVariables(pd3dDevice, pd3dCommandList);
@@ -276,14 +302,16 @@ CWorker::CWorker(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dComman
 	CLoadedModelInfo* pBossModel = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "Model/Boss_Run.bin", NULL);
 	SetChild(pBossModel->m_pModelRootObject, true);
 
-	m_pSkinnedAnimationController = new CAnimationController(pd3dDevice, pd3dCommandList, 3, pBossModel);
-	m_pSkinnedAnimationController->SetTrackAnimationSet(0, 0);//Shoot
-	m_pSkinnedAnimationController->SetTrackAnimationSet(1, 2);//Running
-	m_pSkinnedAnimationController->SetTrackAnimationSet(2, 1);//RunningShoot
+	m_pSkinnedAnimationController = new CAnimationController(pd3dDevice, pd3dCommandList, 4, pBossModel);
+	m_pSkinnedAnimationController->SetTrackAnimationSet(2, 0);//Idle
+	m_pSkinnedAnimationController->SetTrackAnimationSet(0, 1);//Shoot
+	m_pSkinnedAnimationController->SetTrackAnimationSet(3, 2);//RunningShoot
+	m_pSkinnedAnimationController->SetTrackAnimationSet(1, 3);//Run
 
 	m_pSkinnedAnimationController->SetTrackEnable(0, true);
 	m_pSkinnedAnimationController->SetTrackEnable(1, false);
 	m_pSkinnedAnimationController->SetTrackEnable(2, false);
+	m_pSkinnedAnimationController->SetTrackEnable(3, false);
 
 	//	m_pSkinnedAnimationController->SetCallbackKeys(1, 2);
 	//#ifdef _WITH_SOUND_RESOURCE

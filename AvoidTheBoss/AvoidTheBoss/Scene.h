@@ -83,7 +83,7 @@ public:
 //	//배치(Batch) 처리를 하기 위하여 씬을 셰이더들의 리스트로 표현한다. 
 
 	CCamera* m_pCamera;
-	
+	WCHAR	 txtFrameBuf[20];
 	CPlayer*					_players[4];
 	PlayerInfo					_playerInfo[4]; // 자신의 플레이어 인포 
 	
@@ -97,10 +97,10 @@ public:
 	//루트 시그너쳐를 나타내는 인터페이스 포인터이다. 
 
 	CGameObject**				m_ppGameObjects = NULL;
-	int32							m_nGameObjects = 0;
+	int32						m_nGameObjects = 0;
 
 	LIGHT*						m_pLights = NULL;
-	int32							m_nLights = 0;
+	int32						m_nLights = 0;
 
 	XMFLOAT4					m_xmf4GlobalAmbient;
 

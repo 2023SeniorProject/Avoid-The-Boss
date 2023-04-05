@@ -1,22 +1,21 @@
 #pragma once
 #define MAX_ROOM_USER 4 // 한 방당 최대 인원수
 #include "WorldRewinder.h"
-#include "CTimer.h"
-
 
 enum ROOM_STATUS : int8
 {
 	INGAME = 0 ,FULL = 1, NOT_FULL = 2, EMPTY = 3, COUNT
 };
 
+class Scheduler;
 class queueEvent;
 
 // 방은 호스트가 요청하는 순간 생성한다.
 class Room
 {
 public:
-	Room() {}
-	~Room() {}
+	Room();
+	~Room();
 	bool IsDestroyRoom() { return (_cList.size() == 0); } // false 반환 시 방 파괴 --> 호스트가 방을 나갔을 경우 파괴하도록함.
 	void UserOut(int32 sid);
 	void UserIn(int32 sid);
@@ -34,12 +33,9 @@ public:
 	std::shared_mutex _listLock;
 	std::list<int32> _cList; // 방에 속해있는 클라이언트 리스트
 
-	std::queue<queueEvent*> _jobQueue; // 방에 속해 있는 클라이언트가 야기한 이벤트 큐
+	Scheduler* _jobQueue; // 방에 속해 있는 클라이언트가 야기한 이벤트 큐
 	std::shared_mutex _jobQueueLock; // eventQueue 관리용 Lock
-	//
 	PlayerInfo _players[4];
-
-	Timer _rmTimer; // 해당 룸의 업데이트에 사용할 타이머
 	int8 _status = ROOM_STATUS::EMPTY; // 방 상태
 	int32 _num = 0; // 방에 있는 인원 수
 	GameLogic _logic;

@@ -165,6 +165,7 @@ void CSession::ProcessPacket(char* packet)
 		std::cout << mainGame.m_pScene->_playerIdx << "\n";
 		mainGame.m_pScene->m_pCamera = mainGame.m_pScene->_players[mainGame.m_pScene->_playerIdx]->GetCamera();
 		mainGame._curScene.store(SceneInfo::GAMEROOM);
+		mainGame.m_pScene->InitScene();
 	}
 	break;
 	case S_PACKET_TYPE::LOGIN_OK:

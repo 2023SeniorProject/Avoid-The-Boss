@@ -106,7 +106,6 @@ enum class GameStatus { NONE_GAME, START_GAME, END_GAME};
 
 class GameLogic
 {
-	using Clock = std::chrono::high_resolution_clock;
 public:
 
 	GameLogic() { }
@@ -127,11 +126,11 @@ public:
 		if (gs != GameStatus::START_GAME) return;
 		for (int i = 0; i < 4; ++i) p[i].Update(_timer.GetTimeElapsed());
 		// 일정 틱 값 이상 증가하면~
-		if ( _timer._accumulateElapsedTimeForWorldFrame >= _timer._fTimeElapsedAvg)
+		if ( _timer._accumulateElapsedTimeForWorldFrame > _timer._fTimeElapsedAvg)
 		{
 			AddHistory(p); // 월드 프레임 상태를 기록한다.
+			//std::cout << _timer._accumulateElapsedTimeForWorldFrame << "\n";
 			_timer._accumulateElapsedTimeForWorldFrame = 0.f;
-			
 		}
 
 	};
@@ -148,6 +147,8 @@ public:
 		_worldHistory.SetWorldStatusByFrame(_lastWorldStatus._myWorldFrame, _lastWorldStatus);
 		
 	};
+
+	
 	void StopTimer() { _timer.Stop(); }
 	void StartTimer() { _timer.Start(); }
 public:

@@ -60,17 +60,14 @@ void Timer::Tick(float fLockFPS)
 	std::chrono::duration<float, std::milli> fp_ms = (curTimePoint - _lastTimePoint); // 반 올림하지 않고 정확하게 출력하기
 	_fTimeElapsed = fp_ms.count();
 	_lastTimePoint = curTimePoint;
-
+	
 	// 평균 프레임을 샘플링 하기 위한 코드
-	if (fabsf(_fTimeElapsed - _fTimeElapsedAvg) < 100.f) // 오차가 0.1초 미만이라면 샘플링을 허용해준다.
+	if (fabsf(_fTimeElapsed - _fTimeElapsedAvg) < 1000.f) // 오차가 0.1초 미만이라면 샘플링을 허용해준다.
 	{
 		::memmove(&_SampleFrameTime[1], _SampleFrameTime, (static_cast<unsigned long long>(MAX_SAMPLE_COUNT) - 1) * sizeof(float));
 		_SampleFrameTime[0] = _fTimeElapsed;
 		if (_nSampleCount < MAX_SAMPLE_COUNT) _nSampleCount++;
 	}
-	
-
-	
 
 	_accumulateElapsedTime += _fTimeElapsed;
 	_accumulateElapsedTimeForWorldFrame += _fTimeElapsed;

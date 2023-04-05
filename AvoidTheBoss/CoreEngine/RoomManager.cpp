@@ -1,7 +1,7 @@
 #include "pch.h"
 #include "RoomManager.h"
 #include "Session.h"
-#include "packetEvent.h"
+#include "JobQueue.h"
 
 using namespace std;
 //========== ROOM =============
@@ -11,7 +11,15 @@ using namespace std;
 //    2. 읽는 경우 : 방에 있는 유저에게 브로드 캐스팅 진행하는 경우 cList를 탐색할 때
 
 //=============================
+Room::Room()
+{
+	_jobQueue = new Scheduler();
+}
 
+Room::~Room()
+{
+	delete _jobQueue;
+}
 void Room::UserOut(int32 sid)
 {
 	{
@@ -107,16 +115,8 @@ void Room::Update()
 	_logic.TickTimer(60.f);
 	{
 		std::unique_lock<std::shared_mutex> ql(_jobQueueLock);
-		while(!_jobQueue.empty())
-		{
-			queueEvent* qe = _jobQueue.front();
-			_jobQueue.pop();
-			if (qe != nullptr)
-			{
-				qe->Task();
-				delete qe;
-			}
-		}
+		_jobQueue->DoTasks();
+
 	}	// JobQueue 작업
 	_logic.UpdateWorld(_players);
 }
@@ -124,7 +124,7 @@ void Room::Update()
 void Room::AddEvent(queueEvent* qe)
 {
 	std::unique_lock<std::shared_mutex> ql(_jobQueueLock); // Queue Lock 호출
-	_jobQueue.push(qe);
+	_jobQueue->PushTask(qe);
 }
 // ======= RoomManager ========
 
@@ -158,8 +158,6 @@ void RoomManager::CreateRoom(int32 sid)
 		if (_rooms[i]._status == ROOM_STATUS::EMPTY)
 		{
 			_rooms[i]._status = ROOM_STATUS::NOT_FULL;
-			_rooms[i]._rmTimer.Reset();
-			
 			_rooms[i].UserIn(sid);
 			_rmCnt.fetch_add(1);
 			break;

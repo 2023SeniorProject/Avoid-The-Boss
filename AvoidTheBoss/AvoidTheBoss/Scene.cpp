@@ -5,6 +5,8 @@
 
 #define MAPVOLUME 50
 
+
+
 CGameScene::CGameScene()
 {
 
@@ -207,7 +209,7 @@ void CGameScene::ReleaseObjects()
 
 void CGameScene::ProcessInput(HWND hWnd)
 {
-	_logic.TickTimer(0.f);
+	_logic.TickTimer(60.f);
 	static UCHAR pKeyBuffer[256];
 	// 방향키를 바이트로 처리한다.
 
@@ -218,7 +220,6 @@ void CGameScene::ProcessInput(HWND hWnd)
 		if (pKeyBuffer[VK_DOWN] & 0xF0) dwDirection |= DIR_BACKWARD;
 		if (pKeyBuffer[VK_LEFT] & 0xF0) dwDirection |= DIR_LEFT;
 		if (pKeyBuffer[VK_RIGHT] & 0xF0) dwDirection |= DIR_RIGHT;
-
 	}
 	
 	float cxDelta = 0.0f, cyDelta = 0.0f;
@@ -282,16 +283,25 @@ void CGameScene::ProcessInput(HWND hWnd)
 	{	
 		if (k == _playerIdx) _players[k]->Update(_logic.GetTimeElapsed(),PLAYER_TYPE::OWNER);
 		else _players[k]->Update(_logic.GetTimeElapsed(),PLAYER_TYPE::OTHER_PLAYER);
-
+		
 		// 플레이어 인포로 변환
 		_playerInfo[k].m_xmf3Look = _players[k]->GetLook();
 		_playerInfo[k].m_xmf3Right = _players[k]->GetRight();
 		_playerInfo[k].m_xmf3Up = _players[k]->GetUp();
 		_playerInfo[k].m_xmf3Position = _players[k]->GetPosition();
 	}
-
 	_logic.UpdateWorld(_playerInfo);
 
+	// 평균 프레임 레이트 출력
+	std::wstring str = L"";
+	str.append(L"FPS:");
+	str += std::to_wstring(_logic._nWorldFrame);
+	str.append(L" ");
+	str += std::to_wstring(_players[_playerIdx]->GetPosition().x);
+	str.append(L" ");
+	str.append(std::to_wstring(_players[_playerIdx]->GetPosition().z));
+	
+	::SetWindowText(hWnd, str.c_str());
 }
 
 void CGameScene::AnimateObjects()

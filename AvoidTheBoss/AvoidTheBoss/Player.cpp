@@ -112,7 +112,7 @@ void CPlayer::Update(float fTimeElapsed, PLAYER_TYPE ptype)
 	
 	if (m_OnInteraction) OnInteractive();
 
-	if (BoxTree->CheckCollision(m_playerBV)) MakePosition(m_playerBV.Center);
+	//if (BoxTree->CheckCollision(m_playerBV, m_xmf3Look, m_xmf3Right, m_xmf3Up)) MakePosition(m_playerBV.Center);
 
 	DWORD nCameraMode = m_pCamera->GetMode();
 
@@ -330,7 +330,7 @@ CWorker::CWorker(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dComman
 	//SetCameraUpdatedContext();
 
 	SetScale(XMFLOAT3(1.f, 1.f, 1.f));
-	SetPosition(XMFLOAT3(0.0f, 0.0f, 0.0f));
+	SetPosition(XMFLOAT3(0.0f, 0.25f, 0.0f));
 
 	if (pBossModel) delete pBossModel;
 }

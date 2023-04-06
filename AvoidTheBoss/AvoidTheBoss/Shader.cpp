@@ -488,6 +488,8 @@ void CMapObjectsShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCom
 	m_ppObjects = new CGameObject * [m_nObjects];
 
 	CGameObject* pMap = CGameObject::LoadGeometryFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "Model/Industry_Map.bin", NULL);
+	pMap->m_type = 2;
+
 	m_ppObjects[0] = new CGameObject();
 	m_ppObjects[0]->SetChild(pMap);
 	pMap->AddRef();

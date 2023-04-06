@@ -195,12 +195,12 @@ void CStandardMesh::LoadMeshFromFile(ID3D12Device *pd3dDevice, ID3D12GraphicsCom
 			nReads = (UINT)::fread(&m_xmf3AABBCenter, sizeof(XMFLOAT3), 1, pInFile);
 			nReads = (UINT)::fread(&m_xmf3AABBExtents, sizeof(XMFLOAT3), 1, pInFile);
 
-			if (pGameobject->m_type == 1)
-			{
-				pGameobject->m_pAABB.Center = m_xmf3AABBCenter;
-				pGameobject->m_pAABB.Extents = m_xmf3AABBExtents;
-				BoxTree->AddBoundingBox(pGameobject->m_pAABB);
-			}
+		
+			pGameobject->m_pAABB.Center = m_xmf3AABBCenter;
+			pGameobject->m_pAABB.Extents = m_xmf3AABBExtents;
+			std::cout << pGameobject->m_pAABB.Center.x << " " << pGameobject->m_pAABB.Center.z << "\n";
+			BoxTree->AddBoundingBox(pGameobject->m_pAABB);
+			
 		}
 		else if (!strcmp(pstrToken, "<Positions>:"))
 		{

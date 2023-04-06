@@ -149,18 +149,18 @@ void CGameScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandLis
 	XMFLOAT3 xmf3Scale(8.0f, 2.0f, 8.0f);
 	XMFLOAT4 xmf4Color(0.0f, 0.3f, 0.0f, 0.0f);
 
-	m_nShaders = 2;
+	m_nShaders = 1;
 	m_ppShaders = new CShader * [m_nShaders];
 
-	CMapObjectsShader* pMapShader = new CMapObjectsShader();
-	pMapShader->CreateShader(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature);
-	pMapShader->BuildObjects(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, NULL, NULL);
-	m_ppShaders[0] = pMapShader;
+	//CMapObjectsShader* pMapShader = new CMapObjectsShader();
+	//pMapShader->CreateShader(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature);
+	//pMapShader->BuildObjects(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, NULL, NULL);
+	//m_ppShaders[0] = pMapShader;
 
 	CBoundsObjectsShader* pBoundsMapShader = new CBoundsObjectsShader();
 	pBoundsMapShader->CreateShader(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature);
 	pBoundsMapShader->BuildObjects(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, NULL, NULL);
-	m_ppShaders[1] = pBoundsMapShader;
+	m_ppShaders[0] = pBoundsMapShader;
 
 
 	//CGameObject* pBVObject = new CGameObject();

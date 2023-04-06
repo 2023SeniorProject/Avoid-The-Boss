@@ -9,7 +9,7 @@ CPlayer::CPlayer()
 	m_pCamera = NULL;
 	m_playerBV.Center = GetPosition();
 	m_playerBV.Radius = 0.02f;
-	m_xmf3Position = XMFLOAT3(0.0f, 0.0f, 0.0f);
+	m_xmf3Position = XMFLOAT3(0.0f, 1.25f, 0.0f);
 
 	m_xmf3Right = XMFLOAT3(1.0f, 0.0f, 0.0f);
 	m_xmf3Up = XMFLOAT3(0.0f, 1.0f, 0.0f);
@@ -112,7 +112,7 @@ void CPlayer::Update(float fTimeElapsed, PLAYER_TYPE ptype)
 	
 	if (m_OnInteraction) OnInteractive();
 
-	if (m_pPlayerUpdatedContext) OnPlayerUpdateCallback(fTimeElapsed);
+	if (BoxTree->CheckCollision(m_playerBV)) MakePosition(m_playerBV.Center);
 
 	DWORD nCameraMode = m_pCamera->GetMode();
 
@@ -121,7 +121,7 @@ void CPlayer::Update(float fTimeElapsed, PLAYER_TYPE ptype)
 		fTimeElapsed);
 
 	//카메라의 위치가 변경될 때 추가로 수행할 작업을 수행한다. 
-	if (m_pCameraUpdatedContext) OnCameraUpdateCallback(fTimeElapsed);
+	if (m_pCameraUpdatedContext) OnCameraUpdateCallback();
 
 	//카메라가 3인칭 카메라이면 카메라가 변경된 플레이어 위치를 바라보도록 한다. 
 	if (nCameraMode == THIRD_PERSON_CAMERA) m_pCamera->SetLookAt(m_xmf3Position);
@@ -212,7 +212,7 @@ void CPlayer::OtherUpdate(float fTimeElapsed)
 		fTimeElapsed);
 
 	//카메라의 위치가 변경될 때 추가로 수행할 작업을 수행한다. 
-	if (m_pCameraUpdatedContext) OnCameraUpdateCallback(fTimeElapsed);
+	if (m_pCameraUpdatedContext) OnCameraUpdateCallback();
 
 	//카메라가 3인칭 카메라이면 카메라가 변경된 플레이어 위치를 바라보도록 한다. 
 	if (nCameraMode == THIRD_PERSON_CAMERA) m_pCamera->SetLookAt(m_xmf3Position);
@@ -221,9 +221,9 @@ void CPlayer::OtherUpdate(float fTimeElapsed)
 	m_pCamera->RegenerateViewMatrix();
 }
 
-void CPlayer::OnPlayerUpdateCallback(float fTimeElapsed)
+void CPlayer::OnPlayerUpdateCallback()
 {
-	if (BoxTree->CheckCollision(m_playerBV,m_xmf3Look,m_xmf3Right,m_xmf3Up)) MakePosition(m_playerBV.Center);
+	
 }
 
 void CPlayer::ProcesesInput()
@@ -374,11 +374,12 @@ CCamera* CWorker::ChangeCamera(DWORD nNewCameraMode, float fTimeElapsed)
 	return(m_pCamera);
 }
 
-void CWorker::OnPlayerUpdateCallback(float fTimeElapsed)
+void CWorker::OnPlayerUpdateCallback()
 {
+	
 }
 
-void CWorker::OnCameraUpdateCallback(float fTimeElapsed)
+void CWorker::OnCameraUpdateCallback()
 {
 }
 

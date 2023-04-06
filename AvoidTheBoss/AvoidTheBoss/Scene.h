@@ -86,7 +86,7 @@ public:
 	CPlayer*					_players[4];
 	PlayerInfo					_playerInfo[4]; // 자신의 플레이어 인포 
 	
-	int16						_playerIdx = -1;
+	int16						_playerIdx = 0;
 	GameLogic					_logic;
 
 	DWORD						m_lastKeyInput = 0;

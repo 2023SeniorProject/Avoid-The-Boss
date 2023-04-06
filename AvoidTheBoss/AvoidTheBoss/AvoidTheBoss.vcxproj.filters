@@ -152,6 +152,126 @@
     <Image Include="AvoidTheBoss.ico">
       <Filter>Resource</Filter>
     </Image>
+    <Image Include="Model\Textures\Boss_Texture.dds">
+      <Filter>Textures</Filter>
+    </Image>
+    <Image Include="Model\Textures\Box_BaseColor.dds">
+      <Filter>Textures</Filter>
+    </Image>
+    <Image Include="Model\Textures\Box_low_DefaultMaterial_BaseColor.dds">
+      <Filter>Textures</Filter>
+    </Image>
+    <Image Include="Model\Textures\Boxs_Metallic.dds">
+      <Filter>Textures</Filter>
+    </Image>
+    <Image Include="Model\Textures\Boxs_Normal.dds">
+      <Filter>Textures</Filter>
+    </Image>
+    <Image Include="Model\Textures\Boxs_Roughness.dds">
+      <Filter>Textures</Filter>
+    </Image>
+    <Image Include="Model\Textures\Conveyor.dds">
+      <Filter>Textures</Filter>
+    </Image>
+    <Image Include="Model\Textures\Conveyor_Angle.dds">
+      <Filter>Textures</Filter>
+    </Image>
+    <Image Include="Model\Textures\Conveyor_Middle.dds">
+      <Filter>Textures</Filter>
+    </Image>
+    <Image Include="Model\Textures\Fire_Extinguisher.dds">
+      <Filter>Textures</Filter>
+    </Image>
+    <Image Include="Model\Textures\Fork_Lift.dds">
+      <Filter>Textures</Filter>
+    </Image>
+    <Image Include="Model\Textures\Generator.dds">
+      <Filter>Textures</Filter>
+    </Image>
+    <Image Include="Model\Textures\Generator_Panel(2).dds">
+      <Filter>Textures</Filter>
+    </Image>
+    <Image Include="Model\Textures\Generator_Panel.dds">
+      <Filter>Textures</Filter>
+    </Image>
+    <Image Include="Model\Textures\Industry_EdgeFrame.dds">
+      <Filter>Textures</Filter>
+    </Image>
+    <Image Include="Model\Textures\Industry_Field_Tile.dds">
+      <Filter>Textures</Filter>
+    </Image>
+    <Image Include="Model\Textures\Industry_Field_Tile_BaseColor.dds">
+      <Filter>Textures</Filter>
+    </Image>
+    <Image Include="Model\Textures\Industry_Field_Tile_Metallic.dds">
+      <Filter>Textures</Filter>
+    </Image>
+    <Image Include="Model\Textures\Industry_Field_Tile_Normal.dds">
+      <Filter>Textures</Filter>
+    </Image>
+    <Image Include="Model\Textures\Industry_Field_Tile_Roughness.dds">
+      <Filter>Textures</Filter>
+    </Image>
+    <Image Include="Model\Textures\Industry_Pillar1.dds">
+      <Filter>Textures</Filter>
+    </Image>
+    <Image Include="Model\Textures\Industry_Pillar1_BaseColor.dds">
+      <Filter>Textures</Filter>
+    </Image>
+    <Image Include="Model\Textures\Industry_Pillar2.dds">
+      <Filter>Textures</Filter>
+    </Image>
+    <Image Include="Model\Textures\Industry_Pillar2_BaseColor.dds">
+      <Filter>Textures</Filter>
+    </Image>
+    <Image Include="Model\Textures\Industry_Pillar2_low_Industry_Pillar2_BaseColor.dds">
+      <Filter>Textures</Filter>
+    </Image>
+    <Image Include="Model\Textures\Industry_Pillar2_low_Industry_Pillar2_Metallic.dds">
+      <Filter>Textures</Filter>
+    </Image>
+    <Image Include="Model\Textures\Industry_Pillar2_low_Industry_Pillar2_Normal.dds">
+      <Filter>Textures</Filter>
+    </Image>
+    <Image Include="Model\Textures\Industry_Pillar2_low_Industry_Pillar2_Roughness.dds">
+      <Filter>Textures</Filter>
+    </Image>
+    <Image Include="Model\Textures\Industry_Roof_BaseColor.dds">
+      <Filter>Textures</Filter>
+    </Image>
+    <Image Include="Model\Textures\Industry_RoofFrame.dds">
+      <Filter>Textures</Filter>
+    </Image>
+    <Image Include="Model\Textures\Industry_Wall_BaseColor.dds">
+      <Filter>Textures</Filter>
+    </Image>
+    <Image Include="Model\Textures\Oil_Drum.dds">
+      <Filter>Textures</Filter>
+    </Image>
+    <Image Include="Model\Textures\Oxygen_Tank.dds">
+      <Filter>Textures</Filter>
+    </Image>
+    <Image Include="Model\Textures\plane.dds">
+      <Filter>Textures</Filter>
+    </Image>
+    <Image Include="Model\Textures\Shelf.dds">
+      <Filter>Textures</Filter>
+    </Image>
+    <Image Include="Model\Textures\Wood_Pallet.dds">
+      <Filter>Textures</Filter>
+    </Image>
+    <Image Include="Model\Textures\Wood_Pallet_Wood_Pallet_Main_BaseColor.dds">
+      <Filter>Textures</Filter>
+    </Image>
+    <Image Include="Model\Textures\Wood_Pallet_Wood_Pallet_Main_Metallic.dds">
+      <Filter>Textures</Filter>
+    </Image>
+    <Image Include="Model\Textures\Wood_Pallet_Wood_Pallet_Main_Normal.dds">
+      <Filter>Textures</Filter>
+    </Image>
+    <Image Include="Model\Textures\Wood_Pallet_Wood_Pallet_Main_Roughness.dds">
+      <Filter>Textures</Filter>
+    </Image>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Resource">
@@ -189,6 +309,9 @@
     </Filter>
     <Filter Include="SceneInterface">
       <UniqueIdentifier>{694d1a9b-e9a4-4322-89ea-27279e5f83ec}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Textures">
+      <UniqueIdentifier>{f34dc00f-c3c5-46e0-9b02-019005ed489b}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

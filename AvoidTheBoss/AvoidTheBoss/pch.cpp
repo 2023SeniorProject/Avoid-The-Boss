@@ -1,10 +1,15 @@
+// stdafx.cpp : 표준 포함 파일만 들어 있는 소스 파일입니다.
+// LabProject03-1.pch는 미리 컴파일된 헤더가 됩니다.
+// stdafx.obj에는 미리 컴파일된 형식 정보가 포함됩니다.
+
 #include "pch.h"
 
 #include "DDSTextureLoader12.h"
 
-UINT gnCbvSrvDescriptorIncrementSize = 32;
-/*버퍼 리소스를 생성하는 함수이다. 버퍼의 힙 유형에 따라 버퍼 리소스를 생성하고 초기화 데이터가 있으면 초기화
-한다.*/
+UINT gnCbvSrvDescriptorIncrementSize = 0;
+UINT gnRtvDescriptorIncrementSize = 0;
+UINT gnDsvDescriptorIncrementSize = 0;
+
 ID3D12Resource* CreateBufferResource(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, void* pData, UINT nBytes, D3D12_HEAP_TYPE d3dHeapType, D3D12_RESOURCE_STATES d3dResourceStates, ID3D12Resource** ppd3dUploadBuffer)
 {
 	ID3D12Resource* pd3dBuffer = NULL;
@@ -102,7 +107,11 @@ ID3D12Resource* CreateTextureResourceFromDDSFile(ID3D12Device* pd3dDevice, ID3D1
 	d3dHeapPropertiesDesc.CreationNodeMask = 1;
 	d3dHeapPropertiesDesc.VisibleNodeMask = 1;
 
+	//	D3D12_RESOURCE_DESC d3dResourceDesc = pd3dTexture->GetDesc();
+	//	UINT nSubResources = d3dResourceDesc.DepthOrArraySize * d3dResourceDesc.MipLevels;
 	UINT nSubResources = (UINT)vSubresources.size();
+	//	UINT64 nBytes = 0;
+	//	pd3dDevice->GetCopyableFootprints(&d3dResourceDesc, 0, nSubResources, 0, NULL, NULL, NULL, &nBytes);
 	UINT64 nBytes = GetRequiredIntermediateSize(pd3dTexture, 0, nSubResources);
 
 	D3D12_RESOURCE_DESC d3dResourceDesc;
@@ -119,8 +128,13 @@ ID3D12Resource* CreateTextureResourceFromDDSFile(ID3D12Device* pd3dDevice, ID3D1
 	d3dResourceDesc.Layout = D3D12_TEXTURE_LAYOUT_ROW_MAJOR;
 	d3dResourceDesc.Flags = D3D12_RESOURCE_FLAG_NONE;
 
-	hResult = pd3dDevice->CreateCommittedResource(&d3dHeapPropertiesDesc, D3D12_HEAP_FLAG_NONE, &d3dResourceDesc, D3D12_RESOURCE_STATE_GENERIC_READ, NULL, __uuidof(ID3D12Resource), (void**)ppd3dUploadBuffer);
+	pd3dDevice->CreateCommittedResource(&d3dHeapPropertiesDesc, D3D12_HEAP_FLAG_NONE, &d3dResourceDesc, D3D12_RESOURCE_STATE_GENERIC_READ, NULL, __uuidof(ID3D12Resource), (void**)ppd3dUploadBuffer);
 
+	//UINT nSubResources = (UINT)vSubresources.size();
+	//D3D12_SUBRESOURCE_DATA *pd3dSubResourceData = new D3D12_SUBRESOURCE_DATA[nSubResources];
+	//for (UINT i = 0; i < nSubResources; i++) pd3dSubResourceData[i] = vSubresources.at(i);
+
+	//	std::vector<D3D12_SUBRESOURCE_DATA>::pointer ptr = &vSubresources[0];
 	::UpdateSubresources(pd3dCommandList, pd3dTexture, *ppd3dUploadBuffer, 0, 0, nSubResources, &vSubresources[0]);
 
 	D3D12_RESOURCE_BARRIER d3dResourceBarrier;
@@ -133,5 +147,8 @@ ID3D12Resource* CreateTextureResourceFromDDSFile(ID3D12Device* pd3dDevice, ID3D1
 	d3dResourceBarrier.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
 	pd3dCommandList->ResourceBarrier(1, &d3dResourceBarrier);
 
+	//	delete[] pd3dSubResourceData;
+
 	return(pd3dTexture);
 }
+

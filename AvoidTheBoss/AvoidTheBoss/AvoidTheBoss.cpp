@@ -36,14 +36,14 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     UNREFERENCED_PARAMETER(lpCmdLine);
    SocketUtil::Init();
    GCThreadManager = new ThreadManager;
-    int retval = DialogBox(hInstance, MAKEINTRESOURCE(IDD_LOGINDIALOG), NULL, reinterpret_cast<DLGPROC>(MyDialogBox));
-    if (retval == -1 || retval == 2)
+   // int retval = DialogBox(hInstance, MAKEINTRESOURCE(IDD_LOGINDIALOG), NULL, reinterpret_cast<DLGPROC>(MyDialogBox));
+   /* if (retval == -1 || retval == 2)
     {
         SocketUtil::Close(clientCore._client->_sock);
         SocketUtil::Clear();
         delete GCThreadManager;
         return 0;
-    }
+    }*/
     // 전역 문자열을 초기화합니다.
     ::LoadString(hInstance, IDS_APP_TITLE, szTitle, MAX_LOADSTRING);
     ::LoadString(hInstance, IDC_AVOIDTHEBOSS, szWindowClass, MAX_LOADSTRING);
@@ -58,14 +58,14 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     HACCEL hAccelTable = LoadAccelerators(hInstance, MAKEINTRESOURCE(IDC_AVOIDTHEBOSS));
 
     // 기본 메시지 루프입니다:
-    GCThreadManager->Launch([=]()
+   /* GCThreadManager->Launch([=]()
         {
             while (true)
             {
                 if (!clientCore.Processing()) break;
             }
         }
-    );
+    );*/
 
    while (true)
    {
@@ -89,7 +89,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
        std::this_thread::sleep_for(0ms);
    }
   
-    GCThreadManager->Join();
+    //GCThreadManager->Join();
     delete GCThreadManager;
     mainGame.OnDestroy();
     return (int)msg.wParam;

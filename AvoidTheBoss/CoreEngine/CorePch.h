@@ -138,6 +138,13 @@ inline void Swap(float* pfS, float* pfT) { float fTemp = *pfS; *pfS = *pfT; *pfT
 
 #define ANIMATION_CALLBACK_EPSILON		0.0165f
 
+
+enum Layout
+{
+	PLAYER, MAP, BOUDS, SOUND
+};
+
+
 //3차원 벡터의 연산
 namespace Vector3
 {

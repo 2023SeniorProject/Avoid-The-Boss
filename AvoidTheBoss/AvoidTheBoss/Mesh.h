@@ -126,7 +126,7 @@ protected:
 	D3D12_VERTEX_BUFFER_VIEW		m_d3dBiTangentBufferView;
 
 public:
-	void LoadMeshFromFile(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList, FILE *pInFile, CGameObject* pGameobject);
+	void LoadMeshFromFile(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList, FILE *pInFile, CGameObject* pGameobject, Layout objType);
 
 	virtual void ReleaseUploadBuffers();
 

@@ -495,3 +495,25 @@ void CMapObjectsShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCom
 
 	CreateShaderVariables(pd3dDevice, pd3dCommandList);
 }
+
+CBoundsObjectsShader::CBoundsObjectsShader()
+{
+}
+
+CBoundsObjectsShader::~CBoundsObjectsShader()
+{
+}
+
+void CBoundsObjectsShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, CLoadedModelInfo* pModel, void* pContext)
+{
+	m_nObjects = 1;
+	m_ppObjects = new CGameObject * [m_nObjects];
+
+	CGameObject* pMap = CGameObject::LoadGeometryFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "Model/Map_Bounding_Box_(4).bin", NULL);
+	m_ppObjects[0] = new CGameObject();
+	m_ppObjects[0]->SetChild(pMap);
+	pMap->AddRef();
+	m_ppObjects[0]->SetPosition(XMFLOAT3(0.0f, 0.0f, 0.0f));
+
+	CreateShaderVariables(pd3dDevice, pd3dCommandList);
+}

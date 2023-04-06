@@ -41,7 +41,7 @@ public:
 
 	bool m_OnInteraction = false;
 	int m_InteractionCountTime = INTERACTION_TIME;
-public:
+
 public: 
 	CPlayer();
 	virtual ~CPlayer();
@@ -93,7 +93,7 @@ public:
 	void Rotate(float x, float y, float z);
 
 	//플레이어의 위치와 회전 정보를 경과 시간에 따라 갱신하는 함수이다.
-	virtual void Update(float fTimeElapsed);
+	virtual void Update(float fTimeElapsed, PLAYER_TYPE ptype);
 
 	virtual void OnPlayerUpdateCallback(float fTimeElapsed);
 	void SetPlayerUpdatedContext(LPVOID pContext) { m_pPlayerUpdatedContext = pContext; }
@@ -120,6 +120,7 @@ public:
 class CWorker : public CPlayer
 {
 public:
+
 	CWorker(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature);
 	virtual ~CWorker();
 public:
@@ -129,7 +130,7 @@ public:
 
 	virtual void Move(DWORD dwDirection, float fDistance);
 
-	virtual void Update(float fTimeElapsed);
+	virtual void Update(float fTimeElapsed, PLAYER_TYPE ptype);
 
 };
 

@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "Shader.h"
 #include "Player.h"
+//#include "CollisionDetector.h"
 
 CPlayer::CPlayer()
 {
@@ -220,7 +221,7 @@ void CPlayer::OtherUpdate(float fTimeElapsed)
 	m_pCamera->RegenerateViewMatrix();
 }
 
-void CPlayer::OnPlayerUpdateCallback()
+void CPlayer::OnPlayerUpdateCallback(float fTimeElapsed)
 {
 	if (BoxTree->CheckCollision(m_playerBV,m_xmf3Look,m_xmf3Right,m_xmf3Up)) MakePosition(m_playerBV.Center);
 }
@@ -293,6 +294,7 @@ void CPlayer::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamer
 
 CWorker::CWorker(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature)
 {
+	m_type = 0;
 	m_pCamera = ChangeCamera(THIRD_PERSON_CAMERA, 0.0f);
 
 	CLoadedModelInfo* pBossModel = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "Model/Boss_Run.bin", NULL);
@@ -391,9 +393,9 @@ void CWorker::Move(DWORD dwDirection, float fDistance)
 	CPlayer::Move(dwDirection, fDistance);
 }
 
-void CWorker::Update(float fTimeElapsed)
+void CWorker::Update(float fTimeElapsed, PLAYER_TYPE ptype)
 {
-	CPlayer::Update(fTimeElapsed);
+	CPlayer::Update(fTimeElapsed, PLAYER_TYPE::OWNER);
 
 	if (m_pSkinnedAnimationController)
 	{

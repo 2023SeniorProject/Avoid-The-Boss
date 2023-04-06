@@ -203,9 +203,6 @@ void CGameScene::ProcessInput(HWND hWnd)
 
 		if (pKeyBuffer[0x44] & 0xF0) dwDirection |= DIR_RIGHT;
 		else if (pKeyBuffer[0x64] & 0xF0) dwDirection |= DIR_RIGHT;
-	
-		//if (pKeyBuffer[0x46] & 0xF0) _players[0]->SetOnInteraction(true);
-		//else if (pKeyBuffer[0x66] & 0xF0) _players[0]->SetOnInteraction(true);
 	}
 
 	float cxDelta = 0.0f, cyDelta = 0.0f;
@@ -254,12 +251,10 @@ void CGameScene::ProcessInput(HWND hWnd)
 
 	if (m_lastKeyInput != dwDirection || (cxDelta != 0.0f) || (cyDelta != 0.0f)) // 이전과 방향(키입력이 다른 경우에만 무브 이벤트 패킷을 보낸다)
 	{
-
 		C2S_MOVE packet;
 		packet.size = sizeof(C2S_MOVE);
 		packet.type = C_PACKET_TYPE::MOVE;
 		packet.key = dwDirection;
-
 		//clientCore._client->DoSend(&packet);
 	}
 	m_lastKeyInput = dwDirection;

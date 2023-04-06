@@ -118,7 +118,7 @@ void CSession::ProcessPacket(char* packet)
 		if (player != nullptr  && movePacket->sid != _sid)
 		{
 			player->m_lock.lock();
-			player->OtherMove(movePacket->key, PLAYER_VELOCITY);
+			//player->Move(movePacket->key, PLAYER_VELOCITY);
 			player->m_lock.unlock();
 		}
 	}

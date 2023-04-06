@@ -76,10 +76,6 @@ public:
 	virtual void Move(DWORD dwDirection, float fDistance);
 	void SetSpeed(const XMFLOAT3& xmf3Shift);
 	void UpdateMove(const XMFLOAT3& velocity);
-	
-	// 다른 플레이어를 이동하는 함수
-	void OtherMove(DWORD dwDirection, float fDistance);
-	void OtherUpdate(float fTimeElapsed);
 
 	void ProcesesInput();
 
@@ -127,9 +123,7 @@ public:
 	virtual CCamera* ChangeCamera(DWORD nNewCameraMode, float fTimeElapsed);
 	virtual void OnPlayerUpdateCallback();
 	virtual void OnCameraUpdateCallback();
-
 	virtual void Move(DWORD dwDirection, float fDistance);
-
 	virtual void Update(float fTimeElapsed, PLAYER_TYPE ptype);
 
 };

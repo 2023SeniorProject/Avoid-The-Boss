@@ -8,7 +8,7 @@ Timer::Timer()
 	_nSampleCount = 0;
 	_curFrameRate = 0;
 	_nFramePerSec = 0;
-	_accumlateElapsedTime = 0.0f;
+	_accumulateElapsedTime = 0.0f;
 
 
 }
@@ -48,7 +48,7 @@ void Timer::Reset()
 
 void Timer::Tick(float fLockFPS)
 {
-	if (fLockFPS != 0.0f) _fTimeElapsedAvg = (int)((1.f / fLockFPS) * 1000.f);
+	if (fLockFPS != 0.0f) _fTimeElapsedAvg = (int)((1.f / fLockFPS) * 1000.f); // 60 FPS 기준 16값이 나온다.
 	
 	if (_bStopped)
 	{
@@ -57,44 +57,46 @@ void Timer::Tick(float fLockFPS)
 	}
 
 	std::chrono::time_point curTimePoint = Clock::now();
-	double fTimeElapsed = std::chrono::duration<double , std::milli>(curTimePoint - _lastTimePoint).count();
-	//std::cout << fTimeElapsed << std::endl;
-	
+	std::chrono::duration<float, std::milli> fp_ms = (curTimePoint - _lastTimePoint); // 반 올림하지 않고 정확하게 출력하기
+	_fTimeElapsed = fp_ms.count();
 	_lastTimePoint = curTimePoint;
-
-	if (fabsf(fTimeElapsed - _fTimeElapsedAvg) < 100.f) // 오차가 1초 미만이라면
+	
+	// 평균 프레임을 샘플링 하기 위한 코드
+	if (fabsf(_fTimeElapsed - _fTimeElapsedAvg) < 1000.f) // 오차가 0.1초 미만이라면 샘플링을 허용해준다.
 	{
 		::memmove(&_SampleFrameTime[1], _SampleFrameTime, (static_cast<unsigned long long>(MAX_SAMPLE_COUNT) - 1) * sizeof(float));
-		_SampleFrameTime[0] = fTimeElapsed;
+		_SampleFrameTime[0] = _fTimeElapsed;
 		if (_nSampleCount < MAX_SAMPLE_COUNT) _nSampleCount++;
 	}
-	
 
-	if (fLockFPS != 0.0f && (fTimeElapsed > _fTimeElapsedAvg))
+	_accumulateElapsedTime += _fTimeElapsed;
+	_accumulateElapsedTimeForWorldFrame += _fTimeElapsed;
+
+	if (fLockFPS != 0.0f && (_fTimeElapsed > _fTimeElapsedAvg))
 	{
-		//_nWorldFrame++; // 실제 월드 프레임은 이렇게 증가한다.
 		_nFramePerSec++;
 	}
 
-	_accumlateElapsedTime += fTimeElapsed;
-	
-	if (_accumlateElapsedTime >= 1000.f)
+	if (_accumulateElapsedTime >= 1000.f)
 	{
-		_curFrameRate = _nFramePerSec;
-		_nFramePerSec = 0;
-		_accumlateElapsedTime = 0.0f;
+		_curFrameRate = _nFramePerSec; // 현재 프레임률
+		_nFramePerSec = 0;             // 초당 프레임
+		_accumulateElapsedTime = 0.0f; // 총 누적 프레임 (1초 기준)
 	}
 
+	
+
 	//누적된 프레임 처리 시간의 평균을 구하여 프레임 처리 시간을 구한다. 
-	_fTimeElapsedAvg = 0.0f;
-	for (ULONG i = 0; i < _nSampleCount; i++) _fTimeElapsedAvg += _SampleFrameTime[i];
-	
-	if (_nSampleCount > 0)
+	if (fLockFPS == 0.f)
 	{
-		(_fTimeElapsedAvg) /= _nSampleCount;
-	
+		_fTimeElapsedAvg = 0.0f;
+		for (ULONG i = 0; i < _nSampleCount; i++) _fTimeElapsedAvg += _SampleFrameTime[i];
+		if (_nSampleCount > 0)
+		{
+			(_fTimeElapsedAvg) /= _nSampleCount;
+
+		}
 	}
-	
 }
 
 unsigned long  Timer::GetFrameRate(LPTSTR lpszString, int nCharacters)
@@ -110,11 +112,6 @@ unsigned long  Timer::GetFrameRate(LPTSTR lpszString, int nCharacters)
 
 float Timer::GetTimeElapsed()
 {
-	return (_fTimeElapsedAvg / 1000.f);
+	return (_fTimeElapsed / 1000.f);
 }
 
-float Timer::GetTotalTime()
-{
-	std::chrono::time_point _curTimePoint = Clock::now();
-	return std::chrono::duration<double>(_curTimePoint - _initTimePoint).count();
-}

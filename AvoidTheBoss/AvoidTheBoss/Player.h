@@ -1,6 +1,11 @@
 #pragma once
-
 #include "GameObject.h"
+#include "PlayerInfo.h"
+
+enum class PLAYER_TYPE
+{
+	OWNER,OTHER_PLAYER,NONE
+};
 
 #define INTERACTION_TIME 60
 class CPlayer : public CGameObject
@@ -37,6 +42,7 @@ public:
 	bool m_OnInteraction = false;
 	int m_InteractionCountTime = INTERACTION_TIME;
 public:
+public: 
 	CPlayer();
 	virtual ~CPlayer();
 	
@@ -56,6 +62,7 @@ public:
 	{
 		m_xmf3Position = xmf3Position;
 	}
+
 
 	const XMFLOAT3& GetVelocity() const { return(m_xmf3Velocity); }
 	float GetYaw() { return(m_fYaw); }
@@ -88,7 +95,7 @@ public:
 	//플레이어의 위치와 회전 정보를 경과 시간에 따라 갱신하는 함수이다.
 	virtual void Update(float fTimeElapsed);
 
-	virtual void OnPlayerUpdateCallback(float fTimeElapsed) { }
+	virtual void OnPlayerUpdateCallback(float fTimeElapsed);
 	void SetPlayerUpdatedContext(LPVOID pContext) { m_pPlayerUpdatedContext = pContext; }
 
 	virtual void OnCameraUpdateCallback(float fTimeElapsed) { }

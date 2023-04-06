@@ -123,6 +123,9 @@
     <ClInclude Include="CollisionDetector.h">
       <Filter>Shared\Physics</Filter>
     </ClInclude>
+    <ClInclude Include="JobQueue.h">
+      <Filter>Shared\Packet</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CoreGlobal.cpp">
@@ -196,6 +199,9 @@
     </ClCompile>
     <ClCompile Include="CollisionDetector.cpp">
       <Filter>Shared\Physics</Filter>
+    </ClCompile>
+    <ClCompile Include="JobQueue.cpp">
+      <Filter>Shared\Packet</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

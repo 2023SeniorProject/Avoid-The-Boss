@@ -8,7 +8,7 @@ PlayerInfo::PlayerInfo()
 	m_xmf3Up = XMFLOAT3(0.0f, 1.0f, 0.0f);
 	m_xmf3Look = XMFLOAT3(0.0f, 0.0f, 1.0f);
 
-	m_xmf3Position = XMFLOAT3(0.0f, 75.0f, 0.0f);
+	m_xmf3Position = XMFLOAT3(0.0f, 1.25f, -50.0f);
 	m_xmf3Velocity = XMFLOAT3(0.0f, 0.0f, 0.0f);
 	m_pPlayerUpdatedContext = NULL;
 

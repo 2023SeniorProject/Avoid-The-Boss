@@ -8,10 +8,9 @@ class Timer
 private:
 	using Clock = std::chrono::high_resolution_clock;
 public:
-
-	float					_fTimeElapsedAvg; // 한 프레임 처리하는데 걸리는 평균 시간
 	float					_fTimeDuringPaused;
-	
+	float					_fTimeElapsed;
+	bool					_bStopped;
 
 	float					_SampleFrameTime[MAX_SAMPLE_COUNT]; 
 	ULONG					_nSampleCount; 
@@ -22,11 +21,11 @@ public:
 	Clock::time_point		_lastTimePoint; // 마지막 시점 시간
 	Clock::time_point		_StopTimePoint; // 멈춘 시점 
 	Clock::time_point		_initTimePoint;
-public:
-	float					_accumlateElapsedTime;
-	//float					_nWorldFrame;
 
-	bool					_bStopped;
+	float					_fTimeElapsedAvg = 0.f; // 한 프레임 처리하는데 걸리는 평균 시간
+	float					_accumulateElapsedTime = 0.f; // 한 프레임 만큼 처리 됐는지 확인하는 용도
+public:
+	float					_accumulateElapsedTimeForWorldFrame = 0.f; // 월드 프레임 증감을 위한 누적 시간.
 public:
 	Timer();
 	virtual ~Timer();
@@ -35,9 +34,8 @@ public:
 	void Start();
 	void Stop();
 	void Reset();
-
 	unsigned long GetFrameRate(LPTSTR lpszString = NULL, int nCharacters = 0); // 프레임 레이트 반환
 	float GetTimeElapsed(); // 프레임 평균 경과 시간 반환
-	float GetTotalTime();
+	
 };
 

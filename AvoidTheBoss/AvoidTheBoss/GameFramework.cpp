@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "GameFramework.h"
 #include "clientIocpCore.h"
+
 #include <string>
 
 CGameFramework mainGame;
@@ -58,7 +59,7 @@ bool CGameFramework::OnCreate(HINSTANCE hInstance, HWND hMainWnd)
 	CreateRenderTargetViews();
 #endif
 	CreateDepthStencilView();
-
+	
 	//렌더링할 게임 객체를 생성한다.
 	BuildObjects();
 	return(true);
@@ -352,7 +353,7 @@ void CGameFramework::BuildObjects()
 
 	//그래픽 리소스들을 생성하는 과정에 생성된 업로드 버퍼들을 소멸시킨다. 
 	if (m_pScene) m_pScene->ReleaseUploadBuffers();
-	m_pScene->InitScene();
+	//m_pScene->InitScene();
 }
 
 void CGameFramework::ReleaseObjects()
@@ -462,12 +463,7 @@ void CGameFramework::FrameAdvance() // 여기서 업데이트랑 렌더링 동시에 진행하는 
 	//	/*현재의 프레임 레이트를 문자열로 가져와서 주 윈도우의 타이틀로 출력한다. m_pszBuffer 문자열이
 	//	"LapProject ("으로 초기화되었으므로 (m_pszFrameRate+12)에서부터 프레임 레이트를 문자열로 출력
 	//	하여 “ FPS)” 문자열과 합친다.
-	std::wstring str = std::to_wstring(m_pScene->_players[m_pScene->_playerIdx]->GetPosition().x);
-	str.append(L" ");
-	str.append(std::to_wstring(m_pScene->_players[m_pScene->_playerIdx]->GetPosition().z));
-	_tcscpy_s(m_pszFrameRate,500,str.c_str());
-	//	*/
-	::SetWindowText(m_hWnd, m_pszFrameRate);
+
 	MoveToNextFrame();
 	
 }
@@ -509,11 +505,7 @@ void CGameFramework::OnProcessingMouseMessage(HWND hWnd, UINT nMessageID, WPARAM
 
 bool CGameFramework::CollisionCheck()
 {
-	if (m_pScene)
-	{
-		if (m_pScene->CollisionCheck())
-			return true;
-	}
+	
 	return false;
 }
 
@@ -530,9 +522,9 @@ LRESULT CGameFramework::OnProcessingWindowMessage(HWND hWnd, UINT nMessageID, WP
 	case WM_ACTIVATE:
 	{
 		if (LOWORD(wParam) == WA_INACTIVE)
-			m_pScene->m_Timer.Stop();
+			m_pScene->_logic.StopTimer();
 		else
-			m_pScene->m_Timer.Start();
+			m_pScene->_logic.StartTimer();
 		break;
 	}
 	case WM_SIZE:

@@ -1,10 +1,15 @@
 #pragma once
 #include "IocpCore.h"
 #include "Session.h"
+
 enum EVENT_TYPE : int8 { MOVE_EVENT, ATTACK_EVENT, ROTATE_EVENT};
+
 // queue
 class queueEvent
 {
+public:
+	int64 generateTime = 0.f;
+	int32 sid = -1;
 public:
 	queueEvent() {};
 	virtual ~queueEvent() {};
@@ -16,7 +21,6 @@ class moveEvent : public queueEvent
 public:
 	moveEvent() { };
 	virtual ~moveEvent() {};
-	int32 sid = -1;
 	uint8 key = 0;
 public:
 	virtual void Task()
@@ -24,7 +28,7 @@ public:
 		std::lock_guard<std::mutex> plg(ServerIocpCore._clients[sid]->_playerLock);
 		// to do move Player in gameLogic
 		int16 roomNum = ServerIocpCore._clients[sid]->_myRm;
-		ServerIocpCore._rmgr->GetRoom(roomNum).GetMyPlayerFromRoom(sid).Move(key, UNIT * 1.2f);
+		ServerIocpCore._rmgr->GetRoom(roomNum).GetMyPlayerFromRoom(sid).Move(key, PLAYER_VELOCITY);
 	};
 	
 };
@@ -34,7 +38,6 @@ class rotateEvent : public queueEvent
 public:
 	rotateEvent() { };
 	virtual ~rotateEvent() {};
-	int32 sid = -1;
 	float angleY = 0.f;
 public:
 	virtual void Task()

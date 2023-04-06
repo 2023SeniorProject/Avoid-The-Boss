@@ -4,8 +4,10 @@
 
 CPlayer::CPlayer()
 {
+	m_type = 0;
 	m_pCamera = NULL;
-
+	m_playerBV.Center = GetPosition();
+	m_playerBV.Radius = 0.02f;
 	m_xmf3Position = XMFLOAT3(0.0f, 0.0f, 0.0f);
 
 	m_xmf3Right = XMFLOAT3(1.0f, 0.0f, 0.0f);
@@ -96,15 +98,13 @@ void CPlayer::UpdateMove(const XMFLOAT3& xmf3Shift)
 	if (m_pCamera) m_pCamera->Move(xmf3Shift);
 }
 
-void CPlayer::Update(float fTimeElapsed)
+void CPlayer::Update(float fTimeElapsed, PLAYER_TYPE ptype)
 {
 
-	//플레이어를 속도 벡터 만큼 실제로 이동한다(카메라를 이동할 것이다). 
+	//플레이어를 속도 벡터 만큼 실제로 이동한다(카메라를 이동할 것이다).
 	XMFLOAT3 xmf3Velocity = Vector3::ScalarProduct(m_xmf3Velocity, fTimeElapsed, false); // 1/60 초 변경 속도를
-
 	UpdateMove(xmf3Velocity);
-	if (m_pCamera == NULL) return;
-
+	m_playerBV.Center = GetPosition();
 	/*플레이어의 위치가 변경될 때 추가로 수행할 작업을 수행한다. 플레이어의 새로운 위치가 유효한 위치가 아닐 수도
 	있고 또는 플레이어의 충돌 검사 등을 수행할 필요가 있다. 이러한 상황에서 플레이어의 위치를 유효한 위치로 다시
 	변경할 수 있다.*/
@@ -197,22 +197,13 @@ void CPlayer::Rotate(float x, float y, float z)
 	m_xmf3Up = Vector3::CrossProduct(m_xmf3Look, m_xmf3Right, true);
 }
 
-//이 함수는 매 프레임마다 호출된다. 플레이어의 속도 벡터에 중력과 마찰력 등을 적용한다.
-
-
 void CPlayer::OtherUpdate(float fTimeElapsed)
 {
 	//플레이어를 속도 벡터 만큼 실제로 이동한다(카메라를 이동할 것이다). 
 	XMFLOAT3 xmf3Velocity = Vector3::ScalarProduct(m_xmf3Velocity, fTimeElapsed, false); // 1/60 초 변경 속도를
-
 	UpdateMove(xmf3Velocity);
+
 	if (m_pCamera == NULL) return;
-
-	/*플레이어의 위치가 변경될 때 추가로 수행할 작업을 수행한다. 플레이어의 새로운 위치가 유효한 위치가 아닐 수도
-	있고 또는 플레이어의 충돌 검사 등을 수행할 필요가 있다. 이러한 상황에서 플레이어의 위치를 유효한 위치로 다시
-	변경할 수 있다.*/
-	if (m_pPlayerUpdatedContext) OnPlayerUpdateCallback(fTimeElapsed);
-
 	DWORD nCameraMode = m_pCamera->GetMode();
 
 	//플레이어의 위치가 변경되었으므로 3인칭 카메라를 갱신한다. 
@@ -227,6 +218,11 @@ void CPlayer::OtherUpdate(float fTimeElapsed)
 
 	//카메라의 카메라 변환 행렬을 다시 생성한다. 
 	m_pCamera->RegenerateViewMatrix();
+}
+
+void CPlayer::OnPlayerUpdateCallback()
+{
+	if (BoxTree->CheckCollision(m_playerBV,m_xmf3Look,m_xmf3Right,m_xmf3Up)) MakePosition(m_playerBV.Center);
 }
 
 void CPlayer::ProcesesInput()
@@ -371,7 +367,7 @@ CCamera* CWorker::ChangeCamera(DWORD nNewCameraMode, float fTimeElapsed)
 	}
 	m_pCamera->SetPosition(Vector3::Add(m_xmf3Position, m_pCamera->GetOffset()));
 
-	Update(fTimeElapsed);
+	Update(fTimeElapsed,PLAYER_TYPE::NONE);
 
 	return(m_pCamera);
 }

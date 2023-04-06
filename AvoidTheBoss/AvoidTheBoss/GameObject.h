@@ -5,7 +5,9 @@
 #pragma once
 
 #include "Mesh.h"
+
 #include "Camera.h"
+extern std::vector<DirectX::BoundingBox> bv;
 
 #define DIR_FORWARD					0x01
 #define DIR_BACKWARD				0x02

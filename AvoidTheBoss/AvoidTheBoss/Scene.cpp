@@ -4,6 +4,7 @@
 #include "clientIocpCore.h"
 
 ID3D12DescriptorHeap* CGameScene::m_pd3dCbvSrvDescriptorHeap = NULL;
+#define MAPVOLUME 50
 
 D3D12_CPU_DESCRIPTOR_HANDLE	CGameScene::m_d3dCbvCPUDescriptorStartHandle;
 D3D12_GPU_DESCRIPTOR_HANDLE	CGameScene::m_d3dCbvGPUDescriptorStartHandle;
@@ -17,6 +18,7 @@ D3D12_GPU_DESCRIPTOR_HANDLE	CGameScene::m_d3dSrvGPUDescriptorNextHandle;
 
 CGameScene::CGameScene()
 {
+
 }
 
 CGameScene::~CGameScene()
@@ -130,6 +132,9 @@ void CGameScene::BuildDefaultLightsAndMaterials()
 
 void CGameScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList)
 {
+	BoxTree = new OcTree(XMFLOAT3(0, 0, 0), 60);
+	BoxTree->BuildTree();
+	//그래픽 루트 시그너쳐를 생성한다. 
 	m_pd3dGraphicsRootSignature = CreateGraphicsRootSignature(pd3dDevice);
 
 	CreateCbvSrvDescriptorHeaps(pd3dDevice, 0, 52+1+1+12+3+12+3);//Albedomap 52 / player 1 / skybox 1 / box subTexture 3 * 4/ tile subTexture 3 * 1/ woodPallet 3 * 4 / pillar2 3 * 1
@@ -153,6 +158,15 @@ void CGameScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandLis
 
 	m_ppShaders[0] = pMapShader;
 
+	CGameObject* pBVMap = CGameObject::LoadGeometryFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "Map_Bounding_Box_4.bin");
+	pBVMap->SetPosition(0.0f, 0.0f, 0.0f);
+	CGameObject* pBVObject = NULL;
+	pBVObject = new CGameObject();
+	pBVObject->SetChild(pBVMap, true);
+	pBVObject->SetPosition(0.0f, 0.f, 0.0f);
+	pBVObject->SetScale(1.0f, 1.0f, 1.0f);
+	pBVObject->Rotate(0.0f, 0.0f, 0.0f);
+	m_ppGameObjects[0] = pBVObject;
 
 	CreateShaderVariables(pd3dDevice, pd3dCommandList);
 
@@ -166,7 +180,7 @@ void CGameScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandLis
 
 void CGameScene::ProcessInput(HWND hWnd)
 {
-	m_Timer.Tick(30.0f);
+	_logic.TickTimer(60.f);
 	static UCHAR pKeyBuffer[256];
 	// 방향키를 바이트로 처리한다.
 
@@ -204,6 +218,7 @@ void CGameScene::ProcessInput(HWND hWnd)
 		//마우스 커서의 위치를 마우스가 눌려졌던 위치로 설정한다. 
 		::SetCursorPos(m_ptOldCursorPos.x, m_ptOldCursorPos.y);
 	}
+
 	{
 		//std::lock_guard<std::mutex> lg(_players[_playerIdx]->m_lock);
 		if ((dwDirection != 0) || (cxDelta != 0.0f) || (cyDelta != 0.0f))
@@ -249,9 +264,27 @@ void CGameScene::ProcessInput(HWND hWnd)
 	//카메라를 갱신한다. 중력과 마찰력의 영향을 속도 벡터에 적용한다.
 	for (int k = 0; k < PLAYERNUM; ++k)
 	{	
-		if (k == _playerIdx) _players[k]->Update(m_Timer.GetTimeElapsed());
-		//else _players[k]->OtherUpdate(m_Timer.GetTimeElapsed());
+		if (k == _playerIdx) _players[k]->Update(_logic.GetTimeElapsed(),PLAYER_TYPE::OWNER);
+		else _players[k]->Update(_logic.GetTimeElapsed(),PLAYER_TYPE::OTHER_PLAYER);
+		
+		// 플레이어 인포로 변환
+		_playerInfo[k].m_xmf3Look = _players[k]->GetLook();
+		_playerInfo[k].m_xmf3Right = _players[k]->GetRight();
+		_playerInfo[k].m_xmf3Up = _players[k]->GetUp();
+		_playerInfo[k].m_xmf3Position = _players[k]->GetPosition();
 	}
+	_logic.UpdateWorld(_playerInfo);
+
+	// 평균 프레임 레이트 출력
+	std::wstring str = L"";
+	str.append(L"FPS:");
+	str += std::to_wstring(_logic._nWorldFrame);
+	str.append(L" ");
+	str += std::to_wstring(_players[_playerIdx]->GetPosition().x);
+	str.append(L" ");
+	str.append(std::to_wstring(_players[_playerIdx]->GetPosition().z));
+	
+	::SetWindowText(hWnd, str.c_str());
 }
 
 
@@ -619,12 +652,12 @@ D3D12_GPU_DESCRIPTOR_HANDLE CGameScene::CreateShaderResourceViews(ID3D12Device* 
 
 void CGameScene::AnimateObjects()
 { 
-	for (int i = 0; i < m_nGameObjects; i++) if (m_ppGameObjects[i]) m_ppGameObjects[i]->Animate(m_Timer.GetTimeElapsed());//>>>>
-	for (int i = 0; i < m_nShaders; i++) if (m_ppShaders[i]) m_ppShaders[i]->AnimateObjects(m_Timer.GetTimeElapsed());//<<<<
+	for (int i = 0; i < m_nGameObjects; i++) if (m_ppGameObjects[i]) m_ppGameObjects[i]->Animate(_logic.GetTimeElapsed());//>>>>
+	for (int i = 0; i < m_nShaders; i++) if (m_ppShaders[i]) m_ppShaders[i]->AnimateObjects(_logic.GetTimeElapsed());//<<<<
 
 	for (int i = 0; i < PLAYERNUM; i++)
 	{
-		_players[i]->Animate(m_Timer.GetTimeElapsed());
+		_players[i]->Animate(_logic.GetTimeElapsed());
 	}
 	if (m_pLights)
 	{

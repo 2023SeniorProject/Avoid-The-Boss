@@ -1,9 +1,8 @@
 #pragma once
-#include "CTimer.h"
+#include "WorldRewinder.h"
 #include "SceneInterface.h"
 #include "Shader.h"
 #include "Player.h"
-#include "DummyPlayer.h"
 
 #define MAX_LIGHTS			16 
 
@@ -56,7 +55,7 @@ public:
 	void BuildDefaultLightsAndMaterials();
 	void BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList
 		* pd3dCommandList);
-	void InitScene() { m_Timer.Reset(); };
+	void InitScene() { _logic.StartGame(); };
 	void ReleaseObjects();
 
 	//그래픽 루트 시그너쳐를 생성한다. 
@@ -83,12 +82,14 @@ public:
 //	//배치(Batch) 처리를 하기 위하여 씬을 셰이더들의 리스트로 표현한다. 
 
 	CCamera* m_pCamera;
-	Timer m_Timer;
-
+	WCHAR	 txtFrameBuf[20];
 	CPlayer*					_players[4];
-	int16						_playerIdx = 0;
-	DWORD						m_lastKeyInput = 0;
+	PlayerInfo					_playerInfo[4]; // 자신의 플레이어 인포 
+	
+	int16						_playerIdx = -1;
+	GameLogic					_logic;
 
+	DWORD						m_lastKeyInput = 0;
 	//마지막으로 마우스 버튼을 클릭할 때의 마우스 커서의 위치이다. 
 	POINT						m_ptOldCursorPos;
 

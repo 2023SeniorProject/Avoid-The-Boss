@@ -152,15 +152,15 @@ void CGameScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandLis
 	m_nShaders = 1;
 	m_ppShaders = new CShader * [m_nShaders];
 
-	CMapObjectsShader* pMapShader = new CMapObjectsShader();
-	pMapShader->CreateShader(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature);
-	pMapShader->BuildObjects(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, NULL,NULL);
-	m_ppShaders[0] = pMapShader;
+	//CMapObjectsShader* pMapShader = new CMapObjectsShader();
+	//pMapShader->CreateShader(pd3dDevice, pd3dCommandList, /m_pd3dGraphicsRootSignature);
+	//pMapShader->BuildObjects(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, //NULL,NULL);
+	//m_ppShaders[0] = pMapShader;
 
-	//CBoundsObjectsShader* pBoundsMapShader = new CBoundsObjectsShader();
-	//pBoundsMapShader->CreateShader(pd3dDevice, pd3dCommandList, /m_pd3dGraphicsRootSignature);
-	//pBoundsMapShader->BuildObjects(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature,//NULL,NULL);
-	//m_ppShaders[0] = pBoundsMapShader;
+	CBoundsObjectsShader* pBoundsMapShader = new CBoundsObjectsShader();
+	pBoundsMapShader->CreateShader(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature);
+	pBoundsMapShader->BuildObjects(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature,NULL,NULL);
+	m_ppShaders[0] = pBoundsMapShader;
 
 	CreateShaderVariables(pd3dDevice, pd3dCommandList);
 

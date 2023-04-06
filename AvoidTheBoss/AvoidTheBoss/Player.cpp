@@ -112,7 +112,7 @@ void CPlayer::Update(float fTimeElapsed, PLAYER_TYPE ptype)
 	
 	if (m_OnInteraction) OnInteractive();
 
-	//if (BoxTree->CheckCollision(m_playerBV, m_xmf3Look, m_xmf3Right, m_xmf3Up)) MakePosition(m_playerBV.Center);
+	if (BoxTree->CheckCollision(m_playerBV, m_xmf3Look, m_xmf3Right, m_xmf3Up)) MakePosition(m_playerBV.Center);
 
 	DWORD nCameraMode = m_pCamera->GetMode();
 

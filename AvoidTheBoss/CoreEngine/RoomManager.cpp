@@ -108,23 +108,18 @@ void Room::BroadCasting(void* packet) // 방에 속하는 클라이언트에게만 전달하기
 	}
 }
 
-// 방에 있는 유저에 대한 게임 로직 업데이트 진행
+// 방에 있는 유저에 대한 게임 로직 업데이트 진행 
 void Room::Update()
 {
 	if (_status != ROOM_STATUS::FULL) return;
-	_logic.TickTimer(60.f);
-	{
-		std::unique_lock<std::shared_mutex> ql(_jobQueueLock);
-		_jobQueue->DoTasks();
+	_jobQueue->DoTasks();
 
-	}	// JobQueue 작업
-	_logic.UpdateWorld(_players);
 }
 
-void Room::AddEvent(queueEvent* qe)
+void Room::AddEvent(queueEvent* qe, float after)
 {
 	std::unique_lock<std::shared_mutex> ql(_jobQueueLock); // Queue Lock 호출
-	_jobQueue->PushTask(qe);
+	_jobQueue->PushTask(qe,DEAD_RECORNING_TPS);
 }
 // ======= RoomManager ========
 

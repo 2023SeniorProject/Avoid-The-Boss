@@ -16,9 +16,6 @@
     <Filter Include="ForServer\DB">
       <UniqueIdentifier>{3251044a-b8ce-43b6-b1ed-66984837fc9f}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ForServer\PlayerInfo">
-      <UniqueIdentifier>{2b42a5d2-018e-4673-8d0a-0327c93047c7}</UniqueIdentifier>
-    </Filter>
     <Filter Include="ForServer\Session">
       <UniqueIdentifier>{23a66a44-420a-45bf-b11a-a995896c51dc}</UniqueIdentifier>
     </Filter>
@@ -45,6 +42,9 @@
     </Filter>
     <Filter Include="Shared\Physics">
       <UniqueIdentifier>{5a1f8f00-ea3d-49a8-98f0-30f0c6c3bccc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ForServer\PlayerInfo">
+      <UniqueIdentifier>{2b42a5d2-018e-4673-8d0a-0327c93047c7}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

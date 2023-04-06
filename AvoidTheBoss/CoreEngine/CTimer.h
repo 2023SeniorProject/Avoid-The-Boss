@@ -2,6 +2,8 @@
 #include <chrono>
 
 const ULONG MAX_SAMPLE_COUNT = 50;
+const int32 DEAD_RECORNING_TPS = 30;
+
 
 class Timer
 {

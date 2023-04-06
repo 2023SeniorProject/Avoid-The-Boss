@@ -27,7 +27,7 @@ public:
 		auto i = std::find(_cList.begin(), _cList.end(), sid);
 		if (i != _cList.end()) return _players[std::distance(_cList.begin(), i)]; // 방에 있는 클라이언트들을 알아서 탐색
 	}
-	void AddEvent(queueEvent* packet); // 이벤트 패킷이 들어오면 큐에다가 추가를 할 것이다.
+	void AddEvent(queueEvent* packet, float after); // 이벤트 패킷이 들어오면 큐에다가 추가를 할 것이다.
 public:
 	//RWLOCK;
 	std::shared_mutex _listLock;

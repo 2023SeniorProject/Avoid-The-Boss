@@ -7,9 +7,9 @@ Scheduler::Scheduler()
 	_CurrentTick = GetCurrentTick(); // 현재 틱 값 초기화
 }
 
-void Scheduler::PushTask(queueEvent* task)
+void Scheduler::PushTask(queueEvent* task, float after)
 {
-	int64 dueTimeTick = _CurrentTick;
+	int64 dueTimeTick = _CurrentTick + after;
 	task->generateTime = dueTimeTick;
 	_TaskQueue.push(task);
 }

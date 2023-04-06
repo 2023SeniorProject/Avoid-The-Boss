@@ -16,19 +16,24 @@ public:
 	virtual void Task() {};
 };
 
-class moveEvent : public queueEvent
+class moveEvent : public queueEvent // 33 ms 마다 전송한다.
 {
 public:
 	moveEvent() { };
 	virtual ~moveEvent() {};
-	uint8 key = 0;
+	XMFLOAT3 predictPos;
 public:
 	virtual void Task()
 	{
 		std::lock_guard<std::mutex> plg(ServerIocpCore._clients[sid]->_playerLock);
 		// to do move Player in gameLogic
 		int16 roomNum = ServerIocpCore._clients[sid]->_myRm;
-		ServerIocpCore._rmgr->GetRoom(roomNum).GetMyPlayerFromRoom(sid).Move(key, PLAYER_VELOCITY);
+
+		S2C_POS packet;
+		packet.size = sizeof(S2C_MOVE);
+		packet.sid = sid;
+		packet.position = predictPos;
+		ServerIocpCore._rmgr->GetRoom(roomNum).BroadCasting(&packet);
 	};
 	
 };

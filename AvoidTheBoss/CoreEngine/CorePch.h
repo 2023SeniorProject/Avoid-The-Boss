@@ -109,7 +109,7 @@ using Microsoft::WRL::ComPtr;
 #define UNIT 1.0f // 1m = 1 unit
 
 
-const float PLAYER_VELOCITY = UNIT * 12.25f;
+const float PLAYER_VELOCITY = UNIT * 1.2f;
 
 extern UINT	gnCbvSrvDescriptorIncrementSize;
 extern UINT	gnRtvDescriptorIncrementSize;

@@ -248,14 +248,13 @@ void CGameScene::ProcessInput(HWND hWnd)
 		}
 	}
 
-
 	if (m_lastKeyInput != dwDirection || (cxDelta != 0.0f) || (cyDelta != 0.0f)) // 이전과 방향(키입력이 다른 경우에만 무브 이벤트 패킷을 보낸다)
 	{
-		C2S_MOVE packet;
-		packet.size = sizeof(C2S_MOVE);
+		C2S_DIR packet;
+		packet.size = sizeof(C2S_DIR);
 		packet.type = C_PACKET_TYPE::MOVE;
-		packet.key = dwDirection;
-		//clientCore._client->DoSend(&packet);
+		packet.direction = Vector3::Normalize(_players[_playerIdx]->GetVelocity());
+		clientCore._client->DoSend(&packet);
 	}
 	m_lastKeyInput = dwDirection;
 	
@@ -265,14 +264,8 @@ void CGameScene::ProcessInput(HWND hWnd)
 	{	
 		if (k == _playerIdx) _players[k]->Update(_logic.GetTimeElapsed(),PLAYER_TYPE::OWNER);
 		else _players[k]->Update(_logic.GetTimeElapsed(),PLAYER_TYPE::OTHER_PLAYER);
-		
-		// 플레이어 인포로 변환
-		_playerInfo[k].m_xmf3Look = _players[k]->GetLook();
-		_playerInfo[k].m_xmf3Right = _players[k]->GetRight();
-		_playerInfo[k].m_xmf3Up = _players[k]->GetUp();
-		_playerInfo[k].m_xmf3Position = _players[k]->GetPosition();
 	}
-	_logic.UpdateWorld(_playerInfo);
+
 
 	// 평균 프레임 레이트 출력
 	std::wstring str = L"";

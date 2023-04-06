@@ -19,6 +19,7 @@ public:
 	XMFLOAT3 m_xmf3Position;
 	//플레이어의 이동 속도를 나타내는 벡터이다. 
 	XMFLOAT3 m_xmf3Velocity;
+	XMFLOAT3 m_direction;
 
 	//플레이어의 위치가 바뀔 때마다 호출되는 OnPlayerUpdateCallback() 함수에서 사용하는 데이터이다.
 	LPVOID m_pPlayerUpdatedContext;

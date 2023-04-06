@@ -8,8 +8,8 @@ CPlayer::CPlayer()
 	m_type = 0;
 	m_pCamera = NULL;
 	m_playerBV.Center = GetPosition();
-	m_playerBV.Radius = 0.02f;
-	m_xmf3Position = XMFLOAT3(0.0f, 0.0f, 0.0f);
+	m_playerBV.Radius = 0.1f;
+	m_xmf3Position = XMFLOAT3(0.0f, 1.25f, 0.0f);
 
 	m_xmf3Right = XMFLOAT3(1.0f, 0.0f, 0.0f);
 	m_xmf3Up = XMFLOAT3(0.0f, 1.0f, 0.0f);
@@ -280,7 +280,7 @@ CWorker::CWorker(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dComman
 	//SetCameraUpdatedContext();
 
 	SetScale(XMFLOAT3(1.f, 1.f, 1.f));
-	SetPosition(XMFLOAT3(0.0f, 0.0f, 0.0f));
+	SetPosition(XMFLOAT3(0.0f, 1.3f, 0.0f));
 
 	if (pBossModel) delete pBossModel;
 }

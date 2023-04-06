@@ -137,12 +137,13 @@ void CSession::ProcessPacket(char* packet)
 		
 	}
 	break;
-	case S_PACKET_TYPE::POSITION:
+	case S_PACKET_TYPE::POS:
 	{
-		S2C_POSITION* posPacket = reinterpret_cast<S2C_POSITION*>(packet);
+		S2C_POS* posPacket = reinterpret_cast<S2C_POS*>(packet);
 		CPlayer* player = mainGame.m_pScene->GetScenePlayer(posPacket->sid);
 		if (player != nullptr && mainGame._curScene == SceneInfo::GAMEROOM)
 		{
+			//if(Vector3::Length(Vector3::Subtract(player->GetPosition(), posPacket->position)) >= 10.f)
 			player->m_lock.lock();
 			player->MakePosition(posPacket->position);
 			player->m_lock.unlock();

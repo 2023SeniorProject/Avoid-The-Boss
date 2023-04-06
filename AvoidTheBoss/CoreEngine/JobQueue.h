@@ -18,7 +18,7 @@ class Scheduler
 public:
 	using Clock = std::chrono::high_resolution_clock;
 	Scheduler();
-	void PushTask(queueEvent*);
+	void PushTask(queueEvent*, float after);
 	void DoTasks();
 	int64 GetCurrentTick() const
 	{

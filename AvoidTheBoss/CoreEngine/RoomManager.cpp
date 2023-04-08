@@ -112,6 +112,8 @@ void Room::BroadCasting(void* packet) // 방에 속하는 클라이언트에게만 전달하기
 void Room::Update()
 {
 	if (_status != ROOM_STATUS::FULL) return;
+
+	std::unique_lock<std::shared_mutex> ql(_jobQueueLock);
 	_jobQueue->DoTasks();
 
 }

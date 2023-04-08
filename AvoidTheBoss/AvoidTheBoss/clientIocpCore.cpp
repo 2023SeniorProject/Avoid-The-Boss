@@ -111,16 +111,17 @@ void CSession::ProcessPacket(char* packet)
 {
 	switch ((uint8)packet[1])
 	{
-	case S_PACKET_TYPE::SMOVE:
+	case S_PACKET_TYPE::SDIR:
 	{
-		S2C_MOVE* movePacket = reinterpret_cast<S2C_MOVE*>(packet);
+		S2C_DIR* movePacket = reinterpret_cast<S2C_DIR*>(packet);
 		CPlayer* player = mainGame.m_pScene->GetScenePlayer(movePacket->sid);
 		if (player != nullptr  && movePacket->sid != _sid)
 		{
 			player->m_lock.lock();
-			//player->Move(movePacket->key, PLAYER_VELOCITY);
+			player->SetVelocity(movePacket->direction);
 			player->m_lock.unlock();
 		}
+		std::cout << movePacket->direction.x << " " << movePacket->direction.z << " sdir\n";
 	}
 	break;
 
@@ -134,10 +135,9 @@ void CSession::ProcessPacket(char* packet)
 			player->Rotate(0, rotatePacket->angle, 0);
 			player->m_lock.unlock();
 		}
-		
 	}
 	break;
-	case S_PACKET_TYPE::POS:
+	case S_PACKET_TYPE::POS: // 미리 계산한 좌표값을 보내준다.
 	{
 		S2C_POS* posPacket = reinterpret_cast<S2C_POS*>(packet);
 		CPlayer* player = mainGame.m_pScene->GetScenePlayer(posPacket->sid);
@@ -147,6 +147,7 @@ void CSession::ProcessPacket(char* packet)
 			player->m_lock.lock();
 			player->MakePosition(posPacket->position);
 			player->m_lock.unlock();
+			std::cout << "spos\n";
 		}
 		
 	}

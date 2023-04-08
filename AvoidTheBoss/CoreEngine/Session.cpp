@@ -134,11 +134,11 @@ void ServerSession::ProcessPacket(char* packet)
 			mv->sid = _sid;
 			queueEvent* me = static_cast<queueEvent*>(mv);
 
-			S2C_MOVE packet;
+			S2C_DIR packet;
 			packet.sid = _sid;
 			packet.direction = movePacket->direction;
-			packet.size = sizeof(S2C_MOVE);
-			packet.type = S_PACKET_TYPE::SMOVE;
+			packet.size = sizeof(S2C_DIR);
+			packet.type = S_PACKET_TYPE::SDIR;
 
 			ServerIocpCore._rmgr->GetRoom(_myRm).BroadCasting(&packet);
 			ServerIocpCore._rmgr->GetRoom(_myRm).AddEvent(me,DEAD_RECORNING_TPS);

@@ -30,7 +30,7 @@ public:
 		int16 roomNum = ServerIocpCore._clients[sid]->_myRm;
 
 		S2C_POS packet;
-		packet.size = sizeof(S2C_MOVE);
+		packet.size = sizeof(S2C_DIR);
 		packet.sid = sid;
 		packet.position = predictPos;
 		ServerIocpCore._rmgr->GetRoom(roomNum).BroadCasting(&packet);

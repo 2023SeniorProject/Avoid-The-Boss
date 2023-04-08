@@ -238,22 +238,22 @@ void CGameScene::ProcessInput(HWND hWnd)
 					packet.size = sizeof(C2S_ROTATE);
 					packet.type = C_PACKET_TYPE::ROTATE;
 					packet.angle = cxDelta;
-					//clientCore._client->DoSend(&packet);
+					clientCore._client->DoSend(&packet);
 				}
 			}
 
 			/*플레이어를 dwDirection 방향으로 이동한다(실제로는 속도 벡터를 변경한다). 이동 거리는 시간에 비례하도록 한다. 플레이어의 이동 속력은 (1.3UNIT/초)로 가정한다.*/
-			if (dwDirection) 
-				_players[_playerIdx]->Move(dwDirection, PLAYER_VELOCITY);
+			if (dwDirection) _players[_playerIdx]->Move(dwDirection, PLAYER_VELOCITY);
 		}
 	}
 
-	if (m_lastKeyInput != dwDirection || (cxDelta != 0.0f) || (cyDelta != 0.0f)) // 이전과 방향(키입력이 다른 경우에만 무브 이벤트 패킷을 보낸다)
+	if (m_lastKeyInput != dwDirection || ( dwDirection != 0 && ((cxDelta != 0.0f) || (cyDelta != 0.0f)))) // 이전과 방향(키입력이 다른 경우에만 무브 이벤트 패킷을 보낸다)
 	{
 		C2S_DIR packet;
 		packet.size = sizeof(C2S_DIR);
 		packet.type = C_PACKET_TYPE::MOVE;
-		packet.direction = Vector3::Normalize(_players[_playerIdx]->GetVelocity());
+		packet.position = _players[_playerIdx]->GetPosition();
+		packet.direction =_players[_playerIdx]->GetVelocity();
 		clientCore._client->DoSend(&packet);
 	}
 	m_lastKeyInput = dwDirection;

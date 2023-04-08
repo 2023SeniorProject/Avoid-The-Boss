@@ -198,7 +198,6 @@ void CStandardMesh::LoadMeshFromFile(ID3D12Device *pd3dDevice, ID3D12GraphicsCom
 		
 			pGameobject->m_pAABB.Center = m_xmf3AABBCenter;
 			pGameobject->m_pAABB.Extents = m_xmf3AABBExtents;
-			std::cout << pGameobject->m_pAABB.Center.x << " " << pGameobject->m_pAABB.Center.z << "\n";
 			BoxTree->AddBoundingBox(pGameobject->m_pAABB);
 			
 		}

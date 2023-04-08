@@ -8,7 +8,7 @@
 enum C_PACKET_TYPE : uint8 { ACQ_LOGIN = 101, ACQ_LOGOUT = 102, CCHAT = 103, MOVE = 104 ,ROTATE = 105 };
 enum C_ROOM_PACKET_TYPE : uint8 { ACQ_MK_RM = 115, ACQ_ENTER_RM = 116, EXIT_CRM = 117}; // 规 积己, 规 昏力, 涝厘 , 辆丰 
 enum S_ROOM_PACKET_TYPE : uint8 { MK_RM_OK = 119, MK_RM_FAIL = 120, HIDE_RM = 121, REP_ENTER_RM = 122, REP_EXIT_RM = 123 }; // 规 积己, 规 昏力, 涝厘 , 辆丰 
-enum S_PACKET_TYPE : uint8 { LOGIN_OK = 201,  LOGIN_FAIL = 202 , SCHAT = 203, SMOVE = 204, SROTATE = 205, POS = 206, GAME_START = 207};
+enum S_PACKET_TYPE : uint8 { LOGIN_OK = 201,  LOGIN_FAIL = 202 , SCHAT = 203, SDIR = 204, SROTATE = 205, POS = 206, GAME_START = 207};
 
 
 
@@ -104,12 +104,12 @@ struct S2C_GAMESTART
 	int16 sids[4];
 }; 
 
-struct S2C_MOVE
+struct S2C_DIR
 {
 	uint8 size;
 	uint8 type;
 	int16 sid;
-	DirectX::XMFLOAT3 direction;
+	DirectX::XMFLOAT3 direction; // 加档 蔼
 };
 
 

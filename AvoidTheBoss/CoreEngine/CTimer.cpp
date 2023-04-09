@@ -70,14 +70,14 @@ void Timer::Tick(float fLockFPS)
 	}
 
 	_accumulateElapsedTime += _fTimeElapsed;
-	_accumulateElapsedTimeForWorldFrame += _fTimeElapsed;
+	_aacumlateFPSLockTime += _fTimeElapsed;
 
 	if (fLockFPS != 0.0f && (_fTimeElapsed > _fTimeElapsedAvg))
 	{
 		_nFramePerSec++;
 	}
 
-	if (_accumulateElapsedTime >= 1000.f)
+	if (_accumulateElapsedTime >= 1000.f) // 1초 지나면 끝
 	{
 		_curFrameRate = _nFramePerSec; // 현재 프레임률
 		_nFramePerSec = 0;             // 초당 프레임
@@ -87,7 +87,7 @@ void Timer::Tick(float fLockFPS)
 	
 
 	//누적된 프레임 처리 시간의 평균을 구하여 프레임 처리 시간을 구한다. 
-	if (fLockFPS == 0.f)
+	if (fLockFPS == 0.f) // 고정 fps 아니면 평균 출력
 	{
 		_fTimeElapsedAvg = 0.0f;
 		for (ULONG i = 0; i < _nSampleCount; i++) _fTimeElapsedAvg += _SampleFrameTime[i];
@@ -115,3 +115,8 @@ float Timer::GetTimeElapsed()
 	return (_fTimeElapsed / 1000.f);
 }
 
+
+float Timer::GetDeltaTime(float fpsLock)
+{
+	return (1 / fpsLock);
+}

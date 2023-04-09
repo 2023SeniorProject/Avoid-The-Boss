@@ -57,6 +57,10 @@ struct C2S_ROOM_EXIT
 	uint8 type;
 };
 
+
+// ======= 게임 로직 패킷 ==============
+
+
 struct C2S_MOVE
 {
 	uint8 size;

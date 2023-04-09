@@ -19,8 +19,6 @@ public:
 	XMFLOAT3 m_xmf3Position;
 	//플레이어의 이동 속도를 나타내는 벡터이다. 
 	XMFLOAT3 m_xmf3Velocity;
-	XMFLOAT3 m_direction;
-
 	//플레이어의 위치가 바뀔 때마다 호출되는 OnPlayerUpdateCallback() 함수에서 사용하는 데이터이다.
 	LPVOID m_pPlayerUpdatedContext;
 	
@@ -38,12 +36,11 @@ public:
 	XMFLOAT3& GetVelocity() { return(m_xmf3Velocity); }
 	
 	void Rotate(float x, float y, float z);
-	void SetSpeed(const XMFLOAT3& xmf3Shift);
+
 	void Move(uint8 dwDirection, float fDistance);
 	void UpdateMove(const XMFLOAT3& velocity);
 	
 	//플레이어의 위치와 회전 정보를 경과 시간에 따라 갱신하는 함수이다.
 	void Update(float fTimeElapsed);
-	void OnPlayerUpdateCallback(float fTimeElapsed) { }
-	void SetPlayerUpdatedContext(LPVOID pContext) { m_pPlayerUpdatedContext = pContext; }
+	void OnPlayerUpdateCallback(float fTimeElapsed);
 };

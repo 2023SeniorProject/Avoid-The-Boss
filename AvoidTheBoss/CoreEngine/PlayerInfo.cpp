@@ -10,8 +10,6 @@ PlayerInfo::PlayerInfo()
 
 	m_xmf3Position = XMFLOAT3(0.0f, 0.0f, 0.0f);
 	m_xmf3Velocity = XMFLOAT3(0.0f, 0.0f, 0.0f);
-	m_pPlayerUpdatedContext = NULL;
-
 
 	m_fPitch = 0.0f;
 	m_fRoll = 0.0f;
@@ -26,6 +24,7 @@ PlayerInfo::~PlayerInfo()
 void PlayerInfo::Move(uint8 dwDirection, float fDistance)
 {
 	XMFLOAT3 xmf3Shift = XMFLOAT3(0, 0, 0);
+	std::cout << dwDirection << "\n";
 	if (dwDirection)
 	{	
 		if (dwDirection & DIR_FORWARD)  xmf3Shift = Vector3::Add(xmf3Shift, m_xmf3Look,fDistance);
@@ -89,7 +88,7 @@ void PlayerInfo::Update(float fTimeElapsed)
 	//플레이어를 속도 벡터 만큼 실제로 이동한다(카메라도 이동될 것이다). 
 	XMFLOAT3 xmf3Velocity = Vector3::ScalarProduct(m_xmf3Velocity, fTimeElapsed, false);
 	UpdateMove(xmf3Velocity);
-	if (m_pPlayerUpdatedContext) OnPlayerUpdateCallback(fTimeElapsed);
+	OnPlayerUpdateCallback(fTimeElapsed);
 }
 
 

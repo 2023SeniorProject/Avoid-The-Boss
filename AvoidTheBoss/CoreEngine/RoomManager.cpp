@@ -3,6 +3,7 @@
 #include "Session.h"
 #include "JobQueue.h"
 
+
 using namespace std;
 //========== ROOM =============
 
@@ -75,6 +76,7 @@ void Room::UserIn(int32 sid)
 		if (_cList.size() == PLAYERNUM)
 		{
 			_status = ROOM_STATUS::FULL;
+			_timer.Reset();
 			S2C_GAMESTART packet;
 			packet.type = S_PACKET_TYPE::GAME_START;
 			packet.size = sizeof(S2C_GAMESTART);
@@ -85,7 +87,7 @@ void Room::UserIn(int32 sid)
 				++k;
 			}
 			BroadCasting(&packet);
-			_logic.StartGame();
+			
 		}
 	}		
 	std::cout << "RM [" << _num << "][" << _cList.size() << "/4]" << std::endl;
@@ -111,17 +113,25 @@ void Room::BroadCasting(void* packet) // 방에 속하는 클라이언트에게만 전달하기
 // 방에 있는 유저에 대한 게임 로직 업데이트 진행 
 void Room::Update()
 {
+	_timer.Tick(60.f);
 	if (_status != ROOM_STATUS::FULL) return;
 
+	
 	std::unique_lock<std::shared_mutex> ql(_jobQueueLock);
 	_jobQueue->DoTasks();
-
+	for (int i = 0; i < PLAYERNUM; ++i) _players[i].Update(_timer.GetTimeElapsed());
 }
 
 void Room::AddEvent(queueEvent* qe, float after)
 {
 	std::unique_lock<std::shared_mutex> ql(_jobQueueLock); // Queue Lock 호출
 	_jobQueue->PushTask(qe,DEAD_RECORNING_TPS);
+}
+
+void Room::AddEvent(queueEvent* qe)
+{
+	std::unique_lock<std::shared_mutex> ql(_jobQueueLock); // Queue Lock 호출
+	_jobQueue->PushTask(qe);
 }
 // ======= RoomManager ========
 
@@ -134,12 +144,10 @@ void RoomManager::Init()
 		_rooms[i]._num = i;
 	}
 }
-
 void RoomManager::EnterRoom(int32 sid,int16 rmNum)
 {
 	_rooms[rmNum].UserIn(sid);
 }
-
 void RoomManager::CreateRoom(int32 sid)
 {
 	if (_rmCnt.load() >= _cap)
@@ -161,7 +169,6 @@ void RoomManager::CreateRoom(int32 sid)
 		}
 	}
 }
-
 void RoomManager::UpdateRooms()
 {
 	for (int i = 0; i < _cap; ++i)

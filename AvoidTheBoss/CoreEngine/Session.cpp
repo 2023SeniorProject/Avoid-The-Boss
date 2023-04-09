@@ -125,33 +125,32 @@ void ServerSession::ProcessPacket(char* packet)
 {
 	switch ((uint8)packet[1])
 	{
-		case C_PACKET_TYPE::MOVE:
+		case C_PACKET_TYPE::CKEY:
 		{
 
-			C2S_DIR* movePacket = reinterpret_cast<C2S_DIR*>(packet);
+			C2S_KEY* movePacket = reinterpret_cast<C2S_KEY*>(packet);
 			moveEvent* mv = new moveEvent;
-			mv->predictPos = Vector3::Add(movePacket->position, Vector3::ScalarProduct(movePacket->direction , (DEAD_RECORNING_TPS / 1000.f)));
 			mv->sid = _sid;
+			mv->_key = movePacket->key;
+			mv->_dir = movePacket->dir;
 			queueEvent* me = static_cast<queueEvent*>(mv);
+			
 
-			S2C_DIR packet;
+			S2C_KEY packet;
+			packet.size = sizeof(S2C_KEY);
+			packet.type = S_PACKET_TYPE::SKEY;
 			packet.sid = _sid;
-			packet.direction = movePacket->direction;
-			packet.size = sizeof(S2C_DIR);
-			packet.type = S_PACKET_TYPE::SDIR;
-
+			packet.key = movePacket->key;
+			ServerIocpCore._rmgr->GetRoom(_myRm).AddEvent(me);
 			ServerIocpCore._rmgr->GetRoom(_myRm).BroadCasting(&packet);
-			ServerIocpCore._rmgr->GetRoom(_myRm).AddEvent(me,DEAD_RECORNING_TPS);
-		
 		}
 		break;
-		case C_PACKET_TYPE::ROTATE:
+		case C_PACKET_TYPE::CROT:
 		{
-	
 			C2S_ROTATE* rotatePacket = reinterpret_cast<C2S_ROTATE*>(packet);
 			S2C_ROTATE packet;
 			packet.size = sizeof(S2C_ROTATE);
-			packet.type = S_PACKET_TYPE::SROTATE;
+			packet.type = S_PACKET_TYPE::SROT;
 			packet.sid = _sid;
 			packet.angle = rotatePacket->angle;
 			ServerIocpCore._rmgr->GetRoom(_myRm).BroadCasting(&packet);

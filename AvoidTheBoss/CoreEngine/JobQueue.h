@@ -18,7 +18,13 @@ class Scheduler
 public:
 	using Clock = std::chrono::high_resolution_clock;
 	Scheduler();
-	void PushTask(queueEvent*, float after);
+	void Reset() 
+	{
+		_BeginTickPoint = Clock::now(); // 시작 시점은 지금
+		_CurrentTick = GetCurrentTick(); // 현재 틱 값 초기화
+	}
+	void PushTask(queueEvent*, float after); // after 시간 후에 해당 임무를 수행한다.
+	void PushTask(queueEvent*);
 	void DoTasks();
 	int64 GetCurrentTick() const
 	{

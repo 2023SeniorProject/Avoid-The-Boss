@@ -111,21 +111,20 @@ void CSession::ProcessPacket(char* packet)
 {
 	switch ((uint8)packet[1])
 	{
-	case S_PACKET_TYPE::SDIR:
+	case S_PACKET_TYPE::SKEY:
 	{
-		S2C_DIR* movePacket = reinterpret_cast<S2C_DIR*>(packet);
+		S2C_KEY* movePacket = reinterpret_cast<S2C_KEY*>(packet);
 		CPlayer* player = mainGame.m_pScene->GetScenePlayer(movePacket->sid);
 		if (player != nullptr  && movePacket->sid != _sid)
 		{
 			player->m_lock.lock();
-			player->SetVelocity(movePacket->direction);
+			player->Move(movePacket->key,PLAYER_VELOCITY);
 			player->m_lock.unlock();
 		}
-		std::cout << movePacket->direction.x << " " << movePacket->direction.z << " sdir\n";
 	}
 	break;
 
-	case S_PACKET_TYPE::SROTATE:
+	case S_PACKET_TYPE::SROT:
 	{
 		S2C_ROTATE* rotatePacket = reinterpret_cast<S2C_ROTATE*>(packet);	
 		CPlayer* player = mainGame.m_pScene->GetScenePlayer(rotatePacket->sid);
@@ -137,19 +136,8 @@ void CSession::ProcessPacket(char* packet)
 		}
 	}
 	break;
-	case S_PACKET_TYPE::POS: // 미리 계산한 좌표값을 보내준다.
+	case S_PACKET_TYPE::SPOS: // 미리 계산한 좌표값을 보내준다.
 	{
-		S2C_POS* posPacket = reinterpret_cast<S2C_POS*>(packet);
-		CPlayer* player = mainGame.m_pScene->GetScenePlayer(posPacket->sid);
-		if (player != nullptr && mainGame._curScene == SceneInfo::GAMEROOM)
-		{
-			//if(Vector3::Length(Vector3::Subtract(player->GetPosition(), posPacket->position)) >= 10.f)
-			player->m_lock.lock();
-			player->MakePosition(posPacket->position);
-			player->m_lock.unlock();
-			std::cout << "spos\n";
-		}
-		
 	}
 	break;
 	case S_PACKET_TYPE::SCHAT:

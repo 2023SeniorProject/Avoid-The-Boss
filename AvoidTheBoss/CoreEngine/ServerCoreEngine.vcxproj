@@ -165,7 +165,6 @@
     <ClInclude Include="CoreGlobal.h" />
     <ClInclude Include="CoreMacro.h" />
     <ClInclude Include="CorePch.h" />
-    <ClInclude Include="GameLogic.h" />
     <ClInclude Include="JobQueue.h" />
     <ClInclude Include="PlayerInfo.h" />
     <ClInclude Include="CoreTLS.h" />
@@ -191,7 +190,6 @@
     <ClCompile Include="CoreGlobal.cpp" />
     <ClCompile Include="CoreMacro.cpp" />
     <ClCompile Include="CorePch.cpp" />
-    <ClCompile Include="GameLogic.cpp" />
     <ClCompile Include="JobQueue.cpp" />
     <ClCompile Include="PlayerInfo.cpp" />
     <ClCompile Include="CoreTLS.cpp" />

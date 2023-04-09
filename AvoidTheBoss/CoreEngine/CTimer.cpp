@@ -70,7 +70,7 @@ void Timer::Tick(float fLockFPS)
 	}
 
 	_accumulateElapsedTime += _fTimeElapsed;
-	_aacumlateFPSLockTime += _fTimeElapsed;
+	_accumulateFPSLockTime += _fTimeElapsed;
 
 	if (fLockFPS != 0.0f && (_fTimeElapsed > _fTimeElapsedAvg))
 	{
@@ -85,7 +85,6 @@ void Timer::Tick(float fLockFPS)
 	}
 
 	
-
 	//누적된 프레임 처리 시간의 평균을 구하여 프레임 처리 시간을 구한다. 
 	if (fLockFPS == 0.f) // 고정 fps 아니면 평균 출력
 	{
@@ -118,5 +117,5 @@ float Timer::GetTimeElapsed()
 
 float Timer::GetDeltaTime(float fpsLock)
 {
-	return (1 / fpsLock);
+	return (1.f / fpsLock);
 }

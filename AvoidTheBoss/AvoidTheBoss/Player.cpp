@@ -53,11 +53,9 @@ void CPlayer::Move(DWORD dwDirection, float fDistance)
 		if (dwDirection & DIR_DOWN) xmf3Shift = Vector3::Add(xmf3Shift, m_xmf3Up, -fDistance);
 
 		//플레이어를 현재 위치 벡터에서 xmf3Shift 벡터만큼 이동한다. 
-		SetSpeed(xmf3Shift);
+		SetVelocity(xmf3Shift);
 	}
 }
-
-
 
 void CPlayer::SetSpeed(const XMFLOAT3& xmf3Shift)
 {
@@ -340,14 +338,12 @@ void CWorker::Move(DWORD dwDirection, float fDistance)
 		m_pSkinnedAnimationController->SetTrackEnable(0, false);
 		m_pSkinnedAnimationController->SetTrackEnable(1, true);
 	}
-
 	CPlayer::Move(dwDirection, fDistance);
 }
 
 void CWorker::Update(float fTimeElapsed, PLAYER_TYPE ptype)
 {
 	CPlayer::Update(fTimeElapsed, ptype);
-
 	if (m_pSkinnedAnimationController)
 	{
 		float fLength = sqrtf(m_xmf3Velocity.x * m_xmf3Velocity.x + m_xmf3Velocity.z * m_xmf3Velocity.z);

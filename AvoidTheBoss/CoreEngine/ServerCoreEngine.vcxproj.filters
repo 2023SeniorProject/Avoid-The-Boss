@@ -43,9 +43,6 @@
     <Filter Include="ForServer\PlayerInfo">
       <UniqueIdentifier>{2b42a5d2-018e-4673-8d0a-0327c93047c7}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Shared\GameLogic">
-      <UniqueIdentifier>{cb78a7ff-5959-495c-8ad9-263bcc2cf650}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Shared\JobQueue">
       <UniqueIdentifier>{7ca8b712-3e66-4ab4-ad8a-3f8d4bf63998}</UniqueIdentifier>
     </Filter>
@@ -117,9 +114,6 @@
     <ClInclude Include="CollisionDetector.h">
       <Filter>Shared\Physics</Filter>
     </ClInclude>
-    <ClInclude Include="GameLogic.h">
-      <Filter>Shared\GameLogic</Filter>
-    </ClInclude>
     <ClInclude Include="JobQueue.h">
       <Filter>Shared\JobQueue</Filter>
     </ClInclude>
@@ -187,9 +181,6 @@
     </ClCompile>
     <ClCompile Include="CollisionDetector.cpp">
       <Filter>Shared\Physics</Filter>
-    </ClCompile>
-    <ClCompile Include="GameLogic.cpp">
-      <Filter>Shared\GameLogic</Filter>
     </ClCompile>
     <ClCompile Include="JobQueue.cpp">
       <Filter>Shared\JobQueue</Filter>

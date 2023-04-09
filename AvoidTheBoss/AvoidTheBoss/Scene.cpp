@@ -184,7 +184,7 @@ void CGameScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandLis
 
 void CGameScene::ProcessInput(HWND hWnd)
 {
-	_logic.TickTimer(60.f);
+	_timer.Tick(60);
 	static UCHAR pKeyBuffer[256];
 	// 방향키를 바이트로 처리한다.
 
@@ -236,7 +236,7 @@ void CGameScene::ProcessInput(HWND hWnd)
 				{
 					C2S_ROTATE packet;
 					packet.size = sizeof(C2S_ROTATE);
-					packet.type = C_PACKET_TYPE::ROTATE;
+					packet.type = C_PACKET_TYPE::CROT;
 					packet.angle = cxDelta;
 					clientCore._client->DoSend(&packet);
 				}
@@ -249,11 +249,11 @@ void CGameScene::ProcessInput(HWND hWnd)
 
 	if (m_lastKeyInput != dwDirection || ( dwDirection != 0 && ((cxDelta != 0.0f) || (cyDelta != 0.0f)))) // 이전과 방향(키입력이 다른 경우에만 무브 이벤트 패킷을 보낸다)
 	{
-		C2S_DIR packet;
-		packet.size = sizeof(C2S_DIR);
-		packet.type = C_PACKET_TYPE::MOVE;
-		packet.position = _players[_playerIdx]->GetPosition();
-		packet.direction =_players[_playerIdx]->GetVelocity();
+		C2S_KEY packet; // 키 입력 + 방향 정보를 보낸다.
+		packet.size = sizeof(C2S_KEY);
+		packet.type = C_PACKET_TYPE::CKEY;
+		packet.key = dwDirection;
+		packet.dir =_players[_playerIdx]->GetLook();
 		clientCore._client->DoSend(&packet);
 	}
 	m_lastKeyInput = dwDirection;
@@ -262,15 +262,13 @@ void CGameScene::ProcessInput(HWND hWnd)
 	//카메라를 갱신한다. 중력과 마찰력의 영향을 속도 벡터에 적용한다.
 	for (int k = 0; k < PLAYERNUM; ++k)
 	{	
-		if (k == _playerIdx) _players[k]->Update(_logic.GetTimeElapsed(),PLAYER_TYPE::OWNER);
-		else _players[k]->Update(_logic.GetTimeElapsed(),PLAYER_TYPE::OTHER_PLAYER);
+		if (k == _playerIdx) _players[k]->Update(_timer.GetTimeElapsed(),PLAYER_TYPE::OWNER);
+		else _players[k]->Update(_timer.GetTimeElapsed(),PLAYER_TYPE::OTHER_PLAYER);
 	}
 
 
 	// 평균 프레임 레이트 출력
 	std::wstring str = L"";
-	str.append(L"FPS:");
-	str += std::to_wstring(_logic._nWorldFrame);
 	str.append(L" ");
 	str += std::to_wstring(_players[_playerIdx]->GetPosition().x);
 	str.append(L" ");
@@ -644,12 +642,12 @@ D3D12_GPU_DESCRIPTOR_HANDLE CGameScene::CreateShaderResourceViews(ID3D12Device* 
 
 void CGameScene::AnimateObjects()
 { 
-	for (int i = 0; i < m_nGameObjects; i++) if (m_ppGameObjects[i]) m_ppGameObjects[i]->Animate(_logic.GetTimeElapsed());//>>>>
-	for (int i = 0; i < m_nShaders; i++) if (m_ppShaders[i]) m_ppShaders[i]->AnimateObjects(_logic.GetTimeElapsed());//<<<<
+	for (int i = 0; i < m_nGameObjects; i++) if (m_ppGameObjects[i]) m_ppGameObjects[i]->Animate(_timer.GetTimeElapsed());//>>>>
+	for (int i = 0; i < m_nShaders; i++) if (m_ppShaders[i]) m_ppShaders[i]->AnimateObjects(_timer.GetTimeElapsed());//<<<<
 
 	for (int i = 0; i < PLAYERNUM; i++)
 	{
-		_players[i]->Animate(_logic.GetTimeElapsed());
+		_players[i]->Animate(_timer.GetTimeElapsed());
 	}
 	if (m_pLights)
 	{

@@ -7,6 +7,20 @@ enum class PLAYER_TYPE
 	OWNER,OTHER_PLAYER,NONE
 };
 
+enum class CHARACTER_TYPE
+{
+	BOSS,YELLOW_EMP,MASK_EMP,CAP_EMP,GOGGLE_EMP
+};
+
+static const char *g_pstrCharactorRefernece[5] =
+{
+	"Model/Boss_Run.bin",
+	"Model/Character1_Idle.bin",
+	"Model/Character2_Down.bin",
+	"Model/Character3_Down.bin",
+	"Model/Character4_Down.bin"
+};
+
 #define INTERACTION_TIME 60
 class CPlayer : public CGameObject
 {
@@ -42,6 +56,7 @@ public:
 	bool m_OnInteraction = false;
 	int m_InteractionCountTime = INTERACTION_TIME;
 
+	int m_nCharacterType;
 public: 
 	CPlayer();
 	virtual ~CPlayer();
@@ -123,6 +138,22 @@ public:
 
 	CWorker(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature);
 	virtual ~CWorker();
+public:
+	virtual CCamera* ChangeCamera(DWORD nNewCameraMode, float fTimeElapsed);
+	virtual void OnPlayerUpdateCallback();
+	virtual void OnCameraUpdateCallback();
+
+	virtual void Move(DWORD dwDirection, float fDistance);
+
+	virtual void Update(float fTimeElapsed, PLAYER_TYPE ptype);
+
+};
+
+class CEmployee : public CPlayer
+{
+public:
+	CEmployee(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature,CHARACTER_TYPE nType);
+	virtual ~CEmployee();
 public:
 	virtual CCamera* ChangeCamera(DWORD nNewCameraMode, float fTimeElapsed);
 	virtual void OnPlayerUpdateCallback();

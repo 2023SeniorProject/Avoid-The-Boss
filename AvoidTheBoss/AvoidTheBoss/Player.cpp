@@ -297,7 +297,9 @@ CWorker::CWorker(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dComman
 	m_type = 0;
 	m_pCamera = ChangeCamera(THIRD_PERSON_CAMERA, 0.0f);
 
-	CLoadedModelInfo* pBossModel = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "Model/Boss_Run.bin", NULL,Layout::PLAYER);
+	m_nCharacterType = (int)CHARACTER_TYPE::BOSS;
+
+	CLoadedModelInfo* pBossModel = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, g_pstrCharactorRefernece[m_nCharacterType], NULL, Layout::PLAYER);
 	SetChild(pBossModel->m_pModelRootObject, true);
 
 	m_pSkinnedAnimationController = new CAnimationController(pd3dDevice, pd3dCommandList, 4, pBossModel);
@@ -412,6 +414,116 @@ void CWorker::Update(float fTimeElapsed, PLAYER_TYPE ptype)
 
 }
 
+CEmployee::CEmployee(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, CHARACTER_TYPE nType)
+{
+	m_pCamera = ChangeCamera(THIRD_PERSON_CAMERA, 0.0f);
+
+	m_nCharacterType = (int)nType;
+
+	CLoadedModelInfo* pEmployeeModel = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, g_pstrCharactorRefernece[m_nCharacterType], NULL, Layout::PLAYER);
+	SetChild(pEmployeeModel->m_pModelRootObject, true);
+
+	m_pSkinnedAnimationController = new CAnimationController(pd3dDevice, pd3dCommandList, 6, pEmployeeModel);
+	m_pSkinnedAnimationController->SetTrackAnimationSet(0, 0);//Idle
+	m_pSkinnedAnimationController->SetTrackAnimationSet(1, 1);//Shoot
+	m_pSkinnedAnimationController->SetTrackAnimationSet(2, 2);//RunningShoot
+	m_pSkinnedAnimationController->SetTrackAnimationSet(3, 3);//Run
+	m_pSkinnedAnimationController->SetTrackAnimationSet(4, 4);//RunningShoot
+	m_pSkinnedAnimationController->SetTrackAnimationSet(5, 5);//Run
+
+
+	m_pSkinnedAnimationController->SetTrackEnable(0, true);
+	m_pSkinnedAnimationController->SetTrackEnable(1, false);
+	m_pSkinnedAnimationController->SetTrackEnable(2, false);
+	m_pSkinnedAnimationController->SetTrackEnable(3, false);
+	m_pSkinnedAnimationController->SetTrackEnable(4, false);
+	m_pSkinnedAnimationController->SetTrackEnable(5, false);
+
+	CreateShaderVariables(pd3dDevice, pd3dCommandList);
+
+	//SetPlayerUpdatedContext();
+	//SetCameraUpdatedContext();
+
+	SetScale(XMFLOAT3(1.f, 1.f, 1.f));
+	SetPosition(XMFLOAT3(0.0f, 1.25f, 60.0f));
+
+	if (pEmployeeModel) delete pEmployeeModel;
+}
+
+CEmployee::~CEmployee()
+{
+}
+
+CCamera* CEmployee::ChangeCamera(DWORD nNewCameraMode, float fTimeElapsed)
+{
+	DWORD nCurrentCameraMode = (m_pCamera) ? m_pCamera->GetMode() : 0x00;
+	if (nCurrentCameraMode == nNewCameraMode)
+		return(m_pCamera);
+
+	float MaxDepthofMap = 5000.0f;//sqrt(2) * 50 * UNIT + 2 * UNIT;
+	switch (nNewCameraMode)
+	{
+	case FIRST_PERSON_CAMERA:
+		m_pCamera = OnChangeCamera(FIRST_PERSON_CAMERA, nCurrentCameraMode);
+		m_pCamera->SetTimeLag(0.0f);
+		m_pCamera->SetOffset(XMFLOAT3(0.0f, 1.4f, 0.0f));
+		m_pCamera->GenerateProjectionMatrix(1.01f, MaxDepthofMap, ASPECT_RATIO, 60.0f); //5000.f
+		m_pCamera->SetViewport(0, 0, FRAME_BUFFER_WIDTH, FRAME_BUFFER_HEIGHT, 0.0f, 1.0f);
+		m_pCamera->SetScissorRect(0, 0, FRAME_BUFFER_WIDTH, FRAME_BUFFER_HEIGHT);
+		break;
+	case THIRD_PERSON_CAMERA:
+		m_pCamera = OnChangeCamera(THIRD_PERSON_CAMERA, nCurrentCameraMode);
+		m_pCamera->SetTimeLag(0.0f);
+		m_pCamera->SetOffset(XMFLOAT3(0.0f, 1.7f * UNIT, -5 * UNIT));
+		m_pCamera->GenerateProjectionMatrix(1.01f, MaxDepthofMap, ASPECT_RATIO, 60.0f);
+		m_pCamera->SetViewport(0, 0, FRAME_BUFFER_WIDTH, FRAME_BUFFER_HEIGHT, 0.0f, 1.0f);
+		m_pCamera->SetScissorRect(0, 0, FRAME_BUFFER_WIDTH, FRAME_BUFFER_HEIGHT);
+		break;
+	default:
+		break;
+	}
+	m_pCamera->SetPosition(Vector3::Add(m_xmf3Position, m_pCamera->GetOffset()));
+
+	Update(fTimeElapsed, PLAYER_TYPE::NONE);
+
+	return(m_pCamera);
+}
+
+void CEmployee::OnPlayerUpdateCallback()
+{
+}
+
+void CEmployee::OnCameraUpdateCallback()
+{
+}
+
+void CEmployee::Move(DWORD dwDirection, float fDistance)
+{
+	if (dwDirection)
+	{
+		m_pSkinnedAnimationController->SetTrackEnable(0, false);
+		m_pSkinnedAnimationController->SetTrackEnable(1, true);
+	}
+
+	CPlayer::Move(dwDirection, fDistance);
+}
+
+void CEmployee::Update(float fTimeElapsed, PLAYER_TYPE ptype)
+{
+	if (m_pSkinnedAnimationController)
+	{
+		float fLength = sqrtf(m_xmf3Velocity.x * m_xmf3Velocity.x + m_xmf3Velocity.z * m_xmf3Velocity.z);
+		if (::IsZero(fLength))
+		{
+			m_pSkinnedAnimationController->SetTrackEnable(0, true);
+			m_pSkinnedAnimationController->SetTrackEnable(1, false);
+			m_pSkinnedAnimationController->SetTrackPosition(0, 0.0f);
+		}
+	}
+	m_xmf3Velocity = XMFLOAT3(0.0f, 0.0f, 0.0f);
+}
+
+
 #define _WITH_DEBUG_CALLBACK_DATA
 
 void CSoundCallbackHandler::HandleCallback(void* pCallbackData, float fTrackPosition)
@@ -428,6 +540,3 @@ void CSoundCallbackHandler::HandleCallback(void* pCallbackData, float fTrackPosi
 	PlaySound(pWavName, NULL, SND_FILENAME | SND_ASYNC);
 #endif
 }
-
-
-

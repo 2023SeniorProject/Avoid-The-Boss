@@ -1,7 +1,7 @@
 #pragma once
 
 #define MAX_USER 10
-#define PORTNUM 9000
+#define PORTNUM 9001
 #define CHATBUF 50
 // 클라 -> 서버 패킷
 

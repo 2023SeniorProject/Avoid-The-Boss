@@ -72,7 +72,7 @@
 #include <DirectXPackedVector.h>//벡터 관련 패킹된 구조체 제공
 #include <DirectXColors.h>//색상 정의 제공
 #include <DirectXCollision.h>//충돌 검사 관련 함수,구조체,클래스 제공 
-#include "protocol.h"
+
 
 //C:\Program Files(x86)\Windows Kits\10\Include\10.0.17763.0\um 에서  DirectX로 시작하는 파일들 - 특히 “DirectXCollision.h”와 “DirectXCollision.inl” 내용 보기
 //심드 성능상 벡터 연산 오버로드 하지말자
@@ -81,7 +81,7 @@
 using namespace DirectX;
 using namespace DirectX::PackedVector;
 
-
+#include "protocol.h"
 #include "CollisionDetector.h"
 #define PLAYERNUM 1
 

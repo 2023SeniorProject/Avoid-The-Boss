@@ -18,7 +18,7 @@ protected:
 	XMFLOAT3					m_xmf3Look = XMFLOAT3(0.0f, 0.0f, 1.0f);
 	XMFLOAT3					m_xmf3Scale = XMFLOAT3(1.0f, 1.0f, 1.0f);
 
-	XMFLOAT3					m_predictPos = XMFLOAT3(0, 0, 0);
+	
 	float m_fPitch;
 	float m_fYaw;
 	float m_fRoll;
@@ -38,7 +38,7 @@ public:
 	int16 m_sid = -1; // 切重生 Session Id
 	std::mutex m_lock; // 切重税 Lock
 	BoundingSphere m_playerBV; // BV = bounding volume
-
+	XMFLOAT3					m_predictPos = XMFLOAT3(0, 0, 0);
 	bool m_OnInteraction = false;
 	int m_InteractionCountTime = INTERACTION_TIME;
 
@@ -47,16 +47,23 @@ public:
 	virtual ~CPlayer();
 	
 	XMFLOAT3 GetPosition() const { return(m_xmf3Position); }
+	XMFLOAT3& GetPredictPos() { return(m_predictPos); }
 	XMFLOAT3 GetLookVector() { return(m_xmf3Look); }
 	XMFLOAT3 GetUpVector() { return(m_xmf3Up); }
 	XMFLOAT3 GetRightVector() { return(m_xmf3Right); }
-
+	void SetDirection(const XMFLOAT3& look)
+	{
+		m_xmf3Look = look;
+		m_xmf3Right = Vector3::CrossProduct(m_xmf3Up, m_xmf3Look, true);
+		m_xmf3Up = Vector3::CrossProduct(m_xmf3Look, m_xmf3Right, true);
+	}
 	void SetVelocity(const XMFLOAT3& xmf3Velocity) { m_xmf3Velocity = xmf3Velocity; }
 	void SetPlayerSid(const int16& sid) { m_sid = sid; }
 	void SetPosition(const XMFLOAT3& xmf3Position) 
 	{
 		UpdateMove(XMFLOAT3(xmf3Position.x - m_xmf3Position.x, xmf3Position.y - m_xmf3Position.y, xmf3Position.z - m_xmf3Position.z));
 	}
+	void SetPredicPos(const XMFLOAT3& pred) { m_predictPos = pred; }
 	void SetScale(const XMFLOAT3& xmf3Scale) { m_xmf3Scale = xmf3Scale; }
 	void MakePosition(const XMFLOAT3& xmf3Position)
 	{

@@ -126,6 +126,7 @@ void Room::Update()
 		int idx = 0;
 		for(auto i : _cList)
 		{
+			//std::cout << "30tick\n";
 			S2C_POS packet;
 			packet.type = S_PACKET_TYPE::SPOS;
 			packet.size = sizeof(S2C_POS);

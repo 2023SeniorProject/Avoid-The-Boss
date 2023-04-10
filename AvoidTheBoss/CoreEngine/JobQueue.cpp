@@ -52,7 +52,6 @@ void Scheduler::DoNormalTasks()
 		queueEvent* jobElem = _normalQueue.front(); // 가장 우선적으로 나와야할 이벤트에 대해서
 		jobElem->Task(); // 만약 호출할 시점이 됐다면 해당 잡을 수행하고 queue에서 제거
 		_normalQueue.pop();
-		std::cout << "do job\n" << std::endl;
 		delete jobElem;
 
 	}

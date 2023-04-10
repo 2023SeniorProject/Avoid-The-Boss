@@ -263,8 +263,10 @@ void CGameScene::ProcessInput(HWND hWnd)
 	//카메라를 갱신한다. 중력과 마찰력의 영향을 속도 벡터에 적용한다.
 	for (int k = 0; k < PLAYERNUM; ++k)
 	{	
+		_players[k]->m_lock.lock();
 		if (k == _playerIdx) _players[k]->Update(_timer.GetTimeElapsed(),PLAYER_TYPE::OWNER);
 		else _players[k]->Update(_timer.GetTimeElapsed(),PLAYER_TYPE::OTHER_PLAYER);
+		_players[k]->m_lock.unlock();
 	}
 
 

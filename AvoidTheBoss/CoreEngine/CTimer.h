@@ -42,8 +42,9 @@ public:
 	float GetDeltaTime(float fpsLock);
 	bool IsAfterTick(float fpsLock) 
 	{ 
-		if (_accumulateFPSLockTime >= (1 / fpsLock) * 1000.f)
+		if (_accumulateFPSLockTime > (int)(1 / fpsLock) * 1000.f)
 		{
+			//std::cout << _accumulateElapsedTime << "\n";
 			_accumulateFPSLockTime = 0.f;
 			return true;
 		}

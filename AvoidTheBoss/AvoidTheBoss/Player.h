@@ -16,9 +16,9 @@ static const char *g_pstrCharactorRefernece[5] =
 {
 	"Model/Boss_Run.bin",
 	"Model/Character1_Idle.bin",
-	"Model/Character2_Down.bin",
-	"Model/Character3_Down.bin",
-	"Model/Character4_Down.bin"
+	"Model/Character2_Run.bin",
+	"Model/Character3_Idle.bin",
+	"Model/Character4_Idle.bin"
 };
 
 #define INTERACTION_TIME 60

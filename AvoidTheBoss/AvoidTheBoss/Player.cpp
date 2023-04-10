@@ -424,12 +424,12 @@ CEmployee::CEmployee(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCo
 	SetChild(pEmployeeModel->m_pModelRootObject, true);
 
 	m_pSkinnedAnimationController = new CAnimationController(pd3dDevice, pd3dCommandList, 6, pEmployeeModel);
-	m_pSkinnedAnimationController->SetTrackAnimationSet(0, 0);//Idle
-	m_pSkinnedAnimationController->SetTrackAnimationSet(1, 1);//Shoot
-	m_pSkinnedAnimationController->SetTrackAnimationSet(2, 2);//RunningShoot
-	m_pSkinnedAnimationController->SetTrackAnimationSet(3, 3);//Run
-	m_pSkinnedAnimationController->SetTrackAnimationSet(4, 4);//RunningShoot
-	m_pSkinnedAnimationController->SetTrackAnimationSet(5, 5);//Run
+	m_pSkinnedAnimationController->SetTrackAnimationSet(2, 0);//faint_down
+	m_pSkinnedAnimationController->SetTrackAnimationSet(3, 1);//down_idle
+	m_pSkinnedAnimationController->SetTrackAnimationSet(0, 2);//idle
+	m_pSkinnedAnimationController->SetTrackAnimationSet(1, 3);//run
+	m_pSkinnedAnimationController->SetTrackAnimationSet(4, 4);//walk
+	m_pSkinnedAnimationController->SetTrackAnimationSet(5, 5);//awake
 
 
 	m_pSkinnedAnimationController->SetTrackEnable(0, true);
@@ -445,7 +445,7 @@ CEmployee::CEmployee(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCo
 	//SetCameraUpdatedContext();
 
 	SetScale(XMFLOAT3(1.f, 1.f, 1.f));
-	SetPosition(XMFLOAT3(0.0f, 1.25f, 60.0f));
+	SetPosition(XMFLOAT3(0.0f, 0.25f, 0.0f));
 
 	if (pEmployeeModel) delete pEmployeeModel;
 }
@@ -510,6 +510,8 @@ void CEmployee::Move(DWORD dwDirection, float fDistance)
 
 void CEmployee::Update(float fTimeElapsed, PLAYER_TYPE ptype)
 {
+	CPlayer::Update(fTimeElapsed, PLAYER_TYPE::OWNER);
+
 	if (m_pSkinnedAnimationController)
 	{
 		float fLength = sqrtf(m_xmf3Velocity.x * m_xmf3Velocity.x + m_xmf3Velocity.z * m_xmf3Velocity.z);

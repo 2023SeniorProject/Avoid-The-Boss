@@ -117,6 +117,13 @@ struct S2C_KEY
 	uint8 key;
 };
 
+struct S2C_POS
+{
+	uint8 size;
+	uint8 type;
+	int16 sid;
+	DirectX::XMFLOAT3 predicPos;
+};
 
 struct S2C_ROTATE
 {

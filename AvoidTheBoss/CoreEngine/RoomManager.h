@@ -24,6 +24,7 @@ public:
 	void UserIn(int32 sid);
 	void BroadCasting(void* packet);
 	void Update();
+
 	PlayerInfo& GetMyPlayerFromRoom(int32 sid) 
 	{ 
 		std::shared_lock<std::shared_mutex> ll(_listLock);
@@ -34,7 +35,6 @@ public:
 	void AddEvent(queueEvent* qe);
 	void StartGame() 
 	{
-		_isGameStarted = true;
 		_timer.Reset();
 	}
 public:
@@ -48,7 +48,7 @@ public:
 	std::shared_mutex _jobQueueLock; // eventQueue °ü¸®¿ë Lock
 	PlayerInfo _players[4];
 	Timer _timer;
-	Atomic<bool> _isGameStarted = false;
+
 };
 
 class RoomManager

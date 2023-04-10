@@ -113,13 +113,29 @@ void Room::BroadCasting(void* packet) // 방에 속하는 클라이언트에게만 전달하기
 // 방에 있는 유저에 대한 게임 로직 업데이트 진행 
 void Room::Update()
 {
-	_timer.Tick(60.f);
 	if (_status != ROOM_STATUS::FULL) return;
-
-	
-	std::unique_lock<std::shared_mutex> ql(_jobQueueLock);
-	_jobQueue->DoTasks();
+	_timer.Tick(60.f);
+	{
+		std::unique_lock<std::shared_mutex> ql(_jobQueueLock);
+		_jobQueue->DoNormalTasks();
+	}
 	for (int i = 0; i < PLAYERNUM; ++i) _players[i].Update(_timer.GetTimeElapsed());
+	if (_timer.IsAfterTick(30.f))
+	{
+		std::shared_lock<std::shared_mutex> sl(_listLock);
+		int idx = 0;
+		for(auto i : _cList)
+		{
+			S2C_POS packet;
+			packet.type = S_PACKET_TYPE::SPOS;
+			packet.size = sizeof(S2C_POS);
+			packet.sid = i;
+			packet.predicPos = Vector3::Add(_players[idx++].GetPosition() ,Vector3::ScalarProduct(_players[idx++].GetVelocity(), _timer.GetDeltaTime(30)));
+			// 서버의 현재 위치 기준 30ms 뒤의 위치 값을 계산해서 보낸다.
+			BroadCasting(&packet);
+		}
+	}
+
 }
 
 void Room::AddEvent(queueEvent* qe, float after)

@@ -18,7 +18,7 @@ protected:
 	XMFLOAT3					m_xmf3Look = XMFLOAT3(0.0f, 0.0f, 1.0f);
 	XMFLOAT3					m_xmf3Scale = XMFLOAT3(1.0f, 1.0f, 1.0f);
 
-
+	XMFLOAT3					m_predictPos = XMFLOAT3(0, 0, 0);
 	float m_fPitch;
 	float m_fYaw;
 	float m_fRoll;
@@ -78,7 +78,7 @@ public:
 	void UpdateMove(const XMFLOAT3& velocity);
 
 	void ProcesesInput();
-
+	 
 	void SetOnInteraction(bool value) 
 	{
 		m_OnInteraction = value; 

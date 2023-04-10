@@ -26,7 +26,7 @@ public:
 public:
 	virtual void Task()
 	{
-		std::lock_guard<std::mutex> plg(ServerIocpCore._clients[sid]->_playerLock);
+		if (_key == 0) std::cout << "keyUp";
 		// to do move Player in gameLogic
 		int16 roomNum = ServerIocpCore._clients[sid]->_myRm;
 		ServerIocpCore._rmgr->GetRoom(roomNum).GetMyPlayerFromRoom(sid).SetDirection(_dir);

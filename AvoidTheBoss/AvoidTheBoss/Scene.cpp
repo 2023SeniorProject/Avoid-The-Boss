@@ -249,6 +249,7 @@ void CGameScene::ProcessInput(HWND hWnd)
 
 	if (m_lastKeyInput != dwDirection || ( dwDirection != 0 && ((cxDelta != 0.0f) || (cyDelta != 0.0f)))) // 이전과 방향(키입력이 다른 경우에만 무브 이벤트 패킷을 보낸다)
 	{
+		if (dwDirection == 0) std::cout << "keyUp\n";
 		C2S_KEY packet; // 키 입력 + 방향 정보를 보낸다.
 		packet.size = sizeof(C2S_KEY);
 		packet.type = C_PACKET_TYPE::CKEY;

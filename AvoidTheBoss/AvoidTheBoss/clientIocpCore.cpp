@@ -115,12 +115,11 @@ void CSession::ProcessPacket(char* packet)
 	{
 		S2C_KEY* movePacket = reinterpret_cast<S2C_KEY*>(packet);
 		CPlayer* player = mainGame.m_pScene->GetScenePlayer(movePacket->sid);
-		if (player != nullptr  && movePacket->sid != _sid)
+		if (player != nullptr /* && movePacket->sid != _sid*/)
 		{
-			player->m_lock.lock();
-			player->Move(movePacket->key,PLAYER_VELOCITY);
-			player->m_lock.unlock();
+			player->Move(movePacket->key, PLAYER_VELOCITY);
 		}
+		
 	}
 	break;
 
@@ -128,12 +127,11 @@ void CSession::ProcessPacket(char* packet)
 	{
 		S2C_ROTATE* rotatePacket = reinterpret_cast<S2C_ROTATE*>(packet);	
 		CPlayer* player = mainGame.m_pScene->GetScenePlayer(rotatePacket->sid);
-		if (player != nullptr  && rotatePacket->sid != _sid)
+		if (player != nullptr  /* && rotatePacket->sid != _sid */ )
 		{
-			player->m_lock.lock();
 			player->Rotate(0, rotatePacket->angle, 0);
-			player->m_lock.unlock();
 		}
+		
 	}
 	break;
 	case S_PACKET_TYPE::SPOS: // 미리 계산한 좌표값을 보내준다.

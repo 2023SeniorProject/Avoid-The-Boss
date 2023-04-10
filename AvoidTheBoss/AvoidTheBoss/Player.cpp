@@ -316,9 +316,6 @@ CCamera* CWorker::ChangeCamera(DWORD nNewCameraMode, float fTimeElapsed)
 		break;
 	}
 	m_pCamera->SetPosition(Vector3::Add(m_xmf3Position, m_pCamera->GetOffset()));
-
-	Update(fTimeElapsed,PLAYER_TYPE::NONE);
-
 	return(m_pCamera);
 }
 

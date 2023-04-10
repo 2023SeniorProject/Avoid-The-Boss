@@ -25,6 +25,7 @@ public:
 	}
 	void PushTask(queueEvent*, float after); // after 시간 후에 해당 임무를 수행한다.
 	void PushTask(queueEvent*);
+	void DoNormalTasks();
 	void DoTasks();
 	int64 GetCurrentTick() const
 	{
@@ -33,6 +34,7 @@ public:
 
 private:
 
+	std::queue<queueEvent*> _normalQueue;
 	JobPriorityQueue _TaskQueue; // Job의 발생 틱에 따라 우선순위를 부여한다. --> 틱값이 클 수록 오래된 일이라는 것
 	Clock::time_point _BeginTickPoint; // 최초 시작 시간 스탬프
 	int64 _CurrentTick;  // 현재 틱

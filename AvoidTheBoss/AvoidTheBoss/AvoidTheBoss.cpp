@@ -245,6 +245,7 @@ BOOL CALLBACK MyDialogBox(HWND hWndDlg, UINT message, WPARAM wParam, LPARAM lPar
             clientCore.DoConnect(&loginPacket);
             while (true)
             {
+                std::cout << "looping\n";
                 if (clientCore.Processing())
                 {
                     if (clientCore._client->_loginOk == 1)

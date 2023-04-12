@@ -390,7 +390,7 @@ public:
 
 	CGameObject *GetParent() { return(m_pParent); }
 	void UpdateTransform(XMFLOAT4X4 *pxmf4x4Parent=NULL);
-	CGameObject *FindFrame(char *pstrFrameName);
+	CGameObject *FindFrame(const char *pstrFrameName);
 
 	CTexture *FindReplicatedTexture(_TCHAR *pstrTextureName);
 
@@ -429,20 +429,17 @@ public:
 	virtual void Render(ID3D12GraphicsCommandList *pd3dCommandList, CCamera *pCamera = NULL);
 };
 
-class CIndustryMap : public CGameObject
+#define BUTTON_ANIM_FRAME 15
+class CSwitch : public CGameObject
 {
+private:
+	bool m_bIsSwitchedOn = false;
+	int m_nAnimationCount = 0;
 public:
-	CIndustryMap(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature);
-	virtual ~CIndustryMap();
+	void SetRandomPosition(XMFLOAT3 pos);
+	void SetBounds();
 
-	//virtual void Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera = NULL);
+	void CollisitonCheck();
+	virtual void Animate(float fTimeElapsed);
 };
-
-class CBossObject : public CGameObject
-{
-public:
-	CBossObject(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, CLoadedModelInfo* pModel, int nAnimationTracks);
-	virtual ~CBossObject();
-};
-
 

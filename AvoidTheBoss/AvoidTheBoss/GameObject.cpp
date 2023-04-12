@@ -647,7 +647,7 @@ void CGameObject::FindAndSetSkinnedMesh(CSkinnedMesh **ppSkinnedMeshes, int *pnS
 	if (m_pChild) m_pChild->FindAndSetSkinnedMesh(ppSkinnedMeshes, pnSkinnedMesh);
 }
 
-CGameObject *CGameObject::FindFrame(char *pstrFrameName)
+CGameObject *CGameObject::FindFrame(const char *pstrFrameName)
 {
 	CGameObject *pFrameObject = NULL;
 	if (!strncmp(m_pstrFrameName, pstrFrameName, strlen(pstrFrameName))) return(this);
@@ -1255,28 +1255,31 @@ void CSkyBox::Render(ID3D12GraphicsCommandList *pd3dCommandList, CCamera *pCamer
 	CGameObject::Render(pd3dCommandList, pCamera);
 }
 
-CBossObject::CBossObject(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, CLoadedModelInfo* pModel, int nAnimationTracks)
+void CSwitch::SetRandomPosition(XMFLOAT3 pos)
 {
-	CLoadedModelInfo* pEagleModel = pModel;
-	if (!pEagleModel) pEagleModel = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "Model/Boss_Runing_Shoot.bin", NULL,Layout::PLAYER);
-
-	SetChild(pEagleModel->m_pModelRootObject, true);
-	m_pSkinnedAnimationController = new CAnimationController(pd3dDevice, pd3dCommandList, nAnimationTracks, pEagleModel);
+	//고정된 위치에 생성
 }
 
-CBossObject::~CBossObject()
+void CSwitch::SetBounds()
 {
+	m_pAABB.Center = XMFLOAT3(GetPosition().x, 0.0f, GetPosition().z);
 }
 
-CIndustryMap::CIndustryMap(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature)
+void CSwitch::CollisitonCheck()
 {
-
+	//캐릭터 원 - 스위치 영역 원 충돌체크
 }
 
-CIndustryMap::~CIndustryMap()
+void CSwitch::Animate(float fTimeElapsed)
 {
-}
+	if (m_bIsSwitchedOn)
+	{
+		CGameObject* pButton = FindFrame("Cylinder");
 
-//void CIndustryMap::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera)
-//{
-//}
+		if (m_nAnimationCount > 0)
+		{
+			pButton->MoveForward(-0.01f * fTimeElapsed);
+			m_nAnimationCount--;
+		}
+	}
+}

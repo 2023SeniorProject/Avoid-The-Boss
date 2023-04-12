@@ -59,19 +59,6 @@ protected:
 	float								m_fElapsedTime = 0.0f;
 };
 
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//
-class CTerrainShader : public CShader
-{
-public:
-	CTerrainShader();
-	virtual ~CTerrainShader();
-
-	virtual D3D12_INPUT_LAYOUT_DESC CreateInputLayout();
-
-	virtual D3D12_SHADER_BYTECODE CreateVertexShader();
-	virtual D3D12_SHADER_BYTECODE CreatePixelShader();
-};
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //
@@ -137,6 +124,17 @@ class CBoundsObjectsShader : public CStandardObjectsShader
 public:
 	CBoundsObjectsShader();
 	virtual ~CBoundsObjectsShader();
+
+	virtual void BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, CLoadedModelInfo* pModel, void* pContext = NULL);
+};
+
+class CSwitchObjectShader : public CStandardObjectsShader
+{
+private:
+	int m_nButtonType = -1;
+public:
+	CSwitchObjectShader();
+	virtual ~CSwitchObjectShader();
 
 	virtual void BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, CLoadedModelInfo* pModel, void* pContext = NULL);
 };

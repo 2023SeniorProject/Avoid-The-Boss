@@ -1,3 +1,5 @@
+#define _CRTDBG_MAP_ALLOC
+#include <crtdbg.h>
 #include "pch.h"
 #include "ThreadManager.h"
 #include "SocketUtil.h"
@@ -26,19 +28,24 @@ int main()
 				{
 					ServerIocpCore.Processing(); // Accept 받기 성공 
 					//기존 게임 서버 프로그래밍 Worker Thread에 해당하는 부분
-					std::this_thread::sleep_for(0ms);
 				}
+				std::cout << "End Thread \n";
+				_CrtSetReportMode(_CRT_WARN, _CRTDBG_MODE_DEBUG);
+				_CrtDumpMemoryLeaks();
 			});
+		
 	}
 	GThreadManager->Launch([=]()
 		{
 			while (true)
 			{
 				ServerIocpCore._rmgr->UpdateRooms();
-				std::this_thread::sleep_for(0ms);
 			}
+			std::cout << "End Thread \n";
 		});
 	GThreadManager->Join();
 	delete GThreadManager;
 	SocketUtil::Clear();
+
+	
 }

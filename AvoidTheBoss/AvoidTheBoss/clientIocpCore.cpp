@@ -4,6 +4,7 @@
 #include "IocpEvent.h"
 
 
+
 ClientMananger clientCore;
 
 CSession::CSession()
@@ -95,8 +96,7 @@ bool CSession::DoRecv()
 	_rev._cid = _cid;
 	DWORD recvBytes(0);
 	DWORD flag(0);
-	_rev._rWsaBuf.len -= _prev_remain;
-	if (WSARecv(_sock, &_rev._rWsaBuf + _prev_remain, 1, &recvBytes, &flag, static_cast<LPWSAOVERLAPPED>(&_rev), NULL) == SOCKET_ERROR)
+	if (WSARecv(_sock, &_rev._rWsaBuf, 1, &recvBytes, &flag, static_cast<LPWSAOVERLAPPED>(&_rev), NULL) == SOCKET_ERROR)
 	{
 		int32 errcode = WSAGetLastError();
 		if (WSAGetLastError() != WSA_IO_PENDING)
@@ -181,15 +181,13 @@ void CSession::ProcessPacket(char* packet)
 		S2C_LOGIN_OK* lo = (S2C_LOGIN_OK*)packet;
 		_cid = lo->cid;
 		_sid = lo->sid;
-		_loginOk = 1;
 	}
 	break;
 	case S_PACKET_TYPE::LOGIN_FAIL:
 	{
 		S2C_LOGIN_FAIL* lo = (S2C_LOGIN_FAIL*)packet;
 		std::cout << "Login Fail" << std::endl;
-		SocketUtil::Close(_sock);
-		_loginOk = 0;
+		::SendMessage(mainGame.m_hWnd, WM_QUIT, 0, 0);
 	}
 	break;
 	// ===== 방 관련 패킷 ============

@@ -89,8 +89,8 @@ bool ServerSession::DoRecv()
 	_rev._cid = _cid;
 	DWORD recvBytes(0);
 	DWORD flag(0);
-	_rev._rWsaBuf.len -= _prev_remain;
-	if (WSARecv(_sock, &_rev._rWsaBuf + _prev_remain, 1, &recvBytes, &flag, static_cast<LPWSAOVERLAPPED>(&_rev), NULL) == SOCKET_ERROR)
+	
+	if (WSARecv(_sock, &_rev._rWsaBuf, 1, &recvBytes, &flag, static_cast<LPWSAOVERLAPPED>(&_rev), NULL) == SOCKET_ERROR)
 	{
 		int32 errcode = WSAGetLastError();
 		if (WSAGetLastError() != WSA_IO_PENDING)

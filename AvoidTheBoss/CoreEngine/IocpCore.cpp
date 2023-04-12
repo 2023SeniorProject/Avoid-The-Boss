@@ -52,7 +52,7 @@ bool IocpCore::Processing(uint32_t time_limit) // worker thread 기능 완료된 비동
 			default:
 				// TODO : 로그 찍기
 			{
-				std::cout <<  "GetQuedError" << ::WSAGetLastError() << std::endl;
+				std::cout <<  "GetQuedError " << ::WSAGetLastError() << "\n";
 				ServerSession* s = static_cast<ServerSession*>(iocpObject);
 				Disconnect(s->_sid);
 			}
@@ -61,7 +61,7 @@ bool IocpCore::Processing(uint32_t time_limit) // worker thread 기능 완료된 비동
 	}
 
 	// 클라이언트가 정상적으로 종료한 경우
-	if (numOfBytes == 0 && (iocpEvent->_comp == EventType::Recv || iocpEvent->_comp == EventType::Send))
+	if (numOfBytes == 0 && (iocpEvent->_comp == EventType::Recv))
 	{
 		//Disconnect
 		ServerSession* s = static_cast<ServerSession*>(iocpObject);

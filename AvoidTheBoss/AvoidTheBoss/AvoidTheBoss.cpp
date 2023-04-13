@@ -81,10 +81,10 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
           mainGame.FrameAdvance(); // 처리할 윈도우 메세지가 큐에 없을 때 게임프로그램이 CPU사용
        }
    }
+ 
   
-    GCThreadManager->Join();
-    delete GCThreadManager;
     mainGame.OnDestroy();
+    delete GCThreadManager;
     _CrtSetReportMode(_CRT_WARN, _CRTDBG_MODE_DEBUG);
     _CrtDumpMemoryLeaks();
     SocketUtil::Clear();

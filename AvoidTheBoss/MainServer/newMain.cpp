@@ -30,8 +30,7 @@ int main()
 					//기존 게임 서버 프로그래밍 Worker Thread에 해당하는 부분
 				}
 				std::cout << "End Thread \n";
-				_CrtSetReportMode(_CRT_WARN, _CRTDBG_MODE_DEBUG);
-				_CrtDumpMemoryLeaks();
+				
 			});
 		
 	}

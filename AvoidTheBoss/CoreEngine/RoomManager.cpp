@@ -24,7 +24,7 @@ Room::~Room()
 void Room::UserOut(int32 sid)
 {
 	{
-		//WLock; // cList Lock 쓰기 호출
+		// cList Lock 쓰기 호출
 		std::unique_lock<std::shared_mutex> wll(_listLock);
 		auto i = std::find(_cList.begin(), _cList.end(), sid); // 리스트에 있는지 탐색 후
 		if (i != _cList.end()) _cList.erase(i); // 리스트에서 제거
@@ -41,7 +41,7 @@ void Room::UserOut(int32 sid)
 			READ_SERVER_LOCK;
 			for (auto i : ServerIocpCore._clients)
 			{
-				i.second->DoSend(&packet);
+				//i.second->DoSend(&packet);
 			}
 		}
 	}
@@ -96,15 +96,13 @@ void Room::UserIn(int32 sid)
 
 void Room::BroadCasting(void* packet) // 방에 속하는 클라이언트에게만 전달하기
 {
-	//RLock; // cList Lock 읽기 호출 
+	// cList Lock 읽기 호출 
 	std::shared_lock<std::shared_mutex> rll(_listLock);
 	for (auto i =  _cList.begin(); i != _cList.end(); ++i)
 	{
 		if (ServerIocpCore._clients[*i] == nullptr) continue;
 		if(!ServerIocpCore._clients[*i]->DoSend(packet))
 		{ 
-			// 비정상 접속 클라이언트 처리
-			cout << *i << "Client Error Occur" << endl;
 			continue;
 		}
 	}
@@ -122,19 +120,13 @@ void Room::Update()
 	for (int i = 0; i < PLAYERNUM; ++i) _players[i].Update(_timer.GetTimeElapsed());
 	if (_timer.IsAfterTick(30.f))
 	{
-		std::shared_lock<std::shared_mutex> sl(_listLock);
-		int idx = 0;
-		for(auto i : _cList)
-		{
-			//std::cout << "30tick\n";
-			S2C_POS packet;
-			packet.type = S_PACKET_TYPE::SPOS;
-			packet.size = sizeof(S2C_POS);
-			packet.sid = i;
-			packet.predicPos = Vector3::Add(_players[idx++].GetPosition() ,Vector3::ScalarProduct(_players[idx++].GetVelocity(), _timer.GetDeltaTime(30)));
-			// 서버의 현재 위치 기준 30ms 뒤의 위치 값을 계산해서 보낸다.
-			BroadCasting(&packet);
-		}
+		S2C_POS packet;
+		packet.type = S_PACKET_TYPE::SPOS;
+		packet.size = sizeof(S2C_POS);
+		packet.sid = 0;
+ 		XMFLOAT3 a = Vector3::ScalarProduct(_players[0].GetVelocity(), _timer.GetDeltaTime(30));
+		packet.predicPos = Vector3::Add(_players[0].GetPosition() , a);
+		BroadCasting(&packet);
 	}
 
 }

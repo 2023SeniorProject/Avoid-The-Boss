@@ -33,7 +33,7 @@ public:
 	~SIocpCore();
 	virtual void Disconnect(int32 sid) override;
 public:
-	RWLOCK;
+	std::shared_mutex _lock;
 	std::unordered_map<int32, ServerSession*> _clients;
 	std::set<int32> _cList;
 	RoomManager* _rmgr;

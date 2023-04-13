@@ -48,7 +48,7 @@ public:
 			_accumulateFPSLockTime = 0.f;
 			return true;
 		}
-		return false; 
+		else return false; 
 	}
 
 };

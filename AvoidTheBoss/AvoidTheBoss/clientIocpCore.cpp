@@ -96,6 +96,8 @@ bool CSession::DoRecv()
 	_rev._cid = _cid;
 	DWORD recvBytes(0);
 	DWORD flag(0);
+	_rev._rWsaBuf.buf = _rev._rbuf + _prev_remain;
+	_rev._rWsaBuf.len = BUFSIZE - _prev_remain;
 	if (WSARecv(_sock, &_rev._rWsaBuf, 1, &recvBytes, &flag, static_cast<LPWSAOVERLAPPED>(&_rev), NULL) == SOCKET_ERROR)
 	{
 		int32 errcode = WSAGetLastError();
@@ -129,7 +131,7 @@ void CSession::ProcessPacket(char* packet)
 	{
 		S2C_ROTATE* rotatePacket = reinterpret_cast<S2C_ROTATE*>(packet);	
 		CPlayer* player = mainGame.m_pScene->GetScenePlayer(rotatePacket->sid);
-		if (player != nullptr  /* && rotatePacket->sid != _sid */ )
+		if (player != nullptr )
 		{
 			player->Rotate(0, rotatePacket->angle, 0);
 		}
@@ -138,24 +140,21 @@ void CSession::ProcessPacket(char* packet)
 	break;
 	case S_PACKET_TYPE::SPOS: // 미리 계산한 좌표값을 보내준다.
 	{
+		
 		S2C_POS* predicPosPacket = reinterpret_cast<S2C_POS*>(packet);
 		CPlayer* player = mainGame.m_pScene->GetScenePlayer(predicPosPacket->sid);
-		if (!Vector3::IsZero(player->GetPredictPos()))
+	
+		XMFLOAT3 offset // 클라측 예상 위치와 서버 측 예상 위치의 오차 구한다.
+		{ player->GetPredictPos().x - predicPosPacket->predicPos.x,
+		  player->GetPredictPos().y - predicPosPacket->predicPos.y,
+		  player->GetPredictPos().z - predicPosPacket->predicPos.z
+		};
+		if (Vector3::Length(offset) >= 0.1) // 오차 검사 // 오차가 크면  서버 걸로 대체
 		{
-			XMFLOAT3 offset // 클라측 예상 위치와 서버 측 예상 위치의 오차 구한다.
-			{ player->GetPredictPos().x - predicPosPacket->predicPos.x,
-			  player->GetPredictPos().y - predicPosPacket->predicPos.y,
-			  player->GetPredictPos().z - predicPosPacket->predicPos.z
-			};
-			if (Vector3::Length(offset) >= 0.1) // 오차 검사 // 오차가 크면  서버 걸로 대체
-			{
-				player->m_lock.lock();
-				player->SetPredicPos(predicPosPacket->predicPos);
-				XMFLOAT3 newdir = Vector3::Normalize(Vector3::Subtract(predicPosPacket->predicPos, player->GetPosition()));
-				player->SetDirection(newdir); // 방향 설정 후,
-				player->m_lock.unlock();
-			}
+			std::cout << "reset Pos\n";
+			player->SetPredicPos(predicPosPacket->predicPos);
 		}
+		else std::cout << "almost Same Pos\n";
 	}
 	break;
 	case S_PACKET_TYPE::SCHAT:

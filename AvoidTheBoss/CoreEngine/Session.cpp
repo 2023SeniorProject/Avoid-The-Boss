@@ -57,6 +57,8 @@ void ServerSession::Processing(IocpEvent* iocpEvent, int32 numOfBytes)
 			SendEvent* sev = static_cast<SendEvent*>(iocpEvent);
 			if (iocpEvent == nullptr) ASSERT_CRASH("double Del");
 			delete iocpEvent;
+			_CrtSetReportMode(_CRT_WARN, _CRTDBG_MODE_DEBUG);
+			_CrtDumpMemoryLeaks();
 		}
 		break;
 	}
@@ -75,9 +77,10 @@ bool ServerSession::DoSend(void* packet)
 		int32 errcode = WSAGetLastError();
 		if (WSAGetLastError() != WSA_IO_PENDING)
 		{
-			cout << "recv " << errcode << endl;
+			cout << "Send Error " << errcode << "\n";
 			return false;
 		}
+		delete sev;
 	}
 	return true;
 }
@@ -87,6 +90,8 @@ bool ServerSession::DoRecv()
 	_rev.Init();
 	_rev._sid = _sid;
 	_rev._cid = _cid;
+	_rev._rWsaBuf.buf = _rev._rbuf + _prev_remain;
+	_rev._rWsaBuf.len = BUFSIZE - _prev_remain;
 	DWORD recvBytes(0);
 	DWORD flag(0);
 	
@@ -95,7 +100,7 @@ bool ServerSession::DoRecv()
 		int32 errcode = WSAGetLastError();
 		if (WSAGetLastError() != WSA_IO_PENDING)
 		{
-			cout << "send " << errcode << endl;
+			cout << "Recv Error " << errcode << "\n";
 			return false;
 		}
 	}

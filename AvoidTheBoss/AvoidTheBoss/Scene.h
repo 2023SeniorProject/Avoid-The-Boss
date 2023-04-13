@@ -114,6 +114,7 @@ public:
 	ID3D12Resource* m_pd3dcbLights = NULL;
 	LIGHTS* m_pcbMappedLights = NULL;
 
+	CSwitch* m_pSwitch[3];
 protected:
 	ID3D12RootSignature* m_pd3dGraphicsRootSignature = NULL;
 

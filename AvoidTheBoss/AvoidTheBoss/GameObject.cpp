@@ -1265,14 +1265,28 @@ void CSwitch::SetBounds()
 	m_pAABB.Center = XMFLOAT3(GetPosition().x, 0.0f, GetPosition().z);
 }
 
-void CSwitch::CollisitonCheck()
+void CSwitch::CollisitonCheck(CPlayer* player)
 {
 	//캐릭터 원 - 스위치 영역 원 충돌체크
+	if (!m_bOnSwitch)
+	{
+		XMFLOAT3 v1 = GetPosition();
+		XMFLOAT3 v2 = player->GetPosition();
+		float fDistance = sqrt(pow(v1.x - v2.x, 2) + pow(v1.y - v2.y, 2) + pow(v1.y - v2.y, 2));
+		if (fDistance < radius + player->m_playerBV.Radius)
+		{
+			if (player->GetOnInteraction())
+			{
+				m_bOnSwitch = true;
+				m_nAnimationCount = BUTTON_ANIM_FRAME;
+			}
+		}
+	}
 }
 
 void CSwitch::Animate(float fTimeElapsed)
 {
-	if (m_bIsSwitchedOn)
+	if (m_bOnSwitch)
 	{
 		CGameObject* pButton = FindFrame("Cylinder");
 

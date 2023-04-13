@@ -160,22 +160,21 @@ void CGameScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandLis
 	CBoundsObjectsShader* pBoundsMapShader = new CBoundsObjectsShader();
 	pBoundsMapShader->CreateShader(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature);
 	pBoundsMapShader->BuildObjects(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature,NULL,NULL);
-	//m_ppShaders[1] = pBoundsMapShader;
+	m_ppShaders[1] = pBoundsMapShader;
 
 	CSwitchObjectShader* pSwitchObjectShader = new CSwitchObjectShader();
 	pSwitchObjectShader->CreateShader(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature);
-	pSwitchObjectShader->BuildObjects(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, NULL, NULL);
+	pSwitchObjectShader->BuildObjects(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, NULL, m_pSwitch);
 	m_ppShaders[1] = pSwitchObjectShader;
-
-
-	CreateShaderVariables(pd3dDevice, pd3dCommandList);
-
 
 	for (int i = 0; i < PLAYERNUM; ++i)
 	{
-		_players[i] = new CEmployee(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, CHARACTER_TYPE::YELLOW_EMP);
+		_players[i] = new CEmployee(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, CHARACTER_TYPE::MASK_EMP);
 	}
 	m_pCamera = _players[0]->GetCamera();
+
+	CreateShaderVariables(pd3dDevice, pd3dCommandList);
+
 }
 
 void CGameScene::ProcessInput(HWND hWnd)

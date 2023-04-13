@@ -494,18 +494,27 @@ CSwitchObjectShader::~CSwitchObjectShader()
 
 void CSwitchObjectShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, CLoadedModelInfo* pModel, void* pContext)
 {
+	CSwitch* pSwitch = (CSwitch*)pContext;
+
 	m_nObjects = 3;
 	m_ppObjects = new CGameObject * [m_nObjects];
 
-	CGameObject* pSwitch = CGameObject::LoadGeometryFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "Model/Switch.bin", NULL, Layout::SWITCH);
-	pSwitch->m_type = 1;
+	const char* path[3] =
+	{
+		"Model/Switch.bin",
+		"Model/Switch_(1).bin",
+		"Model/Switch_(2).bin"
+	};
 
 	for (int i = 0; i < m_nObjects; i++)
 	{
+		CGameObject* pSwitchModel = CGameObject::LoadGeometryFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, path[i], NULL, Layout::SWITCH);
+		pSwitchModel->m_type = 1;
 		m_ppObjects[i] = new CSwitch();
-		m_ppObjects[i]->SetChild(pSwitch);
-		pSwitch->AddRef();
-		m_ppObjects[i]->SetPosition(XMFLOAT3(0.0f, 0.0f, 0.0f));
+		m_ppObjects[i]->SetChild(pSwitchModel);
+		m_ppObjects[i]->AddRef();
+		pSwitch = (CSwitch*)m_ppObjects[i];
+		//m_ppObjects[i]->SetPosition(XMFLOAT3(0.0f, 0.0f, 0.0f));
 	}
 
 	CreateShaderVariables(pd3dDevice, pd3dCommandList);

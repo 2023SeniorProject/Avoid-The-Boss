@@ -117,8 +117,7 @@ void CPlayer::Update(float fTimeElapsed, PLAYER_TYPE ptype)
 	DWORD nCameraMode = m_pCamera->GetMode();
 
 	//플레이어의 위치가 변경되었으므로 3인칭 카메라를 갱신한다. 
-	if (nCameraMode == THIRD_PERSON_CAMERA) m_pCamera->Update(m_xmf3Position,
-		fTimeElapsed);
+	if (nCameraMode == THIRD_PERSON_CAMERA) m_pCamera->Update(m_xmf3Position,fTimeElapsed);
 
 	//카메라의 위치가 변경될 때 추가로 수행할 작업을 수행한다. 
 	if (m_pCameraUpdatedContext) OnCameraUpdateCallback();

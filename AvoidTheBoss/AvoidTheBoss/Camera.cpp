@@ -215,7 +215,6 @@ void CFirstPersonCamera::Rotate(float x, float y, float z)
 CThirdPersonCamera::CThirdPersonCamera(CCamera* pCamera)
 {
 	m_nMode = THIRD_PERSON_CAMERA;
-
 }
 
 void CThirdPersonCamera::Update(XMFLOAT3& xmf3LookAt, float fTimeElapsed)

@@ -16,10 +16,12 @@ static const char *g_pstrCharactorRefernece[5] =
 {
 	"Model/Boss_Run.bin",
 	"Model/Character1_Idle.bin",
-	"Model/Character2_Run.bin",
+	"Model/Character2_Idle.bin",
 	"Model/Character3_Idle.bin",
 	"Model/Character4_Idle.bin"
 };
+
+
 
 #define INTERACTION_TIME 60
 class CPlayer : public CGameObject
@@ -57,6 +59,9 @@ public:
 	int m_InteractionCountTime = INTERACTION_TIME;
 
 	int m_nCharacterType;
+
+	//Switch 
+
 public: 
 	CPlayer();
 	virtual ~CPlayer();
@@ -102,6 +107,8 @@ public:
 	{
 		m_OnInteraction = value; 
 	}
+
+	bool GetOnInteraction() { return m_OnInteraction; }
 	void OnInteractive();
 
 	//플레이어를 회전하는 함수이다. 

@@ -21,9 +21,7 @@ static const char *g_pstrCharactorRefernece[5] =
 	"Model/Character4_Idle.bin"
 };
 
-
-
-#define INTERACTION_TIME 60
+#define INTERACTION_TIME 25
 class CPlayer : public CGameObject
 {
 protected:
@@ -60,8 +58,7 @@ public:
 
 	int m_nCharacterType;
 
-	//Switch 
-
+	CSwitch* m_pSwitch = NULL;
 public: 
 	CPlayer();
 	virtual ~CPlayer();

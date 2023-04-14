@@ -494,8 +494,6 @@ CSwitchObjectShader::~CSwitchObjectShader()
 
 void CSwitchObjectShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, CLoadedModelInfo* pModel, void* pContext)
 {
-	CSwitch* pSwitch = (CSwitch*)pContext;
-
 	m_nObjects = 3;
 	m_ppObjects = new CGameObject * [m_nObjects];
 
@@ -513,7 +511,6 @@ void CSwitchObjectShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsC
 		m_ppObjects[i] = new CSwitch();
 		m_ppObjects[i]->SetChild(pSwitchModel);
 		m_ppObjects[i]->AddRef();
-		pSwitch = (CSwitch*)m_ppObjects[i];
 		//m_ppObjects[i]->SetPosition(XMFLOAT3(0.0f, 0.0f, 0.0f));
 	}
 

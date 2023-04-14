@@ -160,16 +160,16 @@ void CGameScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandLis
 	CBoundsObjectsShader* pBoundsMapShader = new CBoundsObjectsShader();
 	pBoundsMapShader->CreateShader(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature);
 	pBoundsMapShader->BuildObjects(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature,NULL,NULL);
-	m_ppShaders[1] = pBoundsMapShader;
 
 	CSwitchObjectShader* pSwitchObjectShader = new CSwitchObjectShader();
 	pSwitchObjectShader->CreateShader(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature);
-	pSwitchObjectShader->BuildObjects(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, NULL, m_pSwitch);
+	pSwitchObjectShader->BuildObjects(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, NULL,NULL);
 	m_ppShaders[1] = pSwitchObjectShader;
 
 	for (int i = 0; i < PLAYERNUM; ++i)
 	{
-		_players[i] = new CEmployee(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, CHARACTER_TYPE::MASK_EMP);
+		_players[i] = new CEmployee(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, CHARACTER_TYPE::YELLOW_EMP);
+		_players[i]->m_pSwitch = (CSwitch*)pSwitchObjectShader->m_ppObjects[0];
 	}
 	m_pCamera = _players[0]->GetCamera();
 
@@ -187,20 +187,46 @@ void CGameScene::ProcessInput(HWND hWnd)
 	uint8 dwDirection = 0;
 	if (::GetKeyboardState(pKeyBuffer))
 	{
-		if (pKeyBuffer[0x57] & 0xF0) dwDirection |= DIR_FORWARD;
-		else if (pKeyBuffer[0x77] & 0xF0) dwDirection |= DIR_FORWARD;
+		if (m_pSwitch)
+		{
+			if (!(m_pSwitch->GetOnSwitch()))
+			{
+				if (pKeyBuffer[0x57] & 0xF0) dwDirection |= DIR_FORWARD;
+				else if (pKeyBuffer[0x77] & 0xF0) dwDirection |= DIR_FORWARD;
 
-		if (pKeyBuffer[0x53] & 0xF0) dwDirection |= DIR_BACKWARD;
-		else if (pKeyBuffer[0x73] & 0xF0) dwDirection |= DIR_BACKWARD;
+				if (pKeyBuffer[0x53] & 0xF0) dwDirection |= DIR_BACKWARD;
+				else if (pKeyBuffer[0x73] & 0xF0) dwDirection |= DIR_BACKWARD;
 
-		if (pKeyBuffer[0x61] & 0xF0) dwDirection |= DIR_LEFT;
-		else if (pKeyBuffer[0x41] & 0xF0) dwDirection |= DIR_LEFT;
+				if (pKeyBuffer[0x61] & 0xF0) dwDirection |= DIR_LEFT;
+				else if (pKeyBuffer[0x41] & 0xF0) dwDirection |= DIR_LEFT;
 
-		if (pKeyBuffer[0x44] & 0xF0) dwDirection |= DIR_RIGHT;
-		else if (pKeyBuffer[0x64] & 0xF0) dwDirection |= DIR_RIGHT;
-	
-		//if (pKeyBuffer[0x46] & 0xF0) _players[0]->SetOnInteraction(true);
-		//else if (pKeyBuffer[0x66] & 0xF0) _players[0]->SetOnInteraction(true);
+				if (pKeyBuffer[0x44] & 0xF0) dwDirection |= DIR_RIGHT;
+				else if (pKeyBuffer[0x64] & 0xF0) dwDirection |= DIR_RIGHT;
+
+				if (pKeyBuffer[0x46] & 0xF0) _players[0]->SetOnInteraction(true);
+				else if (pKeyBuffer[0x66] & 0xF0) _players[0]->SetOnInteraction(true);
+			}
+		}
+		else
+		{
+			if (pKeyBuffer[0x57] & 0xF0) dwDirection |= DIR_FORWARD;
+			else if (pKeyBuffer[0x77] & 0xF0) dwDirection |= DIR_FORWARD;
+
+			if (pKeyBuffer[0x53] & 0xF0) dwDirection |= DIR_BACKWARD;
+			else if (pKeyBuffer[0x73] & 0xF0) dwDirection |= DIR_BACKWARD;
+
+			if (pKeyBuffer[0x61] & 0xF0) dwDirection |= DIR_LEFT;
+			else if (pKeyBuffer[0x41] & 0xF0) dwDirection |= DIR_LEFT;
+
+			if (pKeyBuffer[0x44] & 0xF0) dwDirection |= DIR_RIGHT;
+			else if (pKeyBuffer[0x64] & 0xF0) dwDirection |= DIR_RIGHT;
+
+			//if (_players[0]->m_pSwitch-/>GetOnSwitch/())
+			//{
+				if (pKeyBuffer[0x46] & 0xF0) _players[0]->SetOnInteraction(true);
+				else if (pKeyBuffer[0x66] & 0xF0) _players[0]->SetOnInteraction(true);
+			//}
+		}
 	}
 
 	float cxDelta = 0.0f, cyDelta = 0.0f;

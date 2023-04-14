@@ -429,12 +429,6 @@ public:
 	virtual void Render(ID3D12GraphicsCommandList *pd3dCommandList, CCamera *pCamera = NULL);
 };
 
-typedef struct SwitchInformation
-{
-	XMFLOAT3 position;
-	float radius;
-}Switch;
-
 #define BUTTON_ANIM_FRAME 15
 class CSwitch : public CGameObject
 {
@@ -446,7 +440,10 @@ public:
 	void SetRandomPosition(XMFLOAT3 pos);
 	void SetBounds();
 
+	bool SetOnSwitch(bool value) { m_bOnSwitch = value; }
+	bool GetOnSwitch() { return m_bOnSwitch; }
 	void CollisitonCheck(CPlayer* player);
 	virtual void Animate(float fTimeElapsed);
 };
+
 

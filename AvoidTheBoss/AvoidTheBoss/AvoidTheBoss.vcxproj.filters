@@ -80,7 +80,7 @@
       <Filter>SceneInterface</Filter>
     </ClInclude>
     <ClInclude Include="Scene.h">
-      <Filter>Mesh</Filter>
+      <Filter>GameScene</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

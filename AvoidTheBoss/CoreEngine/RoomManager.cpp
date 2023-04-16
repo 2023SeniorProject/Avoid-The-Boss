@@ -118,14 +118,13 @@ void Room::Update()
 		_jobQueue->DoNormalTasks();
 	}
 	for (int i = 0; i < PLAYERNUM; ++i) _players[i].Update(_timer.GetTimeElapsed());
-	if (_timer.IsAfterTick(30.f))
+	if (_timer.IsAfterTick(60.f))
 	{
 		S2C_POS packet;
 		packet.type = S_PACKET_TYPE::SPOS;
 		packet.size = sizeof(S2C_POS);
 		packet.sid = 0;
- 		XMFLOAT3 a = Vector3::ScalarProduct(_players[0].GetVelocity(), _timer.GetDeltaTime(30));
-		packet.predicPos = Vector3::Add(_players[0].GetPosition() , a);
+		packet.predicPos = _players[0].GetPosition();
 		BroadCasting(&packet);
 	}
 

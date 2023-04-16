@@ -184,7 +184,7 @@ void CGameScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandLis
 
 void CGameScene::ProcessInput(HWND hWnd)
 {
-	_timer.Tick(60);
+	_timer.Tick(0);
 	static UCHAR pKeyBuffer[256];
 	// 방향키를 바이트로 처리한다.
 
@@ -268,14 +268,17 @@ void CGameScene::ProcessInput(HWND hWnd)
 		_players[k]->m_lock.unlock();
 	}
 
-
 	// 평균 프레임 레이트 출력
 	std::wstring str = L"";
+	str.append(L" (");
+	str += std::to_wstring(_players[_playerIdx]->GetLook().x);
 	str.append(L" ");
-	str += std::to_wstring(_players[_playerIdx]->GetPosition().x);
+	str.append(std::to_wstring(_players[_playerIdx]->GetLook().z));
+	str.append(L") (");
+	str += std::to_wstring(_players[_playerIdx]->GetLook().x);
 	str.append(L" ");
-	str.append(std::to_wstring(_players[_playerIdx]->GetPosition().z));
-	
+	str.append(std::to_wstring(_players[_playerIdx]->GetLook().z));
+	str.append(L")");
 	::SetWindowText(hWnd, str.c_str());
 }
 

@@ -77,10 +77,11 @@ bool ServerSession::DoSend(void* packet)
 		int32 errcode = WSAGetLastError();
 		if (WSAGetLastError() != WSA_IO_PENDING)
 		{
+			delete sev;
 			cout << "Send Error " << errcode << "\n";
 			return false;
 		}
-		delete sev;
+		
 	}
 	return true;
 }

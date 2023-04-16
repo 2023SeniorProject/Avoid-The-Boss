@@ -119,7 +119,7 @@ void CSession::ProcessPacket(char* packet)
 	{
 		S2C_KEY* movePacket = reinterpret_cast<S2C_KEY*>(packet);
 		CPlayer* player = mainGame.m_pScene->GetScenePlayer(movePacket->sid);
-		if (player != nullptr /* && movePacket->sid != _sid*/)
+		if (player != nullptr)
 		{
 			player->Move(movePacket->key, PLAYER_VELOCITY);
 		}
@@ -131,7 +131,7 @@ void CSession::ProcessPacket(char* packet)
 	{
 		S2C_ROTATE* rotatePacket = reinterpret_cast<S2C_ROTATE*>(packet);	
 		CPlayer* player = mainGame.m_pScene->GetScenePlayer(rotatePacket->sid);
-		if (player != nullptr )
+		if (player != nullptr && _sid != rotatePacket->sid )
 		{
 			player->Rotate(0, rotatePacket->angle, 0);
 		}
@@ -143,18 +143,9 @@ void CSession::ProcessPacket(char* packet)
 		
 		S2C_POS* predicPosPacket = reinterpret_cast<S2C_POS*>(packet);
 		CPlayer* player = mainGame.m_pScene->GetScenePlayer(predicPosPacket->sid);
-	
-		XMFLOAT3 offset // 클라측 예상 위치와 서버 측 예상 위치의 오차 구한다.
-		{ player->GetPredictPos().x - predicPosPacket->predicPos.x,
-		  player->GetPredictPos().y - predicPosPacket->predicPos.y,
-		  player->GetPredictPos().z - predicPosPacket->predicPos.z
-		};
-		if (Vector3::Length(offset) >= 0.1) // 오차 검사 // 오차가 크면  서버 걸로 대체
-		{
-			std::cout << "reset Pos\n";
-			player->SetPredicPos(predicPosPacket->predicPos);
-		}
-		else std::cout << "almost Same Pos\n";
+		player->m_lock.lock();
+		player->MakePosition(predicPosPacket->predicPos);
+		player->m_lock.unlock();
 	}
 	break;
 	case S_PACKET_TYPE::SCHAT:

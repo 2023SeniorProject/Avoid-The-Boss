@@ -187,28 +187,6 @@ void CGameScene::ProcessInput(HWND hWnd)
 	uint8 dwDirection = 0;
 	if (::GetKeyboardState(pKeyBuffer))
 	{
-		if (m_pSwitch)
-		{
-			if (!(m_pSwitch->GetOnSwitch()))
-			{
-				if (pKeyBuffer[0x57] & 0xF0) dwDirection |= DIR_FORWARD;
-				else if (pKeyBuffer[0x77] & 0xF0) dwDirection |= DIR_FORWARD;
-
-				if (pKeyBuffer[0x53] & 0xF0) dwDirection |= DIR_BACKWARD;
-				else if (pKeyBuffer[0x73] & 0xF0) dwDirection |= DIR_BACKWARD;
-
-				if (pKeyBuffer[0x61] & 0xF0) dwDirection |= DIR_LEFT;
-				else if (pKeyBuffer[0x41] & 0xF0) dwDirection |= DIR_LEFT;
-
-				if (pKeyBuffer[0x44] & 0xF0) dwDirection |= DIR_RIGHT;
-				else if (pKeyBuffer[0x64] & 0xF0) dwDirection |= DIR_RIGHT;
-
-				if (pKeyBuffer[0x46] & 0xF0) _players[0]->SetOnInteraction(true);
-				else if (pKeyBuffer[0x66] & 0xF0) _players[0]->SetOnInteraction(true);
-			}
-		}
-		else
-		{
 			if (pKeyBuffer[0x57] & 0xF0) dwDirection |= DIR_FORWARD;
 			else if (pKeyBuffer[0x77] & 0xF0) dwDirection |= DIR_FORWARD;
 
@@ -221,12 +199,13 @@ void CGameScene::ProcessInput(HWND hWnd)
 			if (pKeyBuffer[0x44] & 0xF0) dwDirection |= DIR_RIGHT;
 			else if (pKeyBuffer[0x64] & 0xF0) dwDirection |= DIR_RIGHT;
 
-			//if (_players[0]->m_pSwitch-/>GetOnSwitch/())
-			//{
-				if (pKeyBuffer[0x46] & 0xF0) _players[0]->SetOnInteraction(true);
-				else if (pKeyBuffer[0x66] & 0xF0) _players[0]->SetOnInteraction(true);
-			//}
-		}
+			if (pKeyBuffer[0x46] & 0xF0)
+				_players[0]->SetOnInteraction(true);
+			else if (pKeyBuffer[0x66] & 0xF0) 
+				_players[0]->SetOnInteraction(true);
+
+			if (_players[0]->GetOnInteraction())
+				dwDirection |= DIR_BUTTON_CENTER;
 	}
 
 	float cxDelta = 0.0f, cyDelta = 0.0f;
@@ -244,6 +223,7 @@ void CGameScene::ProcessInput(HWND hWnd)
 		::SetCursorPos(m_ptOldCursorPos.x, m_ptOldCursorPos.y);
 	}
 
+	if(dwDirection!=DIR_BUTTON_CENTER)
 	{
 		//std::lock_guard<std::mutex> lg(_players[_playerIdx]->m_lock);
 		if ((dwDirection != 0) || (cxDelta != 0.0f) || (cyDelta != 0.0f))

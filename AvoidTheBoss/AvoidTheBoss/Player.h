@@ -21,7 +21,8 @@ static const char *g_pstrCharactorRefernece[5] =
 	"Model/Character4_Idle.bin"
 };
 
-#define INTERACTION_TIME 25
+#define INTERACTION_TIME 25*4
+
 class CPlayer : public CGameObject
 {
 protected:

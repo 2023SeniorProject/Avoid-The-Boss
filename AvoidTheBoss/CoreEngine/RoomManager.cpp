@@ -14,12 +14,12 @@ using namespace std;
 //=============================
 Room::Room()
 {
-	_jobQueue = new Scheduler();
+	//_jobQueue = new Scheduler();
 }
 
 Room::~Room()
 {
-	delete _jobQueue;
+	//delete _jobQueue;
 }
 void Room::UserOut(int32 sid)
 {
@@ -113,18 +113,33 @@ void Room::Update()
 {
 	if (_status != ROOM_STATUS::FULL) return;
 	_timer.Tick(60.f);
+	
 	{
 		std::unique_lock<std::shared_mutex> ql(_jobQueueLock);
-		_jobQueue->DoNormalTasks();
+		while (!_jobQueue.empty())
+		{
+			queueEvent* qe = _jobQueue.front();
+			_jobQueue.pop();
+			if (qe != nullptr)
+			{
+				qe->Task();
+				delete qe;
+				std::cout << "Do job\n";
+			}
+		}
+		
 	}
+
 	for (int i = 0; i < PLAYERNUM; ++i) _players[i].Update(_timer.GetTimeElapsed());
-	if (_timer.IsAfterTick(60.f))
+	
+	if (_timer.IsAfterTick(45))
 	{
 		S2C_POS packet;
 		packet.type = S_PACKET_TYPE::SPOS;
 		packet.size = sizeof(S2C_POS);
 		packet.sid = 0;
-		packet.predicPos = _players[0].GetPosition();
+		packet.x = _players[0].GetPosition().x;
+		packet.z = _players[0].GetPosition().z;
 		BroadCasting(&packet);
 	}
 
@@ -133,13 +148,13 @@ void Room::Update()
 void Room::AddEvent(queueEvent* qe, float after)
 {
 	std::unique_lock<std::shared_mutex> ql(_jobQueueLock); // Queue Lock 호출
-	_jobQueue->PushTask(qe,DEAD_RECORNING_TPS);
+	//_jobQueue->PushTask(qe,DEAD_RECORNING_TPS);
 }
 
 void Room::AddEvent(queueEvent* qe)
 {
 	std::unique_lock<std::shared_mutex> ql(_jobQueueLock); // Queue Lock 호출
-	_jobQueue->PushTask(qe);
+	_jobQueue.push(qe);
 }
 // ======= RoomManager ========
 

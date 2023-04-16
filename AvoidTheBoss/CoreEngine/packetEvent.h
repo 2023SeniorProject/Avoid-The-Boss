@@ -29,14 +29,7 @@ public:
 		// to do move Player in gameLogic
 		int16 roomNum = ServerIocpCore._clients[sid]->_myRm;
 		ServerIocpCore._rmgr->GetRoom(roomNum).GetMyPlayerFromRoom(sid).SetDirection(_dir);
-		std::cout << ServerIocpCore._rmgr->GetRoom(roomNum).GetMyPlayerFromRoom(sid).m_xmf3Look.x << " "
-			<< ServerIocpCore._rmgr->GetRoom(roomNum).GetMyPlayerFromRoom(sid).m_xmf3Look.z <<") (";
-
-		std::cout << ServerIocpCore._rmgr->GetRoom(roomNum).GetMyPlayerFromRoom(sid).m_xmf3Right.x << " "
-			<< ServerIocpCore._rmgr->GetRoom(roomNum).GetMyPlayerFromRoom(sid).m_xmf3Right.z << "\n";
-
 		ServerIocpCore._rmgr->GetRoom(roomNum).GetMyPlayerFromRoom(sid).Move(_key, PLAYER_VELOCITY);
-
 	};
 	
 };
@@ -50,6 +43,8 @@ public:
 public:
 	virtual void Task()
 	{
+		int16 roomNum = ServerIocpCore._clients[sid]->_myRm;
+		ServerIocpCore._rmgr->GetRoom(roomNum).GetMyPlayerFromRoom(sid).Rotate(0,angleY,0);
 	};
 
 };

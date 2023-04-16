@@ -44,8 +44,9 @@ public:
 	int8 _status = ROOM_STATUS::EMPTY; // 방 상태
 	int32 _num = 0; // 방에 있는 인원 수
 
-	Scheduler* _jobQueue; // 방에 속해 있는 클라이언트가 야기한 이벤트 큐
+	//Scheduler* _jobQueue; // 방에 속해 있는 클라이언트가 야기한 이벤트 큐
 	std::shared_mutex _jobQueueLock; // eventQueue 관리용 Lock
+	std::queue<queueEvent*> _jobQueue;
 	PlayerInfo _players[4];
 	Timer _timer;
 

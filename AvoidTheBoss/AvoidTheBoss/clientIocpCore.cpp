@@ -119,7 +119,7 @@ void CSession::ProcessPacket(char* packet)
 	{
 		S2C_KEY* movePacket = reinterpret_cast<S2C_KEY*>(packet);
 		CPlayer* player = mainGame.m_pScene->GetScenePlayer(movePacket->sid);
-		if (player != nullptr)
+		if (player != nullptr && _sid != movePacket->sid)
 		{
 			player->Move(movePacket->key, PLAYER_VELOCITY);
 		}
@@ -141,10 +141,11 @@ void CSession::ProcessPacket(char* packet)
 	case S_PACKET_TYPE::SPOS: // 미리 계산한 좌표값을 보내준다.
 	{
 		
-		S2C_POS* predicPosPacket = reinterpret_cast<S2C_POS*>(packet);
-		CPlayer* player = mainGame.m_pScene->GetScenePlayer(predicPosPacket->sid);
+		S2C_POS* posPacket = reinterpret_cast<S2C_POS*>(packet);
+		CPlayer* player = mainGame.m_pScene->GetScenePlayer(posPacket->sid);
+		if (player == nullptr) break;
 		player->m_lock.lock();
-		player->MakePosition(predicPosPacket->predicPos);
+		player->MakePosition(XMFLOAT3(posPacket->x , player->GetPosition().y, posPacket->z));
 		player->m_lock.unlock();
 	}
 	break;

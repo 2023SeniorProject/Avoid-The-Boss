@@ -72,6 +72,7 @@ public:
 		{
 			if (_players[i]->m_sid == sid) return _players[i];
 		}
+		return nullptr;
 	}
 public:
 	Timer _timer;

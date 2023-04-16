@@ -182,8 +182,6 @@ void CGameScene::ProcessInput(HWND hWnd)
 	_timer.Tick(0);
 	static UCHAR pKeyBuffer[256];
 	// 방향키를 바이트로 처리한다.
-
-
 	uint8 dwDirection = 0;
 	if (::GetKeyboardState(pKeyBuffer))
 	{
@@ -277,7 +275,8 @@ void CGameScene::ProcessInput(HWND hWnd)
 		packet.size = sizeof(C2S_KEY);
 		packet.type = C_PACKET_TYPE::CKEY;
 		packet.key = dwDirection;
-		packet.dir =_players[_playerIdx]->GetLook();
+		packet.x =_players[_playerIdx]->GetLook().x;
+		packet.z = _players[_playerIdx]->GetLook().z;
 		clientCore._client->DoSend(&packet);
 	}
 	m_lastKeyInput = dwDirection;
@@ -295,13 +294,6 @@ void CGameScene::ProcessInput(HWND hWnd)
 	// 평균 프레임 레이트 출력
 	std::wstring str = L"";
 	str.append(L" (");
-	str += std::to_wstring(_players[_playerIdx]->GetLook().x);
-	str.append(L" ");
-	str.append(std::to_wstring(_players[_playerIdx]->GetLook().z));
-	str.append(L") (");
-	str += std::to_wstring(_players[_playerIdx]->GetLook().x);
-	str.append(L" ");
-	str.append(std::to_wstring(_players[_playerIdx]->GetLook().z));
 	str.append(L")");
 	::SetWindowText(hWnd, str.c_str());
 }
@@ -691,6 +683,9 @@ void CGameScene::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCa
 			m_ppHierarchicalGameObjects[i]->Render(pd3dCommandList, pCamera);
 		}
 	}
-	for (int i = 0; i < PLAYERNUM; ++i) _players[i]->Render(pd3dCommandList, pCamera);
 
+	for (int i = 0; i < PLAYERNUM; ++i)
+	{
+		_players[i]->Render(pd3dCommandList, pCamera);
+	}
 }

@@ -34,7 +34,6 @@ public:
 	void SetDirection(const XMFLOAT3& look)
 	{
 		m_xmf3Look = look;
-		m_xmf3Right = Vector3::CrossProduct(m_xmf3Up, m_xmf3Look, true);
 		m_xmf3Up = Vector3::CrossProduct(m_xmf3Look, m_xmf3Right, true);
 	}
 	XMFLOAT3& GetVelocity() { return(m_xmf3Velocity); }

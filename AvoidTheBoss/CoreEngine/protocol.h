@@ -66,7 +66,7 @@ struct C2S_KEY
 	uint8 size;
 	uint8 type;
 	uint8 key; // 입력 키
-	DirectX::XMFLOAT3 dir; // 플레이어 방향
+	float x,z; // 플레이어 방향 // 키 입력의 변화가 있을 때만 전송
 };
 
 
@@ -74,8 +74,8 @@ struct C2S_ROTATE
 {
 	uint8 size;
 	uint8 type;
-	float angle;
-};
+	int32 angle;
+}; // 마우스 회전 시 , 매 프레임마다 전송
 
 struct C2S_ATTACK
 {
@@ -122,7 +122,9 @@ struct S2C_POS
 	uint8 size;
 	uint8 type;
 	int16 sid;
-	DirectX::XMFLOAT3 predicPos;
+	float x;
+	float z;
+
 };
 
 struct S2C_ROTATE
@@ -130,7 +132,7 @@ struct S2C_ROTATE
 	uint8 size;
 	uint8 type;
 	int16 sid;
-	float angle;
+	int32 angle;
 };
 
 struct S2C_ROOM_CREATE

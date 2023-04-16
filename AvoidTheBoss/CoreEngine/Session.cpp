@@ -137,19 +137,24 @@ void ServerSession::ProcessPacket(char* packet)
 		{
 
 			C2S_KEY* movePacket = reinterpret_cast<C2S_KEY*>(packet);
-			moveEvent* mv = new moveEvent;
+			/*moveEvent* mv = new moveEvent;
 			mv->sid = _sid;
 			mv->_key = movePacket->key;
-			mv->_dir = movePacket->dir;
-			queueEvent* me = static_cast<queueEvent*>(mv);
-			
+			mv->_dir.x = movePacket->x;
+			mv->_dir.z = movePacket->z;
+			queueEvent* me = static_cast<queueEvent*>(mv);*/
+
+			ServerIocpCore._rmgr->GetRoom(_myRm).GetMyPlayerFromRoom(_sid)._lock.lock();
+			ServerIocpCore._rmgr->GetRoom(_myRm).GetMyPlayerFromRoom(_sid).SetDirection(XMFLOAT3(movePacket->x , 0, movePacket->z));
+			ServerIocpCore._rmgr->GetRoom(_myRm).GetMyPlayerFromRoom(_sid).Move(movePacket->key, PLAYER_VELOCITY);
+			ServerIocpCore._rmgr->GetRoom(_myRm).GetMyPlayerFromRoom(_sid)._lock.unlock();
+
 
 			S2C_KEY packet;
 			packet.size = sizeof(S2C_KEY);
 			packet.type = S_PACKET_TYPE::SKEY;
 			packet.sid = _sid;
 			packet.key = movePacket->key;
-			ServerIocpCore._rmgr->GetRoom(_myRm).AddEvent(me);
 			ServerIocpCore._rmgr->GetRoom(_myRm).BroadCasting(&packet);
 		}
 		break;
@@ -161,7 +166,16 @@ void ServerSession::ProcessPacket(char* packet)
 			packet.type = S_PACKET_TYPE::SROT;
 			packet.sid = _sid;
 			packet.angle = rotatePacket->angle;
+		
+			ServerIocpCore._rmgr->GetRoom(_myRm).GetMyPlayerFromRoom(_sid)._lock.lock();
+			ServerIocpCore._rmgr->GetRoom(_myRm).GetMyPlayerFromRoom(_sid).Rotate(0,rotatePacket->angle,0);
+			ServerIocpCore._rmgr->GetRoom(_myRm).GetMyPlayerFromRoom(_sid)._lock.unlock();
+		/*	rotateEvent* re = new rotateEvent;
+			re->sid = _sid;
+			re->angleY = rotatePacket->angle;
+			ServerIocpCore._rmgr->GetRoom(_myRm).AddEvent(re);*/
 			ServerIocpCore._rmgr->GetRoom(_myRm).BroadCasting(&packet);
+
 		}
 		break;
 		case C_PACKET_TYPE::CCHAT:

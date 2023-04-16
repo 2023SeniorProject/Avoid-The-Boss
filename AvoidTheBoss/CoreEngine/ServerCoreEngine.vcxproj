@@ -161,7 +161,6 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="AcceptManager.h" />
-    <ClInclude Include="Allocator.h" />
     <ClInclude Include="CollisionDetector.h" />
     <ClInclude Include="CoreGlobal.h" />
     <ClInclude Include="CoreMacro.h" />
@@ -172,12 +171,10 @@
     <ClInclude Include="DeadLockFinder.h" />
     <ClInclude Include="IocpCore.h" />
     <ClInclude Include="IocpEvent.h" />
-    <ClInclude Include="Memory.h" />
     <ClInclude Include="OBDC_MGR.h" />
     <ClInclude Include="packetEvent.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="protocol.h" />
-    <ClInclude Include="RefCountable.h" />
     <ClInclude Include="WorldRewinder.h" />
     <ClInclude Include="RoomManager.h" />
     <ClInclude Include="RWLock.h" />
@@ -189,7 +186,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AcceptManager.cpp" />
-    <ClCompile Include="Allocator.cpp" />
     <ClCompile Include="CollisionDetector.cpp" />
     <ClCompile Include="CoreGlobal.cpp" />
     <ClCompile Include="CoreMacro.cpp" />
@@ -200,7 +196,6 @@
     <ClCompile Include="DeadLockFinder.cpp" />
     <ClCompile Include="IocpCore.cpp" />
     <ClCompile Include="IocpEvent.cpp" />
-    <ClCompile Include="Memory.cpp" />
     <ClCompile Include="OBDC_MGR.cpp" />
     <ClCompile Include="packetEvent.cpp" />
     <ClCompile Include="pch.cpp">
@@ -210,7 +205,6 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="protocol.cpp" />
-    <ClCompile Include="RefCountable.cpp" />
     <ClCompile Include="WorldRewinder.cpp" />
     <ClCompile Include="RoomManager.cpp" />
     <ClCompile Include="RWLock.cpp" />

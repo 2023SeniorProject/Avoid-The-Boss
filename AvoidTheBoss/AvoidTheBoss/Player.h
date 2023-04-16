@@ -32,7 +32,7 @@ protected:
 	XMFLOAT3					m_xmf3Look = XMFLOAT3(0.0f, 0.0f, 1.0f);
 	XMFLOAT3					m_xmf3Scale = XMFLOAT3(1.0f, 1.0f, 1.0f);
 
-
+	
 	float m_fPitch;
 	float m_fYaw;
 	float m_fRoll;
@@ -52,7 +52,7 @@ public:
 	int16 m_sid = -1; // 자신으 Session Id
 	std::mutex m_lock; // 자신의 Lock
 	BoundingSphere m_playerBV; // BV = bounding volume
-
+	XMFLOAT3					m_predictPos = XMFLOAT3(0, 0, 0);
 	bool m_OnInteraction = false;
 	int m_InteractionCountTime = INTERACTION_TIME;
 
@@ -64,16 +64,23 @@ public:
 	virtual ~CPlayer();
 	
 	XMFLOAT3 GetPosition() const { return(m_xmf3Position); }
+	XMFLOAT3& GetPredictPos() { return(m_predictPos); }
 	XMFLOAT3 GetLookVector() { return(m_xmf3Look); }
 	XMFLOAT3 GetUpVector() { return(m_xmf3Up); }
 	XMFLOAT3 GetRightVector() { return(m_xmf3Right); }
-
+	void SetDirection(const XMFLOAT3& look)
+	{
+		m_xmf3Look = look;
+		m_xmf3Right = Vector3::CrossProduct(m_xmf3Up, m_xmf3Look, true);
+		m_xmf3Up = Vector3::CrossProduct(m_xmf3Look, m_xmf3Right, true);
+	}
 	void SetVelocity(const XMFLOAT3& xmf3Velocity) { m_xmf3Velocity = xmf3Velocity; }
 	void SetPlayerSid(const int16& sid) { m_sid = sid; }
 	void SetPosition(const XMFLOAT3& xmf3Position) 
 	{
 		UpdateMove(XMFLOAT3(xmf3Position.x - m_xmf3Position.x, xmf3Position.y - m_xmf3Position.y, xmf3Position.z - m_xmf3Position.z));
 	}
+	void SetPredicPos(const XMFLOAT3& pred) { m_predictPos = pred; }
 	void SetScale(const XMFLOAT3& xmf3Scale) { m_xmf3Scale = xmf3Scale; }
 	void MakePosition(const XMFLOAT3& xmf3Position)
 	{
@@ -93,13 +100,9 @@ public:
 	virtual void Move(DWORD dwDirection, float fDistance);
 	void SetSpeed(const XMFLOAT3& xmf3Shift);
 	void UpdateMove(const XMFLOAT3& velocity);
-	
-	// 다른 플레이어를 이동하는 함수
-	void OtherMove(DWORD dwDirection, float fDistance);
-	void OtherUpdate(float fTimeElapsed);
 
 	void ProcesesInput();
-
+	 
 	void SetOnInteraction(bool value) 
 	{
 		m_OnInteraction = value; 
@@ -146,9 +149,7 @@ public:
 	virtual CCamera* ChangeCamera(DWORD nNewCameraMode, float fTimeElapsed);
 	virtual void OnPlayerUpdateCallback();
 	virtual void OnCameraUpdateCallback();
-
 	virtual void Move(DWORD dwDirection, float fDistance);
-
 	virtual void Update(float fTimeElapsed, PLAYER_TYPE ptype);
 
 };

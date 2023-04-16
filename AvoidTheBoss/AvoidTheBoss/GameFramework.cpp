@@ -375,7 +375,7 @@ void CGameFramework::AnimateObjects()
 void CGameFramework::FrameAdvance() // 여기서 업데이트랑 렌더링 동시에 진행하는 곳
 {
 	//타이머의 시간이 갱신되도록 하고 프레임 레이트를 계산한다. 
-	//if (_curScene != SceneInfo::GAMEROOM) return;
+	if (_curScene != SceneInfo::GAMEROOM) return;
 	
 	ProcessInput();
 	AnimateObjects();
@@ -522,9 +522,9 @@ LRESULT CGameFramework::OnProcessingWindowMessage(HWND hWnd, UINT nMessageID, WP
 	case WM_ACTIVATE:
 	{
 		if (LOWORD(wParam) == WA_INACTIVE)
-			m_pScene->_logic.StopTimer();
+			m_pScene->_timer.Stop();
 		else
-			m_pScene->_logic.StartTimer();
+			m_pScene->_timer.Start();
 		break;
 	}
 	case WM_SIZE:

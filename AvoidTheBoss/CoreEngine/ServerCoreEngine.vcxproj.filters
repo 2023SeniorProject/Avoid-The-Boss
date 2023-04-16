@@ -10,14 +10,8 @@
     <Filter Include="ForServer\IocpCore">
       <UniqueIdentifier>{25981e20-db04-4451-b45e-daf4d3161c2a}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ForServer\Memory">
-      <UniqueIdentifier>{198423d0-46ae-40c4-9c0c-197efeda2ca7}</UniqueIdentifier>
-    </Filter>
     <Filter Include="ForServer\DB">
       <UniqueIdentifier>{3251044a-b8ce-43b6-b1ed-66984837fc9f}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ForServer\PlayerInfo">
-      <UniqueIdentifier>{2b42a5d2-018e-4673-8d0a-0327c93047c7}</UniqueIdentifier>
     </Filter>
     <Filter Include="ForServer\Session">
       <UniqueIdentifier>{23a66a44-420a-45bf-b11a-a995896c51dc}</UniqueIdentifier>
@@ -45,6 +39,12 @@
     </Filter>
     <Filter Include="Shared\Physics">
       <UniqueIdentifier>{5a1f8f00-ea3d-49a8-98f0-30f0c6c3bccc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ForServer\PlayerInfo">
+      <UniqueIdentifier>{2b42a5d2-018e-4673-8d0a-0327c93047c7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shared\JobQueue">
+      <UniqueIdentifier>{7ca8b712-3e66-4ab4-ad8a-3f8d4bf63998}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -93,15 +93,6 @@
     <ClInclude Include="IocpEvent.h">
       <Filter>ForServer\IocpCore</Filter>
     </ClInclude>
-    <ClInclude Include="Memory.h">
-      <Filter>ForServer\Memory</Filter>
-    </ClInclude>
-    <ClInclude Include="RefCountable.h">
-      <Filter>ForServer\Memory</Filter>
-    </ClInclude>
-    <ClInclude Include="Allocator.h">
-      <Filter>ForServer\Memory</Filter>
-    </ClInclude>
     <ClInclude Include="OBDC_MGR.h">
       <Filter>ForServer\DB</Filter>
     </ClInclude>
@@ -124,7 +115,7 @@
       <Filter>Shared\Physics</Filter>
     </ClInclude>
     <ClInclude Include="JobQueue.h">
-      <Filter>Shared\Packet</Filter>
+      <Filter>Shared\JobQueue</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -170,15 +161,6 @@
     <ClCompile Include="IocpEvent.cpp">
       <Filter>ForServer\IocpCore</Filter>
     </ClCompile>
-    <ClCompile Include="Memory.cpp">
-      <Filter>ForServer\Memory</Filter>
-    </ClCompile>
-    <ClCompile Include="RefCountable.cpp">
-      <Filter>ForServer\Memory</Filter>
-    </ClCompile>
-    <ClCompile Include="Allocator.cpp">
-      <Filter>ForServer\Memory</Filter>
-    </ClCompile>
     <ClCompile Include="OBDC_MGR.cpp">
       <Filter>ForServer\DB</Filter>
     </ClCompile>
@@ -201,7 +183,7 @@
       <Filter>Shared\Physics</Filter>
     </ClCompile>
     <ClCompile Include="JobQueue.cpp">
-      <Filter>Shared\Packet</Filter>
+      <Filter>Shared\JobQueue</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

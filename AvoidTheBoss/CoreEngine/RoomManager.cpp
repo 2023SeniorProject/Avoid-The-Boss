@@ -3,6 +3,7 @@
 #include "Session.h"
 #include "JobQueue.h"
 
+
 using namespace std;
 //========== ROOM =============
 
@@ -23,7 +24,7 @@ Room::~Room()
 void Room::UserOut(int32 sid)
 {
 	{
-		//WLock; // cList Lock 쓰기 호출
+		// cList Lock 쓰기 호출
 		std::unique_lock<std::shared_mutex> wll(_listLock);
 		auto i = std::find(_cList.begin(), _cList.end(), sid); // 리스트에 있는지 탐색 후
 		if (i != _cList.end()) _cList.erase(i); // 리스트에서 제거
@@ -40,7 +41,7 @@ void Room::UserOut(int32 sid)
 			READ_SERVER_LOCK;
 			for (auto i : ServerIocpCore._clients)
 			{
-				i.second->DoSend(&packet);
+				//i.second->DoSend(&packet);
 			}
 		}
 	}
@@ -75,6 +76,7 @@ void Room::UserIn(int32 sid)
 		if (_cList.size() == PLAYERNUM)
 		{
 			_status = ROOM_STATUS::FULL;
+			_timer.Reset();
 			S2C_GAMESTART packet;
 			packet.type = S_PACKET_TYPE::GAME_START;
 			packet.size = sizeof(S2C_GAMESTART);
@@ -85,7 +87,7 @@ void Room::UserIn(int32 sid)
 				++k;
 			}
 			BroadCasting(&packet);
-			_logic.StartGame();
+			
 		}
 	}		
 	std::cout << "RM [" << _num << "][" << _cList.size() << "/4]" << std::endl;
@@ -94,31 +96,44 @@ void Room::UserIn(int32 sid)
 
 void Room::BroadCasting(void* packet) // 방에 속하는 클라이언트에게만 전달하기
 {
-	//RLock; // cList Lock 읽기 호출 
+	// cList Lock 읽기 호출 
 	std::shared_lock<std::shared_mutex> rll(_listLock);
 	for (auto i =  _cList.begin(); i != _cList.end(); ++i)
 	{
 		if (ServerIocpCore._clients[*i] == nullptr) continue;
 		if(!ServerIocpCore._clients[*i]->DoSend(packet))
 		{ 
-			// 비정상 접속 클라이언트 처리
-			cout << *i << "Client Error Occur" << endl;
 			continue;
 		}
 	}
 }
 
-// 방에 있는 유저에 대한 게임 로직 업데이트 진행
+// 방에 있는 유저에 대한 게임 로직 업데이트 진행 
 void Room::Update()
 {
 	if (_status != ROOM_STATUS::FULL) return;
-	_logic.TickTimer(60.f);
+	_timer.Tick(60.f);
 	{
 		std::unique_lock<std::shared_mutex> ql(_jobQueueLock);
-		_jobQueue->DoTasks();
+		_jobQueue->DoNormalTasks();
+	}
+	for (int i = 0; i < PLAYERNUM; ++i) _players[i].Update(_timer.GetTimeElapsed());
+	if (_timer.IsAfterTick(60.f))
+	{
+		S2C_POS packet;
+		packet.type = S_PACKET_TYPE::SPOS;
+		packet.size = sizeof(S2C_POS);
+		packet.sid = 0;
+		packet.predicPos = _players[0].GetPosition();
+		BroadCasting(&packet);
+	}
 
-	}	// JobQueue 작업
-	_logic.UpdateWorld(_players);
+}
+
+void Room::AddEvent(queueEvent* qe, float after)
+{
+	std::unique_lock<std::shared_mutex> ql(_jobQueueLock); // Queue Lock 호출
+	_jobQueue->PushTask(qe,DEAD_RECORNING_TPS);
 }
 
 void Room::AddEvent(queueEvent* qe)
@@ -137,12 +152,10 @@ void RoomManager::Init()
 		_rooms[i]._num = i;
 	}
 }
-
 void RoomManager::EnterRoom(int32 sid,int16 rmNum)
 {
 	_rooms[rmNum].UserIn(sid);
 }
-
 void RoomManager::CreateRoom(int32 sid)
 {
 	if (_rmCnt.load() >= _cap)
@@ -164,7 +177,6 @@ void RoomManager::CreateRoom(int32 sid)
 		}
 	}
 }
-
 void RoomManager::UpdateRooms()
 {
 	for (int i = 0; i < _cap; ++i)

@@ -4,6 +4,7 @@
 #include "IocpEvent.h"
 
 
+
 ClientMananger clientCore;
 
 CSession::CSession()
@@ -56,6 +57,7 @@ void CSession::Processing(IocpEvent* iocpEvent, int32 numOfBytes)
 		{
 			memcpy(rev->_rbuf, p, remain_data);
 		}
+		DoRecv();
 	}
 	break;
 	case EventType::Send:
@@ -94,6 +96,8 @@ bool CSession::DoRecv()
 	_rev._cid = _cid;
 	DWORD recvBytes(0);
 	DWORD flag(0);
+	_rev._rWsaBuf.buf = _rev._rbuf + _prev_remain;
+	_rev._rWsaBuf.len = BUFSIZE - _prev_remain;
 	if (WSARecv(_sock, &_rev._rWsaBuf, 1, &recvBytes, &flag, static_cast<LPWSAOVERLAPPED>(&_rev), NULL) == SOCKET_ERROR)
 	{
 		int32 errcode = WSAGetLastError();
@@ -111,43 +115,37 @@ void CSession::ProcessPacket(char* packet)
 {
 	switch ((uint8)packet[1])
 	{
-	case S_PACKET_TYPE::SMOVE:
+	case S_PACKET_TYPE::SKEY:
 	{
-		S2C_MOVE* movePacket = reinterpret_cast<S2C_MOVE*>(packet);
+		S2C_KEY* movePacket = reinterpret_cast<S2C_KEY*>(packet);
 		CPlayer* player = mainGame.m_pScene->GetScenePlayer(movePacket->sid);
-		if (player != nullptr  && movePacket->sid != _sid)
+		if (player != nullptr)
 		{
-			player->m_lock.lock();
-			player->OtherMove(movePacket->key, PLAYER_VELOCITY);
-			player->m_lock.unlock();
+			player->Move(movePacket->key, PLAYER_VELOCITY);
 		}
+		
 	}
 	break;
 
-	case S_PACKET_TYPE::SROTATE:
+	case S_PACKET_TYPE::SROT:
 	{
 		S2C_ROTATE* rotatePacket = reinterpret_cast<S2C_ROTATE*>(packet);	
 		CPlayer* player = mainGame.m_pScene->GetScenePlayer(rotatePacket->sid);
-		if (player != nullptr  && rotatePacket->sid != _sid)
+		if (player != nullptr && _sid != rotatePacket->sid )
 		{
-			player->m_lock.lock();
 			player->Rotate(0, rotatePacket->angle, 0);
-			player->m_lock.unlock();
 		}
 		
 	}
 	break;
-	case S_PACKET_TYPE::POSITION:
+	case S_PACKET_TYPE::SPOS: // 미리 계산한 좌표값을 보내준다.
 	{
-		S2C_POSITION* posPacket = reinterpret_cast<S2C_POSITION*>(packet);
-		CPlayer* player = mainGame.m_pScene->GetScenePlayer(posPacket->sid);
-		if (player != nullptr && mainGame._curScene == SceneInfo::GAMEROOM)
-		{
-			player->m_lock.lock();
-			player->MakePosition(posPacket->position);
-			player->m_lock.unlock();
-		}
 		
+		S2C_POS* predicPosPacket = reinterpret_cast<S2C_POS*>(packet);
+		CPlayer* player = mainGame.m_pScene->GetScenePlayer(predicPosPacket->sid);
+		player->m_lock.lock();
+		player->MakePosition(predicPosPacket->predicPos);
+		player->m_lock.unlock();
 	}
 	break;
 	case S_PACKET_TYPE::SCHAT:
@@ -173,15 +171,13 @@ void CSession::ProcessPacket(char* packet)
 		S2C_LOGIN_OK* lo = (S2C_LOGIN_OK*)packet;
 		_cid = lo->cid;
 		_sid = lo->sid;
-		_loginOk = 1;
 	}
 	break;
 	case S_PACKET_TYPE::LOGIN_FAIL:
 	{
 		S2C_LOGIN_FAIL* lo = (S2C_LOGIN_FAIL*)packet;
 		std::cout << "Login Fail" << std::endl;
-		SocketUtil::Close(_sock);
-		_loginOk = 0;
+		::SendMessage(mainGame.m_hWnd, WM_QUIT, 0, 0);
 	}
 	break;
 	// ===== 방 관련 패킷 ============
@@ -201,7 +197,6 @@ void CSession::ProcessPacket(char* packet)
 	}
 	break;
 	}
-	DoRecv();
 }
 
 

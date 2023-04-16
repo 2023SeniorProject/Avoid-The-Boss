@@ -1,10 +1,10 @@
 #include "pch.h"
 #include "CollisionDetector.h"
-
 OcTree* BoxTree = nullptr;
 
 
-int32 OcTree::_maxLevel = 3;
+int32 OcTree::_maxLevel = 4;
+
 
 
 float DotProduct(XMFLOAT3 a, XMFLOAT3 b) 
@@ -54,74 +54,77 @@ void OcTree::BuildChildTree()
 	}
 }
 
-float clamp(float pos, float min , float max)
+float clamp(float pos, float min, float max)
 {
 	float val = (pos < min ? min : pos);
-	val =  val > max ? max : val;
+	val = val > max ? max : val;
 	if (val != min && val != max) return ((val - min) > (max - val) ? max : min);
 	else return val;
 }
-bool OcTree::CheckCollision(DirectX::BoundingSphere& playerBox, XMFLOAT3& look, XMFLOAT3& right, XMFLOAT3& up)
+bool OcTree::CheckCollision(DirectX::BoundingSphere& playerBox)
 {
-		bool rVal = false;
-		if (_curLevel == _maxLevel)
+	bool rVal = false;
+	if (_curLevel == _maxLevel)
+	{
+		if (_area.Intersects(playerBox))
 		{
-			if (_area.Intersects(playerBox))
+			bool rVal2 = false;
+
+
+			for (auto& i : _node->boxs)
 			{
-				bool rVal2 = false;
-				
-				
-				for (auto& i : _node->boxs)
+				if (i.Intersects(playerBox))
 				{
-					if (i.Intersects(playerBox))
+
+					// To Do Collision Response
+
+					// 1. 자기의 로컬 좌표계 기준으로 min max 값을 구한다.
+					// 플레이어의 자기 로컬 좌표계에 투영했을 때 가장 큰 좌표값과 가장 작은 좌표값을 구한다.
+					// look = z
+					// up = y
+					// right = x
+					XMFLOAT3 centerVec{ playerBox.Center.x - i.Center.x, 0.f , playerBox.Center.z - i.Center.z }; // 상자 중심으로 플레이어 상대적인 위치 벡터.
+
+					//// 지형의 사각형 영역 중 구의 중심과 가장 가까운 정점의 x , z 좌표를 구한다.
+					float closeX = clamp(centerVec.x, -1 * i.Extents.x, i.Extents.x);
+					float closeZ = clamp(centerVec.z, -1 * i.Extents.z, i.Extents.z);
+
+					//// 플레이어 좌표기준으로 얼만큼 거리인지 구한다.
+					XMFLOAT3 closeDist{ centerVec.x - closeX , 0.f , centerVec.z - closeZ }; // 방향 계산
+				
+					
+
+					if (::fabs(playerBox.Radius - closeDist.x) < ::fabs(playerBox.Radius - closeDist.z)) // offset 수치가 작은 쪽으로 계산.
 					{
-						
-						// To Do Collision Response
-
-						// 1. 자기의 로컬 좌표계 기준으로 min max 값을 구한다.
-						// 플레이어의 자기 로컬 좌표계에 투영했을 때 가장 큰 좌표값과 가장 작은 좌표값을 구한다.
-						// look = z
-						// up = y
-						// right = x
-						XMFLOAT3 centerVec{ playerBox.Center.x - i.Center.x, 0.f , playerBox.Center.z - i.Center.z }; // 상자 중심으로 플레이어 상대적인 위치 벡터.
-						
-						// 지형의 사각형 영역 중 구의 중심과 가장 가까운 정점의 x , z 좌표를 구한다.
-						float closeX = clamp(centerVec.x,  -1 * i.Extents.x, i.Extents.x);
-						float closeZ = clamp(centerVec.z,  -1 * i.Extents.z, i.Extents.z);
-						
-						// 플레이어 좌표기준으로 얼만큼 거리인지 구한다.
-						XMFLOAT3 closeDist { centerVec.x - closeX , 0.f , centerVec.z - closeZ }; // 방향 계산
-						
-						//float cd = Vector3::Length(closeDist); // 거리 계산
-						//float offsetdist = ::fabs(playerBox.Radius - cd); // offset 거리 계산. 구의 반지름 - 가장 가까운 점과 구의 중심의 거리
-
-						//XMFLOAT3 a = Vector3::ScalarProduct(closeDist, offsetdist, true); // 해당 방향으로 스칼라곱
-						if (::fabs(playerBox.Radius - closeDist.x) < ::fabs(playerBox.Radius - closeDist.z)) // offset 수치가 작은 쪽으로 계산.
-						{
-							playerBox.Center.x += (playerBox.Radius - closeDist.x);
-						}
-						else
-						{
-							 playerBox.Center.z += (playerBox.Radius - closeDist.z);
-						}
-						rVal2 |= true;
+						playerBox.Center.x += ::fabs((playerBox.Radius - closeDist.x)) * 1.2f;
 					}
+					else
+					{
+						playerBox.Center.z += ::fabs((playerBox.Radius - closeDist.z)) * 1.2f;
+					}
+					
+					rVal2 |= true;
 				}
-
-				return rVal2;
 			}
-			else return false;
+
+			return rVal2;
 		}
-		else if (_curLevel < _maxLevel)
+		else return false;
+	}
+	else if (_curLevel < _maxLevel)
+	{
+
+		if (_area.Intersects(playerBox))
 		{
-			
-			if (_area.Intersects(playerBox))
+			for (auto& i : _childTree)
 			{
 				for (auto& i : _childTree)
 				{
-					rVal |= i->CheckCollision(playerBox,look,right,up);
+					rVal |= i->CheckCollision(playerBox);
 				}
+				rVal |= i->CheckCollision(playerBox);
 			}
-			return rVal;
 		}
+		return rVal;
+	}
 }

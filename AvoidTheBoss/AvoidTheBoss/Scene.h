@@ -41,12 +41,10 @@ class CGameScene : public SceneInterface
 public:
 	CGameScene();
 	~CGameScene();
-
+	virtual void InitScene() { _timer.Reset(); }
 	//씬에서 마우스와 키보드 메시지를 처리한다.
-	virtual void OnProcessingMouseMessage(HWND hWnd, UINT nMessageID, WPARAM wParam, LPARAM
-		lParam);
-	virtual void OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPARAM wParam, LPARAM
-		lParam);
+	virtual void OnProcessingMouseMessage(HWND hWnd, UINT nMessageID, WPARAM wParam, LPARAM	lParam);
+	virtual void OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPARAM wParam, LPARAM lParam);
 
 	virtual void CreateShaderVariables(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList);
 	virtual void UpdateShaderVariables(ID3D12GraphicsCommandList* pd3dCommandList);
@@ -55,7 +53,6 @@ public:
 	void BuildDefaultLightsAndMaterials();
 	void BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList
 		* pd3dCommandList);
-	void InitScene() { _logic.StartGame(); };
 	void ReleaseObjects();
 
 	//그래픽 루트 시그너쳐를 생성한다. 
@@ -77,42 +74,36 @@ public:
 		}
 	}
 public:
-
+	Timer _timer;
 //protected:
 //	//배치(Batch) 처리를 하기 위하여 씬을 셰이더들의 리스트로 표현한다. 
 
-	CCamera* m_pCamera;
-	WCHAR	 txtFrameBuf[20];
-	CPlayer*					_players[4];
-	PlayerInfo					_playerInfo[4]; // 자신의 플레이어 인포 
-	
-	int16						_playerIdx = 0;
-	GameLogic					_logic;
+	CCamera*					m_pCamera;
+	WCHAR						txtFrameBuf[20];
 
+	CPlayer*					_players[4];
+	int16						_playerIdx = 0;
 	DWORD						m_lastKeyInput = 0;
 	//마지막으로 마우스 버튼을 클릭할 때의 마우스 커서의 위치이다. 
-	POINT						m_ptOldCursorPos;
+	POINT								m_ptOldCursorPos;
 
 	float								m_fElapsedTime = 0.0f;
 
 	int									m_nGameObjects = 0;
-	CGameObject** m_ppGameObjects = NULL;
+	CGameObject**						m_ppGameObjects = NULL;
 
 	int									m_nHierarchicalGameObjects = 0;
-	CGameObject** m_ppHierarchicalGameObjects = NULL;
+	CGameObject**						m_ppHierarchicalGameObjects = NULL;
 
 	int									m_nShaders = 0;
-	CShader** m_ppShaders = NULL;
+	CShader**							m_ppShaders = NULL;
+	CSkyBox*							m_pSkyBox = NULL;
 
-	CSkyBox* m_pSkyBox = NULL;
-
-	LIGHT* m_pLights = NULL;
+	LIGHT*								m_pLights = NULL;
 	int									m_nLights = 0;
-
 	XMFLOAT4							m_xmf4GlobalAmbient;
-
-	ID3D12Resource* m_pd3dcbLights = NULL;
-	LIGHTS* m_pcbMappedLights = NULL;
+	ID3D12Resource*						m_pd3dcbLights = NULL;
+	LIGHTS*								m_pcbMappedLights = NULL;
 
 	CSwitch* m_pSwitch = NULL;
 protected:

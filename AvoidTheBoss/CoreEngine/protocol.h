@@ -1,15 +1,15 @@
 #pragma once
 
 #define MAX_USER 10
-#define PORTNUM 9000
+#define PORTNUM 9001
 #define CHATBUF 50
 // 클라 -> 서버 패킷
 
-enum C_PACKET_TYPE : uint8 { ACQ_LOGIN = 101, ACQ_LOGOUT = 102, CCHAT = 103, MOVE = 104 ,ROTATE = 105  };
-enum C_ROOM_PACKET_TYPE : uint8 { ACQ_MK_RM = 115, ACQ_ENTER_RM = 116, EXIT_CRM = 117}; // 방 생성, 방 삭제, 입장 , 종료 
-enum S_ROOM_PACKET_TYPE : uint8 { MK_RM_OK = 119, MK_RM_FAIL = 120, HIDE_RM = 121, REP_ENTER_RM = 122, REP_EXIT_RM = 123 }; // 방 생성, 방 삭제, 입장 , 종료 
-enum S_PACKET_TYPE : uint8 { LOGIN_OK = 201,  LOGIN_FAIL = 202 , SCHAT = 203, SMOVE = 204, SROTATE = 205, POSITION = 206, GAME_START = 207};
+enum C_PACKET_TYPE : uint8 { ACQ_LOGIN = 101, ACQ_LOGOUT = 102, CCHAT = 103, CKEY = 104 ,CROT = 105, CMOVE = 106 };
+enum S_PACKET_TYPE : uint8 { LOGIN_OK = 201,  LOGIN_FAIL = 202 , SCHAT = 203, SKEY = 204, SROT = 205, SPOS = 206, GAME_START = 207};
 
+enum C_ROOM_PACKET_TYPE : uint8 { ACQ_MK_RM = 115, ACQ_ENTER_RM = 116, EXIT_CRM = 117 }; // 방 생성, 방 삭제, 입장 , 종료 
+enum S_ROOM_PACKET_TYPE : uint8 { MK_RM_OK = 119, MK_RM_FAIL = 120, HIDE_RM = 121, REP_ENTER_RM = 122, REP_EXIT_RM = 123 }; // 방 생성, 방 삭제, 입장 , 종료 
 
 
 
@@ -57,12 +57,18 @@ struct C2S_ROOM_EXIT
 	uint8 type;
 };
 
-struct C2S_MOVE
+
+// ======= 게임 로직 패킷 ==============
+
+
+struct C2S_KEY
 {
 	uint8 size;
 	uint8 type;
-	uint8 key; // unsigned char
+	uint8 key; // 입력 키
+	DirectX::XMFLOAT3 dir; // 플레이어 방향
 };
+
 
 struct C2S_ROTATE
 {
@@ -70,7 +76,6 @@ struct C2S_ROTATE
 	uint8 type;
 	float angle;
 };
-
 
 struct C2S_ATTACK
 {
@@ -104,7 +109,7 @@ struct S2C_GAMESTART
 	int16 sids[4];
 }; 
 
-struct S2C_MOVE
+struct S2C_KEY
 {
 	uint8 size;
 	uint8 type;
@@ -112,12 +117,12 @@ struct S2C_MOVE
 	uint8 key;
 };
 
-struct S2C_POSITION
+struct S2C_POS
 {
 	uint8 size;
 	uint8 type;
 	int16 sid;
-	DirectX::XMFLOAT3 position;
+	DirectX::XMFLOAT3 predicPos;
 };
 
 struct S2C_ROTATE
@@ -161,4 +166,5 @@ struct S2C_HIDE_ROOM
 	uint8 type;
 	int32 rmNum;
 };
+
 #pragma pack (pop)

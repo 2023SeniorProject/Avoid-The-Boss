@@ -183,7 +183,6 @@ void CGameScene::ProcessInput(HWND hWnd)
 	static UCHAR pKeyBuffer[256];
 	// 방향키를 바이트로 처리한다.
 
-
 	uint8 dwDirection = 0;
 	if (::GetKeyboardState(pKeyBuffer))
 	{

@@ -430,20 +430,26 @@ public:
 	virtual void Render(ID3D12GraphicsCommandList *pd3dCommandList, CCamera *pCamera = NULL);
 };
 
-#define BUTTON_ANIM_FRAME 15
+#define BUTTON_ANIM_FRAME 15*10
 class CSwitch : public CGameObject
 {
 private:
 	bool m_bOnSwitch = false;
 	int m_nAnimationCount = 0;
-	float radius = 2.0f;
+	float radius = 0.0f;
 public:
+	CSwitch();
+	virtual ~CSwitch();
 	void SetRandomPosition(XMFLOAT3 pos);
 	void SetBounds();
 
-	bool SetOnSwitch(bool value) { m_bOnSwitch = value; }
+	void SetOnSwitch(bool value) { m_bOnSwitch = value; }
 	bool GetOnSwitch() { return m_bOnSwitch; }
-	void CollisitonCheck(CPlayer* player);
+
+	void SetAnimationCount(int value) { m_nAnimationCount = value; }
+	bool GetAnimationCount() { return m_nAnimationCount; }
+
+	void CollisionCheck(CPlayer* player);
 	virtual void Animate(float fTimeElapsed);
 };
 

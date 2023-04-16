@@ -133,13 +133,13 @@ void CPlayer::Update(float fTimeElapsed, PLAYER_TYPE ptype)
 
 void CPlayer::OnInteractive()
 {
-	m_pSwitch->CollisitonCheck(this);
+	m_pSwitch->CollisionCheck(this);
 
 	if (m_OnInteraction == true && m_InteractionCountTime > 0)
 	{
 		m_pSkinnedAnimationController->SetTrackEnable(0, false);
 		m_pSkinnedAnimationController->SetTrackEnable(1, false);
-		m_pSkinnedAnimationController->SetTrackEnable(6, true);
+		m_pSkinnedAnimationController->SetTrackEnable(7, true);
 		m_pSkinnedAnimationController->SetTrackPosition(0, 0.0f);
 
 		m_InteractionCountTime -= 1;
@@ -148,7 +148,7 @@ void CPlayer::OnInteractive()
 	{
 		m_pSkinnedAnimationController->SetTrackEnable(0, true);
 		m_pSkinnedAnimationController->SetTrackEnable(1, false);
-		m_pSkinnedAnimationController->SetTrackEnable(6, false);
+		m_pSkinnedAnimationController->SetTrackEnable(7, false);
 		m_OnInteraction = false;
 		m_InteractionCountTime = INTERACTION_TIME;
 	}
@@ -428,7 +428,7 @@ CEmployee::CEmployee(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCo
 	CLoadedModelInfo* pEmployeeModel = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, g_pstrCharactorRefernece[m_nCharacterType], NULL, Layout::PLAYER);
 	SetChild(pEmployeeModel->m_pModelRootObject, true);
 
-	m_pSkinnedAnimationController = new CAnimationController(pd3dDevice, pd3dCommandList, 7, pEmployeeModel);
+	m_pSkinnedAnimationController = new CAnimationController(pd3dDevice, pd3dCommandList, 8, pEmployeeModel);
 	m_pSkinnedAnimationController->SetTrackAnimationSet(2, 0);//faint_down
 	m_pSkinnedAnimationController->SetTrackAnimationSet(3, 1);//down_idle
 	m_pSkinnedAnimationController->SetTrackAnimationSet(0, 2);//idle
@@ -436,6 +436,7 @@ CEmployee::CEmployee(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCo
 	m_pSkinnedAnimationController->SetTrackAnimationSet(4, 4);//walk
 	m_pSkinnedAnimationController->SetTrackAnimationSet(5, 5);//awake
 	m_pSkinnedAnimationController->SetTrackAnimationSet(6, 6);//rever
+	m_pSkinnedAnimationController->SetTrackAnimationSet(7, 7);//button
 
 
 	m_pSkinnedAnimationController->SetTrackEnable(0, true);
@@ -445,6 +446,7 @@ CEmployee::CEmployee(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCo
 	m_pSkinnedAnimationController->SetTrackEnable(4, false);
 	m_pSkinnedAnimationController->SetTrackEnable(5, false);
 	m_pSkinnedAnimationController->SetTrackEnable(6, false);
+	m_pSkinnedAnimationController->SetTrackEnable(7, false);
 
 	CreateShaderVariables(pd3dDevice, pd3dCommandList);
 
@@ -532,6 +534,15 @@ void CEmployee::Update(float fTimeElapsed, PLAYER_TYPE ptype)
 	m_xmf3Velocity = XMFLOAT3(0.0f, 0.0f, 0.0f);
 }
 
+void CEmployee::OnSwitchArea()
+{
+	if (GetOnInteraction())
+	{
+		SetSwitchArea(true);
+		m_pSwitch->SetOnSwitch(true);
+		m_pSwitch->SetAnimationCount(BUTTON_ANIM_FRAME);
+	}
+}
 
 #define _WITH_DEBUG_CALLBACK_DATA
 

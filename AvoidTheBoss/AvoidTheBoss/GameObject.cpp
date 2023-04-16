@@ -1255,6 +1255,14 @@ void CSkyBox::Render(ID3D12GraphicsCommandList *pd3dCommandList, CCamera *pCamer
 	CGameObject::Render(pd3dCommandList, pCamera);
 }
 
+
+CSwitch::CSwitch()
+{
+	SetBounds();
+}
+CSwitch::~CSwitch()
+{
+}
 void CSwitch::SetRandomPosition(XMFLOAT3 pos)
 {
 	//고정된 위치에 생성
@@ -1262,24 +1270,37 @@ void CSwitch::SetRandomPosition(XMFLOAT3 pos)
 
 void CSwitch::SetBounds()
 {
-	m_pAABB.Center = XMFLOAT3(GetPosition().x, 0.0f, GetPosition().z);
+	//CGameObject* pRoot = FindFrame("Switch");
+	//if (pRoot)
+	//{
+	//	//m_pAABB.Center = XMFLOAT3(pRoot->GetPosition().x, 0.0f, pRoot->GetPosition().z);
+	//	if (pRoot->m_pAABB.Extents.x > pRoot->m_pAABB.Extents.z)
+	//	{
+	//		radius = pRoot->m_pAABB.Extents.x;
+	//	}
+	//	else
+	//	{
+	//		radius = pRoot->m_pAABB.Extents.z;
+	//	}
+	//}
+	radius = 0.25f;
 }
 
-void CSwitch::CollisitonCheck(CPlayer* player)
+void CSwitch::CollisionCheck(CPlayer* player)
 {
 	//캐릭터 원 - 스위치 영역 원 충돌체크
 	if (!m_bOnSwitch)
 	{
-		XMFLOAT3 v1 = GetPosition();
+		CGameObject* pRoot = FindFrame("Switch");
+		XMFLOAT3 v1 = pRoot->GetPosition();
 		XMFLOAT3 v2 = player->GetPosition();
 		float fDistance = sqrt(pow(v1.x - v2.x, 2) + pow(v1.y - v2.y, 2) + pow(v1.y - v2.y, 2));
-		if (fDistance < radius + player->m_playerBV.Radius)
+		if (fDistance <= radius + 1.5f + player->m_playerBV.Radius)
+			player->OnSwitchArea();
+		else
 		{
-			if (player->GetOnInteraction())
-			{
-				m_bOnSwitch = true;
-				m_nAnimationCount = BUTTON_ANIM_FRAME;
-			}
+			player->SetOnInteraction(false);
+			player->SetSwitchArea(false);
 		}
 	}
 }
@@ -1292,8 +1313,13 @@ void CSwitch::Animate(float fTimeElapsed)
 
 		if (m_nAnimationCount > 0)
 		{
-			pButton->MoveForward(-1.0f * fTimeElapsed);
+			pButton->MoveUp(-1.0f * fTimeElapsed);
 			m_nAnimationCount--;
 		}
+		else
+		{
+			m_bOnSwitch = false;
+		}
 	}
+	UpdateTransform(NULL);
 }

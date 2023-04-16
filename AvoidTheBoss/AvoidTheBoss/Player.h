@@ -59,6 +59,7 @@ public:
 
 	int m_nCharacterType;
 
+	bool m_bIsSwitchArea = false;
 	CSwitch* m_pSwitch = NULL;
 public: 
 	CPlayer();
@@ -80,7 +81,6 @@ public:
 	{
 		m_xmf3Position = xmf3Position;
 	}
-
 
 	const XMFLOAT3& GetVelocity() const { return(m_xmf3Velocity); }
 	float GetYaw() { return(m_fYaw); }
@@ -105,9 +105,12 @@ public:
 	{
 		m_OnInteraction = value; 
 	}
-
 	bool GetOnInteraction() { return m_OnInteraction; }
 	void OnInteractive();
+
+	virtual void SetSwitchArea(bool value) { m_bIsSwitchArea = value; }
+	virtual bool GetSwitchArea() { return m_bIsSwitchArea; }
+	virtual void OnSwitchArea(){}
 
 	//플레이어를 회전하는 함수이다. 
 	void Rotate(float x, float y, float z);
@@ -157,7 +160,7 @@ public:
 class CEmployee : public CPlayer
 {
 public:
-	CEmployee(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature,CHARACTER_TYPE nType);
+	CEmployee(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, CHARACTER_TYPE nType);
 	virtual ~CEmployee();
 public:
 	virtual CCamera* ChangeCamera(DWORD nNewCameraMode, float fTimeElapsed);
@@ -168,6 +171,7 @@ public:
 
 	virtual void Update(float fTimeElapsed, PLAYER_TYPE ptype);
 
+	virtual void OnSwitchArea();
 };
 
 

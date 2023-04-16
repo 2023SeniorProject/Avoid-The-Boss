@@ -74,7 +74,7 @@ public:
 	void AddBoundingBox(DirectX::BoundingBox aabb);
 	void BuildTree();
 	void BuildChildTree();
-	bool CheckCollision(DirectX::BoundingSphere& playerBox, XMFLOAT3& look, XMFLOAT3& right, XMFLOAT3& up);
+	bool CheckCollision(DirectX::BoundingSphere& playerBox);
 };
 
 extern class OcTree* BoxTree;

@@ -1,6 +1,7 @@
 #pragma once
 // Worker Thread 기능을 클래스로 랩핑
 #include "RoomManager.h"
+
 // IOCP에 등록할 수 있는 모든 오브젝트에 관해서 정의
 class IocpObject 
 {
@@ -32,7 +33,7 @@ public:
 	~SIocpCore();
 	virtual void Disconnect(int32 sid) override;
 public:
-	RWLOCK;
+	std::shared_mutex _lock;
 	std::unordered_map<int32, ServerSession*> _clients;
 	std::set<int32> _cList;
 	RoomManager* _rmgr;

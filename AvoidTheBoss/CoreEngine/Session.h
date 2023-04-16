@@ -34,9 +34,7 @@ public:
 public:
 	SOCKET _sock = INVALID_SOCKET;
 	RecvEvent _rev;
-
 	std::mutex _playerLock; // 플레이어 관리용 Lock
-	PlayerInfo _playerInfo;
 };
 
 

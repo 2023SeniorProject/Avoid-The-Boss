@@ -52,7 +52,7 @@ bool IocpCore::Processing(uint32_t time_limit) // worker thread 기능 완료된 비동
 			default:
 				// TODO : 로그 찍기
 			{
-				std::cout << ::WSAGetLastError() << std::endl;
+				std::cout << ::WSAGetLastError() << "\n";
 				ServerSession* s = static_cast<ServerSession*>(iocpObject);
 				Disconnect(s->_sid);
 			}
@@ -69,7 +69,6 @@ bool IocpCore::Processing(uint32_t time_limit) // worker thread 기능 완료된 비동
 		if (iocpEvent->_comp == EventType::Send) delete iocpEvent;
 		return false;
 	}
-
 	iocpObject->Processing(iocpEvent, numOfBytes); // 성공하면 전반적인 프로세싱을 시작해보자
 	
 	return true;
@@ -92,11 +91,13 @@ SIocpCore::~SIocpCore()
 
 void SIocpCore::Disconnect(int32 sid)
 {
-	if(sid >= 0 && _clients[sid]->_myRm != -1) _rmgr->ExitRoom(sid, _clients[sid]->_myRm);
-	WLock;
 	std::cout << "[" << _clients[sid]->_cid << "] Disconnected" << std::endl;
-	_cList.erase(_clients[sid]->_cid);
-	delete _clients[sid];
-	_clients.erase(sid); 
+	if(sid >= 0 && _clients[sid]->_myRm != -1) _rmgr->ExitRoom(sid, _clients[sid]->_myRm);
+	{
+		std::unique_lock<std::shared_mutex> disconnectLock(_lock);
+	
+		_cList.erase(_clients[sid]->_cid);
+		_clients.erase(sid);
+	}
 }
 

@@ -8,10 +8,8 @@ PlayerInfo::PlayerInfo()
 	m_xmf3Up = XMFLOAT3(0.0f, 1.0f, 0.0f);
 	m_xmf3Look = XMFLOAT3(0.0f, 0.0f, 1.0f);
 
-	m_xmf3Position = XMFLOAT3(0.0f, 1.25f, -50.0f);
+	m_xmf3Position = XMFLOAT3(0.0f, 0.0f, -50.0f);
 	m_xmf3Velocity = XMFLOAT3(0.0f, 0.0f, 0.0f);
-	m_pPlayerUpdatedContext = NULL;
-
 
 	m_fPitch = 0.0f;
 	m_fRoll = 0.0f;
@@ -23,39 +21,30 @@ PlayerInfo::~PlayerInfo()
 {
 }
 
+void PlayerInfo::SetSpeed(const XMFLOAT3& xmf3Shift)
+{
+	m_xmf3Velocity = Vector3::Add(m_xmf3Velocity, xmf3Shift);
+}
+
 void PlayerInfo::Move(uint8 dwDirection, float fDistance)
 {
 	XMFLOAT3 xmf3Shift = XMFLOAT3(0, 0, 0);
 	if (dwDirection)
-	{
-		// xmf3Shift == 방향 벡터
-		
-		//화살표 키 ‘↑’를 누르면 로컬 z-축 방향으로 이동(전진)한다. ‘↓’를 누르면 반대 방향으로 이동한다. 
-		if (dwDirection & DIR_FORWARD) xmf3Shift = Vector3::Add(xmf3Shift, m_xmf3Look,
-			fDistance);
-		if (dwDirection & DIR_BACKWARD) xmf3Shift = Vector3::Add(xmf3Shift, m_xmf3Look,
-			-fDistance);
-
-		//화살표 키 ‘→’를 누르면 로컬 x-축 방향으로 이동한다. ‘←’를 누르면 반대 방향으로 이동한다. 
-		if (dwDirection & DIR_RIGHT)
-			xmf3Shift = Vector3::Add(xmf3Shift, m_xmf3Right,
-				fDistance);
-		if (dwDirection & DIR_LEFT) xmf3Shift = Vector3::Add(xmf3Shift, m_xmf3Right,
-			-fDistance);
-		m_xmf3Velocity = XMFLOAT3(0, 0, 0);
+	{	
+		if (dwDirection & DIR_FORWARD)  xmf3Shift = Vector3::Add(xmf3Shift, m_xmf3Look,fDistance);
+		if (dwDirection & DIR_BACKWARD) xmf3Shift = Vector3::Add(xmf3Shift, m_xmf3Look, -fDistance);
+		if (dwDirection & DIR_RIGHT)    xmf3Shift = Vector3::Add(xmf3Shift, m_xmf3Right,fDistance);
+		if (dwDirection & DIR_LEFT)     xmf3Shift = Vector3::Add(xmf3Shift, m_xmf3Right,-fDistance);
 		//플레이어를 현재 위치 벡터에서 xmf3Shift 벡터만큼 이동한다. 
-		SetSpeed(xmf3Shift);
-	}
-	else
-	{
+		m_xmf3Velocity = XMFLOAT3(0, 0, 0);
 		SetVelocity(xmf3Shift);
 	}
+	else SetVelocity(xmf3Shift);
+	
 }
 
 void PlayerInfo::Rotate(float x, float y, float z)
 {
-
-
 	if (x != 0.0f)
 	{
 		m_fPitch += x;
@@ -100,15 +89,12 @@ void PlayerInfo::UpdateMove(const XMFLOAT3& xmf3Shift)
 void PlayerInfo::Update(float fTimeElapsed)
 {
 	//플레이어를 속도 벡터 만큼 실제로 이동한다(카메라도 이동될 것이다). 
+	
 	XMFLOAT3 xmf3Velocity = Vector3::ScalarProduct(m_xmf3Velocity, fTimeElapsed, false);
 	UpdateMove(xmf3Velocity);
-	if (m_pPlayerUpdatedContext) OnPlayerUpdateCallback(fTimeElapsed);
+	OnPlayerUpdateCallback(fTimeElapsed);
 }
 
-void PlayerInfo::SetSpeed(const XMFLOAT3& xmf3Shift)
-{
-	m_xmf3Velocity = Vector3::Add(m_xmf3Velocity, xmf3Shift);
-}
 
 
 

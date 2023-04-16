@@ -1,6 +1,5 @@
 ﻿// Senior_project_ver2.cpp : 애플리케이션에 대한 진입점을 정의합니다.
 //
-
 #include "pch.h"
 #include "AvoidTheBoss.h"
 #include "clientIocpCore.h"
@@ -11,6 +10,7 @@
 
 // 전역 변수:
 
+HWND g_hWnd;
 HINSTANCE hInst;                                // 현재 인스턴스입니다.
 WCHAR szTitle[MAX_LOADSTRING];                  // 제목 표시줄 텍스트입니다.
 WCHAR szWindowClass[MAX_LOADSTRING];            // 기본 창 클래스 이름입니다.
@@ -36,14 +36,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     UNREFERENCED_PARAMETER(lpCmdLine);
    SocketUtil::Init();
    GCThreadManager = new ThreadManager;
-   // int retval = DialogBox(hInstance, MAKEINTRESOURCE(IDD_LOGINDIALOG), NULL, reinterpret_cast<DLGPROC>(MyDialogBox));
-   /* if (retval == -1 || retval == 2)
-    {
-        SocketUtil::Close(clientCore._client->_sock);
-        SocketUtil::Clear();
-        delete GCThreadManager;
-        return 0;
-    }*/
+   DialogBox(hInstance, MAKEINTRESOURCE(IDD_LOGINDIALOG), NULL, reinterpret_cast<DLGPROC>(MyDialogBox));
     // 전역 문자열을 초기화합니다.
     ::LoadString(hInstance, IDS_APP_TITLE, szTitle, MAX_LOADSTRING);
     ::LoadString(hInstance, IDC_AVOIDTHEBOSS, szWindowClass, MAX_LOADSTRING);
@@ -58,14 +51,15 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     HACCEL hAccelTable = LoadAccelerators(hInstance, MAKEINTRESOURCE(IDC_AVOIDTHEBOSS));
 
     // 기본 메시지 루프입니다:
-   /* GCThreadManager->Launch([=]()
+    GCThreadManager->Launch([=]()
         {
             while (true)
             {
                 if (!clientCore.Processing()) break;
             }
+            std::cout << "end thread \n";
         }
-    );*/
+    );
 
    while (true)
    {
@@ -73,7 +67,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
        {
            if (msg.message == WM_QUIT)
            {
-               SocketUtil::Close(clientCore._client->_sock);
+               clientCore.Disconnect(0);
                break;
            }
            if (!::TranslateAccelerator(msg.hwnd, hAccelTable, &msg))
@@ -86,12 +80,15 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
        {
           mainGame.FrameAdvance(); // 처리할 윈도우 메세지가 큐에 없을 때 게임프로그램이 CPU사용
        }
-       std::this_thread::sleep_for(0ms);
    }
+ 
   
-    //GCThreadManager->Join();
-    delete GCThreadManager;
     mainGame.OnDestroy();
+    delete GCThreadManager;
+    _CrtSetReportMode(_CRT_WARN, _CRTDBG_MODE_DEBUG);
+    _CrtDumpMemoryLeaks();
+    SocketUtil::Clear();
+    std::cout << "Quit Client\n";
     return (int)msg.wParam;
 }
 
@@ -130,6 +127,7 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
     HWND hMainWnd = CreateWindow(szWindowClass, szTitle, dwStyle, CW_USEDEFAULT,
         CW_USEDEFAULT, rc.right - rc.left, rc.bottom - rc.top, NULL, NULL, hInst,
         NULL);
+    g_hWnd = hMainWnd;
     if (!hMainWnd)return (FALSE);
 
     //----프레임워크 객체 초기화
@@ -185,12 +183,10 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
     case WM_PAINT:
     {
         hdc = BeginPaint(hWnd, &ps);
-        // TODO: 여기에 hdc를 사용하는 그리기 코드를 추가합니다...
         EndPaint(hWnd, &ps);
     }
     break;
     case WM_DESTROY:
-
         ::PostQuitMessage(0);
         break;
     default:
@@ -243,23 +239,7 @@ BOOL CALLBACK MyDialogBox(HWND hWndDlg, UINT message, WPARAM wParam, LPARAM lPar
             GetDlgItemText(hWndDlg, IDC_PW, loginPacket.pw, 10);
             clientCore.InitConnect("127.0.0.1");
             clientCore.DoConnect(&loginPacket);
-            while (true)
-            {
-                if (clientCore.Processing())
-                {
-                    if (clientCore._client->_loginOk == 1)
-                    {
-                        EndDialog(hWndDlg, 1);
-                        return TRUE;
-                    }
-                    else if (clientCore._client->_loginOk == 0)
-                    {
-                        EndDialog(hWndDlg, -1);
-                        return TRUE;
-                    }
-                    else if (clientCore._client->_loginOk == -3) continue;
-                }
-            }
+            EndDialog(hWndDlg, IDOK);
             return TRUE;
             }
         case IDCANCEL:

@@ -8,7 +8,7 @@ CPlayer::CPlayer()
 	m_type = 0;
 	m_pCamera = NULL;
 	m_playerBV.Center = GetPosition();
-	m_playerBV.Radius = 0.02f;
+	m_playerBV.Radius = 0.1f;
 	m_xmf3Position = XMFLOAT3(0.0f, 1.25f, 0.0f);
 
 	m_xmf3Right = XMFLOAT3(1.0f, 0.0f, 0.0f);
@@ -35,6 +35,10 @@ CPlayer::~CPlayer()
 	if (m_pCamera) delete m_pCamera;
 }
 
+
+
+
+
 /*플레이어의 위치를 변경하는 함수이다. 플레이어의 위치는 기본적으로 사용자가 플레이어를 이동하기 위한 키보드를
 누를 때 변경된다. 플레이어의 이동 방향(dwDirection)에 따라 플레이어를 fDistance 만큼 이동한다.*/
 
@@ -51,37 +55,8 @@ void CPlayer::Move(DWORD dwDirection, float fDistance)
 		if (dwDirection & DIR_LEFT) xmf3Shift = Vector3::Add(xmf3Shift, m_xmf3Right, -fDistance);
 		if (dwDirection & DIR_UP) xmf3Shift = Vector3::Add(xmf3Shift, m_xmf3Up, fDistance);
 		if (dwDirection & DIR_DOWN) xmf3Shift = Vector3::Add(xmf3Shift, m_xmf3Up, -fDistance);
-
-		//플레이어를 현재 위치 벡터에서 xmf3Shift 벡터만큼 이동한다. 
-		SetSpeed(xmf3Shift);
-	}
-}
-
-void CPlayer::OtherMove(DWORD dwDirection, float fDistance)
-{
-	XMFLOAT3 xmf3Shift = XMFLOAT3(0, 0, 0);
-	if (dwDirection)
-	{
-		// xmf3Shift == 방향 벡터
-
-		//화살표 키 ‘↑’를 누르면 로컬 z-축 방향으로 이동(전진)한다. ‘↓’를 누르면 반대 방향으로 이동한다. 
-		if (dwDirection & DIR_FORWARD) xmf3Shift = Vector3::Add(xmf3Shift, m_xmf3Look,
-			fDistance);
-		if (dwDirection & DIR_BACKWARD) xmf3Shift = Vector3::Add(xmf3Shift, m_xmf3Look,
-			-fDistance);
-
-		//화살표 키 ‘→’를 누르면 로컬 x-축 방향으로 이동한다. ‘←’를 누르면 반대 방향으로 이동한다. 
-		if (dwDirection & DIR_RIGHT)
-			xmf3Shift = Vector3::Add(xmf3Shift, m_xmf3Right,
-				fDistance);
-		if (dwDirection & DIR_LEFT) xmf3Shift = Vector3::Add(xmf3Shift, m_xmf3Right,
-			-fDistance);
-		//플레이어를 현재 위치 벡터에서 xmf3Shift 벡터만큼 이동한다. 
-		m_xmf3Velocity = XMFLOAT3(0, 0, 0);
-		SetSpeed(xmf3Shift);
-	}
-	else
-	{
+		m_predictPos = Vector3::Add(m_xmf3Position, xmf3Shift, (1.f / 30.f)); // 30 ms 뒤의 위치를 계산
+		//플레이어를 현재 위치 벡터에서 xmf3Shift 벡터만큼 이동한다
 		SetVelocity(xmf3Shift);
 	}
 }
@@ -198,29 +173,6 @@ void CPlayer::Rotate(float x, float y, float z)
 	m_xmf3Up = Vector3::CrossProduct(m_xmf3Look, m_xmf3Right, true);
 }
 
-void CPlayer::OtherUpdate(float fTimeElapsed)
-{
-	//플레이어를 속도 벡터 만큼 실제로 이동한다(카메라를 이동할 것이다). 
-	XMFLOAT3 xmf3Velocity = Vector3::ScalarProduct(m_xmf3Velocity, fTimeElapsed, false); // 1/60 초 변경 속도를
-	UpdateMove(xmf3Velocity);
-
-	if (m_pCamera == NULL) return;
-	DWORD nCameraMode = m_pCamera->GetMode();
-
-	//플레이어의 위치가 변경되었으므로 3인칭 카메라를 갱신한다. 
-	if (nCameraMode == THIRD_PERSON_CAMERA) m_pCamera->Update(m_xmf3Position,
-		fTimeElapsed);
-
-	//카메라의 위치가 변경될 때 추가로 수행할 작업을 수행한다. 
-	if (m_pCameraUpdatedContext) OnCameraUpdateCallback();
-
-	//카메라가 3인칭 카메라이면 카메라가 변경된 플레이어 위치를 바라보도록 한다. 
-	if (nCameraMode == THIRD_PERSON_CAMERA) m_pCamera->SetLookAt(m_xmf3Position);
-
-	//카메라의 카메라 변환 행렬을 다시 생성한다. 
-	m_pCamera->RegenerateViewMatrix();
-}
-
 void CPlayer::OnPlayerUpdateCallback()
 {
 	
@@ -330,7 +282,7 @@ CWorker::CWorker(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dComman
 	//SetCameraUpdatedContext();
 
 	SetScale(XMFLOAT3(1.f, 1.f, 1.f));
-	SetPosition(XMFLOAT3(0.0f, 0.25f, 0.0f));
+	SetPosition(XMFLOAT3(0.0f, 1.3f, 0.0f));
 
 	if (pBossModel) delete pBossModel;
 }
@@ -368,9 +320,6 @@ CCamera* CWorker::ChangeCamera(DWORD nNewCameraMode, float fTimeElapsed)
 		break;
 	}
 	m_pCamera->SetPosition(Vector3::Add(m_xmf3Position, m_pCamera->GetOffset()));
-
-	Update(fTimeElapsed,PLAYER_TYPE::NONE);
-
 	return(m_pCamera);
 }
 
@@ -390,14 +339,12 @@ void CWorker::Move(DWORD dwDirection, float fDistance)
 		m_pSkinnedAnimationController->SetTrackEnable(0, false);
 		m_pSkinnedAnimationController->SetTrackEnable(1, true);
 	}
-
 	CPlayer::Move(dwDirection, fDistance);
 }
 
 void CWorker::Update(float fTimeElapsed, PLAYER_TYPE ptype)
 {
-	CPlayer::Update(fTimeElapsed, PLAYER_TYPE::OWNER);
-
+	CPlayer::Update(fTimeElapsed, ptype);
 	if (m_pSkinnedAnimationController)
 	{
 		float fLength = sqrtf(m_xmf3Velocity.x * m_xmf3Velocity.x + m_xmf3Velocity.z * m_xmf3Velocity.z);
@@ -408,7 +355,7 @@ void CWorker::Update(float fTimeElapsed, PLAYER_TYPE ptype)
 			m_pSkinnedAnimationController->SetTrackPosition(0, 0.0f);
 		}
 	}
-	m_xmf3Velocity = XMFLOAT3(0.0f, 0.0f, 0.0f);
+	if(ptype == PLAYER_TYPE::OWNER) m_xmf3Velocity = XMFLOAT3(0.0f, 0.0f, 0.0f);
 
 }
 

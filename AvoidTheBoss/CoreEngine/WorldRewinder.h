@@ -80,7 +80,19 @@ public:
 
 		return _worldHistory[(_frameIndex + MAX_REWIND - delta) % MAX_REWIND];
 	}
+	void AddHistory(PlayerInfo* p)
+	{
 
+		//_lastWorldStatus._pPos[0] = p[0].GetPosition();
+		//_lastWorldStatus._pPos[1] = p[1].GetPosition();
+		//_lastWorldStatus._pPos[2] = p[2].GetPosition();
+		//_lastWorldStatus._pPos[3] = p[3].GetPosition();
+
+		////_lastWorldStatus._attackLay = _chaser.m_xmf3Look; // 레이저 방향
+		//_lastWorldStatus._myWorldFrame = _nWorldFrame++;
+		//_worldHistory.SetWorldStatusByFrame(_lastWorldStatus._myWorldFrame, _lastWorldStatus);
+
+	};
 	bool IsAttackAvailable(uint32 frame)
 	{
 		const WorldStatus& cw = GetWorldStatusByFrame(frame);
@@ -100,69 +112,3 @@ private:
 	uint32 _frameIndex; // 배열내 위치
 	std::array<WorldStatus, MAX_REWIND> _worldHistory; // 월드 상태 히스토리
 };
-
-
-enum class GameStatus { NONE_GAME, START_GAME, END_GAME};
-
-class GameLogic
-{
-public:
-
-	GameLogic() { }
-	~GameLogic() { }
-	void StartGame() 
-	{ 
-		gs = GameStatus::START_GAME;
-		_timer.Reset();
-	}
-
-	// 호출 순서
-	// TickTimer -> UpdateWorld -> AddHistory
-
-	void TickTimer(float fpsLock) { _timer.Tick(fpsLock); }
-	float GetTimeElapsed() { return _timer.GetTimeElapsed(); }
-	void UpdateWorld(PlayerInfo* p)
-	{
-		if (gs != GameStatus::START_GAME) return;
-		for (int i = 0; i < 4; ++i) p[i].Update(_timer.GetTimeElapsed());
-		// 일정 틱 값 이상 증가하면~
-		if ( _timer._accumulateElapsedTimeForWorldFrame > _timer._fTimeElapsedAvg)
-		{
-			AddHistory(p); // 월드 프레임 상태를 기록한다.
-			//std::cout << _timer._accumulateElapsedTimeForWorldFrame << "\n";
-			_timer._accumulateElapsedTimeForWorldFrame = 0.f;
-		}
-
-	};
-	void AddHistory(PlayerInfo* p)
-	{
-	
-		_lastWorldStatus._pPos[0] = p[0].GetPosition();
-		_lastWorldStatus._pPos[1] = p[1].GetPosition();
-		_lastWorldStatus._pPos[2] = p[2].GetPosition();
-		_lastWorldStatus._pPos[3] = p[3].GetPosition();
-		
-		//_lastWorldStatus._attackLay = _chaser.m_xmf3Look; // 레이저 방향
-		_lastWorldStatus._myWorldFrame = _nWorldFrame++;
-		_worldHistory.SetWorldStatusByFrame(_lastWorldStatus._myWorldFrame, _lastWorldStatus);
-		
-	};
-
-	
-	void StopTimer() { _timer.Stop(); }
-	void StartTimer() { _timer.Start(); }
-public:
-	
-
-	uint32 _curWorldFrame = 0;
-	WorldStatus _lastWorldStatus; // 항상 최신의 월드 상태를 유지하고 있는다.
-	Rewinder<30> _worldHistory; // 타이머로 계산해서, 만약 1프레임이 지나게 된다면 추가한다. 최대 30개 까지 보장 가능하다.
-
-//
-	GameStatus gs = GameStatus::NONE_GAME;
-// 타이머 관련 멤버 변수
-	Timer _timer;
-	uint32 _nWorldFrame = 0;
-};
-
-//  1. 클라랑 서버랑 프레임 싱크가 안맞을 때 어떻게 할건지 

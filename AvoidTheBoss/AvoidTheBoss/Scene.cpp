@@ -174,7 +174,7 @@ void CGameScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandLis
 
 void CGameScene::ProcessInput(HWND hWnd)
 {
-	_logic.TickTimer(60.f);
+	_timer.Tick(0);
 	static UCHAR pKeyBuffer[256];
 	// 방향키를 바이트로 처리한다.
 
@@ -193,9 +193,6 @@ void CGameScene::ProcessInput(HWND hWnd)
 
 		if (pKeyBuffer[0x44] & 0xF0) dwDirection |= DIR_RIGHT;
 		else if (pKeyBuffer[0x64] & 0xF0) dwDirection |= DIR_RIGHT;
-	
-		//if (pKeyBuffer[0x46] & 0xF0) _players[0]->SetOnInteraction(true);
-		//else if (pKeyBuffer[0x66] & 0xF0) _players[0]->SetOnInteraction(true);
 	}
 
 	float cxDelta = 0.0f, cyDelta = 0.0f;
@@ -229,28 +226,25 @@ void CGameScene::ProcessInput(HWND hWnd)
 				{
 					C2S_ROTATE packet;
 					packet.size = sizeof(C2S_ROTATE);
-					packet.type = C_PACKET_TYPE::ROTATE;
+					packet.type = C_PACKET_TYPE::CROT;
 					packet.angle = cxDelta;
-					//clientCore._client->DoSend(&packet);
+					clientCore._client->DoSend(&packet);
 				}
 			}
 
 			/*플레이어를 dwDirection 방향으로 이동한다(실제로는 속도 벡터를 변경한다). 이동 거리는 시간에 비례하도록 한다. 플레이어의 이동 속력은 (1.3UNIT/초)로 가정한다.*/
-			if (dwDirection) 
-				_players[_playerIdx]->Move(dwDirection, PLAYER_VELOCITY);
+			if (dwDirection) _players[_playerIdx]->Move(dwDirection, PLAYER_VELOCITY);
 		}
 	}
 
-
-	if (m_lastKeyInput != dwDirection || (cxDelta != 0.0f) || (cyDelta != 0.0f)) // 이전과 방향(키입력이 다른 경우에만 무브 이벤트 패킷을 보낸다)
+	if (m_lastKeyInput != dwDirection || ( dwDirection != 0 && ((cxDelta != 0.0f) || (cyDelta != 0.0f)))) // 이전과 방향(키입력이 다른 경우에만 무브 이벤트 패킷을 보낸다)
 	{
-
-		C2S_MOVE packet;
-		packet.size = sizeof(C2S_MOVE);
-		packet.type = C_PACKET_TYPE::MOVE;
+		C2S_KEY packet; // 키 입력 + 방향 정보를 보낸다.
+		packet.size = sizeof(C2S_KEY);
+		packet.type = C_PACKET_TYPE::CKEY;
 		packet.key = dwDirection;
-
-		//clientCore._client->DoSend(&packet);
+		packet.dir =_players[_playerIdx]->GetLook();
+		clientCore._client->DoSend(&packet);
 	}
 	m_lastKeyInput = dwDirection;
 	
@@ -258,26 +252,23 @@ void CGameScene::ProcessInput(HWND hWnd)
 	//카메라를 갱신한다. 중력과 마찰력의 영향을 속도 벡터에 적용한다.
 	for (int k = 0; k < PLAYERNUM; ++k)
 	{	
-		if (k == _playerIdx) _players[k]->Update(_logic.GetTimeElapsed(),PLAYER_TYPE::OWNER);
-		else _players[k]->Update(_logic.GetTimeElapsed(),PLAYER_TYPE::OTHER_PLAYER);
-		
-		// 플레이어 인포로 변환
-		_playerInfo[k].m_xmf3Look = _players[k]->GetLook();
-		_playerInfo[k].m_xmf3Right = _players[k]->GetRight();
-		_playerInfo[k].m_xmf3Up = _players[k]->GetUp();
-		_playerInfo[k].m_xmf3Position = _players[k]->GetPosition();
+		_players[k]->m_lock.lock();
+		if (k == _playerIdx) _players[k]->Update(_timer.GetTimeElapsed(),PLAYER_TYPE::OWNER);
+		else _players[k]->Update(_timer.GetTimeElapsed(),PLAYER_TYPE::OTHER_PLAYER);
+		_players[k]->m_lock.unlock();
 	}
-	_logic.UpdateWorld(_playerInfo);
 
 	// 평균 프레임 레이트 출력
 	std::wstring str = L"";
-	str.append(L"FPS:");
-	str += std::to_wstring(_logic._nWorldFrame);
+	str.append(L" (");
+	str += std::to_wstring(_players[_playerIdx]->GetLook().x);
 	str.append(L" ");
-	str += std::to_wstring(_players[_playerIdx]->GetPosition().x);
+	str.append(std::to_wstring(_players[_playerIdx]->GetLook().z));
+	str.append(L") (");
+	str += std::to_wstring(_players[_playerIdx]->GetLook().x);
 	str.append(L" ");
-	str.append(std::to_wstring(_players[_playerIdx]->GetPosition().z));
-	
+	str.append(std::to_wstring(_players[_playerIdx]->GetLook().z));
+	str.append(L")");
 	::SetWindowText(hWnd, str.c_str());
 }
 
@@ -646,12 +637,12 @@ D3D12_GPU_DESCRIPTOR_HANDLE CGameScene::CreateShaderResourceViews(ID3D12Device* 
 
 void CGameScene::AnimateObjects()
 { 
-	for (int i = 0; i < m_nGameObjects; i++) if (m_ppGameObjects[i]) m_ppGameObjects[i]->Animate(_logic.GetTimeElapsed());//>>>>
-	for (int i = 0; i < m_nShaders; i++) if (m_ppShaders[i]) m_ppShaders[i]->AnimateObjects(_logic.GetTimeElapsed());//<<<<
+	for (int i = 0; i < m_nGameObjects; i++) if (m_ppGameObjects[i]) m_ppGameObjects[i]->Animate(_timer.GetTimeElapsed());//>>>>
+	for (int i = 0; i < m_nShaders; i++) if (m_ppShaders[i]) m_ppShaders[i]->AnimateObjects(_timer.GetTimeElapsed());//<<<<
 
 	for (int i = 0; i < PLAYERNUM; i++)
 	{
-		_players[i]->Animate(_logic.GetTimeElapsed());
+		_players[i]->Animate(_timer.GetTimeElapsed());
 	}
 	if (m_pLights)
 	{

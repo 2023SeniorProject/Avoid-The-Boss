@@ -91,8 +91,10 @@ void AcceptManager::RegisterAccept(AcceptEvent* acceptEvent)
 		const int32 errorCode = ::WSAGetLastError();
 		if (errorCode != WSA_IO_PENDING)
 		{
+			delete session;
 			// 일단 다시 Accept 걸어준다.
 			// accept를 실패한 경우 다시 다른 클라이언트가 연결될 수 있도록 한다.
+			acceptEvent->_session = nullptr;
 			std::cout << "Accept Error" << std::endl;
 			RegisterAccept(acceptEvent);
 		}
@@ -167,7 +169,7 @@ void AcceptManager::ProcessAccept(AcceptEvent* acceptEvent)
 	
 	session->_status = USER_STATUS::LOBBY;
 	session->DoRecv();  // recv 상태로 만든다.
-	
+	acceptEvent->_session = nullptr;
 	RegisterAccept(acceptEvent); // 다시 acceptEvent를 등록한다.
 }
 

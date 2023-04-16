@@ -16,19 +16,27 @@ public:
 	virtual void Task() {};
 };
 
-class moveEvent : public queueEvent
+class moveEvent : public queueEvent // 33 ms 마다 전송한다.
 {
 public:
 	moveEvent() { };
 	virtual ~moveEvent() {};
-	uint8 key = 0;
+	XMFLOAT3 _dir {0,0,0};
+	uint8 _key = 0;
 public:
 	virtual void Task()
 	{
-		std::lock_guard<std::mutex> plg(ServerIocpCore._clients[sid]->_playerLock);
 		// to do move Player in gameLogic
 		int16 roomNum = ServerIocpCore._clients[sid]->_myRm;
-		ServerIocpCore._rmgr->GetRoom(roomNum).GetMyPlayerFromRoom(sid).Move(key, PLAYER_VELOCITY);
+		ServerIocpCore._rmgr->GetRoom(roomNum).GetMyPlayerFromRoom(sid).SetDirection(_dir);
+		std::cout << ServerIocpCore._rmgr->GetRoom(roomNum).GetMyPlayerFromRoom(sid).m_xmf3Look.x << " "
+			<< ServerIocpCore._rmgr->GetRoom(roomNum).GetMyPlayerFromRoom(sid).m_xmf3Look.z <<") (";
+
+		std::cout << ServerIocpCore._rmgr->GetRoom(roomNum).GetMyPlayerFromRoom(sid).m_xmf3Right.x << " "
+			<< ServerIocpCore._rmgr->GetRoom(roomNum).GetMyPlayerFromRoom(sid).m_xmf3Right.z << "\n";
+
+		ServerIocpCore._rmgr->GetRoom(roomNum).GetMyPlayerFromRoom(sid).Move(_key, PLAYER_VELOCITY);
+
 	};
 	
 };
@@ -42,8 +50,6 @@ public:
 public:
 	virtual void Task()
 	{
-		int16 roomNum = ServerIocpCore._clients[sid]->_myRm;
-		ServerIocpCore._rmgr->GetRoom(roomNum).GetMyPlayerFromRoom(sid).Rotate(0,angleY,0);
 	};
 
 };

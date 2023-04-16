@@ -1292,7 +1292,7 @@ void CSwitch::Animate(float fTimeElapsed)
 
 		if (m_nAnimationCount > 0)
 		{
-			pButton->MoveForward(-0.1f * fTimeElapsed);
+			pButton->MoveForward(-1.0f * fTimeElapsed);
 			m_nAnimationCount--;
 		}
 	}

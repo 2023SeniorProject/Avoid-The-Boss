@@ -60,7 +60,7 @@ public:
 	int m_nCharacterType;
 
 	bool m_bIsSwitchArea = false;
-	CSwitch* m_pSwitch = NULL;
+	//CSwitch* m_pSwitch = NULL;
 public: 
 	CPlayer();
 	virtual ~CPlayer();
@@ -98,8 +98,6 @@ public:
 	// 다른 플레이어를 이동하는 함수
 	void OtherMove(DWORD dwDirection, float fDistance);
 	void OtherUpdate(float fTimeElapsed);
-
-	void ProcesesInput();
 
 	void SetOnInteraction(bool value) 
 	{
@@ -157,12 +155,18 @@ public:
 
 };
 
+struct SwitchInformation
+{
+	XMFLOAT3 position;
+	float radius; //raderArea
+};
+
 class CEmployee : public CPlayer
 {
 public:
 	CEmployee(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, CHARACTER_TYPE nType);
 	virtual ~CEmployee();
-public:
+
 	virtual CCamera* ChangeCamera(DWORD nNewCameraMode, float fTimeElapsed);
 	virtual void OnPlayerUpdateCallback();
 	virtual void OnCameraUpdateCallback();
@@ -171,7 +175,8 @@ public:
 
 	virtual void Update(float fTimeElapsed, PLAYER_TYPE ptype);
 
-	virtual void OnSwitchArea();
+	bool CheckSwitchArea();
+	SwitchInformation m_pSwitch;
 };
 
 

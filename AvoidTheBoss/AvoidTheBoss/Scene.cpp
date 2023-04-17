@@ -166,15 +166,18 @@ void CGameScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandLis
 	pSwitchObjectShader->BuildObjects(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, NULL,NULL);
 	m_ppShaders[1] = pSwitchObjectShader;
 
+	m_pSwitch = (CSwitch*)pSwitchObjectShader->m_ppObjects[0];
 	for (int i = 0; i < PLAYERNUM; ++i)
 	{
+		XMFLOAT3 position = XMFLOAT3(-4.5f, 0.0f, 0.017f);
 		_players[i] = new CEmployee(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, CHARACTER_TYPE::YELLOW_EMP);
-		_players[i]->m_pSwitch = (CSwitch*)pSwitchObjectShader->m_ppObjects[0];
+		//CGameObject* pRoot = m_pSwitch->FindFrame("Switch");
+		((CEmployee*)_players[i])->m_pSwitch.position = position;// m_pSwitch->GetPosition();
+		((CEmployee*)_players[i])->m_pSwitch.radius = m_pSwitch->GetRadius();
 	}
 	m_pCamera = _players[0]->GetCamera();
 
 	CreateShaderVariables(pd3dDevice, pd3dCommandList);
-
 }
 
 void CGameScene::ProcessInput(HWND hWnd)
@@ -199,13 +202,32 @@ void CGameScene::ProcessInput(HWND hWnd)
 			else if (pKeyBuffer[0x64] & 0xF0) dwDirection |= DIR_RIGHT;
 
 			if (pKeyBuffer[0x46] & 0xF0)
-				_players[0]->SetOnInteraction(true);
+			{
+				if(_players[0]->GetSwitchArea())
+					_players[0]->SetOnInteraction(true);
+				else
+					_players[0]->SetOnInteraction(false);
+			}
 			else if (pKeyBuffer[0x66] & 0xF0) 
-				_players[0]->SetOnInteraction(true);
-
-			if (_players[0]->GetOnInteraction())
-				dwDirection |= DIR_BUTTON_CENTER;
+			{
+				if (_players[0]->GetSwitchArea())
+					_players[0]->SetOnInteraction(true);
+				else
+					_players[0]->SetOnInteraction(false);
+			}
 	}
+
+
+	if (_players[0]->GetOnInteraction())
+	{
+		dwDirection |= DIR_BUTTON_CENTER;
+		if (m_pSwitch)
+		{
+			m_pSwitch->SetOnSwitch(true);
+			m_pSwitch->SetAnimationCount(BUTTON_ANIM_FRAME);
+		}
+	}
+	
 
 	float cxDelta = 0.0f, cyDelta = 0.0f;
 	POINT ptCursorPos;

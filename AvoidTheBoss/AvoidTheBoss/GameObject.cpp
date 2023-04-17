@@ -1258,7 +1258,7 @@ void CSkyBox::Render(ID3D12GraphicsCommandList *pd3dCommandList, CCamera *pCamer
 
 CSwitch::CSwitch()
 {
-	SetBounds();
+	radius = 0.25f;
 }
 CSwitch::~CSwitch()
 {
@@ -1283,26 +1283,7 @@ void CSwitch::SetBounds()
 	//		radius = pRoot->m_pAABB.Extents.z;
 	//	}
 	//}
-	radius = 0.25f;
-}
 
-void CSwitch::CollisionCheck(CPlayer* player)
-{
-	//캐릭터 원 - 스위치 영역 원 충돌체크
-	if (!m_bOnSwitch)
-	{
-		CGameObject* pRoot = FindFrame("Switch");
-		XMFLOAT3 v1 = pRoot->GetPosition();
-		XMFLOAT3 v2 = player->GetPosition();
-		float fDistance = sqrt(pow(v1.x - v2.x, 2) + pow(v1.y - v2.y, 2) + pow(v1.y - v2.y, 2));
-		if (fDistance <= radius + 1.5f + player->m_playerBV.Radius)
-			player->OnSwitchArea();
-		else
-		{
-			player->SetOnInteraction(false);
-			player->SetSwitchArea(false);
-		}
-	}
 }
 
 void CSwitch::Animate(float fTimeElapsed)
@@ -1319,6 +1300,7 @@ void CSwitch::Animate(float fTimeElapsed)
 		else
 		{
 			m_bOnSwitch = false;
+			m_nAnimationCount = 0;
 		}
 	}
 	UpdateTransform(NULL);

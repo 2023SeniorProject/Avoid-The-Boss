@@ -111,8 +111,6 @@ void CPlayer::Update(float fTimeElapsed, PLAYER_TYPE ptype)
 	있고 또는 플레이어의 충돌 검사 등을 수행할 필요가 있다. 이러한 상황에서 플레이어의 위치를 유효한 위치로 다시
 	변경할 수 있다.*/
 	
-	if (m_OnInteraction) OnInteractive();
-
 	if (BoxTree->CheckCollision(m_playerBV, m_xmf3Look, m_xmf3Right, m_xmf3Up)) MakePosition(m_playerBV.Center);
 
 	DWORD nCameraMode = m_pCamera->GetMode();
@@ -133,8 +131,6 @@ void CPlayer::Update(float fTimeElapsed, PLAYER_TYPE ptype)
 
 void CPlayer::OnInteractive()
 {
-	m_pSwitch->CollisionCheck(this);
-
 	if (m_OnInteraction == true && m_InteractionCountTime > 0)
 	{
 		m_pSkinnedAnimationController->SetTrackEnable(0, false);
@@ -229,11 +225,6 @@ void CPlayer::OtherUpdate(float fTimeElapsed)
 void CPlayer::OnPlayerUpdateCallback()
 {
 	
-}
-
-void CPlayer::ProcesesInput()
-{
-
 }
 
 void CPlayer::CreateShaderVariables(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList)
@@ -521,6 +512,16 @@ void CEmployee::Update(float fTimeElapsed, PLAYER_TYPE ptype)
 {
 	CPlayer::Update(fTimeElapsed, PLAYER_TYPE::OWNER);
 
+	if (CheckSwitchArea())
+	{
+		SetSwitchArea(true);
+	}
+	else
+		SetSwitchArea(false);
+
+	if (m_OnInteraction)
+			OnInteractive();
+	
 	if (m_pSkinnedAnimationController&&!m_OnInteraction)
 	{
 		float fLength = sqrtf(m_xmf3Velocity.x * m_xmf3Velocity.x + m_xmf3Velocity.z * m_xmf3Velocity.z);
@@ -534,14 +535,21 @@ void CEmployee::Update(float fTimeElapsed, PLAYER_TYPE ptype)
 	m_xmf3Velocity = XMFLOAT3(0.0f, 0.0f, 0.0f);
 }
 
-void CEmployee::OnSwitchArea()
+bool CEmployee::CheckSwitchArea()
 {
-	if (GetOnInteraction())
-	{
-		SetSwitchArea(true);
-		m_pSwitch->SetOnSwitch(true);
-		m_pSwitch->SetAnimationCount(BUTTON_ANIM_FRAME);
-	}
+	//캐릭터 원 - 스위치 영역 원 충돌체크
+	XMFLOAT3 v1 = m_pSwitch.position;
+	XMFLOAT3 v2 = m_xmf3Position;
+
+	float fDistance = sqrt(pow(v1.x - v2.x, 2) + pow(v1.y - v2.y, 2) + pow(v1.y -v2.y, 2));
+	float fSumRange = m_pSwitch.radius + m_playerBV.Radius + 1.0f;
+
+	if (fDistance <= fSumRange)
+		return true;
+	else
+		return false;
+
+	return false;
 }
 
 #define _WITH_DEBUG_CALLBACK_DATA

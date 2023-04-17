@@ -434,14 +434,18 @@ public:
 class CSwitch : public CGameObject
 {
 private:
-	bool m_bOnSwitch = false;
-	int m_nAnimationCount = 0;
 	float radius = 0.0f;
+
 public:
+	bool StateOn = false;
+	bool m_bOnSwitch = false;
+	int m_nAnimationCount = BUTTON_ANIM_FRAME;
+
 	CSwitch();
 	virtual ~CSwitch();
 	void SetRandomPosition(XMFLOAT3 pos);
 	void SetBounds();
+	float GetRadius() { return radius; }
 
 	void SetOnSwitch(bool value) { m_bOnSwitch = value; }
 	bool GetOnSwitch() { return m_bOnSwitch; }
@@ -449,7 +453,6 @@ public:
 	void SetAnimationCount(int value) { m_nAnimationCount = value; }
 	bool GetAnimationCount() { return m_nAnimationCount; }
 
-	void CollisionCheck(CPlayer* player);
 	virtual void Animate(float fTimeElapsed);
 };
 

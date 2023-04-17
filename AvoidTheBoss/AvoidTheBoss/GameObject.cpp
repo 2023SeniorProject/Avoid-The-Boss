@@ -1301,6 +1301,7 @@ void CSwitch::Animate(float fTimeElapsed)
 		{
 			m_bOnSwitch = false;
 			m_nAnimationCount = 0;
+			StateOn = true;
 		}
 	}
 	UpdateTransform(NULL);

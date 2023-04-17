@@ -203,20 +203,25 @@ void CGameScene::ProcessInput(HWND hWnd)
 
 			if (pKeyBuffer[0x46] & 0xF0)
 			{
-				if(_players[0]->GetSwitchArea())
-					_players[0]->SetOnInteraction(true);
-				else
-					_players[0]->SetOnInteraction(false);
+				if (!m_pSwitch->StateOn)
+				{
+					if (_players[0]->GetSwitchArea())
+						_players[0]->SetOnInteraction(true);
+					else
+						_players[0]->SetOnInteraction(false);
+				}
 			}
-			else if (pKeyBuffer[0x66] & 0xF0) 
+			else if (pKeyBuffer[0x66] & 0xF0)
 			{
-				if (_players[0]->GetSwitchArea())
-					_players[0]->SetOnInteraction(true);
-				else
-					_players[0]->SetOnInteraction(false);
+				if (!m_pSwitch->StateOn)
+				{
+					if (_players[0]->GetSwitchArea())
+						_players[0]->SetOnInteraction(true);
+					else
+						_players[0]->SetOnInteraction(false);
+				}
 			}
 	}
-
 
 	if (_players[0]->GetOnInteraction())
 	{
@@ -227,7 +232,6 @@ void CGameScene::ProcessInput(HWND hWnd)
 			m_pSwitch->SetAnimationCount(BUTTON_ANIM_FRAME);
 		}
 	}
-	
 
 	float cxDelta = 0.0f, cyDelta = 0.0f;
 	POINT ptCursorPos;

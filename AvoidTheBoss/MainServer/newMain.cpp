@@ -20,14 +20,17 @@ int main()
 	AcceptManager listener;
 	listener.InitAccept();
 	GThreadManager = new ThreadManager;
-	for (int32 i = 0; i < thread::hardware_concurrency() - 1; i++)
+	for (int32 i = 0; i < thread::hardware_concurrency() - 2; i++)
 	{
 		GThreadManager->Launch([=]()
 			{
+			
 				while (true)
 				{
+					
 					ServerIocpCore.Processing(); // Accept 받기 성공 
 					//기존 게임 서버 프로그래밍 Worker Thread에 해당하는 부분
+					std::this_thread::sleep_for(0ms);
 				}
 				std::cout << "End Thread \n";
 				
@@ -39,6 +42,7 @@ int main()
 			while (true)
 			{
 				ServerIocpCore._rmgr->UpdateRooms();
+				std::this_thread::sleep_for(0ms);
 			}
 			std::cout << "End Thread \n";
 		});

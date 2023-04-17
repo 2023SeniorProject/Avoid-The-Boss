@@ -85,8 +85,6 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
   
     mainGame.OnDestroy();
     delete GCThreadManager;
-    _CrtSetReportMode(_CRT_WARN, _CRTDBG_MODE_DEBUG);
-    _CrtDumpMemoryLeaks();
     SocketUtil::Clear();
     std::cout << "Quit Client\n";
     return (int)msg.wParam;

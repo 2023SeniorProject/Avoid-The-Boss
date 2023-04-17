@@ -30,6 +30,17 @@ public:
 		int16 roomNum = ServerIocpCore._clients[sid]->_myRm;
 		ServerIocpCore._rmgr->GetRoom(roomNum).GetMyPlayerFromRoom(sid).SetDirection(_dir);
 		ServerIocpCore._rmgr->GetRoom(roomNum).GetMyPlayerFromRoom(sid).Move(_key, PLAYER_VELOCITY);
+		
+		if (_key == 0)
+		{
+			S2C_POS packet;
+			packet.sid = sid;
+			packet.size = sizeof(S2C_POS);
+			packet.type = S_PACKET_TYPE::SPOS;
+			packet.x = ServerIocpCore._rmgr->GetRoom(roomNum).GetMyPlayerFromRoom(sid).GetPosition().x;
+			packet.z = ServerIocpCore._rmgr->GetRoom(roomNum).GetMyPlayerFromRoom(sid).GetPosition().z;
+			ServerIocpCore._rmgr->GetRoom(roomNum).BroadCasting(&packet);
+		}
 	};
 	
 };
@@ -43,8 +54,8 @@ public:
 public:
 	virtual void Task()
 	{
-		int16 roomNum = ServerIocpCore._clients[sid]->_myRm;
-		ServerIocpCore._rmgr->GetRoom(roomNum).GetMyPlayerFromRoom(sid).Rotate(0,angleY,0);
+		/*int16 roomNum = ServerIocpCore._clients[sid]->_myRm;
+		ServerIocpCore._rmgr->GetRoom(roomNum).GetMyPlayerFromRoom(sid).Rotate(0,angleY,0);*/
 	};
 
 };

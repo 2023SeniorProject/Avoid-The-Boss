@@ -42,7 +42,6 @@ void Scheduler::DoTasks()
 void Scheduler::DoNormalTasks()
 {
 	/// tick update
-	
 	while (!_normalQueue.empty())
 	{
 		queueEvent* jobElem = _normalQueue.front(); // 가장 우선적으로 나와야할 이벤트에 대해서

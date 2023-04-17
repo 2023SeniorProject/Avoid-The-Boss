@@ -59,6 +59,7 @@ void CPlayer::Move(DWORD dwDirection, float fDistance)
 		//플레이어를 현재 위치 벡터에서 xmf3Shift 벡터만큼 이동한다
 		SetVelocity(xmf3Shift);
 	}
+	else SetVelocity(xmf3Shift);
 }
 
 void CPlayer::SetSpeed(const XMFLOAT3& xmf3Shift)
@@ -397,7 +398,7 @@ CEmployee::CEmployee(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCo
 	//SetCameraUpdatedContext();
 
 	SetScale(XMFLOAT3(1.f, 1.f, 1.f));
-	SetPosition(XMFLOAT3(0.0f, 0.25f, 0.0f));
+	SetPosition(XMFLOAT3(0.0f, 0.25f, -50.0f));
 
 	if (pEmployeeModel) delete pEmployeeModel;
 }
@@ -462,7 +463,7 @@ void CEmployee::Move(DWORD dwDirection, float fDistance)
 
 void CEmployee::Update(float fTimeElapsed, PLAYER_TYPE ptype)
 {
-	CPlayer::Update(fTimeElapsed, PLAYER_TYPE::OWNER);
+	CPlayer::Update(fTimeElapsed, ptype);
 
 	if (m_pSkinnedAnimationController&&!m_OnInteraction)
 	{
@@ -474,7 +475,7 @@ void CEmployee::Update(float fTimeElapsed, PLAYER_TYPE ptype)
 			m_pSkinnedAnimationController->SetTrackPosition(0, 0.0f);
 		}
 	}
-	m_xmf3Velocity = XMFLOAT3(0.0f, 0.0f, 0.0f);
+	if(ptype == PLAYER_TYPE::OWNER) m_xmf3Velocity = XMFLOAT3(0.0f, 0.0f, 0.0f);
 }
 
 

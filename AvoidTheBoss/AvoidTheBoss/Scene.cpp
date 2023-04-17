@@ -252,7 +252,7 @@ void CGameScene::ProcessInput(HWND hWnd)
 				/*cxDelta는 y-축의 회전을 나타내고 cyDelta는 x-축의 회전을 나타낸다. 오른쪽 마우스 버튼이 눌려진 경우
 				cxDelta는 z-축의 회전을 나타낸다.*/
 				if (pKeyBuffer[VK_RBUTTON] & 0xF0) _players[_playerIdx]->Rotate(cyDelta, 0.0f, -cxDelta);
-				else if (pKeyBuffer[VK_LBUTTON] & 0xF0) _players[_playerIdx]->Rotate(cyDelta, cxDelta, 0.0f);
+				else if (pKeyBuffer[VK_LBUTTON] & 0xF0) _players[_playerIdx]->Rotate(0.f, cxDelta, 0.0f);
 
 				if (pKeyBuffer[VK_LBUTTON] & 0xF0)
 				{
@@ -269,7 +269,7 @@ void CGameScene::ProcessInput(HWND hWnd)
 		}
 	}
 
-	if (m_lastKeyInput != dwDirection || ( dwDirection != 0 && ((cxDelta != 0.0f) || (cyDelta != 0.0f)))) // 이전과 방향(키입력이 다른 경우에만 무브 이벤트 패킷을 보낸다)
+	if (m_lastKeyInput != dwDirection || ( dwDirection != 0 && (cxDelta != 0.0f))) // 이전과 방향(키입력이 다른 경우에만 무브 이벤트 패킷을 보낸다)
 	{
 		C2S_KEY packet; // 키 입력 + 방향 정보를 보낸다.
 		packet.size = sizeof(C2S_KEY);
@@ -293,7 +293,11 @@ void CGameScene::ProcessInput(HWND hWnd)
 
 	// 평균 프레임 레이트 출력
 	std::wstring str = L"";
+	str.append(std::to_wstring(_playerIdx));
 	str.append(L" (");
+	str.append(std::to_wstring(_players[_playerIdx]->GetPosition().x));
+	str.append(L" ");
+	str.append(std::to_wstring(_players[_playerIdx]->GetPosition().z));
 	str.append(L")");
 	::SetWindowText(hWnd, str.c_str());
 }

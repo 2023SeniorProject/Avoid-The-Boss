@@ -14,12 +14,12 @@ using namespace std;
 //=============================
 Room::Room()
 {
-	//_jobQueue = new Scheduler();
+	_jobQueue = new Scheduler();
 }
 
 Room::~Room()
 {
-	//delete _jobQueue;
+	delete _jobQueue;
 }
 void Room::UserOut(int32 sid)
 {
@@ -32,10 +32,10 @@ void Room::UserOut(int32 sid)
 
 	if (IsDestroyRoom())
 	{
-		_status = ROOM_STATUS::EMPTY;
+		/*_status = ROOM_STATUS::EMPTY;
 		S2C_HIDE_ROOM packet;
 		packet.size = sizeof(S2C_HIDE_ROOM);
-		packet.rmNum = _num;
+		packet.rmNum = _num;*/
 		// 업데이트 리스트를 보내준다. ==> 빈방이므로 더 이상 표시 X
 		{
 			READ_SERVER_LOCK;
@@ -44,6 +44,7 @@ void Room::UserOut(int32 sid)
 				//i.second->DoSend(&packet);
 			}
 		}
+		std::cout << "Destroy Room\n";
 	}
 	std::cout << "RM [" << _num << "][" << _cList.size() << "/4]" << std::endl;
 }
@@ -111,38 +112,14 @@ void Room::BroadCasting(void* packet) // 방에 속하는 클라이언트에게만 전달하기
 // 방에 있는 유저에 대한 게임 로직 업데이트 진행 
 void Room::Update()
 {
-	if (_status != ROOM_STATUS::FULL) return;
 	_timer.Tick(60.f);
 	
 	{
-		std::unique_lock<std::shared_mutex> ql(_jobQueueLock);
-		while (!_jobQueue.empty())
-		{
-			queueEvent* qe = _jobQueue.front();
-			_jobQueue.pop();
-			if (qe != nullptr)
-			{
-				qe->Task();
-				delete qe;
-				std::cout << "Do job\n";
-			}
-		}
-		
+		std::unique_lock<std::shared_mutex> ql(_jobQueueLock); // Queue Lock 호출
+		_jobQueue->DoNormalTasks();
 	}
-
 	for (int i = 0; i < PLAYERNUM; ++i) _players[i].Update(_timer.GetTimeElapsed());
 	
-	if (_timer.IsAfterTick(45))
-	{
-		S2C_POS packet;
-		packet.type = S_PACKET_TYPE::SPOS;
-		packet.size = sizeof(S2C_POS);
-		packet.sid = 0;
-		packet.x = _players[0].GetPosition().x;
-		packet.z = _players[0].GetPosition().z;
-		BroadCasting(&packet);
-	}
-
 }
 
 void Room::AddEvent(queueEvent* qe, float after)
@@ -154,7 +131,7 @@ void Room::AddEvent(queueEvent* qe, float after)
 void Room::AddEvent(queueEvent* qe)
 {
 	std::unique_lock<std::shared_mutex> ql(_jobQueueLock); // Queue Lock 호출
-	_jobQueue.push(qe);
+	_jobQueue->PushTask(qe);
 }
 // ======= RoomManager ========
 

@@ -115,13 +115,17 @@ void CSession::ProcessPacket(char* packet)
 {
 	switch ((uint8)packet[1])
 	{
+		
 	case S_PACKET_TYPE::SKEY:
 	{
 		S2C_KEY* movePacket = reinterpret_cast<S2C_KEY*>(packet);
 		CPlayer* player = mainGame.m_pScene->GetScenePlayer(movePacket->sid);
 		if (player != nullptr && _sid != movePacket->sid)
 		{
+			if (movePacket->key == 0) std::cout << "keyup\n";
+			player->m_lock.lock();
 			player->Move(movePacket->key, PLAYER_VELOCITY);
+			player->m_lock.unlock();
 		}
 		
 	}
@@ -140,7 +144,7 @@ void CSession::ProcessPacket(char* packet)
 	break;
 	case S_PACKET_TYPE::SPOS: // 미리 계산한 좌표값을 보내준다.
 	{
-		
+		std::cout << "pos\n";
 		S2C_POS* posPacket = reinterpret_cast<S2C_POS*>(packet);
 		CPlayer* player = mainGame.m_pScene->GetScenePlayer(posPacket->sid);
 		if (player == nullptr) break;
@@ -151,8 +155,8 @@ void CSession::ProcessPacket(char* packet)
 	break;
 	case S_PACKET_TYPE::SCHAT:
 	{
-	}
 	break;
+	}
 	case S_PACKET_TYPE::GAME_START:
 	{
 		S2C_GAMESTART* gsp = reinterpret_cast<S2C_GAMESTART*>(packet);

@@ -10,6 +10,8 @@ public:
 	virtual ~LeafNode() { boxs.clear(); }
 };
 
+class PlayerInfo;
+
 class OcTree
 {
 
@@ -74,7 +76,7 @@ public:
 	void AddBoundingBox(DirectX::BoundingBox aabb);
 	void BuildTree();
 	void BuildChildTree();
-	bool CheckCollision(DirectX::BoundingSphere& playerBox);
+	bool CheckCollision(DirectX::BoundingSphere& playerBox, XMFLOAT3& playerPos);
 };
 
 extern class OcTree* BoxTree;

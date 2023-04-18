@@ -132,8 +132,8 @@ void CGameScene::BuildDefaultLightsAndMaterials()
 
 void CGameScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList)
 {
-	BoxTree = new OcTree(XMFLOAT3(0, 0, 0), 60);
-	BoxTree->BuildTree();
+	//BoxTree = new OcTree(XMFLOAT3(0, 0, 0), 60);
+	//BoxTree->BuildTree();
 	//그래픽 루트 시그너쳐를 생성한다. 
 	m_pd3dGraphicsRootSignature = CreateGraphicsRootSignature(pd3dDevice);
 
@@ -293,7 +293,7 @@ void CGameScene::ProcessInput(HWND hWnd)
 
 	// 평균 프레임 레이트 출력
 	std::wstring str = L"";
-	str.append(std::to_wstring(_playerIdx));
+	str.append(std::to_wstring(m_cid));
 	str.append(L" (");
 	str.append(std::to_wstring(_players[_playerIdx]->GetPosition().x));
 	str.append(L" ");

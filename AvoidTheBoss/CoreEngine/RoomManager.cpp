@@ -139,6 +139,7 @@ void Room::Update()
 	{
 		for (int i = 0; i < PLAYERNUM; ++i)
 		{
+			if (Vector3::IsZero(_players[i].GetVelocity())) continue;
 			S2C_POS packet;
 			packet.sid = _players[i].m_sid;
 			packet.size = sizeof(S2C_POS);

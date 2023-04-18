@@ -2,11 +2,10 @@
 #include "IocpCore.h"
 #include "IocpEvent.h"
 #include "Session.h"
+#include "CollisionDetector.h"
 #include "SocketUtil.h"
 
 SIocpCore ServerIocpCore;
-
-
 
 IocpCore::IocpCore()
 {
@@ -82,6 +81,9 @@ SIocpCore::SIocpCore()
 {
 	_rmgr = new RoomManager();
 	_rmgr->Init();
+	BoxTree = new OcTree(XMFLOAT3(0, 0, 0), 60);
+	BoxTree->BuildTree();
+
 }
 
 SIocpCore::~SIocpCore()

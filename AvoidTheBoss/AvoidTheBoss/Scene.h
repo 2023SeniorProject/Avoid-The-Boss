@@ -107,6 +107,8 @@ public:
 	LIGHTS*								m_pcbMappedLights = NULL;
 
 	CSwitch* m_pSwitch = NULL;
+public:
+	int32 m_cid = -1;
 protected:
 	ID3D12RootSignature* m_pd3dGraphicsRootSignature = NULL;
 

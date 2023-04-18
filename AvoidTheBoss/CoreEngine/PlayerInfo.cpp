@@ -1,5 +1,6 @@
 #include "pch.h"
 #include "PlayerInfo.h"
+#include "CollisionDetector.h"
 
 PlayerInfo::PlayerInfo() 
 {
@@ -14,6 +15,9 @@ PlayerInfo::PlayerInfo()
 	m_fPitch = 0.0f;
 	m_fRoll = 0.0f;
 	m_fYaw = 0.0f;
+
+	m_playerBV.Center = m_xmf3Position;
+	m_playerBV.Radius = 0.2f;
 	
 }
 
@@ -99,8 +103,12 @@ void PlayerInfo::Update(float fTimeElapsed)
 	
 	XMFLOAT3 xmf3Velocity = Vector3::ScalarProduct(m_xmf3Velocity, fTimeElapsed, false);
 	UpdateMove(xmf3Velocity);
-	PrintPos();
-	OnPlayerUpdateCallback(fTimeElapsed);
+	OnPlayerUpdateCallback();
+}
+
+void PlayerInfo::OnPlayerUpdateCallback()
+{
+	BoxTree->CheckCollision(m_playerBV, m_xmf3Position);
 }
 
 

@@ -85,7 +85,7 @@ void CPlayer::Update(float fTimeElapsed, PLAYER_TYPE ptype)
 	변경할 수 있다.*/
 	
 	if (m_OnInteraction) OnInteractive();
-	if (BoxTree->CheckCollision(m_playerBV)) MakePosition(m_playerBV.Center);
+	//if (BoxTree->CheckCollision(m_playerBV)) MakePosition(m_playerBV.Center);
 
 	DWORD nCameraMode = m_pCamera->GetMode();
 

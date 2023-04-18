@@ -85,8 +85,9 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
   
     mainGame.OnDestroy();
     delete GCThreadManager;
-    SocketUtil::Clear();
+   
     std::cout << "Quit Client\n";
+    SocketUtil::Clear();
     return (int)msg.wParam;
 }
 

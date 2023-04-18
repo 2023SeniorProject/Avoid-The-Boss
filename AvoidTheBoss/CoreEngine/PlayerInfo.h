@@ -19,7 +19,10 @@ public:
 
 	XMFLOAT3 m_xmf3Position;
 	XMFLOAT3 m_xmf3Velocity;
+
+
 public:
+	BoundingSphere m_playerBV;
 	int32 m_sid;
 public:
 	PlayerInfo();
@@ -57,5 +60,5 @@ public:
 	
 	//플레이어의 위치와 회전 정보를 경과 시간에 따라 갱신하는 함수이다.
 	void Update(float fTimeElapsed);
-	void OnPlayerUpdateCallback(float fTimeElapsed) {};
+	void OnPlayerUpdateCallback();
 };

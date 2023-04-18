@@ -1,8 +1,8 @@
 #include "pch.h"
 #include "CollisionDetector.h"
+#include "PlayerInfo.h"
+
 OcTree* BoxTree = nullptr;
-
-
 int32 OcTree::_maxLevel = 4;
 
 
@@ -61,7 +61,7 @@ float clamp(float pos, float min, float max)
 	if (val != min && val != max) return ((val - min) > (max - val) ? max : min);
 	else return val;
 }
-bool OcTree::CheckCollision(DirectX::BoundingSphere& playerBox)
+bool OcTree::CheckCollision(DirectX::BoundingSphere& playerBox, XMFLOAT3& playerPos)
 {
 	bool rVal = false;
 	if (_curLevel == _maxLevel)
@@ -102,7 +102,8 @@ bool OcTree::CheckCollision(DirectX::BoundingSphere& playerBox)
 					{
 						playerBox.Center.z += ::fabs((playerBox.Radius - closeDist.z)) * 1.2f;
 					}
-					
+
+					playerPos = playerBox.Center;
 					rVal2 |= true;
 				}
 			}
@@ -120,9 +121,9 @@ bool OcTree::CheckCollision(DirectX::BoundingSphere& playerBox)
 			{
 				for (auto& i : _childTree)
 				{
-					rVal |= i->CheckCollision(playerBox);
+					rVal |= i->CheckCollision(playerBox,playerPos);
 				}
-				rVal |= i->CheckCollision(playerBox);
+				rVal |= i->CheckCollision(playerBox, playerPos);
 			}
 		}
 		return rVal;

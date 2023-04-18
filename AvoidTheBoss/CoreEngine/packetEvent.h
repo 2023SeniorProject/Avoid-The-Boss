@@ -39,7 +39,7 @@ public:
 			packet.type = S_PACKET_TYPE::SPOS;
 			packet.x = ServerIocpCore._rmgr->GetRoom(roomNum).GetMyPlayerFromRoom(sid).GetPosition().x;
 			packet.z = ServerIocpCore._rmgr->GetRoom(roomNum).GetMyPlayerFromRoom(sid).GetPosition().z;
-			std::cout << packet.x << " " << packet.z << "\n";
+			std::cout << "[" << sid << "] (" << packet.x << "," << packet.z << ")\n";
 			//ServerIocpCore._rmgr->GetRoom(roomNum).BroadCasting(&packet);
 		}
 	};

@@ -144,7 +144,6 @@ void CSession::ProcessPacket(char* packet)
 	break;
 	case S_PACKET_TYPE::SPOS: // 미리 계산한 좌표값을 보내준다.
 	{
-		std::cout << "pos\n";
 		S2C_POS* posPacket = reinterpret_cast<S2C_POS*>(packet);
 		CPlayer* player = mainGame.m_pScene->GetScenePlayer(posPacket->sid);
 		if (player == nullptr) break;
@@ -167,6 +166,7 @@ void CSession::ProcessPacket(char* packet)
 		}
 		std::cout << mainGame.m_pScene->_playerIdx << "\n";
 		mainGame.m_pScene->m_pCamera = mainGame.m_pScene->_players[mainGame.m_pScene->_playerIdx]->GetCamera();
+		mainGame.m_pScene->m_cid = _cid;
 		mainGame._curScene.store(SceneInfo::GAMEROOM);
 		mainGame.m_pScene->InitScene();
 	}
@@ -176,6 +176,7 @@ void CSession::ProcessPacket(char* packet)
 		S2C_LOGIN_OK* lo = (S2C_LOGIN_OK*)packet;
 		_cid = lo->cid;
 		_sid = lo->sid;
+		
 	}
 	break;
 	case S_PACKET_TYPE::LOGIN_FAIL:

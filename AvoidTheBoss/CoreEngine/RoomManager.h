@@ -23,6 +23,7 @@ public:
 	void UserOut(int32 sid);
 	void UserIn(int32 sid);
 	void BroadCasting(void* packet);
+	void BroadCastingExcept(void* packet, int32 sid);
 	void Update();
 
 	PlayerInfo& GetMyPlayerFromRoom(int32 sid) 

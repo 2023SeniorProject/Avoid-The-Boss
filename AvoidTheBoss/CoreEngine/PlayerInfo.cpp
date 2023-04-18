@@ -26,6 +26,13 @@ void PlayerInfo::SetSpeed(const XMFLOAT3& xmf3Shift)
 	m_xmf3Velocity = Vector3::Add(m_xmf3Velocity, xmf3Shift);
 }
 
+void PlayerInfo::SetDirection(const XMFLOAT3 look)
+{
+	m_xmf3Look = look;
+	m_xmf3Right = Vector3::CrossProduct(m_xmf3Up, m_xmf3Look, true);
+	//PrintRightVec();
+}
+
 void PlayerInfo::Move(uint8 dwDirection, float fDistance)
 {
 	XMFLOAT3 xmf3Shift = XMFLOAT3(0, 0, 0);

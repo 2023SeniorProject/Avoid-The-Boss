@@ -20,6 +20,8 @@ public:
 	XMFLOAT3 m_xmf3Position;
 	XMFLOAT3 m_xmf3Velocity;
 public:
+	int32 m_sid;
+public:
 	PlayerInfo();
 	virtual ~PlayerInfo();
 
@@ -31,13 +33,14 @@ public:
 	{
 		UpdateMove(XMFLOAT3(xmf3Position.x - m_xmf3Position.x, xmf3Position.y - m_xmf3Position.y, xmf3Position.z - m_xmf3Position.z));
 	}
-	void SetDirection(const XMFLOAT3& look)
-	{
-		m_xmf3Look = look;
-		m_xmf3Right = Vector3::CrossProduct(m_xmf3Up, m_xmf3Look, true);
-	}
+	void SetDirection(const XMFLOAT3 look);
+
 	XMFLOAT3& GetVelocity() { return(m_xmf3Velocity); }
 
+	void PrintRightVec()
+	{
+		std::cout << "(" << m_xmf3Right.x << " " << m_xmf3Right.z << ")\n";
+	}
 	void PrintVel()
 	{
 		std::cout << m_xmf3Velocity.x << " " << m_xmf3Velocity.z << "\n";

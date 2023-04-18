@@ -85,6 +85,7 @@ void Room::UserIn(int32 sid)
 			for (auto i : _cList)
 			{
 				packet.sids[k] = i;
+				_players[k].m_sid = i;
 				++k;
 			}
 			BroadCasting(&packet);
@@ -109,6 +110,20 @@ void Room::BroadCasting(void* packet) // 방에 속하는 클라이언트에게만 전달하기
 	}
 }
 
+void Room::BroadCastingExcept(void* packet, int32 sid) // 방에 속하는 클라이언트에게만 전달하기
+{
+	// cList Lock 읽기 호출 
+	std::shared_lock<std::shared_mutex> rll(_listLock);
+	for (auto i = _cList.begin(); i != _cList.end(); ++i)
+	{
+		if (ServerIocpCore._clients[*i] == nullptr || *i == sid) continue;
+		if (!ServerIocpCore._clients[*i]->DoSend(packet))
+		{
+			continue;
+		}
+	}
+}
+
 // 방에 있는 유저에 대한 게임 로직 업데이트 진행 
 void Room::Update()
 {
@@ -120,12 +135,25 @@ void Room::Update()
 	}
 	for (int i = 0; i < PLAYERNUM; ++i) _players[i].Update(_timer.GetTimeElapsed());
 	
+	if (_timer.IsAfterTick(60))
+	{
+		for (int i = 0; i < PLAYERNUM; ++i)
+		{
+			S2C_POS packet;
+			packet.sid = _players[i].m_sid;
+			packet.size = sizeof(S2C_POS);
+			packet.type = S_PACKET_TYPE::SPOS;
+			packet.x = _players[i].GetPosition().x;
+			packet.z = _players[i].GetPosition().z;
+			BroadCasting(&packet);
+		}
+	}
 }
 
 void Room::AddEvent(queueEvent* qe, float after)
 {
 	std::unique_lock<std::shared_mutex> ql(_jobQueueLock); // Queue Lock 호출
-	//_jobQueue->PushTask(qe,DEAD_RECORNING_TPS);
+	_jobQueue->PushTask(qe,DEAD_RECORNING_TPS);
 }
 
 void Room::AddEvent(queueEvent* qe)

@@ -161,7 +161,7 @@ void ServerSession::ProcessPacket(char* packet)
 			packet.type = S_PACKET_TYPE::SROT;
 			packet.sid = _sid;
 			packet.angle = rotatePacket->angle;
-			ServerIocpCore._rmgr->GetRoom(_myRm).BroadCasting(&packet);
+			ServerIocpCore._rmgr->GetRoom(_myRm).BroadCastingExcept(&packet,_sid);
 
 		}
 		break;

@@ -147,7 +147,9 @@ void Room::Update()
 			packet.x = _players[i].GetPosition().x;
 			packet.z = _players[i].GetPosition().z;
 			BroadCasting(&packet);
+			
 		}
+		_history.AddHistory(_players);
 	}
 }
 

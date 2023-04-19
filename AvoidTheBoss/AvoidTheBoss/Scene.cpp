@@ -137,7 +137,7 @@ void CGameScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandLis
 	//그래픽 루트 시그너쳐를 생성한다. 
 	m_pd3dGraphicsRootSignature = CreateGraphicsRootSignature(pd3dDevice);
 
-	CreateCbvSrvDescriptorHeaps(pd3dDevice, 0, 52+1+1+12+3+12+3 + 56+ 6);//Albedomap 52 / player 1 / skybox 1 / box subTexture 3 * 4/ tile subTexture 3 * 1/ woodPallet 3 * 4 / pillar2 3 * 1 / BoundsMap 56
+	CreateCbvSrvDescriptorHeaps(pd3dDevice, 0, 52+1+1+12+3+12+3 + 89 + 6 + 5*4 + 4*4);//Albedomap 52 / player 1 / skybox 1 / box subTexture 3 * 4/ tile subTexture 3 * 1/ woodPallet 3 * 4 / pillar2 3 * 1 / BoundsMap 89 / 스위치 2 + 3 / 문 / 사이렌 6
 
 	CMaterial::PrepareShaders(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature);
 
@@ -148,6 +148,42 @@ void CGameScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandLis
 
 	XMFLOAT3 xmf3Scale(8.0f, 2.0f, 8.0f);
 	XMFLOAT4 xmf4Color(0.0f, 0.3f, 0.0f, 0.0f);
+
+	m_nHierarchicalGameObjects = 2 + 3;
+	m_ppHierarchicalGameObjects = new CGameObject * [m_nHierarchicalGameObjects];
+
+	CLoadedModelInfo* pSiren_L = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "Model/Siren_Alarm2_(1).bin", NULL, Layout::SIREN);
+	m_ppHierarchicalGameObjects[0] = new CSiren(pd3dDevice,pd3dCommandList,m_pd3dGraphicsRootSignature, pSiren_L,1);
+	m_ppHierarchicalGameObjects[0]->m_pSkinnedAnimationController->SetTrackAnimationSet(0, 0);
+	if (pSiren_L) delete pSiren_L;
+
+	CLoadedModelInfo* pSiren_R = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "Model/Siren_Alarm2.bin", NULL, Layout::SIREN);
+	m_ppHierarchicalGameObjects[1] = new CSiren(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, pSiren_R, 1);
+	m_ppHierarchicalGameObjects[1]->m_pSkinnedAnimationController->SetTrackAnimationSet(0, 0);
+	m_ppHierarchicalGameObjects[0]->SetPosition(0.0f, 0.0f, 0.0f);
+	if (pSiren_R) delete pSiren_R;
+
+	CLoadedModelInfo* Button1 = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "Model/Button1.bin", NULL, Layout::SWITCH);
+	m_ppHierarchicalGameObjects[2] = new CSwitch(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, Button1, 1,0);
+	m_ppHierarchicalGameObjects[2]->m_pSkinnedAnimationController->SetTrackAnimationSet(0, 0);
+	m_ppHierarchicalGameObjects[2]->m_pSkinnedAnimationController->SetTrackEnable(0, false);
+	m_ppHierarchicalGameObjects[2]->SetPosition(-23.12724, 1.146619, 1.814123);//left ㅇ
+	if (Button1) delete Button1;
+
+	CLoadedModelInfo* Button2 = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "Model/Button2.bin", NULL, Layout::SWITCH);
+	m_ppHierarchicalGameObjects[3] = new CSwitch(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, Button2, 1,1);
+	m_ppHierarchicalGameObjects[3]->m_pSkinnedAnimationController->SetTrackAnimationSet(0, 0);
+	m_ppHierarchicalGameObjects[3]->m_pSkinnedAnimationController->SetTrackEnable(0, false);
+	m_ppHierarchicalGameObjects[3]->SetPosition(23.08867, 1.083242, 3.155997);//right x
+	if (Button2) delete Button2;
+
+	CLoadedModelInfo* Button3 = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "Model/Button3.bin", NULL, Layout::SWITCH);
+	m_ppHierarchicalGameObjects[4] = new CSwitch(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, Button3, 1,2);
+	m_ppHierarchicalGameObjects[4]->m_pSkinnedAnimationController->SetTrackAnimationSet(0, 0);
+	m_ppHierarchicalGameObjects[4]->m_pSkinnedAnimationController->SetTrackEnable(0, false);
+	m_ppHierarchicalGameObjects[4]->SetPosition(0.6774719,  1.083242, -23.05909);//back 회전
+	if (Button3) delete Button3;
+
 
 	m_nShaders = 2;
 	m_ppShaders = new CShader * [m_nShaders];
@@ -166,15 +202,24 @@ void CGameScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandLis
 	pSwitchObjectShader->BuildObjects(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, NULL,NULL);
 	m_ppShaders[1] = pSwitchObjectShader;
 
+	m_pSwitch = (CSwitch*)pSwitchObjectShader->m_ppObjects[0];
 	for (int i = 0; i < PLAYERNUM; ++i)
 	{
-		_players[i] = new CEmployee(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, CHARACTER_TYPE::YELLOW_EMP);
-		_players[i]->m_pSwitch = (CSwitch*)pSwitchObjectShader->m_ppObjects[0];
+		if(false/*i == (int)CHARACTER_TYPE::BOSS*/)
+			_players[i] = new CWorker(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature);
+		else
+		{
+			_players[i] = new CEmployee(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, CHARACTER_TYPE::GOGGLE_EMP);
+
+			//XMFLOAT3 position = XMFLOAT3(-4.5f, 0.0f, 0.017f);
+			//XMFLOAT4X4 xmf4x4ToParent = m_pSwitch->FindFrame("Switch")->m_xmf4x4ToParent;
+			((CEmployee*)_players[i])->m_pSwitch.position = m_ppHierarchicalGameObjects[2]->GetPosition();// m_pSwitch->GetPosition();//XMFLOAT3(xmf4x4ToParent._41, xmf4x4ToParent._42, xmf4x4ToParent._43);
+			((CEmployee*)_players[i])->m_pSwitch.radius = m_pSwitch->GetRadius();
+		}
 	}
 	m_pCamera = _players[0]->GetCamera();
 
 	CreateShaderVariables(pd3dDevice, pd3dCommandList);
-
 }
 
 void CGameScene::ProcessInput(HWND hWnd)
@@ -182,31 +227,10 @@ void CGameScene::ProcessInput(HWND hWnd)
 	_timer.Tick(0);
 	static UCHAR pKeyBuffer[256];
 	// 방향키를 바이트로 처리한다.
+
 	uint8 dwDirection = 0;
 	if (::GetKeyboardState(pKeyBuffer))
 	{
-		if (m_pSwitch)
-		{
-			if (!(m_pSwitch->GetOnSwitch()))
-			{
-				if (pKeyBuffer[0x57] & 0xF0) dwDirection |= DIR_FORWARD;
-				else if (pKeyBuffer[0x77] & 0xF0) dwDirection |= DIR_FORWARD;
-
-				if (pKeyBuffer[0x53] & 0xF0) dwDirection |= DIR_BACKWARD;
-				else if (pKeyBuffer[0x73] & 0xF0) dwDirection |= DIR_BACKWARD;
-
-				if (pKeyBuffer[0x61] & 0xF0) dwDirection |= DIR_LEFT;
-				else if (pKeyBuffer[0x41] & 0xF0) dwDirection |= DIR_LEFT;
-
-				if (pKeyBuffer[0x44] & 0xF0) dwDirection |= DIR_RIGHT;
-				else if (pKeyBuffer[0x64] & 0xF0) dwDirection |= DIR_RIGHT;
-
-				if (pKeyBuffer[0x46] & 0xF0) _players[0]->SetOnInteraction(true);
-				else if (pKeyBuffer[0x66] & 0xF0) _players[0]->SetOnInteraction(true);
-			}
-		}
-		else
-		{
 			if (pKeyBuffer[0x57] & 0xF0) dwDirection |= DIR_FORWARD;
 			else if (pKeyBuffer[0x77] & 0xF0) dwDirection |= DIR_FORWARD;
 
@@ -219,11 +243,43 @@ void CGameScene::ProcessInput(HWND hWnd)
 			if (pKeyBuffer[0x44] & 0xF0) dwDirection |= DIR_RIGHT;
 			else if (pKeyBuffer[0x64] & 0xF0) dwDirection |= DIR_RIGHT;
 
-			//if (_players[0]->m_pSwitch-/>GetOnSwitch/())
-			//{
-				if (pKeyBuffer[0x46] & 0xF0) _players[0]->SetOnInteraction(true);
-				else if (pKeyBuffer[0x66] & 0xF0) _players[0]->SetOnInteraction(true);
-			//}
+			if (pKeyBuffer[0x46] & 0xF0)
+			{
+				if (_players[0]->m_nCharacterType != CHARACTER_TYPE::BOSS)
+				{
+					if (!m_pSwitch->StateOn)
+					{
+						if (((CEmployee*)_players[0])->GetSwitchArea())
+							((CEmployee*)_players[0])->SetOnInteraction(true);
+						else
+							((CEmployee*)_players[0])->SetOnInteraction(false);
+					}
+				}
+			}
+			else if (pKeyBuffer[0x66] & 0xF0)
+			{
+				if (_players[0]->m_nCharacterType != CHARACTER_TYPE::BOSS)
+				{
+					if (!m_pSwitch->StateOn)
+					{
+						if (((CEmployee*)_players[0])->GetSwitchArea())
+							((CEmployee*)_players[0])->SetOnInteraction(true);
+						else
+							((CEmployee*)_players[0])->SetOnInteraction(false);
+					}
+				}
+			}
+	}
+	if (_players[0]->m_nCharacterType != CHARACTER_TYPE::BOSS)
+	{
+		if (((CEmployee*)_players[0])->GetOnInteraction())
+		{
+			dwDirection |= DIR_BUTTON_CENTER;
+			if (m_pSwitch)
+			{
+				m_pSwitch->SetOnSwitch(true);
+				m_pSwitch->SetAnimationCount(BUTTON_ANIM_FRAME);
+			}
 		}
 	}
 
@@ -242,6 +298,7 @@ void CGameScene::ProcessInput(HWND hWnd)
 		::SetCursorPos(m_ptOldCursorPos.x, m_ptOldCursorPos.y);
 	}
 
+	if(dwDirection!=DIR_BUTTON_CENTER)
 	{
 		//std::lock_guard<std::mutex> lg(_players[_playerIdx]->m_lock);
 		if ((dwDirection != 0) || (cxDelta != 0.0f) || (cyDelta != 0.0f))

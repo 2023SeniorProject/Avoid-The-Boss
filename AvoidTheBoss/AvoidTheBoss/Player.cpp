@@ -7,8 +7,6 @@ CPlayer::CPlayer()
 {
 	m_type = 0;
 	m_pCamera = NULL;
-	m_playerBV.Center = GetPosition();
-	m_playerBV.Radius = 0.1f;
 	m_xmf3Position = XMFLOAT3(0.0f, 1.25f, 0.0f);
 
 	m_xmf3Right = XMFLOAT3(1.0f, 0.0f, 0.0f);
@@ -53,6 +51,7 @@ void CPlayer::Move(DWORD dwDirection, float fDistance)
 		if (dwDirection & DIR_BACKWARD) xmf3Shift = Vector3::Add(xmf3Shift, m_xmf3Look, -fDistance);
 		if (dwDirection & DIR_RIGHT) xmf3Shift = Vector3::Add(xmf3Shift, m_xmf3Right, fDistance);
 		if (dwDirection & DIR_LEFT) xmf3Shift = Vector3::Add(xmf3Shift, m_xmf3Right, -fDistance);
+		if (dwDirection & DIR_BUTTON_CENTER) return;
 		//m_predictPos = Vector3::Add(m_xmf3Position, xmf3Shift, (1.f / 30.f)); // 30 ms 뒤의 위치를 계산
 		//플레이어를 현재 위치 벡터에서 xmf3Shift 벡터만큼 이동한다
 		SetVelocity(xmf3Shift);
@@ -84,8 +83,7 @@ void CPlayer::Update(float fTimeElapsed, PLAYER_TYPE ptype)
 	있고 또는 플레이어의 충돌 검사 등을 수행할 필요가 있다. 이러한 상황에서 플레이어의 위치를 유효한 위치로 다시
 	변경할 수 있다.*/
 	
-	if (m_OnInteraction) OnInteractive();
-	//if (BoxTree->CheckCollision(m_playerBV)) MakePosition(m_playerBV.Center);
+
 
 	DWORD nCameraMode = m_pCamera->GetMode();
 
@@ -101,29 +99,6 @@ void CPlayer::Update(float fTimeElapsed, PLAYER_TYPE ptype)
 	//카메라의 카메라 변환 행렬을 다시 생성한다. 
 	m_pCamera->RegenerateViewMatrix();
 	//m_xmf3Velocity = XMFLOAT3(0.0f, 0.0f, 0.0f);
-}
-
-void CPlayer::OnInteractive()
-{
-	m_pSwitch->CollisitonCheck(this);
-
-	if (m_OnInteraction == true && m_InteractionCountTime > 0)
-	{
-		m_pSkinnedAnimationController->SetTrackEnable(0, false);
-		m_pSkinnedAnimationController->SetTrackEnable(1, false);
-		m_pSkinnedAnimationController->SetTrackEnable(6, true);
-		m_pSkinnedAnimationController->SetTrackPosition(0, 0.0f);
-
-		m_InteractionCountTime -= 1;
-	}
-	else
-	{
-		m_pSkinnedAnimationController->SetTrackEnable(0, true);
-		m_pSkinnedAnimationController->SetTrackEnable(1, false);
-		m_pSkinnedAnimationController->SetTrackEnable(6, false);
-		m_OnInteraction = false;
-		m_InteractionCountTime = INTERACTION_TIME;
-	}
 }
 
 //플레이어를 로컬 x-축, y-축, z-축을 중심으로 회전한다.
@@ -178,11 +153,6 @@ void CPlayer::Rotate(float x, float y, float z)
 void CPlayer::OnPlayerUpdateCallback()
 {
 	
-}
-
-void CPlayer::ProcesesInput()
-{
-
 }
 
 void CPlayer::CreateShaderVariables(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList)
@@ -251,9 +221,9 @@ CWorker::CWorker(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dComman
 	m_type = 0;
 	m_pCamera = ChangeCamera(THIRD_PERSON_CAMERA, 0.0f);
 
-	m_nCharacterType = (int)CHARACTER_TYPE::BOSS;
+	m_nCharacterType = CHARACTER_TYPE::BOSS;
 
-	CLoadedModelInfo* pBossModel = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, g_pstrCharactorRefernece[m_nCharacterType], NULL, Layout::PLAYER);
+	CLoadedModelInfo* pBossModel = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, g_pstrCharactorRefernece[(int)m_nCharacterType], NULL, Layout::PLAYER);
 	SetChild(pBossModel->m_pModelRootObject, true);
 
 	m_pSkinnedAnimationController = new CAnimationController(pd3dDevice, pd3dCommandList, 4, pBossModel);
@@ -367,9 +337,9 @@ CEmployee::CEmployee(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCo
 {
 	m_pCamera = ChangeCamera(THIRD_PERSON_CAMERA, 0.0f);
 
-	m_nCharacterType = (int)nType;
+	m_nCharacterType = nType;
 
-	CLoadedModelInfo* pEmployeeModel = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, g_pstrCharactorRefernece[m_nCharacterType], NULL, Layout::PLAYER);
+	CLoadedModelInfo* pEmployeeModel = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, g_pstrCharactorRefernece[(int)m_nCharacterType], NULL, Layout::PLAYER);
 	SetChild(pEmployeeModel->m_pModelRootObject, true);
 
 	m_pSkinnedAnimationController = new CAnimationController(pd3dDevice, pd3dCommandList, 7, pEmployeeModel);
@@ -379,7 +349,8 @@ CEmployee::CEmployee(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCo
 	m_pSkinnedAnimationController->SetTrackAnimationSet(1, 3);//run
 	m_pSkinnedAnimationController->SetTrackAnimationSet(4, 4);//walk
 	m_pSkinnedAnimationController->SetTrackAnimationSet(5, 5);//awake
-	m_pSkinnedAnimationController->SetTrackAnimationSet(6, 6);//rever
+	m_pSkinnedAnimationController->SetTrackAnimationSet(6, 6);//button
+	//m_pSkinnedAnimationController->SetTrackAnimationSet(7, 7);//button
 
 
 	m_pSkinnedAnimationController->SetTrackEnable(0, true);
@@ -389,6 +360,7 @@ CEmployee::CEmployee(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCo
 	m_pSkinnedAnimationController->SetTrackEnable(4, false);
 	m_pSkinnedAnimationController->SetTrackEnable(5, false);
 	m_pSkinnedAnimationController->SetTrackEnable(6, false);
+	//m_pSkinnedAnimationController->SetTrackEnable(7, false);
 
 	CreateShaderVariables(pd3dDevice, pd3dCommandList);
 
@@ -463,6 +435,16 @@ void CEmployee::Update(float fTimeElapsed, PLAYER_TYPE ptype)
 {
 	CPlayer::Update(fTimeElapsed, ptype);
 
+	if (CheckSwitchArea())
+	{
+		SetSwitchArea(true);
+	}
+	else
+		SetSwitchArea(false);
+
+	if (m_OnInteraction)
+			OnInteractive();
+	
 	if (m_pSkinnedAnimationController&&!m_OnInteraction)
 	{
 		float fLength = sqrtf(m_xmf3Velocity.x * m_xmf3Velocity.x + m_xmf3Velocity.z * m_xmf3Velocity.z);
@@ -475,7 +457,42 @@ void CEmployee::Update(float fTimeElapsed, PLAYER_TYPE ptype)
 	}
 	if(ptype == PLAYER_TYPE::OWNER) m_xmf3Velocity = XMFLOAT3(0.0f, 0.0f, 0.0f);
 }
+void CEmployee::OnInteractive()
+{
+	if (m_OnInteraction == true && m_InteractionCountTime > 0)
+	{
+		m_pSkinnedAnimationController->SetTrackEnable(0, false);
+		m_pSkinnedAnimationController->SetTrackEnable(1, false);
+		m_pSkinnedAnimationController->SetTrackEnable(6, true);
+		m_pSkinnedAnimationController->SetTrackPosition(0, 0.0f);
 
+		m_InteractionCountTime -= 1;
+	}
+	else
+	{
+		m_pSkinnedAnimationController->SetTrackEnable(0, true);
+		m_pSkinnedAnimationController->SetTrackEnable(1, false);
+		m_pSkinnedAnimationController->SetTrackEnable(6, false);
+		m_OnInteraction = false;
+		m_InteractionCountTime = INTERACTION_TIME;
+	}
+}
+bool CEmployee::CheckSwitchArea()
+{
+	//캐릭터 원 - 스위치 영역 원 충돌체크
+	XMFLOAT3 v1 = m_pSwitch.position;
+	XMFLOAT3 v2 = m_xmf3Position;
+
+	float fDistance = sqrt(pow(v1.x - v2.x, 2) + pow(v1.y - v2.y, 2) + pow(v1.y -v2.y, 2));
+	float fSumRange = m_pSwitch.radius + m_playerBV.Radius + 1.0f;
+
+	if (fDistance <= fSumRange)
+		return true;
+	else
+		return false;
+
+	return false;
+}
 
 #define _WITH_DEBUG_CALLBACK_DATA
 

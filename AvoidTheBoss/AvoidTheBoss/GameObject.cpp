@@ -1255,6 +1255,30 @@ void CSkyBox::Render(ID3D12GraphicsCommandList *pd3dCommandList, CCamera *pCamer
 	CGameObject::Render(pd3dCommandList, pCamera);
 }
 
+
+CSwitch::CSwitch()
+{
+	radius = 0.25f;
+}
+
+CSwitch::CSwitch(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, CLoadedModelInfo* pModel, int nAnimationTracks,int number)
+{
+	CLoadedModelInfo* pSirenModel = pModel;
+
+	const char* path[3] = {
+		"Model/Button1.bin",
+		"Model/Button2.bin",
+		"Model/Button3.bin"
+	};
+	if (!pSirenModel)
+		pSirenModel = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, path[number], NULL, Layout::SIREN);
+
+	SetChild(pSirenModel->m_pModelRootObject, true);
+	m_pSkinnedAnimationController = new CAnimationController(pd3dDevice, pd3dCommandList, nAnimationTracks, pSirenModel);
+}
+CSwitch::~CSwitch()
+{
+}
 void CSwitch::SetRandomPosition(XMFLOAT3 pos)
 {
 	//고정된 위치에 생성
@@ -1262,38 +1286,100 @@ void CSwitch::SetRandomPosition(XMFLOAT3 pos)
 
 void CSwitch::SetBounds()
 {
-	m_pAABB.Center = XMFLOAT3(GetPosition().x, 0.0f, GetPosition().z);
+	//CGameObject* pRoot = FindFrame("Switch");
+	//if (pRoot)
+	//{
+	//	//m_pAABB.Center = XMFLOAT3(pRoot->GetPosition().x, 0.0f, pRoot->GetPosition().z);
+	//	if (pRoot->m_pAABB.Extents.x > pRoot->m_pAABB.Extents.z)
+	//	{
+	//		radius = pRoot->m_pAABB.Extents.x;
+	//	}
+	//	else
+	//	{
+	//		radius = pRoot->m_pAABB.Extents.z;
+	//	}
+	//}
+
 }
 
-void CSwitch::CollisitonCheck(CPlayer* player)
-{
-	//캐릭터 원 - 스위치 영역 원 충돌체크
-	if (!m_bOnSwitch)
-	{
-		XMFLOAT3 v1 = GetPosition();
-		XMFLOAT3 v2 = player->GetPosition();
-		float fDistance = sqrt(pow(v1.x - v2.x, 2) + pow(v1.y - v2.y, 2) + pow(v1.y - v2.y, 2));
-		if (fDistance < radius + player->m_playerBV.Radius)
-		{
-			if (player->GetOnInteraction())
-			{
-				m_bOnSwitch = true;
-				m_nAnimationCount = BUTTON_ANIM_FRAME;
-			}
-		}
-	}
-}
+//void CSwitch::Animate(float fTimeElapsed)
+//{
+//	if (m_bOnSwitch)
+//	{
+//		CGameObject* pButton = FindFrame("Cylinder");
+//
+//		if (m_nAnimationCount > 0)
+//		{
+//			pButton->MoveForward(0.00001f * fTimeElapsed * m_nAnimationCount);
+//			m_nAnimationCount--;
+//		}
+//		else
+//		{
+//			m_bOnSwitch = false;
+//			m_nAnimationCount = 0;
+//			StateOn = true;
+//		}
+//	}
+//	//UpdateTransform(NULL);
+//}
 
 void CSwitch::Animate(float fTimeElapsed)
 {
-	if (m_bOnSwitch)
+	if (m_pSkinnedAnimationController)
 	{
-		CGameObject* pButton = FindFrame("Cylinder");
-
-		if (m_nAnimationCount > 0)
+		if (m_bOnSwitch)
 		{
-			pButton->MoveForward(-1.0f * fTimeElapsed);
-			m_nAnimationCount--;
+			if (m_nAnimationCount > 0)
+			{
+				m_pSkinnedAnimationController->SetTrackEnable(0, true);
+				m_pSkinnedAnimationController->SetTrackPosition(0, 0.0f);
+
+				m_nAnimationCount--;
+				CGameObject::Animate(fTimeElapsed);
+			}
+			else
+			{
+				m_bOnSwitch = false;
+				m_nAnimationCount = 0;
+				StateOn = true;
+			}
 		}
 	}
+	else 
+	{
+		if (m_bOnSwitch)
+		{
+			CGameObject* pButton = FindFrame("Cylinder");
+
+			if (m_nAnimationCount > 0)
+			{
+
+				pButton->MoveForward(0.00001f * fTimeElapsed * m_nAnimationCount);
+				m_nAnimationCount--;
+			}
+			else
+			{
+				m_bOnSwitch = false;
+				m_nAnimationCount = 0;
+				StateOn = true;
+			}
+		}
+	}
+
+	//UpdateTransform(NULL);
+}
+
+
+CSiren::CSiren(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, CLoadedModelInfo* pModel, int nAnimationTracks)
+{
+	CLoadedModelInfo* pSirenModel = pModel;
+	if (!pSirenModel) 
+		pSirenModel = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "Model/Siren_Alarm2.bin", NULL,Layout::SIREN);
+
+	SetChild(pSirenModel->m_pModelRootObject, true);
+	m_pSkinnedAnimationController = new CAnimationController(pd3dDevice, pd3dCommandList, nAnimationTracks, pSirenModel);
+}
+
+CSiren::~CSiren()
+{
 }

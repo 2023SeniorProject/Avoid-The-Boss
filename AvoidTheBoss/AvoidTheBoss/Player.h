@@ -21,7 +21,8 @@ static const char *g_pstrCharactorRefernece[5] =
 	"Model/Character4_Idle.bin"
 };
 
-#define INTERACTION_TIME 25
+#define INTERACTION_TIME 25*4
+
 class CPlayer : public CGameObject
 {
 protected:
@@ -52,13 +53,8 @@ public:
 	int16 m_sid = -1; // 切重生 Session Id
 	std::mutex m_lock; // 切重税 Lock
 	BoundingSphere m_playerBV; // BV = bounding volume
-	XMFLOAT3					m_predictPos = XMFLOAT3(0, 0, 0);
-	bool m_OnInteraction = false;
-	int m_InteractionCountTime = INTERACTION_TIME;
 
-	int m_nCharacterType;
-
-	CSwitch* m_pSwitch = NULL;
+	CHARACTER_TYPE m_nCharacterType;
 public: 
 	CPlayer();
 	virtual ~CPlayer();
@@ -87,7 +83,6 @@ public:
 		m_xmf3Position = xmf3Position;
 	}
 
-
 	const XMFLOAT3& GetVelocity() const { return(m_xmf3Velocity); }
 	float GetYaw() { return(m_fYaw); }
 	float GetPitch() { return(m_fPitch); }
@@ -100,13 +95,8 @@ public:
 	virtual void Move(DWORD dwDirection, float fDistance);
 	void SetSpeed(const XMFLOAT3& xmf3Shift);
 	void UpdateMove(const XMFLOAT3& velocity);
+	
 
-	void ProcesesInput();
-	 
-	void SetOnInteraction(bool value) 
-	{
-		m_OnInteraction = value; 
-	}
 
 	bool GetOnInteraction() { return m_OnInteraction; }
 	void OnInteractive();
@@ -154,12 +144,23 @@ public:
 
 };
 
+struct SwitchInformation
+{
+	XMFLOAT3 position;
+	float radius; //raderArea
+};
+
 class CEmployee : public CPlayer
 {
+private:
+	bool m_OnInteraction = false;
+	int m_InteractionCountTime = INTERACTION_TIME;
+
+	bool m_bIsSwitchArea = false;
 public:
-	CEmployee(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature,CHARACTER_TYPE nType);
+	CEmployee(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, CHARACTER_TYPE nType);
 	virtual ~CEmployee();
-public:
+
 	virtual CCamera* ChangeCamera(DWORD nNewCameraMode, float fTimeElapsed);
 	virtual void OnPlayerUpdateCallback();
 	virtual void OnCameraUpdateCallback();
@@ -168,6 +169,15 @@ public:
 
 	virtual void Update(float fTimeElapsed, PLAYER_TYPE ptype);
 
+	void SetOnInteraction(bool value){m_OnInteraction = value;}
+	bool GetOnInteraction() { return m_OnInteraction; }
+	void OnInteractive();
+
+	void SetSwitchArea(bool value) { m_bIsSwitchArea = value; }
+	bool GetSwitchArea() { return m_bIsSwitchArea; }
+
+	bool CheckSwitchArea();
+	SwitchInformation m_pSwitch;
 };
 
 

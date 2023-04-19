@@ -15,6 +15,7 @@ extern std::vector<DirectX::BoundingBox> bv;
 #define DIR_RIGHT					0x08
 #define DIR_UP						0x10
 #define DIR_DOWN					0x20
+#define DIR_BUTTON_CENTER					0X30
 
 class CShader;
 class CStandardShader;
@@ -429,21 +430,38 @@ public:
 	virtual void Render(ID3D12GraphicsCommandList *pd3dCommandList, CCamera *pCamera = NULL);
 };
 
-#define BUTTON_ANIM_FRAME 15
+#define BUTTON_ANIM_FRAME 15*10
 class CSwitch : public CGameObject
 {
 private:
-	bool m_bOnSwitch = false;
-	int m_nAnimationCount = 0;
-	float radius = 2.0f;
+	float radius = 0.0f;
+
 public:
+	bool StateOn = false;
+	bool m_bOnSwitch = false;
+	int m_nAnimationCount = BUTTON_ANIM_FRAME;
+
+	CSwitch();
+	CSwitch(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, CLoadedModelInfo* pModel, int nAnimationTracks,int number);
+	virtual ~CSwitch();
+	
 	void SetRandomPosition(XMFLOAT3 pos);
 	void SetBounds();
+	float GetRadius() { return radius; }
 
-	bool SetOnSwitch(bool value) { m_bOnSwitch = value; }
+	void SetOnSwitch(bool value) { m_bOnSwitch = value; }
 	bool GetOnSwitch() { return m_bOnSwitch; }
-	void CollisitonCheck(CPlayer* player);
+
+	void SetAnimationCount(int value) { m_nAnimationCount = value; }
+	bool GetAnimationCount() { return m_nAnimationCount; }
+
 	virtual void Animate(float fTimeElapsed);
 };
 
+class CSiren : public CGameObject
+{
+public:
+	CSiren(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, CLoadedModelInfo* pModel, int nAnimationTracks);
+	virtual ~CSiren();
+};
 

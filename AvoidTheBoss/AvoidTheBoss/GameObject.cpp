@@ -1260,6 +1260,7 @@ CSwitch::CSwitch()
 {
 	radius = 0.25f;
 }
+
 CSwitch::CSwitch(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, CLoadedModelInfo* pModel, int nAnimationTracks,int number)
 {
 	CLoadedModelInfo* pSirenModel = pModel;

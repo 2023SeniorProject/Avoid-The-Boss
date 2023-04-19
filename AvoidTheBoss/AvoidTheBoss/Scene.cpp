@@ -209,7 +209,7 @@ void CGameScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandLis
 			_players[i] = new CWorker(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature);
 		else
 		{
-			_players[i] = new CEmployee(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, CHARACTER_TYPE::MASK_EMP);
+			_players[i] = new CEmployee(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, CHARACTER_TYPE::GOGGLE_EMP);
 
 			//XMFLOAT3 position = XMFLOAT3(-4.5f, 0.0f, 0.017f);
 			//XMFLOAT4X4 xmf4x4ToParent = m_pSwitch->FindFrame("Switch")->m_xmf4x4ToParent;

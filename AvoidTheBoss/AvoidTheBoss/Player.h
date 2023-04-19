@@ -54,13 +54,7 @@ public:
 	std::mutex m_lock; // 자신의 Lock
 	BoundingSphere m_playerBV; // BV = bounding volume
 
-	bool m_OnInteraction = false;
-	int m_InteractionCountTime = INTERACTION_TIME;
-
-	int m_nCharacterType;
-
-	bool m_bIsSwitchArea = false;
-	//CSwitch* m_pSwitch = NULL;
+	CHARACTER_TYPE m_nCharacterType;
 public: 
 	CPlayer();
 	virtual ~CPlayer();
@@ -98,17 +92,6 @@ public:
 	// 다른 플레이어를 이동하는 함수
 	void OtherMove(DWORD dwDirection, float fDistance);
 	void OtherUpdate(float fTimeElapsed);
-
-	void SetOnInteraction(bool value) 
-	{
-		m_OnInteraction = value; 
-	}
-	bool GetOnInteraction() { return m_OnInteraction; }
-	void OnInteractive();
-
-	virtual void SetSwitchArea(bool value) { m_bIsSwitchArea = value; }
-	virtual bool GetSwitchArea() { return m_bIsSwitchArea; }
-	virtual void OnSwitchArea(){}
 
 	//플레이어를 회전하는 함수이다. 
 	void Rotate(float x, float y, float z);
@@ -163,6 +146,11 @@ struct SwitchInformation
 
 class CEmployee : public CPlayer
 {
+private:
+	bool m_OnInteraction = false;
+	int m_InteractionCountTime = INTERACTION_TIME;
+
+	bool m_bIsSwitchArea = false;
 public:
 	CEmployee(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, CHARACTER_TYPE nType);
 	virtual ~CEmployee();
@@ -174,6 +162,13 @@ public:
 	virtual void Move(DWORD dwDirection, float fDistance);
 
 	virtual void Update(float fTimeElapsed, PLAYER_TYPE ptype);
+
+	void SetOnInteraction(bool value){m_OnInteraction = value;}
+	bool GetOnInteraction() { return m_OnInteraction; }
+	void OnInteractive();
+
+	void SetSwitchArea(bool value) { m_bIsSwitchArea = value; }
+	bool GetSwitchArea() { return m_bIsSwitchArea; }
 
 	bool CheckSwitchArea();
 	SwitchInformation m_pSwitch;

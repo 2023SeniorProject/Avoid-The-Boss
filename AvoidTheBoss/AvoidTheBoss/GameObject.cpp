@@ -1260,6 +1260,21 @@ CSwitch::CSwitch()
 {
 	radius = 0.25f;
 }
+CSwitch::CSwitch(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, CLoadedModelInfo* pModel, int nAnimationTracks,int number)
+{
+	CLoadedModelInfo* pSirenModel = pModel;
+
+	const char* path[3] = {
+		"Model/Button1.bin",
+		"Model/Button2.bin",
+		"Model/Button3.bin"
+	};
+	if (!pSirenModel)
+		pSirenModel = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, path[number], NULL, Layout::SIREN);
+
+	SetChild(pSirenModel->m_pModelRootObject, true);
+	m_pSkinnedAnimationController = new CAnimationController(pd3dDevice, pd3dCommandList, nAnimationTracks, pSirenModel);
+}
 CSwitch::~CSwitch()
 {
 }
@@ -1286,23 +1301,84 @@ void CSwitch::SetBounds()
 
 }
 
+//void CSwitch::Animate(float fTimeElapsed)
+//{
+//	if (m_bOnSwitch)
+//	{
+//		CGameObject* pButton = FindFrame("Cylinder");
+//
+//		if (m_nAnimationCount > 0)
+//		{
+//			pButton->MoveForward(0.00001f * fTimeElapsed * m_nAnimationCount);
+//			m_nAnimationCount--;
+//		}
+//		else
+//		{
+//			m_bOnSwitch = false;
+//			m_nAnimationCount = 0;
+//			StateOn = true;
+//		}
+//	}
+//	//UpdateTransform(NULL);
+//}
+
 void CSwitch::Animate(float fTimeElapsed)
 {
-	if (m_bOnSwitch)
+	if (m_pSkinnedAnimationController)
 	{
-		CGameObject* pButton = FindFrame("Cylinder");
+		if (m_bOnSwitch)
+		{
+			if (m_nAnimationCount > 0)
+			{
+				m_pSkinnedAnimationController->SetTrackEnable(0, true);
+				m_pSkinnedAnimationController->SetTrackPosition(0, 0.0f);
 
-		if (m_nAnimationCount > 0)
-		{
-			pButton->MoveUp(-1.0f * fTimeElapsed);
-			m_nAnimationCount--;
-		}
-		else
-		{
-			m_bOnSwitch = false;
-			m_nAnimationCount = 0;
-			StateOn = true;
+				m_nAnimationCount--;
+				CGameObject::Animate(fTimeElapsed);
+			}
+			else
+			{
+				m_bOnSwitch = false;
+				m_nAnimationCount = 0;
+				StateOn = true;
+			}
 		}
 	}
-	UpdateTransform(NULL);
+	else 
+	{
+		if (m_bOnSwitch)
+		{
+			CGameObject* pButton = FindFrame("Cylinder");
+
+			if (m_nAnimationCount > 0)
+			{
+
+				pButton->MoveForward(0.00001f * fTimeElapsed * m_nAnimationCount);
+				m_nAnimationCount--;
+			}
+			else
+			{
+				m_bOnSwitch = false;
+				m_nAnimationCount = 0;
+				StateOn = true;
+			}
+		}
+	}
+
+	//UpdateTransform(NULL);
+}
+
+
+CSiren::CSiren(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, CLoadedModelInfo* pModel, int nAnimationTracks)
+{
+	CLoadedModelInfo* pSirenModel = pModel;
+	if (!pSirenModel) 
+		pSirenModel = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "Model/Siren_Alarm2.bin", NULL,Layout::SIREN);
+
+	SetChild(pSirenModel->m_pModelRootObject, true);
+	m_pSkinnedAnimationController = new CAnimationController(pd3dDevice, pd3dCommandList, nAnimationTracks, pSirenModel);
+}
+
+CSiren::~CSiren()
+{
 }

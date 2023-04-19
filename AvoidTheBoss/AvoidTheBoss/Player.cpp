@@ -129,27 +129,6 @@ void CPlayer::Update(float fTimeElapsed, PLAYER_TYPE ptype)
 	//m_xmf3Velocity = XMFLOAT3(0.0f, 0.0f, 0.0f);
 }
 
-void CPlayer::OnInteractive()
-{
-	if (m_OnInteraction == true && m_InteractionCountTime > 0)
-	{
-		m_pSkinnedAnimationController->SetTrackEnable(0, false);
-		m_pSkinnedAnimationController->SetTrackEnable(1, false);
-		m_pSkinnedAnimationController->SetTrackEnable(7, true);
-		m_pSkinnedAnimationController->SetTrackPosition(0, 0.0f);
-
-		m_InteractionCountTime -= 1;
-	}
-	else
-	{
-		m_pSkinnedAnimationController->SetTrackEnable(0, true);
-		m_pSkinnedAnimationController->SetTrackEnable(1, false);
-		m_pSkinnedAnimationController->SetTrackEnable(7, false);
-		m_OnInteraction = false;
-		m_InteractionCountTime = INTERACTION_TIME;
-	}
-}
-
 //플레이어를 로컬 x-축, y-축, z-축을 중심으로 회전한다.
 void CPlayer::Rotate(float x, float y, float z)
 {
@@ -293,9 +272,9 @@ CWorker::CWorker(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dComman
 	m_type = 0;
 	m_pCamera = ChangeCamera(THIRD_PERSON_CAMERA, 0.0f);
 
-	m_nCharacterType = (int)CHARACTER_TYPE::BOSS;
+	m_nCharacterType = CHARACTER_TYPE::BOSS;
 
-	CLoadedModelInfo* pBossModel = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, g_pstrCharactorRefernece[m_nCharacterType], NULL, Layout::PLAYER);
+	CLoadedModelInfo* pBossModel = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, g_pstrCharactorRefernece[(int)m_nCharacterType], NULL, Layout::PLAYER);
 	SetChild(pBossModel->m_pModelRootObject, true);
 
 	m_pSkinnedAnimationController = new CAnimationController(pd3dDevice, pd3dCommandList, 4, pBossModel);
@@ -414,20 +393,20 @@ CEmployee::CEmployee(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCo
 {
 	m_pCamera = ChangeCamera(THIRD_PERSON_CAMERA, 0.0f);
 
-	m_nCharacterType = (int)nType;
+	m_nCharacterType = nType;
 
-	CLoadedModelInfo* pEmployeeModel = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, g_pstrCharactorRefernece[m_nCharacterType], NULL, Layout::PLAYER);
+	CLoadedModelInfo* pEmployeeModel = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, g_pstrCharactorRefernece[(int)m_nCharacterType], NULL, Layout::PLAYER);
 	SetChild(pEmployeeModel->m_pModelRootObject, true);
 
-	m_pSkinnedAnimationController = new CAnimationController(pd3dDevice, pd3dCommandList, 8, pEmployeeModel);
+	m_pSkinnedAnimationController = new CAnimationController(pd3dDevice, pd3dCommandList, 7, pEmployeeModel);
 	m_pSkinnedAnimationController->SetTrackAnimationSet(2, 0);//faint_down
 	m_pSkinnedAnimationController->SetTrackAnimationSet(3, 1);//down_idle
 	m_pSkinnedAnimationController->SetTrackAnimationSet(0, 2);//idle
 	m_pSkinnedAnimationController->SetTrackAnimationSet(1, 3);//run
 	m_pSkinnedAnimationController->SetTrackAnimationSet(4, 4);//walk
 	m_pSkinnedAnimationController->SetTrackAnimationSet(5, 5);//awake
-	m_pSkinnedAnimationController->SetTrackAnimationSet(6, 6);//rever
-	m_pSkinnedAnimationController->SetTrackAnimationSet(7, 7);//button
+	m_pSkinnedAnimationController->SetTrackAnimationSet(6, 6);//button
+	//m_pSkinnedAnimationController->SetTrackAnimationSet(7, 7);//button
 
 
 	m_pSkinnedAnimationController->SetTrackEnable(0, true);
@@ -437,7 +416,7 @@ CEmployee::CEmployee(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCo
 	m_pSkinnedAnimationController->SetTrackEnable(4, false);
 	m_pSkinnedAnimationController->SetTrackEnable(5, false);
 	m_pSkinnedAnimationController->SetTrackEnable(6, false);
-	m_pSkinnedAnimationController->SetTrackEnable(7, false);
+	//m_pSkinnedAnimationController->SetTrackEnable(7, false);
 
 	CreateShaderVariables(pd3dDevice, pd3dCommandList);
 
@@ -534,7 +513,26 @@ void CEmployee::Update(float fTimeElapsed, PLAYER_TYPE ptype)
 	}
 	m_xmf3Velocity = XMFLOAT3(0.0f, 0.0f, 0.0f);
 }
+void CEmployee::OnInteractive()
+{
+	if (m_OnInteraction == true && m_InteractionCountTime > 0)
+	{
+		m_pSkinnedAnimationController->SetTrackEnable(0, false);
+		m_pSkinnedAnimationController->SetTrackEnable(1, false);
+		m_pSkinnedAnimationController->SetTrackEnable(6, true);
+		m_pSkinnedAnimationController->SetTrackPosition(0, 0.0f);
 
+		m_InteractionCountTime -= 1;
+	}
+	else
+	{
+		m_pSkinnedAnimationController->SetTrackEnable(0, true);
+		m_pSkinnedAnimationController->SetTrackEnable(1, false);
+		m_pSkinnedAnimationController->SetTrackEnable(6, false);
+		m_OnInteraction = false;
+		m_InteractionCountTime = INTERACTION_TIME;
+	}
+}
 bool CEmployee::CheckSwitchArea()
 {
 	//캐릭터 원 - 스위치 영역 원 충돌체크

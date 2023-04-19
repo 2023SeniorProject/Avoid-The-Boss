@@ -474,7 +474,7 @@ void CBoundsObjectsShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12Graphics
 	m_nObjects = 1;
 	m_ppObjects = new CGameObject * [m_nObjects];
 
-	CGameObject* pMap = CGameObject::LoadGeometryFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "Model/Map_Bounding_Box_(4).bin", NULL, Layout::BOUDS);
+	CGameObject* pMap = CGameObject::LoadGeometryFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "Model/Map_Bounding_Box_(5).bin", NULL, Layout::BOUDS);
 	pMap->m_type = 1;
 	m_ppObjects[0] = new CGameObject();
 	m_ppObjects[0]->SetChild(pMap);

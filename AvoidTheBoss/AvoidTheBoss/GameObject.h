@@ -442,6 +442,7 @@ public:
 	int m_nAnimationCount = BUTTON_ANIM_FRAME;
 
 	CSwitch();
+	CSwitch(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, CLoadedModelInfo* pModel, int nAnimationTracks,int number);
 	virtual ~CSwitch();
 	void SetRandomPosition(XMFLOAT3 pos);
 	void SetBounds();
@@ -456,4 +457,10 @@ public:
 	virtual void Animate(float fTimeElapsed);
 };
 
+class CSiren : public CGameObject
+{
+public:
+	CSiren(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, CLoadedModelInfo* pModel, int nAnimationTracks);
+	virtual ~CSiren();
+};
 

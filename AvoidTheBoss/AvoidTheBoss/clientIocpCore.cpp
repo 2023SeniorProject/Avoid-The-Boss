@@ -146,7 +146,9 @@ void CSession::ProcessPacket(char* packet)
 	{
 		S2C_POS* posPacket = reinterpret_cast<S2C_POS*>(packet);
 		CPlayer* player = mainGame.m_pScene->GetScenePlayer(posPacket->sid);
-		if (player == nullptr) break;
+		mainGame.m_pScene->_curFrameIdx.store(posPacket->fidx);
+		std::cout << mainGame.m_pScene->_curFrameIdx << "\n";
+;		if (player == nullptr) break;
 		player->m_lock.lock();
 		player->MakePosition(XMFLOAT3(posPacket->x , player->GetPosition().y, posPacket->z));
 		player->m_lock.unlock();

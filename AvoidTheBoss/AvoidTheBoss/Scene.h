@@ -1,5 +1,5 @@
 #pragma once
-#include "WorldRewinder.h"
+#include "CTimer.h"
 #include "SceneInterface.h"
 #include "Shader.h"
 #include "Player.h"
@@ -108,6 +108,7 @@ public:
 
 	CSwitch* m_pSwitch = NULL;
 public:
+	Atomic<uint8> _curFrameIdx;
 	int32 m_cid = -1;
 protected:
 	ID3D12RootSignature* m_pd3dGraphicsRootSignature = NULL;

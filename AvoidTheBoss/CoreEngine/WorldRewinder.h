@@ -24,7 +24,8 @@ public:
 	}
 	void PrintWorldInfo()
 	{
-		for (int i = 0; i < PLAYERNUM; ++i) std::cout << "[" << _myWorldFrame << "]" << "(" << _pPos[i].x << " " << _pPos[i].z << ")";
+		//for (int i = 0; i < PLAYERNUM; ++i) std::cout <<  " )" << "(" << _pPos[i].x << " " << _pPos[i].z << ") ";
+		//std::cout << "\n";
 	}
 public:
 	POS _pPos[4]; // 도망자 위치
@@ -90,12 +91,12 @@ public:
 	}
 	void AddHistory(PlayerInfo* p)
 	{
-		
-			std::cout << _lastWorldStatus._myWorldFrame << "\n";
 			_lastWorldStatus._pPos[0] = p[0].GetPosition();
 			_lastWorldStatus._pPos[1] = p[1].GetPosition();
 			_lastWorldStatus._pPos[2] = p[2].GetPosition();
 			_lastWorldStatus._pPos[3] = p[3].GetPosition();
+			std::cout << _frameIndex << "\n";
+			//_lastWorldStatus.PrintWorldInfo();
 			++_lastWorldStatus._myWorldFrame;
 			SetWorldStatusByFrame(_lastWorldStatus._myWorldFrame, _lastWorldStatus);
 	}
@@ -113,6 +114,10 @@ public:
 		_frameIndex = 0;
 	}
 
+	uint32 GetCurFrameIdx() const
+	{
+		return _frameIndex;
+	}
 private:
 	uint32 _curFrame; //   현재 프레임
 	uint32 _frameIndex; // 배열내 위치

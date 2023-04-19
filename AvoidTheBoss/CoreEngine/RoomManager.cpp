@@ -137,6 +137,7 @@ void Room::Update()
 	
 	if (_timer.IsAfterTick(60))
 	{
+		_history.AddHistory(_players);
 		for (int i = 0; i < PLAYERNUM; ++i)
 		{
 			if (Vector3::IsZero(_players[i].GetVelocity())) continue;
@@ -146,10 +147,9 @@ void Room::Update()
 			packet.type = S_PACKET_TYPE::SPOS;
 			packet.x = _players[i].GetPosition().x;
 			packet.z = _players[i].GetPosition().z;
-			BroadCasting(&packet);
-			
+			packet.fidx = _history.GetCurFrameIdx();
+			BroadCasting(&packet);	
 		}
-		_history.AddHistory(_players);
 	}
 }
 

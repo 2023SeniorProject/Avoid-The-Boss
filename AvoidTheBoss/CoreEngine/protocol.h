@@ -122,9 +122,9 @@ struct S2C_POS
 	uint8 size;
 	uint8 type;
 	int16 sid;
+	uint8 fidx;
 	float x;
 	float z;
-
 };
 
 struct S2C_ROTATE

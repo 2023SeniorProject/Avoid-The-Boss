@@ -11,7 +11,7 @@ int main()
 {
 	std::ios::sync_with_stdio(false);
 	std::cout.tie(NULL);
-	::SetConsoleTitle(L"SERVER");
+	::SetConsoleTitle(TEXT("GAMESERVER"));
 	SocketUtil::Init();
 	
 	ThreadManager* GThreadManager = nullptr;
@@ -24,7 +24,6 @@ int main()
 	{
 		GThreadManager->Launch([=]()
 			{
-			
 				while (true)
 				{
 					
@@ -33,7 +32,6 @@ int main()
 					std::this_thread::sleep_for(0ms);
 				}
 				std::cout << "End Thread \n";
-				
 			});
 		
 	}

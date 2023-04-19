@@ -7,9 +7,9 @@ enum class PLAYER_TYPE
 	OWNER,OTHER_PLAYER,NONE
 };
 
-enum class CHARACTER_TYPE
+enum class CHARACTER_TYPE: int32
 {
-	BOSS,YELLOW_EMP,MASK_EMP,CAP_EMP,GOGGLE_EMP
+	BOSS = 0, YELLOW_EMP = 1, MASK_EMP, CAP_EMP, GOGGLE_EMP, COUNT
 };
 
 static const char *g_pstrCharactorRefernece[5] =

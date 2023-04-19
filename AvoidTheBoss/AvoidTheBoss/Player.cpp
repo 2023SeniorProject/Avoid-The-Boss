@@ -256,7 +256,7 @@ CWorker::CWorker(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dComman
 	//SetCameraUpdatedContext();
 
 	SetScale(XMFLOAT3(1.f, 1.f, 1.f));
-	SetPosition(XMFLOAT3(0.0f, 1.3f, 0.0f));
+	SetPosition(XMFLOAT3(0.0f, 0.25f, -50.0f));
 
 	if (pBossModel) delete pBossModel;
 }

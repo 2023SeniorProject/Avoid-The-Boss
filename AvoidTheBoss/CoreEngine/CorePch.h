@@ -83,7 +83,6 @@ using namespace DirectX::PackedVector;
 
 #include "protocol.h"
 #include "CollisionDetector.h"
-#define PLAYERNUM 1
 
 
 bool XMVerifyCPUSupport(); // 응용프로그램에서 SIMD 기능(벡터 연산 명령집합 확장 기능 / 벡터의 병렬 연산 ) 제공여부 확인 
@@ -100,6 +99,7 @@ using Microsoft::WRL::ComPtr;
 //----클라이언트 영역 크기 및 후면 버퍼 크기
 #define FRAME_BUFFER_WIDTH  800
 #define FRAME_BUFFER_HEIGHT 600
+#define PLAYERNUM 1
 
 #define _WITH_CB_WORLD_MATRIX_DESCRIPTOR_TABLE
 //----전체 화면 모드로 시작

@@ -7,7 +7,7 @@
 
 enum ROOM_STATUS : int8
 {
-	INGAME = 0 ,FULL = 1, NOT_FULL = 2, EMPTY = 3, COUNT
+	INGAME = 0 ,FULL = 1, NOT_FULL = 2, EMPTY = 3, COUNT = 4
 };
 
 

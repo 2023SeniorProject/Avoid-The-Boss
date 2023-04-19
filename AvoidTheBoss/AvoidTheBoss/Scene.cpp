@@ -205,11 +205,11 @@ void CGameScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandLis
 	m_pSwitch = (CSwitch*)pSwitchObjectShader->m_ppObjects[0];
 	for (int i = 0; i < PLAYERNUM; ++i)
 	{
-		if(false/*i == (int)CHARACTER_TYPE::BOSS*/)
+		if((CHARACTER_TYPE)i == CHARACTER_TYPE::BOSS)
 			_players[i] = new CWorker(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature);
 		else
 		{
-			_players[i] = new CEmployee(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, CHARACTER_TYPE::GOGGLE_EMP);
+			_players[i] = new CEmployee(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, (CHARACTER_TYPE)i);
 
 			//XMFLOAT3 position = XMFLOAT3(-4.5f, 0.0f, 0.017f);
 			//XMFLOAT4X4 xmf4x4ToParent = m_pSwitch->FindFrame("Switch")->m_xmf4x4ToParent;
@@ -227,7 +227,7 @@ void CGameScene::ProcessInput(HWND hWnd)
 	_timer.Tick(0);
 	static UCHAR pKeyBuffer[256];
 	// 방향키를 바이트로 처리한다.
-
+	bool  fbuttonOn = false;
 	uint8 dwDirection = 0;
 	if (::GetKeyboardState(pKeyBuffer))
 	{
@@ -245,36 +245,40 @@ void CGameScene::ProcessInput(HWND hWnd)
 
 			if (pKeyBuffer[0x46] & 0xF0)
 			{
-				if (_players[0]->m_nCharacterType != CHARACTER_TYPE::BOSS)
+				
+				fbuttonOn = true;
+				if (_players[_playerIdx]->m_nCharacterType != CHARACTER_TYPE::BOSS)
 				{
 					if (!m_pSwitch->StateOn)
 					{
-						if (((CEmployee*)_players[0])->GetSwitchArea())
-							((CEmployee*)_players[0])->SetOnInteraction(true);
+						if (((CEmployee*)_players[_playerIdx])->GetSwitchArea())
+							((CEmployee*)_players[_playerIdx])->SetOnInteraction(true);
 						else
-							((CEmployee*)_players[0])->SetOnInteraction(false);
+							((CEmployee*)_players[_playerIdx])->SetOnInteraction(false);
 					}
 				}
 			}
 			else if (pKeyBuffer[0x66] & 0xF0)
 			{
-				if (_players[0]->m_nCharacterType != CHARACTER_TYPE::BOSS)
+				
+				fbuttonOn = true;
+				if (_players[_playerIdx]->m_nCharacterType != CHARACTER_TYPE::BOSS)
 				{
 					if (!m_pSwitch->StateOn)
 					{
-						if (((CEmployee*)_players[0])->GetSwitchArea())
-							((CEmployee*)_players[0])->SetOnInteraction(true);
+						if (((CEmployee*)_players[_playerIdx])->GetSwitchArea())
+							((CEmployee*)_players[_playerIdx])->SetOnInteraction(true);
 						else
-							((CEmployee*)_players[0])->SetOnInteraction(false);
+							((CEmployee*)_players[_playerIdx])->SetOnInteraction(false);
 					}
 				}
 			}
 	}
-	if (_players[0]->m_nCharacterType != CHARACTER_TYPE::BOSS)
+	if (_players[_playerIdx]->m_nCharacterType != CHARACTER_TYPE::BOSS)
 	{
-		if (((CEmployee*)_players[0])->GetOnInteraction())
+		if (((CEmployee*)_players[_playerIdx])->GetOnInteraction())
 		{
-			dwDirection |= DIR_BUTTON_CENTER;
+			
 			if (m_pSwitch)
 			{
 				m_pSwitch->SetOnSwitch(true);
@@ -298,44 +302,44 @@ void CGameScene::ProcessInput(HWND hWnd)
 		::SetCursorPos(m_ptOldCursorPos.x, m_ptOldCursorPos.y);
 	}
 
-	if(dwDirection!=DIR_BUTTON_CENTER)
-	{
 		//std::lock_guard<std::mutex> lg(_players[_playerIdx]->m_lock);
-		if ((dwDirection != 0) || (cxDelta != 0.0f) || (cyDelta != 0.0f))
+	if ((dwDirection != 0) || (cxDelta != 0.0f) || (cyDelta != 0.0f))
+	{
+		if (cxDelta || cyDelta)
 		{
-			if (cxDelta || cyDelta)
+
+			/*cxDelta는 y-축의 회전을 나타내고 cyDelta는 x-축의 회전을 나타낸다. 오른쪽 마우스 버튼이 눌려진 경우
+			cxDelta는 z-축의 회전을 나타낸다.*/
+			if (pKeyBuffer[VK_RBUTTON] & 0xF0) _players[_playerIdx]->Rotate(cyDelta, 0.0f, -cxDelta);
+			else if (pKeyBuffer[VK_LBUTTON] & 0xF0) _players[_playerIdx]->Rotate(0.f, cxDelta, 0.0f);
+
+			if (pKeyBuffer[VK_LBUTTON] & 0xF0)
 			{
-
-				/*cxDelta는 y-축의 회전을 나타내고 cyDelta는 x-축의 회전을 나타낸다. 오른쪽 마우스 버튼이 눌려진 경우
-				cxDelta는 z-축의 회전을 나타낸다.*/
-				if (pKeyBuffer[VK_RBUTTON] & 0xF0) _players[_playerIdx]->Rotate(cyDelta, 0.0f, -cxDelta);
-				else if (pKeyBuffer[VK_LBUTTON] & 0xF0) _players[_playerIdx]->Rotate(0.f, cxDelta, 0.0f);
-
-				if (pKeyBuffer[VK_LBUTTON] & 0xF0)
-				{
-					C2S_ROTATE packet;
-					packet.size = sizeof(C2S_ROTATE);
-					packet.type = C_PACKET_TYPE::CROT;
-					packet.angle = cxDelta;
-					clientCore._client->DoSend(&packet);
-				}
+				C2S_ROTATE packet;
+				packet.size = sizeof(C2S_ROTATE);
+				packet.type = C_PACKET_TYPE::CROT;
+				packet.angle = cxDelta;
+				clientCore._client->DoSend(&packet);
 			}
-
-			/*플레이어를 dwDirection 방향으로 이동한다(실제로는 속도 벡터를 변경한다). 이동 거리는 시간에 비례하도록 한다. 플레이어의 이동 속력은 (1.3UNIT/초)로 가정한다.*/
-			if (dwDirection) _players[_playerIdx]->Move(dwDirection, PLAYER_VELOCITY);
 		}
-	}
 
-	if (m_lastKeyInput != dwDirection || ( dwDirection != 0 && (cxDelta != 0.0f))) // 이전과 방향(키입력이 다른 경우에만 무브 이벤트 패킷을 보낸다)
+		/*플레이어를 dwDirection 방향으로 이동한다(실제로는 속도 벡터를 변경한다). 이동 거리는 시간에 비례하도록 한다. 플레이어의 이동 속력은 (1.3UNIT/초)로 가정한다.*/
+		if (dwDirection) _players[_playerIdx]->Move(dwDirection, PLAYER_VELOCITY);
+	}
+	
+
+	if (m_lastKeyInput != dwDirection || (dwDirection != 0 && (cxDelta != 0.0f))) // 이전과 방향(키입력이 다른 경우에만 무브 이벤트 패킷을 보낸다)
 	{
 		C2S_KEY packet; // 키 입력 + 방향 정보를 보낸다.
 		packet.size = sizeof(C2S_KEY);
 		packet.type = C_PACKET_TYPE::CKEY;
-		packet.key = dwDirection;
-		packet.x =_players[_playerIdx]->GetLook().x;
+		if (fbuttonOn) packet.key = 0;
+		else packet.key = dwDirection;
+		packet.x = _players[_playerIdx]->GetLook().x;
 		packet.z = _players[_playerIdx]->GetLook().z;
 		clientCore._client->DoSend(&packet);
 	}
+	
 	m_lastKeyInput = dwDirection;
 	
 

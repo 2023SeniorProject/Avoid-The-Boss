@@ -95,7 +95,7 @@ public:
 			_lastWorldStatus._pPos[1] = p[1].GetPosition();
 			_lastWorldStatus._pPos[2] = p[2].GetPosition();
 			_lastWorldStatus._pPos[3] = p[3].GetPosition();
-			std::cout << _frameIndex << "\n";
+			//std::cout << _frameIndex << "\n";
 			//_lastWorldStatus.PrintWorldInfo();
 			++_lastWorldStatus._myWorldFrame;
 			SetWorldStatusByFrame(_lastWorldStatus._myWorldFrame, _lastWorldStatus);

@@ -4,7 +4,7 @@
 #include <string>
 
 OcTree* BoxTree = nullptr;
-int32 OcTree::_maxLevel = 4;
+int32 OcTree::_maxLevel = 3;
 
 
 
@@ -61,6 +61,7 @@ void OcTree::ReadBoundingBoxInfoFromFile(const char* filename)
 		std::cout << "(" << cx << " " << cy << " " << cz << ") (" << ex << " " << ey << " " << ez << ")		[" << i++ << "]\n";
 		AddBoundingBox(bv);
 	}
+	std::cout << "End BoundingBox Loaded\n";
 }
 
 void OcTree::AddBoundingBox(DirectX::BoundingBox aabb)
@@ -127,6 +128,7 @@ bool OcTree::CheckCollision(DirectX::BoundingSphere& playerBox, XMFLOAT3& player
 				if (i.Intersects(playerBox))
 				{
 
+					std::cout << "Collision\n";
 					// To Do Collision Response
 
 					// 1. 자기의 로컬 좌표계 기준으로 min max 값을 구한다.

@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "CollisionDetector.h"
 #include "PlayerInfo.h"
+#include <string>
 
 OcTree* BoxTree = nullptr;
 int32 OcTree::_maxLevel = 4;
@@ -10,6 +11,53 @@ int32 OcTree::_maxLevel = 4;
 float DotProduct(XMFLOAT3 a, XMFLOAT3 b) 
 {
 	return  a.x * b.x + a.y + b.y + a.z * b.z;
+}
+
+void OcTree::ReadBoundingBoxInfoFromFile(const char* filename)
+{
+	std::ifstream infile(filename);
+	std::string line;
+	while (getline(infile, line)) {
+		// find the CENTER and EXTENTS substrings
+		size_t centerDelimeter = line.find("Center:");
+		size_t extentsDelimeter = line.find("Extents:");
+		// extract the CENTER values
+		float cx, cy, cz;
+		if (centerDelimeter != std::string::npos)
+		{
+			size_t centerStart = line.find("(", centerDelimeter);
+			size_t centerXend = line.find(",", centerStart);
+			size_t centerYend = line.find(",", centerXend + 1);
+			size_t centerZend = line.find(")", centerYend);
+
+			if (centerStart != std::string::npos && centerXend != std::string::npos && centerYend != std::string::npos && centerZend != std::string::npos)
+			{
+				cx = atof(line.substr(centerStart + 1, centerXend - centerStart - 1).c_str());
+				cy = atof(line.substr(centerXend + 1, centerYend - centerXend - 1).c_str());
+				cz = atof(line.substr(centerYend + 1, centerZend - centerYend - 1).c_str());
+				
+			}
+		}
+
+		// extract the EXTENTS values
+		float ex, ey, ez;
+		if (extentsDelimeter != std::string::npos) {
+			size_t extentsStart = line.find("(", extentsDelimeter);
+			size_t extentsXend = line.find(",", extentsStart);
+			size_t extentsYend = line.find(",", extentsXend + 1);
+			size_t extentsZend = line.find(")", extentsYend);
+
+			if (extentsStart != std::string::npos && extentsXend != std::string::npos && extentsYend != std::string::npos && extentsZend != std::string::npos) {
+				ex = atof(line.substr(extentsStart + 1, extentsXend - extentsStart - 1).c_str());
+				ey = atof(line.substr(extentsXend + 1, extentsYend - extentsXend - 1).c_str());
+				ez = atof(line.substr(extentsYend + 1, extentsZend - extentsYend - 1).c_str());
+			}
+		}
+		BoundingBox bv;
+		bv.Center = XMFLOAT3(cx, cy, cz);
+		bv.Extents = XMFLOAT3(ex, ey, ez);
+		AddBoundingBox(bv);
+	}
 }
 
 void OcTree::AddBoundingBox(DirectX::BoundingBox aabb)

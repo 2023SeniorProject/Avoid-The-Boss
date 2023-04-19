@@ -73,6 +73,7 @@ public:
 
 		if (_curLevel == _maxLevel) _node = new LeafNode();
 	};
+	void ReadBoundingBoxInfoFromFile(const char*);
 	void AddBoundingBox(DirectX::BoundingBox aabb);
 	void BuildTree();
 	void BuildChildTree();

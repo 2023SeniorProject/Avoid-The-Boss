@@ -15,6 +15,7 @@ float DotProduct(XMFLOAT3 a, XMFLOAT3 b)
 
 void OcTree::ReadBoundingBoxInfoFromFile(const char* filename)
 {
+	int i = 0;
 	std::ifstream infile(filename);
 	std::string line;
 	while (getline(infile, line)) {
@@ -41,7 +42,8 @@ void OcTree::ReadBoundingBoxInfoFromFile(const char* filename)
 
 		// extract the EXTENTS values
 		float ex, ey, ez;
-		if (extentsDelimeter != std::string::npos) {
+		if (extentsDelimeter != std::string::npos) 
+		{
 			size_t extentsStart = line.find("(", extentsDelimeter);
 			size_t extentsXend = line.find(",", extentsStart);
 			size_t extentsYend = line.find(",", extentsXend + 1);
@@ -56,6 +58,7 @@ void OcTree::ReadBoundingBoxInfoFromFile(const char* filename)
 		BoundingBox bv;
 		bv.Center = XMFLOAT3(cx, cy, cz);
 		bv.Extents = XMFLOAT3(ex, ey, ez);
+		std::cout << "(" << cx << " " << cy << " " << cz << ") (" << ex << " " << ey << " " << ez << ")		[" << i++ << "]\n";
 		AddBoundingBox(bv);
 	}
 }

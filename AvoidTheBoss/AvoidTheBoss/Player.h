@@ -60,7 +60,6 @@ public:
 	virtual ~CPlayer();
 	
 	XMFLOAT3 GetPosition() const { return(m_xmf3Position); }
-	XMFLOAT3& GetPredictPos() { return(m_predictPos); }
 	XMFLOAT3 GetLookVector() { return(m_xmf3Look); }
 	XMFLOAT3 GetUpVector() { return(m_xmf3Up); }
 	XMFLOAT3 GetRightVector() { return(m_xmf3Right); }
@@ -76,7 +75,6 @@ public:
 	{
 		UpdateMove(XMFLOAT3(xmf3Position.x - m_xmf3Position.x, xmf3Position.y - m_xmf3Position.y, xmf3Position.z - m_xmf3Position.z));
 	}
-	void SetPredicPos(const XMFLOAT3& pred) { m_predictPos = pred; }
 	void SetScale(const XMFLOAT3& xmf3Scale) { m_xmf3Scale = xmf3Scale; }
 	void MakePosition(const XMFLOAT3& xmf3Position)
 	{
@@ -95,11 +93,6 @@ public:
 	virtual void Move(DWORD dwDirection, float fDistance);
 	void SetSpeed(const XMFLOAT3& xmf3Shift);
 	void UpdateMove(const XMFLOAT3& velocity);
-	
-
-
-	bool GetOnInteraction() { return m_OnInteraction; }
-	void OnInteractive();
 
 	//플레이어를 회전하는 함수이다. 
 	void Rotate(float x, float y, float z);

@@ -118,6 +118,13 @@ public:
 	virtual void OnPrepareRender();
 	//플레이어의 카메라가 3인칭 카메라일 때 플레이어(메쉬)를 렌더링한다. 
 	virtual void Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera =NULL);
+
+public:
+	bool m_OnInteraction = false;
+	int m_InteractionCountTime = INTERACTION_TIME;
+
+	void SetOnInteraction(bool value) { m_OnInteraction = value; }
+	bool GetOnInteraction() { return m_OnInteraction; }
 };
 
 
@@ -135,7 +142,7 @@ public:
 	virtual void Move(DWORD dwDirection, float fDistance);
 
 	virtual void Update(float fTimeElapsed, PLAYER_TYPE ptype);
-
+	virtual void OnInteractive();
 };
 
 struct SwitchInformation
@@ -147,9 +154,6 @@ struct SwitchInformation
 class CEmployee : public CPlayer
 {
 private:
-	bool m_OnInteraction = false;
-	int m_InteractionCountTime = INTERACTION_TIME;
-
 	bool m_bIsSwitchArea = false;
 public:
 	CEmployee(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, CHARACTER_TYPE nType);
@@ -163,8 +167,6 @@ public:
 
 	virtual void Update(float fTimeElapsed, PLAYER_TYPE ptype);
 
-	void SetOnInteraction(bool value){m_OnInteraction = value;}
-	bool GetOnInteraction() { return m_OnInteraction; }
 	void OnInteractive();
 
 	void SetSwitchArea(bool value) { m_bIsSwitchArea = value; }

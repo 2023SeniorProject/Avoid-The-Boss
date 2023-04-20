@@ -202,7 +202,7 @@ void CGameScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandLis
 	pSwitchObjectShader->BuildObjects(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, NULL,NULL);
 	m_ppShaders[1] = pSwitchObjectShader;
 
-	m_pSwitch = (CSwitch*)pSwitchObjectShader->m_ppObjects[0];
+	m_pSwitch = (CSwitch*)m_ppHierarchicalGameObjects[2];
 	for (int i = 0; i < PLAYERNUM; ++i)
 	{
 		if(false/*i == (int)CHARACTER_TYPE::BOSS*/)
@@ -213,7 +213,7 @@ void CGameScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandLis
 
 			//XMFLOAT3 position = XMFLOAT3(-4.5f, 0.0f, 0.017f);
 			//XMFLOAT4X4 xmf4x4ToParent = m_pSwitch->FindFrame("Switch")->m_xmf4x4ToParent;
-			((CEmployee*)_players[i])->m_pSwitch.position = m_ppHierarchicalGameObjects[2]->GetPosition();// m_pSwitch->GetPosition();//XMFLOAT3(xmf4x4ToParent._41, xmf4x4ToParent._42, xmf4x4ToParent._43);
+			((CEmployee*)_players[i])->m_pSwitch.position = m_pSwitch->GetPosition();// m_pSwitch->GetPosition();//XMFLOAT3(xmf4x4ToParent._41, xmf4x4ToParent._42, xmf4x4ToParent._43);
 			((CEmployee*)_players[i])->m_pSwitch.radius = m_pSwitch->GetRadius();
 		}
 	}
@@ -245,34 +245,45 @@ void CGameScene::ProcessInput(HWND hWnd)
 
 			if (pKeyBuffer[0x46] & 0xF0)
 			{
-				if (_players[0]->m_nCharacterType != CHARACTER_TYPE::BOSS)
+				if (_players[_playerIdx]->m_nCharacterType != CHARACTER_TYPE::BOSS)
 				{
 					if (!m_pSwitch->StateOn)
 					{
-						if (((CEmployee*)_players[0])->GetSwitchArea())
-							((CEmployee*)_players[0])->SetOnInteraction(true);
+						if (((CEmployee*)_players[_playerIdx])->GetSwitchArea())
+							_players[_playerIdx]->SetOnInteraction(true);
 						else
-							((CEmployee*)_players[0])->SetOnInteraction(false);
+							_players[_playerIdx]->SetOnInteraction(false);
 					}
 				}
 			}
 			else if (pKeyBuffer[0x66] & 0xF0)
 			{
-				if (_players[0]->m_nCharacterType != CHARACTER_TYPE::BOSS)
+				if (_players[_playerIdx]->m_nCharacterType != CHARACTER_TYPE::BOSS)
 				{
 					if (!m_pSwitch->StateOn)
 					{
-						if (((CEmployee*)_players[0])->GetSwitchArea())
-							((CEmployee*)_players[0])->SetOnInteraction(true);
+						if (((CEmployee*)_players[_playerIdx])->GetSwitchArea())
+							_players[_playerIdx]->SetOnInteraction(true);
 						else
-							((CEmployee*)_players[0])->SetOnInteraction(false);
+							_players[_playerIdx]->SetOnInteraction(false);
 					}
 				}
 			}
+
+			if (pKeyBuffer[VK_SPACE] & 0xF0)
+			{
+				if (_players[_playerIdx]->m_nCharacterType == CHARACTER_TYPE::BOSS)
+				{
+					if (_players[_playerIdx]->m_InteractionCountTime==INTERACTION_TIME)
+						_players[_playerIdx]->SetOnInteraction(true);
+					else
+						_players[_playerIdx]->SetOnInteraction(false);
+				}
+			}
 	}
-	if (_players[0]->m_nCharacterType != CHARACTER_TYPE::BOSS)
+	if (_players[_playerIdx]->m_nCharacterType != CHARACTER_TYPE::BOSS)
 	{
-		if (((CEmployee*)_players[0])->GetOnInteraction())
+		if (((CEmployee*)_players[_playerIdx])->GetOnInteraction())
 		{
 			dwDirection |= DIR_BUTTON_CENTER;
 			if (m_pSwitch)

@@ -273,6 +273,7 @@ CWorker::CWorker(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dComman
 	m_pCamera = ChangeCamera(THIRD_PERSON_CAMERA, 0.0f);
 
 	m_nCharacterType = CHARACTER_TYPE::BOSS;
+	m_InteractionCountTime = INTERACTION_TIME;
 
 	CLoadedModelInfo* pBossModel = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, g_pstrCharactorRefernece[(int)m_nCharacterType], NULL, Layout::PLAYER);
 	SetChild(pBossModel->m_pModelRootObject, true);
@@ -362,7 +363,7 @@ void CWorker::OnCameraUpdateCallback()
 
 void CWorker::Move(DWORD dwDirection, float fDistance)
 {
-	if (dwDirection)
+	if (dwDirection && !m_OnInteraction)
 	{
 		m_pSkinnedAnimationController->SetTrackEnable(0, false);
 		m_pSkinnedAnimationController->SetTrackEnable(1, true);
@@ -375,7 +376,10 @@ void CWorker::Update(float fTimeElapsed, PLAYER_TYPE ptype)
 {
 	CPlayer::Update(fTimeElapsed, PLAYER_TYPE::OWNER);
 
-	if (m_pSkinnedAnimationController)
+	if (m_OnInteraction)
+		OnInteractive();
+
+	if (m_pSkinnedAnimationController&&!m_OnInteraction)
 	{
 		float fLength = sqrtf(m_xmf3Velocity.x * m_xmf3Velocity.x + m_xmf3Velocity.z * m_xmf3Velocity.z);
 		if (::IsZero(fLength))
@@ -386,7 +390,28 @@ void CWorker::Update(float fTimeElapsed, PLAYER_TYPE ptype)
 		}
 	}
 	m_xmf3Velocity = XMFLOAT3(0.0f, 0.0f, 0.0f);
+}
 
+void CWorker::OnInteractive()
+{
+	if (m_OnInteraction == true && m_InteractionCountTime > 0)
+	{
+		m_pSkinnedAnimationController->SetTrackEnable(0, false);
+		m_pSkinnedAnimationController->SetTrackEnable(1, false);
+		m_pSkinnedAnimationController->SetTrackEnable(3, true);
+		m_pSkinnedAnimationController->SetTrackPosition(0, 0.0f);
+
+		m_InteractionCountTime -= 1;
+	}
+	else
+	{
+		m_pSkinnedAnimationController->SetTrackEnable(0, true);
+		m_pSkinnedAnimationController->SetTrackEnable(1, false);
+		m_pSkinnedAnimationController->SetTrackEnable(3, false);
+
+		m_OnInteraction = false;
+		m_InteractionCountTime = INTERACTION_TIME;
+	}
 }
 
 CEmployee::CEmployee(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, CHARACTER_TYPE nType)
@@ -394,6 +419,8 @@ CEmployee::CEmployee(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCo
 	m_pCamera = ChangeCamera(THIRD_PERSON_CAMERA, 0.0f);
 
 	m_nCharacterType = nType;
+
+	m_InteractionCountTime = INTERACTION_TIME;
 
 	CLoadedModelInfo* pEmployeeModel = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, g_pstrCharactorRefernece[(int)m_nCharacterType], NULL, Layout::PLAYER);
 	SetChild(pEmployeeModel->m_pModelRootObject, true);

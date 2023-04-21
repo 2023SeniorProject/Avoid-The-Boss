@@ -137,7 +137,7 @@ void CGameScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandLis
 	//그래픽 루트 시그너쳐를 생성한다. 
 	m_pd3dGraphicsRootSignature = CreateGraphicsRootSignature(pd3dDevice);
 
-	CreateCbvSrvDescriptorHeaps(pd3dDevice, 0, 52+1+1+12+3+12+3 + 89 + 5 + 5*4 + 4*4);//Albedomap 52 / player 1 / skybox 1 / box subTexture 3 * 4/ tile subTexture 3 * 1/ woodPallet 3 * 4 / pillar2 3 * 1 / BoundsMap 89 / 스위치 2 + 3 / 문 / 사이렌 6
+	CreateCbvSrvDescriptorHeaps(pd3dDevice, 0, 52+1+1+12+3+12+3 + 89 + 5 + 5*4 + 4*4 + 2*50);//Albedomap 52 / player 1 / skybox 1 / box subTexture 3 * 4/ tile subTexture 3 * 1/ woodPallet 3 * 4 / pillar2 3 * 1 / BoundsMap 89 / 스위치 2 + 3 / 문 / 사이렌 6 / 총알 100
 
 	CMaterial::PrepareShaders(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature);
 
@@ -215,7 +215,7 @@ void CGameScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandLis
 	if (REmergenct_Door) delete REmergenct_Door;
 
 
-	m_nShaders = 2;
+	m_nShaders = 3;
 	m_ppShaders = new CShader * [m_nShaders];
 
 	CMapObjectsShader* pMapShader = new CMapObjectsShader();
@@ -232,11 +232,20 @@ void CGameScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandLis
 	pSwitchObjectShader->BuildObjects(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, NULL,NULL);
 	m_ppShaders[1] = pSwitchObjectShader;
 
+	CBulletObjectsShader* pBulletObjectShader = new CBulletObjectsShader();
+	pBulletObjectShader->CreateShader(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature);
+	pBulletObjectShader->BuildObjects(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, NULL, NULL);
+	m_ppShaders[2] = pBulletObjectShader;
+
 	m_pSwitch = (CSwitch*)m_ppHierarchicalGameObjects[2];
 	for (int i = 0; i < PLAYERNUM; ++i)
 	{
-		if(i == (int)CHARACTER_TYPE::BOSS)
+		if (i == (int)CHARACTER_TYPE::BOSS)
+		{
 			_players[i] = new CWorker(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature);
+			//if (m_ppShaders[2])
+			//	((CWorker*)_players[i])->m_pBullet = (CBullet*)pBulletObjectShader->m_ppObjects[0];
+		}
 		else
 		{
 			_players[i] = new CEmployee(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, CHARACTER_TYPE::GOGGLE_EMP);
@@ -299,7 +308,9 @@ void CGameScene::ProcessInput(HWND hWnd)
 				if (_players[_playerIdx]->m_nCharacterType == CHARACTER_TYPE::BOSS)
 				{
 					if (_players[_playerIdx]->m_InteractionCountTime == INTERACTION_TIME)
+					{
 						_players[_playerIdx]->SetOnInteraction(true);
+					}
 				}
 			}
 	}

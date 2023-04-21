@@ -396,19 +396,26 @@ void CWorker::OnInteractive()
 {
 	if (m_OnInteraction == true && m_InteractionCountTime > 0)
 	{
-		m_pSkinnedAnimationController->SetTrackEnable(0, false);
-		m_pSkinnedAnimationController->SetTrackEnable(1, false);
-		m_pSkinnedAnimationController->SetTrackEnable(3, true);
-		m_pSkinnedAnimationController->SetTrackPosition(0, 0.0f);
+
+		if (m_pSkinnedAnimationController->GetTrackEnable(2)) // idle
+		{
+			m_pSkinnedAnimationController->SetTrackEnable(2, false);
+			m_pSkinnedAnimationController->SetTrackEnable(0, true);//idle_shoot
+			m_pSkinnedAnimationController->SetTrackPosition(0, 0.0f);
+		}
+		else if (m_pSkinnedAnimationController->GetTrackEnable(1))//run
+		{
+			m_pSkinnedAnimationController->SetTrackEnable(1, false);
+			m_pSkinnedAnimationController->SetTrackEnable(3, true);//running shoot
+			m_pSkinnedAnimationController->SetTrackPosition(0, 0.0f);
+		}
 
 		m_InteractionCountTime -= 1;
 	}
 	else
 	{
-		m_pSkinnedAnimationController->SetTrackEnable(0, true);
-		m_pSkinnedAnimationController->SetTrackEnable(1, false);
+		m_pSkinnedAnimationController->SetTrackEnable(0, false);
 		m_pSkinnedAnimationController->SetTrackEnable(3, false);
-
 		m_OnInteraction = false;
 		m_InteractionCountTime = INTERACTION_TIME;
 	}

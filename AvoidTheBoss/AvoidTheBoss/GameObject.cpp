@@ -457,6 +457,11 @@ void CAnimationController::SetTrackEnable(int nAnimationTrack, bool bEnable)
 	if (m_pAnimationTracks) m_pAnimationTracks[nAnimationTrack].SetEnable(bEnable);
 }
 
+bool CAnimationController::GetTrackEnable(int nAnimationTrack)
+{
+	if (m_pAnimationTracks) return m_pAnimationTracks[nAnimationTrack].GetEnable();
+}
+
 void CAnimationController::SetTrackPosition(int nAnimationTrack, float fPosition)
 {
 	if (m_pAnimationTracks) m_pAnimationTracks[nAnimationTrack].SetPosition(fPosition);
@@ -1383,5 +1388,28 @@ CSiren::CSiren(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandL
 }
 
 CSiren::~CSiren()
+{
+}
+
+CDoor::CDoor(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, CLoadedModelInfo* pModel, int nAnimationTracks,int number)
+{
+	CLoadedModelInfo* pDoorModel = pModel;
+
+	const char* path[5] = {
+	"Model/Front_Hanger_Door_Open.bin",
+	"Model/Left_Sutter_Open.bin",
+	"Model/Right_Sutter_Open.bin",
+	"Model/Left_Emergency_Door_Open.bin",
+	"Model/Right_Emergency_Door_Open.bin"
+	};
+
+	if (!pDoorModel)
+		pDoorModel = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, path[number], NULL, Layout::DOOR);
+
+	SetChild(pDoorModel->m_pModelRootObject, true);
+	m_pSkinnedAnimationController = new CAnimationController(pd3dDevice, pd3dCommandList, nAnimationTracks, pDoorModel);
+}
+
+CDoor::~CDoor()
 {
 }

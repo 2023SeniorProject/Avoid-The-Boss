@@ -128,14 +128,7 @@ bool OcTree::CheckCollision(DirectX::BoundingSphere& playerBox, XMFLOAT3& player
 				if (i.Intersects(playerBox))
 				{
 
-					std::cout << "Collision\n";
-					// To Do Collision Response
-
-					// 1. 자기의 로컬 좌표계 기준으로 min max 값을 구한다.
-					// 플레이어의 자기 로컬 좌표계에 투영했을 때 가장 큰 좌표값과 가장 작은 좌표값을 구한다.
-					// look = z
-					// up = y
-					// right = x
+					// To Do Collision Respons
 					XMFLOAT3 centerVec{ playerBox.Center.x - i.Center.x, 0.f , playerBox.Center.z - i.Center.z }; // 상자 중심으로 플레이어 상대적인 위치 벡터.
 
 					//// 지형의 사각형 영역 중 구의 중심과 가장 가까운 정점의 x , z 좌표를 구한다.
@@ -143,24 +136,31 @@ bool OcTree::CheckCollision(DirectX::BoundingSphere& playerBox, XMFLOAT3& player
 					float closeZ = clamp(centerVec.z, -1 * i.Extents.z, i.Extents.z);
 
 					//// 플레이어 좌표기준으로 얼만큼 거리인지 구한다.
-					XMFLOAT3 closeDist{ centerVec.x - closeX , 0.f , centerVec.z - closeZ }; // 방향 계산
-				
+					XMFLOAT3 closeDist{ 0,0,0 };
+					if (centerVec.x >= 0) closeDist.x = centerVec.x - closeX; // 좌측에 있을 경우
+					else  closeDist.x = closeX - centerVec.x; // 우측에 있을 경우
+
+
+					if (centerVec.z >= 0) closeDist.z = centerVec.z - closeZ;
+					else  closeDist.z = closeZ - centerVec.z;
+					
 					
 
-					if (::fabs(playerBox.Radius - closeDist.x) < ::fabs(playerBox.Radius - closeDist.z)) // offset 수치가 작은 쪽으로 계산.
+					if (::fabs(playerBox.Radius - fabs(closeDist.x)) < ::fabs(playerBox.Radius - fabs(closeDist.z))) // offset 수치가 작은 쪽으로 계산.
 					{
-						playerBox.Center.x += ::fabs((playerBox.Radius - closeDist.x)) * 1.2f;
+						if(centerVec.x < 0) playerBox.Center.x -= ::fabs((playerBox.Radius - closeDist.x)) * 1.2f;
+						else playerBox.Center.x += ::fabs((playerBox.Radius - closeDist.x)) * 1.2f;
 					}
 					else
 					{
-						playerBox.Center.z += ::fabs((playerBox.Radius - closeDist.z)) * 1.2f;
+						if(centerVec.z < 0) playerBox.Center.z -= ::fabs((playerBox.Radius - closeDist.z)) * 1.2f;
+						else  playerBox.Center.z += ::fabs((playerBox.Radius - closeDist.z)) * 1.2f;
 					}
 
 					playerPos = playerBox.Center;
 					rVal2 |= true;
 				}
 			}
-
 			return rVal2;
 		}
 		else return false;

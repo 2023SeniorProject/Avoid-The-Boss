@@ -6,7 +6,7 @@
 // 클라 -> 서버 패킷
 
 enum C_PACKET_TYPE : uint8 { ACQ_LOGIN = 101, ACQ_LOGOUT = 102, CCHAT = 103, CKEY = 104 ,CROT = 105, CMOVE = 106 };
-enum S_PACKET_TYPE : uint8 { LOGIN_OK = 201,  LOGIN_FAIL = 202 , SCHAT = 203, SKEY = 204, SROT = 205, SPOS = 206, GAME_START = 207};
+enum S_PACKET_TYPE : uint8 { LOGIN_OK = 201,  LOGIN_FAIL = 202 , SCHAT = 203, SKEY = 204, SROT = 205, SPOS = 206, GAME_START = 207, GAMEEVENT = 208};
 
 enum C_ROOM_PACKET_TYPE : uint8 { ACQ_MK_RM = 115, ACQ_ENTER_RM = 116, EXIT_CRM = 117 }; // 방 생성, 방 삭제, 입장 , 종료 
 enum S_ROOM_PACKET_TYPE : uint8 { MK_RM_OK = 119, MK_RM_FAIL = 120, HIDE_RM = 121, REP_ENTER_RM = 122, REP_EXIT_RM = 123 }; // 방 생성, 방 삭제, 입장 , 종료 
@@ -81,7 +81,7 @@ struct C2S_ATTACK
 {
 	uint8 size;
 	uint8 type;
-	int16 cid;
+	int16 cid; // 타겟
 	int8 wf; // 발생 시점 월드 프레임
 };
 
@@ -169,4 +169,11 @@ struct S2C_HIDE_ROOM
 	int32 rmNum;
 };
 
+// 클라 / 서버 공용
+struct SC_EVENTPACKET
+{
+	uint8 size;
+	uint8 type;
+	uint8 eventId; // 0: 발전기 시작 / 1: 발전기 완료 // 2: 사장님 공격 처리 // 3: 사장님 공격 쿨타임 
+};
 #pragma pack (pop)

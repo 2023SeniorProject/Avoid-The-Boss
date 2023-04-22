@@ -2,7 +2,7 @@
 #include "IocpCore.h"
 #include "Session.h"
 
-enum EVENT_TYPE : int8 { MOVE_EVENT, ATTACK_EVENT, ROTATE_EVENT};
+enum class INTERACTION_TYPE : uint8 {  ATTACK_EVENT, COOLTIME_EVENT, SWITCH_START_EVENT,SWITCH_END_EVENT, SWITCH_ACTIVATE_EVENT};
 
 // queue
 class queueEvent
@@ -46,27 +46,37 @@ public:
 	
 };
 
-class rotateEvent : public queueEvent
+
+
+class InteractionEvent : public queueEvent
 {
 public:
-	rotateEvent() { };
-	virtual ~rotateEvent() {};
-	float angleY = 0.f;
+	InteractionEvent() {};
+	virtual ~InteractionEvent() {};
+	uint8 eventId;
 public:
-	virtual void Task()
-	{
-		/*int16 roomNum = ServerIocpCore._clients[sid]->_myRm;
-		ServerIocpCore._rmgr->GetRoom(roomNum).GetMyPlayerFromRoom(sid).Rotate(0,angleY,0);*/
+	virtual void Task() 
+	{ 
+		switch ((INTERACTION_TYPE)eventId)
+		{
+		case INTERACTION_TYPE::ATTACK_EVENT:
+			break;
+		case INTERACTION_TYPE::SWITCH_START_EVENT:
+			break;
+		case INTERACTION_TYPE::SWITCH_END_EVENT:
+			break;
+		case INTERACTION_TYPE::SWITCH_ACTIVATE_EVENT:
+			break;
+		default:
+			break;
+		}
+		int16 roomNum = ServerIocpCore._clients[sid]->_myRm;
+		SC_EVENTPACKET packet;
+		packet.size = sizeof(SC_EVENTPACKET);
+		packet.type = S_PACKET_TYPE::GAMEEVENT;
+		packet.eventId = eventId; // 0: 발전기 시작 // 발전기 종료 // 1: 발전기 완료 // 2: 사장님 공격 처리 // 3: 사장님 공격 쿨타임 
+		ServerIocpCore._rmgr->GetRoom(sid).BroadCasting(&packet);
 	};
-
+	
 };
 
-class attackEvent : public queueEvent
-{
-public:
-	attackEvent() {};
-	virtual ~attackEvent() {};
-	int8 type = ATTACK_EVENT;
-public:
-	virtual void Task() { };
-};

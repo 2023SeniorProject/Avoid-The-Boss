@@ -37,6 +37,15 @@
     <ClCompile Include="SceneInterface.cpp">
       <Filter>SceneInterface</Filter>
     </ClCompile>
+    <ClCompile Include="CBullet.cpp">
+      <Filter>GameObject</Filter>
+    </ClCompile>
+    <ClCompile Include="CBoss.cpp">
+      <Filter>Player\BOSS</Filter>
+    </ClCompile>
+    <ClCompile Include="CEmployee.cpp">
+      <Filter>Player\EMPLOYEE</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameObject.h">
@@ -81,6 +90,15 @@
     </ClInclude>
     <ClInclude Include="Scene.h">
       <Filter>GameScene</Filter>
+    </ClInclude>
+    <ClInclude Include="CBullet.h">
+      <Filter>GameObject</Filter>
+    </ClInclude>
+    <ClInclude Include="CBoss.h">
+      <Filter>Player\BOSS</Filter>
+    </ClInclude>
+    <ClInclude Include="CEmployee.h">
+      <Filter>Player\EMPLOYEE</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -312,6 +330,12 @@
     </Filter>
     <Filter Include="Textures">
       <UniqueIdentifier>{f34dc00f-c3c5-46e0-9b02-019005ed489b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Player\BOSS">
+      <UniqueIdentifier>{d57d9bdd-9df7-4d6d-9795-3ef2c8ed98b5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Player\EMPLOYEE">
+      <UniqueIdentifier>{c925e172-b1e8-4fa0-8725-2a71f2dee802}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

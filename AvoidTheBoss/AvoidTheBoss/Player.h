@@ -1,6 +1,5 @@
 #pragma once
 #include "GameObject.h"
-#include "PlayerInfo.h"
 
 enum class PLAYER_TYPE
 {
@@ -128,35 +127,6 @@ public:
 	virtual void OnInteractive() {}
 };
 
-class CBullet : public CGameObject
-{
-private:
-	bool m_OnShoot = false;
-public:
-	CBullet(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature);
-	virtual ~CBullet();
-
-	virtual void Update(float fTimeElapsed);
-	void SetOnShoot(bool value) { m_OnShoot = value; }
-	bool GetOnShoot() { return m_OnShoot; }
-};
-
-class CWorker : public CPlayer
-{
-public:
-	int nBullet = 50;
-	CBullet* m_pBullet = NULL;
-
-	CWorker(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature);
-	virtual ~CWorker();
-
-	virtual CCamera* ChangeCamera(DWORD nNewCameraMode, float fTimeElapsed);
-	virtual void OnPlayerUpdateCallback();
-	virtual void OnCameraUpdateCallback();
-	virtual void Move(DWORD dwDirection, float fDistance);
-	virtual void Update(float fTimeElapsed, PLAYER_TYPE ptype);
-	virtual void OnInteractive();
-};
 
 struct SwitchInformation
 {
@@ -164,30 +134,7 @@ struct SwitchInformation
 	float radius; //raderArea
 };
 
-class CEmployee : public CPlayer
-{
-private:
-	bool m_bIsSwitchArea = false;
-public:
-	CEmployee(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, CHARACTER_TYPE nType);
-	virtual ~CEmployee();
 
-	virtual CCamera* ChangeCamera(DWORD nNewCameraMode, float fTimeElapsed);
-	virtual void OnPlayerUpdateCallback();
-	virtual void OnCameraUpdateCallback();
-
-	virtual void Move(DWORD dwDirection, float fDistance);
-
-	virtual void Update(float fTimeElapsed, PLAYER_TYPE ptype);
-
-	virtual void OnInteractive();
-
-	void SetSwitchArea(bool value) { m_bIsSwitchArea = value; }
-	bool GetSwitchArea() { return m_bIsSwitchArea; }
-
-	bool CheckSwitchArea();
-	SwitchInformation m_pSwitch;
-};
 
 
 class CSoundCallbackHandler : public CAnimationCallbackHandler

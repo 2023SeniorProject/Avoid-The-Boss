@@ -122,7 +122,7 @@ void CSession::ProcessPacket(char* packet)
 		CPlayer* player = mainGame.m_pScene->GetScenePlayer(movePacket->sid);
 		if (player != nullptr && _sid != movePacket->sid)
 		{
-			if (movePacket->key == 0) std::cout << "keyup\n";
+			
 			player->m_lock.lock();
 			player->Move(movePacket->key, PLAYER_VELOCITY);
 			player->m_lock.unlock();
@@ -147,7 +147,6 @@ void CSession::ProcessPacket(char* packet)
 		S2C_POS* posPacket = reinterpret_cast<S2C_POS*>(packet);
 		CPlayer* player = mainGame.m_pScene->GetScenePlayer(posPacket->sid);
 		mainGame.m_pScene->_curFrameIdx.store(posPacket->fidx);
-		std::cout << mainGame.m_pScene->_curFrameIdx << "\n";
 ;		if (player == nullptr) break;
 		player->m_lock.lock();
 		player->MakePosition(XMFLOAT3(posPacket->x , player->GetPosition().y, posPacket->z));

@@ -13,9 +13,7 @@ extern std::vector<DirectX::BoundingBox> bv;
 #define DIR_BACKWARD				0x02
 #define DIR_LEFT					0x04
 #define DIR_RIGHT					0x08
-#define DIR_UP						0x10
-#define DIR_DOWN					0x20
-#define DIR_BUTTON_CENTER					0X30
+#define DIR_BUTTON_F				0X0300
 
 class CShader;
 class CStandardShader;
@@ -434,6 +432,7 @@ public:
 };
 
 #define BUTTON_ANIM_FRAME 15*10
+
 class CSwitch : public CGameObject
 {
 private:

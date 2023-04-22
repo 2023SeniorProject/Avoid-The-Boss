@@ -144,8 +144,6 @@ bool OcTree::CheckCollision(DirectX::BoundingSphere& playerBox, XMFLOAT3& player
 					if (centerVec.z >= 0) closeDist.z = centerVec.z - closeZ;
 					else  closeDist.z = closeZ - centerVec.z;
 					
-					
-
 					if (::fabs(playerBox.Radius - fabs(closeDist.x)) < ::fabs(playerBox.Radius - fabs(closeDist.z))) // offset 수치가 작은 쪽으로 계산.
 					{
 						if(centerVec.x < 0) playerBox.Center.x -= ::fabs((playerBox.Radius - closeDist.x)) * 1.2f;

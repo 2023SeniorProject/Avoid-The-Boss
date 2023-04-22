@@ -530,13 +530,13 @@ void CBulletObjectsShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12Graphics
 	m_nObjects = 50;
 	m_ppObjects = new CGameObject * [m_nObjects];
 
+	CGameObject* pBullet = CGameObject::LoadGeometryFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "Model/Sphere.bin", NULL, Layout::Bullet);
 	for (int i = 0; i < m_nObjects; i++)
 	{
-		CGameObject* pBullet = CGameObject::LoadGeometryFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "Model/Sphere.bin", NULL, Layout::Bullet);
 		m_ppObjects[i] = new CGameObject();
 		m_ppObjects[i]->SetChild(pBullet);
 		pBullet->AddRef();
-		m_ppObjects[i]->SetPosition(XMFLOAT3(0.0f, 1.0f, 0.0f));
+		m_ppObjects[i]->SetPosition(XMFLOAT3(0.0f+i, 1.0f, 0.0f));
 	}
 
 	CreateShaderVariables(pd3dDevice, pd3dCommandList);

@@ -255,6 +255,7 @@ public:
 	void SetAnimationSet(int nAnimationSet) { m_nAnimationSet = nAnimationSet; }
 
 	void SetEnable(bool bEnable) { m_bEnable = bEnable; }
+	BOOL GetEnable() { return m_bEnable; }
 	void SetSpeed(float fSpeed) { m_fSpeed = fSpeed; }
 	void SetWeight(float fWeight) { m_fWeight = fWeight; }
 	void SetPosition(float fPosition) { m_fPosition = fPosition; }
@@ -303,6 +304,8 @@ public:
 	void SetTrackAnimationSet(int nAnimationTrack, int nAnimationSet);
 
 	void SetTrackEnable(int nAnimationTrack, bool bEnable);
+	bool GetTrackEnable(int nAnimationTrack);
+
 	void SetTrackPosition(int nAnimationTrack, float fPosition);
 	void SetTrackSpeed(int nAnimationTrack, float fSpeed);
 	void SetTrackWeight(int nAnimationTrack, float fWeight);
@@ -463,5 +466,12 @@ class CSiren : public CGameObject
 public:
 	CSiren(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, CLoadedModelInfo* pModel, int nAnimationTracks);
 	virtual ~CSiren();
+};
+
+class CDoor : public CGameObject
+{
+public:
+	CDoor(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, CLoadedModelInfo* pModel, int nAnimationTracks,int number);
+	virtual ~CDoor();
 };
 

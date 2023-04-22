@@ -21,7 +21,7 @@ static const char *g_pstrCharactorRefernece[5] =
 	"Model/Character4_Idle.bin"
 };
 
-#define INTERACTION_TIME 25*4
+#define INTERACTION_TIME 40
 
 class CPlayer : public CGameObject
 {
@@ -119,22 +119,43 @@ public:
 	virtual void OnPrepareRender();
 	//플레이어의 카메라가 3인칭 카메라일 때 플레이어(메쉬)를 렌더링한다. 
 	virtual void Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera =NULL);
+public:
+	bool m_OnInteraction = false;
+	int m_InteractionCountTime = INTERACTION_TIME;
+
+	void SetOnInteraction(bool value) { m_OnInteraction = value; }
+	bool GetOnInteraction() { return m_OnInteraction; }
+	virtual void OnInteractive() {}
 };
 
+class CBullet : public CGameObject
+{
+private:
+	bool m_OnShoot = false;
+public:
+	CBullet(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature);
+	virtual ~CBullet();
+
+	virtual void Update(float fTimeElapsed);
+	void SetOnShoot(bool value) { m_OnShoot = value; }
+	bool GetOnShoot() { return m_OnShoot; }
+};
 
 class CWorker : public CPlayer
 {
 public:
+	int nBullet = 50;
+	CBullet* m_pBullet = NULL;
 
 	CWorker(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature);
 	virtual ~CWorker();
-public:
+
 	virtual CCamera* ChangeCamera(DWORD nNewCameraMode, float fTimeElapsed);
 	virtual void OnPlayerUpdateCallback();
 	virtual void OnCameraUpdateCallback();
 	virtual void Move(DWORD dwDirection, float fDistance);
 	virtual void Update(float fTimeElapsed, PLAYER_TYPE ptype);
-
+	virtual void OnInteractive();
 };
 
 struct SwitchInformation
@@ -146,9 +167,6 @@ struct SwitchInformation
 class CEmployee : public CPlayer
 {
 private:
-	bool m_OnInteraction = false;
-	int m_InteractionCountTime = INTERACTION_TIME;
-
 	bool m_bIsSwitchArea = false;
 public:
 	CEmployee(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, CHARACTER_TYPE nType);
@@ -162,9 +180,7 @@ public:
 
 	virtual void Update(float fTimeElapsed, PLAYER_TYPE ptype);
 
-	void SetOnInteraction(bool value){m_OnInteraction = value;}
-	bool GetOnInteraction() { return m_OnInteraction; }
-	void OnInteractive();
+	virtual void OnInteractive();
 
 	void SetSwitchArea(bool value) { m_bIsSwitchArea = value; }
 	bool GetSwitchArea() { return m_bIsSwitchArea; }

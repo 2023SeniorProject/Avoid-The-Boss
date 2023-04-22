@@ -222,6 +222,7 @@ CWorker::CWorker(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dComman
 	m_pCamera = ChangeCamera(THIRD_PERSON_CAMERA, 0.0f);
 
 	m_nCharacterType = CHARACTER_TYPE::BOSS;
+	m_InteractionCountTime = INTERACTION_TIME;
 
 	CLoadedModelInfo* pBossModel = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, g_pstrCharactorRefernece[(int)m_nCharacterType], NULL, Layout::PLAYER);
 	SetChild(pBossModel->m_pModelRootObject, true);
@@ -250,14 +251,17 @@ CWorker::CWorker(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dComman
 		//CAnimationCallbackHandler *pAnimationCallbackHandler = new CSoundCallbackHandler();
 		//m_pSkinnedAnimationController->SetAnimationCallbackHandler(1, pAnimationCallbackHandler);
 
-	CreateShaderVariables(pd3dDevice, pd3dCommandList);
-
 	//SetPlayerUpdatedContext();
 	//SetCameraUpdatedContext();
 
 	SetScale(XMFLOAT3(1.f, 1.f, 1.f));
 	SetPosition(XMFLOAT3(0.0f, 0.25f, -50.0f));
 
+	m_pBullet = new CBullet(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature);
+
+	m_pBullet->SetPosition(XMFLOAT3(0.0f, 1.f, 0.0f));
+
+	CreateShaderVariables(pd3dDevice, pd3dCommandList);
 	if (pBossModel) delete pBossModel;
 }
 
@@ -308,7 +312,7 @@ void CWorker::OnCameraUpdateCallback()
 
 void CWorker::Move(DWORD dwDirection, float fDistance)
 {
-	if (dwDirection)
+	if (dwDirection && !m_OnInteraction)
 	{
 		m_pSkinnedAnimationController->SetTrackEnable(0, false);
 		m_pSkinnedAnimationController->SetTrackEnable(1, true);
@@ -318,8 +322,18 @@ void CWorker::Move(DWORD dwDirection, float fDistance)
 
 void CWorker::Update(float fTimeElapsed, PLAYER_TYPE ptype)
 {
-	CPlayer::Update(fTimeElapsed, ptype);
-	if (m_pSkinnedAnimationController)
+	CPlayer::Update(fTimeElapsed, PLAYER_TYPE::OWNER);
+
+	if (m_OnInteraction)
+	{
+		OnInteractive();
+		m_pBullet->SetOnShoot(true);
+	}
+
+	if (m_pBullet)
+		m_pBullet->Update(fTimeElapsed);
+
+	if (m_pSkinnedAnimationController&&!m_OnInteraction)
 	{
 		float fLength = sqrtf(m_xmf3Velocity.x * m_xmf3Velocity.x + m_xmf3Velocity.z * m_xmf3Velocity.z);
 		if (::IsZero(fLength))
@@ -331,6 +345,32 @@ void CWorker::Update(float fTimeElapsed, PLAYER_TYPE ptype)
 	}
 	if(ptype == PLAYER_TYPE::OWNER) m_xmf3Velocity = XMFLOAT3(0.0f, 0.0f, 0.0f);
 
+void CWorker::OnInteractive()
+{
+	if (m_OnInteraction == true && m_InteractionCountTime > 0)
+	{
+		if (m_pSkinnedAnimationController->GetTrackEnable(2)) // idle
+		{
+			m_pSkinnedAnimationController->SetTrackEnable(2, false);
+			m_pSkinnedAnimationController->SetTrackEnable(0, true);//idle_shoot
+			m_pSkinnedAnimationController->SetTrackPosition(0, 0.0f);
+		}
+		else if (m_pSkinnedAnimationController->GetTrackEnable(1))//run
+		{
+			m_pSkinnedAnimationController->SetTrackEnable(1, false);
+			m_pSkinnedAnimationController->SetTrackEnable(3, true);//running shoot
+			m_pSkinnedAnimationController->SetTrackPosition(0, 0.0f);
+		}
+
+		m_InteractionCountTime -= 1;
+	}
+	else
+	{
+		m_pSkinnedAnimationController->SetTrackEnable(0, false);
+		m_pSkinnedAnimationController->SetTrackEnable(3, false);
+		m_OnInteraction = false;
+		m_InteractionCountTime = INTERACTION_TIME;
+	}
 }
 
 CEmployee::CEmployee(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, CHARACTER_TYPE nType)
@@ -338,6 +378,8 @@ CEmployee::CEmployee(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCo
 	m_pCamera = ChangeCamera(THIRD_PERSON_CAMERA, 0.0f);
 
 	m_nCharacterType = nType;
+
+	m_InteractionCountTime = INTERACTION_TIME;
 
 	CLoadedModelInfo* pEmployeeModel = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, g_pstrCharactorRefernece[(int)m_nCharacterType], NULL, Layout::PLAYER);
 	SetChild(pEmployeeModel->m_pModelRootObject, true);
@@ -509,4 +551,21 @@ void CSoundCallbackHandler::HandleCallback(void* pCallbackData, float fTrackPosi
 #else
 	PlaySound(pWavName, NULL, SND_FILENAME | SND_ASYNC);
 #endif
+}
+
+
+CBullet::CBullet(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature)
+{
+	CLoadedModelInfo* pBulletModel = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "Model/Sphere.bin", NULL, Layout::Bullet);
+	SetChild(pBulletModel->m_pModelRootObject, true);
+}
+
+CBullet::~CBullet()
+{
+}
+
+void CBullet::Update(float fTimeElapsed)
+{
+	if (m_OnShoot)
+		CGameObject::MoveForward(1.0f);
 }

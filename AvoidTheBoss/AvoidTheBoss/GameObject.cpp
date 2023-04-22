@@ -460,6 +460,7 @@ void CAnimationController::SetTrackEnable(int nAnimationTrack, bool bEnable)
 bool CAnimationController::GetTrackEnable(int nAnimationTrack)
 {
 	if (m_pAnimationTracks) return m_pAnimationTracks[nAnimationTrack].GetEnable();
+	return false;
 }
 
 void CAnimationController::SetTrackPosition(int nAnimationTrack, float fPosition)

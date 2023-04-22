@@ -333,7 +333,7 @@ void CWorker::Update(float fTimeElapsed, PLAYER_TYPE ptype)
 	if (m_pBullet)
 		m_pBullet->Update(fTimeElapsed);
 
-	if (m_pSkinnedAnimationController&&!m_OnInteraction)
+	if (m_pSkinnedAnimationController && !m_OnInteraction)
 	{
 		float fLength = sqrtf(m_xmf3Velocity.x * m_xmf3Velocity.x + m_xmf3Velocity.z * m_xmf3Velocity.z);
 		if (::IsZero(fLength))
@@ -343,7 +343,8 @@ void CWorker::Update(float fTimeElapsed, PLAYER_TYPE ptype)
 			m_pSkinnedAnimationController->SetTrackPosition(0, 0.0f);
 		}
 	}
-	if(ptype == PLAYER_TYPE::OWNER) m_xmf3Velocity = XMFLOAT3(0.0f, 0.0f, 0.0f);
+	if (ptype == PLAYER_TYPE::OWNER) m_xmf3Velocity = XMFLOAT3(0.0f, 0.0f, 0.0f);
+}
 
 void CWorker::OnInteractive()
 {

@@ -243,8 +243,8 @@ void CGameScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandLis
 		if (i == (int)CHARACTER_TYPE::BOSS)
 		{
 			_players[i] = new CWorker(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature);
-			//if (m_ppShaders[2])
-			//	((CWorker*)_players[i])->m_pBullet = (CBullet*)pBulletObjectShader->m_ppObjects[0];
+			if (m_ppShaders[2])
+				((CWorker*)_players[i])->m_pBullet = (CBullet*)pBulletObjectShader->m_ppObjects[0];
 		}
 		else
 		{

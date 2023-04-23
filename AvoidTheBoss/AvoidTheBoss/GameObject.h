@@ -475,3 +475,28 @@ public:
 	virtual ~CDoor();
 };
 
+class CBullet : public CGameObject
+{
+private:
+	float m_fSpeed = 0.1f;
+	float m_fDistance = 0.20f;
+
+	//XMFLOAT3 m_xmf3Position = XMFLOAT3(0.0f, 0.0f, 0.0f);
+	XMFLOAT3 m_xmf3Look = XMFLOAT3(0.0f, 0.0f, 1.0f);
+	XMFLOAT3					m_xmf3Right = XMFLOAT3(1.0f, 0.0f, 0.0f);
+	XMFLOAT3					m_xmf3Up = XMFLOAT3(0.0f, 1.0f, 0.0f);
+	//XMFLOAT3					m_xmf3Look = XMFLOAT3(0.0f, 0.0f, 1.0f);
+	XMFLOAT3 m_xmf3Velocity = XMFLOAT3(0.0f, 0.0f, 0.0f);
+
+	bool m_OnShoot = false;
+public:
+	CBullet();
+	CBullet(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature);
+	virtual ~CBullet();
+
+	virtual void Update(float fTimeElapsed);
+	virtual void Animate(float fTimeElapsed);
+
+	void SetOnShoot(bool value) { m_OnShoot = value; }
+	bool GetOnShoot() { return m_OnShoot; }
+};

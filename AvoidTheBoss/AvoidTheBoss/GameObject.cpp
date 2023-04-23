@@ -1413,3 +1413,37 @@ CDoor::CDoor(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandLis
 CDoor::~CDoor()
 {
 }
+
+
+CBullet::CBullet()
+{
+}
+
+CBullet::CBullet(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature)
+{
+	CLoadedModelInfo* pBulletModel = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "Model/Sphere.bin", NULL, Layout::Bullet);
+	SetChild(pBulletModel->m_pModelRootObject, true);
+}
+
+CBullet::~CBullet()
+{
+}
+
+void CBullet::Update(float fTimeElapsed)
+{
+	if (m_OnShoot)
+	{
+		XMFLOAT3 xmf3Shift = XMFLOAT3(0, 0, 0);
+		xmf3Shift = Vector3::Add(xmf3Shift, m_xmf3Right,
+			m_fSpeed);
+		m_xmf3Velocity = Vector3::Add(m_xmf3Velocity, xmf3Shift);
+
+		XMFLOAT3 xmf3Velocity = Vector3::ScalarProduct(m_xmf3Velocity, fTimeElapsed, false);
+		SetPosition(Vector3::Add(GetPosition(), xmf3Velocity));
+	}
+}
+
+void CBullet::Animate(float fTimeElapsed)
+{
+
+}

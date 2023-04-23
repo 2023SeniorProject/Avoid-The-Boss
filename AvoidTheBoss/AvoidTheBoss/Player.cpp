@@ -308,10 +308,6 @@ CWorker::CWorker(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dComman
 	SetScale(XMFLOAT3(1.f, 1.f, 1.f));
 	SetPosition(XMFLOAT3(0.0f, 0.25f, 0.0f));
 
-	m_pBullet = new CBullet(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature);
-
-	m_pBullet->SetPosition(XMFLOAT3(0.0f, 1.f, 0.0f));
-
 	CreateShaderVariables(pd3dDevice, pd3dCommandList);
 	if (pBossModel) delete pBossModel;
 }
@@ -386,7 +382,11 @@ void CWorker::Update(float fTimeElapsed, PLAYER_TYPE ptype)
 	}
 
 	if (m_pBullet)
+	{
+		if(!m_pBullet->GetOnShoot())
+			m_pBullet->SetPosition(GetPosition().x, 1.25f, GetPosition().z);
 		m_pBullet->Update(fTimeElapsed);
+	}
 
 	if (m_pSkinnedAnimationController&&!m_OnInteraction)
 	{
@@ -610,18 +610,3 @@ void CSoundCallbackHandler::HandleCallback(void* pCallbackData, float fTrackPosi
 }
 
 
-CBullet::CBullet(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature)
-{
-	CLoadedModelInfo* pBulletModel = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "Model/Sphere.bin", NULL, Layout::Bullet);
-	SetChild(pBulletModel->m_pModelRootObject, true);
-}
-
-CBullet::~CBullet()
-{
-}
-
-void CBullet::Update(float fTimeElapsed)
-{
-	if (m_OnShoot)
-		CGameObject::MoveForward(1.0f);
-}

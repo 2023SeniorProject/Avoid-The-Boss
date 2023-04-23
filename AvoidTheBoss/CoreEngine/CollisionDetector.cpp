@@ -113,6 +113,7 @@ float clamp(float pos, float min, float max)
 	if (val != min && val != max) return ((val - min) > (max - val) ? max : min);
 	else return val;
 }
+
 bool OcTree::CheckCollision(DirectX::BoundingSphere& playerBox, XMFLOAT3& playerPos)
 {
 	bool rVal = false;
@@ -179,4 +180,10 @@ bool OcTree::CheckCollision(DirectX::BoundingSphere& playerBox, XMFLOAT3& player
 		}
 		return rVal;
 	}
+}
+
+
+bool OcTree::CheckRayCollision(Ray& ray)
+{
+	return false;
 }

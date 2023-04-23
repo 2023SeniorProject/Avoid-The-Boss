@@ -46,6 +46,9 @@
     <Filter Include="Shared\JobQueue">
       <UniqueIdentifier>{7ca8b712-3e66-4ab4-ad8a-3f8d4bf63998}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ForServer\Switch">
+      <UniqueIdentifier>{1ea1cb53-3a3f-4546-99b6-d36c557bd5a7}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CoreGlobal.h">
@@ -117,6 +120,9 @@
     <ClInclude Include="JobQueue.h">
       <Filter>Shared\JobQueue</Filter>
     </ClInclude>
+    <ClInclude Include="SwitchInfo.h">
+      <Filter>ForServer\Switch</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CoreGlobal.cpp">
@@ -184,6 +190,9 @@
     </ClCompile>
     <ClCompile Include="JobQueue.cpp">
       <Filter>Shared\JobQueue</Filter>
+    </ClCompile>
+    <ClCompile Include="SwitchInfo.cpp">
+      <Filter>ForServer\Switch</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

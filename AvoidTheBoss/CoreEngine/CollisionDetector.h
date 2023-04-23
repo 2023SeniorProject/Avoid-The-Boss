@@ -1,5 +1,11 @@
 #pragma once
 
+struct Ray
+{
+	XMFLOAT3 origin;
+	XMFLOAT3 dir;
+	float distance;
+};
 class LeafNode
 {
 public:
@@ -78,6 +84,7 @@ public:
 	void BuildTree();
 	void BuildChildTree();
 	bool CheckCollision(DirectX::BoundingSphere& playerBox, XMFLOAT3& playerPos);
+	bool CheckRayCollision(Ray& ray);
 };
 
 extern class OcTree* BoxTree;

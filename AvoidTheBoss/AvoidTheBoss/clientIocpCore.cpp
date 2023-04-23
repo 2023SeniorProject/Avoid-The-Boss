@@ -166,7 +166,7 @@ void CSession::ProcessPacket(char* packet)
 			mainGame.m_pScene->_players[i]->SetPlayerSid(gsp->sids[i]);
 		}
 		CPlayer* myPlayer = mainGame.m_pScene->_players[mainGame.m_pScene->_playerIdx];
-		mainGame.m_pScene->ChangeMyPlayerCamera();
+		myPlayer->OnChangeCamera(FIRST_PERSON_CAMERA, 0.f);
 		mainGame.m_pScene->m_cid = _cid;
 		mainGame._curScene.store(SceneInfo::GAMEROOM);
 		mainGame.m_pScene->InitScene();

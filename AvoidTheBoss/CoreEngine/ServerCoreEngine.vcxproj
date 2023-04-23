@@ -175,6 +175,7 @@
     <ClInclude Include="packetEvent.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="protocol.h" />
+    <ClInclude Include="SwitchInfo.h" />
     <ClInclude Include="WorldRewinder.h" />
     <ClInclude Include="RoomManager.h" />
     <ClInclude Include="RWLock.h" />
@@ -205,6 +206,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="protocol.cpp" />
+    <ClCompile Include="SwitchInfo.cpp" />
     <ClCompile Include="WorldRewinder.cpp" />
     <ClCompile Include="RoomManager.cpp" />
     <ClCompile Include="RWLock.cpp" />

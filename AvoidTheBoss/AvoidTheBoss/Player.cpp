@@ -179,7 +179,7 @@ CCamera* CPlayer::OnChangeCamera(DWORD nNewCameraMode, DWORD nCurrentCameraMode)
 		//현재 카메라를 사용하는 플레이어 객체를 설정한다. 
 		pNewCamera->SetPlayer(this);
 	}
-	if (m_pCamera) delete m_pCamera;
+	//if (m_pCamera) delete m_pCamera;
 	m_pCamera = pNewCamera;
 	
 	return(pNewCamera);
@@ -200,10 +200,9 @@ void CPlayer::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamer
 	DWORD nCameraMode = (pCamera) ? pCamera->GetMode() : 0x03;
 
 	//카메라 모드가 3인칭이면 플레이어 객체를 렌더링한다. 
-	if (nCameraMode == THIRD_PERSON_CAMERA)
-	{
-		CGameObject::Render(pd3dCommandList, pCamera);
-	}
+	
+	CGameObject::Render(pd3dCommandList, pCamera);
+	
 }
 
 

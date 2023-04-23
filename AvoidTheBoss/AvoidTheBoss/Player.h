@@ -119,12 +119,20 @@ public:
 	virtual void OnPrepareRender();
 	//플레이어의 카메라가 3인칭 카메라일 때 플레이어(메쉬)를 렌더링한다. 
 	virtual void Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera =NULL);
-public:
+protected:
+	int nInteractionNum = -1;
 	bool m_OnInteraction = false;
 	int m_InteractionCountTime;
-
+public:
 	void SetOnInteraction(bool value) { m_OnInteraction = value; }
 	bool GetOnInteraction() { return m_OnInteraction; }
+
+	void SetnInteractionNum(int value) { nInteractionNum = value; }
+	int GetnInteractionNum() { return nInteractionNum; }
+	
+	void SetnInteractionCountTime(int value) { m_InteractionCountTime = value; }
+	int GetnInteractionCountTime() { return m_InteractionCountTime; }
+
 	virtual void OnInteractive() {}
 };
 
@@ -175,7 +183,7 @@ public:
 	bool GetSwitchArea() { return m_bIsSwitchArea; }
 
 	bool CheckSwitchArea();
-	SwitchInformation m_pSwitch;
+	SwitchInformation m_pSwitch[3];
 };
 
 

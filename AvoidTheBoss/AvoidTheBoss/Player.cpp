@@ -590,11 +590,11 @@ void CEmployee::OnInteractive()
 bool CEmployee::CheckSwitchArea()
 {
 	//캐릭터 원 - 스위치 영역 원 충돌체크
-	XMFLOAT3 v1 = m_pSwitch.position;
+	XMFLOAT3 v1 = m_pSwitch[nInteractionNum].position;
 	XMFLOAT3 v2 = m_xmf3Position;
 
 	float fDistance = sqrt(pow(v1.x - v2.x, 2) + pow(v1.y - v2.y, 2) + pow(v1.y -v2.y, 2));
-	float fSumRange = m_pSwitch.radius + m_playerBV.Radius + 1.0f;
+	float fSumRange = m_pSwitch[nInteractionNum].radius + m_playerBV.Radius + 1.0f;
 
 	if (fDistance <= fSumRange)
 		return true;

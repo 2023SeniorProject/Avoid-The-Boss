@@ -18,11 +18,13 @@ D3D12_GPU_DESCRIPTOR_HANDLE	CGameScene::m_d3dSrvGPUDescriptorNextHandle;
 
 CGameScene::CGameScene()
 {
-
+	//m_ppSwitch = new CSwitch * [3];
 }
 
 CGameScene::~CGameScene()
 {
+	//if (m_ppSwitch)
+	//	delete[] m_ppSwitch;
 }
 
 void CGameScene::OnProcessingMouseMessage(HWND hWnd, UINT nMessageID, WPARAM wParam, LPARAM lParam)
@@ -237,21 +239,35 @@ void CGameScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandLis
 	pBulletObjectShader->BuildObjects(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, NULL, NULL);
 	m_ppShaders[2] = pBulletObjectShader;
 
-	m_pSwitch = (CSwitch*)m_ppHierarchicalGameObjects[2];
+	m_ppSwitch = new CSwitch * [nSwitch];
+
+
+	//m_ppSwitch[0] = (CSwitch*)m_ppHierarchicalGameObjects[2];
+	//m_ppSwitch[1] = (CSwitch*)m_ppHierarchicalGameObjects[3];
+	//m_ppSwitch[2] = (CSwitch*)m_ppHierarchicalGameObjects[4];
+
 	for (int i = 0; i < PLAYERNUM; ++i)
 	{
-		if (i == (int)CHARACTER_TYPE::BOSS)
+		if (false/*i == (int)CHARACTER_TYPE::BOSS*/)
 		{
 			_players[i] = new CWorker(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature);
 			if (m_ppShaders[2])
+			{
 				((CWorker*)_players[i])->m_pBullet = (CBullet*)pBulletObjectShader->m_ppObjects[0];
+			}
 		}
 		else
 		{
 			_players[i] = new CEmployee(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, CHARACTER_TYPE::GOGGLE_EMP);
-
-			((CEmployee*)_players[i])->m_pSwitch.position = m_pSwitch->GetPosition();
-			((CEmployee*)_players[i])->m_pSwitch.radius = m_pSwitch->GetRadius();
+			for (int i = 0; i < nSwitch; i++)
+			{
+				if (m_ppHierarchicalGameObjects[i]&&m_ppSwitch[i])
+				{
+					m_ppSwitch[i] = (CSwitch*)m_ppHierarchicalGameObjects[i+2];
+					((CEmployee*)_players[i])->m_pSwitch[i].position = m_ppSwitch[i]->GetPosition();
+					((CEmployee*)_players[i])->m_pSwitch[i].radius = m_ppSwitch[i]->GetRadius();
+				}
+			}
 		}
 	}
 	m_pCamera = _players[0]->GetCamera();
@@ -284,10 +300,17 @@ void CGameScene::ProcessInput(HWND hWnd)
 			{
 				if (_players[_playerIdx]->m_nCharacterType != CHARACTER_TYPE::BOSS)
 				{
-					if (!m_pSwitch->StateOn)
+					for (int i = 0; i < nSwitch; i++)
 					{
-						if (((CEmployee*)_players[_playerIdx])->GetSwitchArea())
-							_players[_playerIdx]->SetOnInteraction(true);
+						if (!m_ppSwitch[i]->StateOn)
+						{
+							if (((CEmployee*)_players[_playerIdx])->GetSwitchArea())
+							{
+								_players[_playerIdx]->SetOnInteraction(true);
+								_players[_playerIdx]->SetnInteractionNum(i);
+								break;
+							}
+						}
 					}
 				}
 			}
@@ -295,10 +318,17 @@ void CGameScene::ProcessInput(HWND hWnd)
 			{
 				if (_players[_playerIdx]->m_nCharacterType != CHARACTER_TYPE::BOSS)
 				{
-					if (!m_pSwitch->StateOn)
+					for (int i = 0; i < nSwitch; i++)
 					{
-						if (((CEmployee*)_players[_playerIdx])->GetSwitchArea())
-							_players[_playerIdx]->SetOnInteraction(true);
+						if (!m_ppSwitch[i]->StateOn)
+						{
+							if (((CEmployee*)_players[_playerIdx])->GetSwitchArea())
+							{
+								_players[_playerIdx]->SetOnInteraction(true);
+								_players[_playerIdx]->SetnInteractionNum(i);
+								break;
+							}
+						}
 					}
 				}
 			}
@@ -307,7 +337,7 @@ void CGameScene::ProcessInput(HWND hWnd)
 			{
 				if (_players[_playerIdx]->m_nCharacterType == CHARACTER_TYPE::BOSS)
 				{
-					if (_players[_playerIdx]->m_InteractionCountTime == BOSS_INTERACTION_TIME)
+					if (_players[_playerIdx]->GetnInteractionCountTime() == BOSS_INTERACTION_TIME)
 					{
 						_players[_playerIdx]->SetOnInteraction(true);
 					}
@@ -318,11 +348,24 @@ void CGameScene::ProcessInput(HWND hWnd)
 	{
 		if (((CEmployee*)_players[_playerIdx])->GetOnInteraction())
 		{
-			dwDirection |= DIR_BUTTON_CENTER;
-			if (m_pSwitch)
+			if (m_nCountButtonClick < 3)
 			{
-				m_pSwitch->SetOnSwitch(true);
-				m_pSwitch->SetAnimationCount(BUTTON_ANIM_FRAME);
+				dwDirection |= DIR_BUTTON_CENTER;
+				int nIndex = ((CEmployee*)_players[_playerIdx])->GetnInteractionCountTime();
+				if (m_ppSwitch[nIndex])
+				{
+					m_ppSwitch[nIndex]->SetOnSwitch(true);
+					m_ppSwitch[nIndex]->SetAnimationCount(BUTTON_ANIM_FRAME);
+					m_nCountButtonClick++;
+				}
+			}
+			else if (m_nCountButtonClick == 3)
+			{
+				for (int i = 0; i < m_nHierarchicalGameObjects; i++)
+				{
+					if (m_ppHierarchicalGameObjects[i]->objLayer == Layout::SIREN && m_ppHierarchicalGameObjects[i]->objLayer == Layout::DOOR)
+						m_ppHierarchicalGameObjects[i]->m_bIsExitReady = true;
+				}
 			}
 		}
 	}

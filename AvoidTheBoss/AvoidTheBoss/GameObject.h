@@ -334,6 +334,9 @@ public:
     virtual ~CGameObject();
 
 public:
+	Layout							objLayer;
+	bool m_bIsExitReady = false;
+
 	char							m_pstrFrameName[64];
 
 	CMesh							*m_pMesh = NULL;
@@ -463,16 +466,26 @@ public:
 
 class CSiren : public CGameObject
 {
+private:
+	bool m_OnSiren = false;
 public:
+
 	CSiren(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, CLoadedModelInfo* pModel, int nAnimationTracks);
 	virtual ~CSiren();
+
+	virtual void Animate(float fTimeElapsed);
 };
 
 class CDoor : public CGameObject
 {
+private:
+	bool m_OpenDoor = false;
 public:
+
 	CDoor(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, CLoadedModelInfo* pModel, int nAnimationTracks,int number);
 	virtual ~CDoor();
+
+	virtual void Animate(float fTimeElapsed);
 };
 
 #define BUIIET_DISTANCE 2.5f

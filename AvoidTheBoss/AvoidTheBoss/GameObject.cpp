@@ -1008,7 +1008,7 @@ CGameObject *CGameObject::LoadFrameHierarchyFromFile(ID3D12Device *pd3dDevice, I
 	int nFrame = 0, nTextures = 0;
 
 	CGameObject *pGameObject = new CGameObject();
-
+	pGameObject->objLayer = objType;
 	for ( ; ; )
 	{
 		::ReadStringFromFile(pInFile, pstrToken);
@@ -1383,12 +1383,21 @@ CSiren::CSiren(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandL
 	if (!pSirenModel) 
 		pSirenModel = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "Model/Siren_Alarm2.bin", NULL,Layout::SIREN);
 
+
 	SetChild(pSirenModel->m_pModelRootObject, true);
 	m_pSkinnedAnimationController = new CAnimationController(pd3dDevice, pd3dCommandList, nAnimationTracks, pSirenModel);
 }
 
 CSiren::~CSiren()
 {
+}
+
+void CSiren::Animate(float fTimeElapsed)
+{
+	if(m_bIsExitReady)
+		m_pSkinnedAnimationController->SetTrackEnable(0, true);
+
+	CGameObject::Animate(fTimeElapsed);
 }
 
 CDoor::CDoor(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, CLoadedModelInfo* pModel, int nAnimationTracks,int number)
@@ -1412,6 +1421,14 @@ CDoor::CDoor(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandLis
 
 CDoor::~CDoor()
 {
+}
+
+void CDoor::Animate(float fTimeElapsed)
+{
+	if(m_bIsExitReady)
+		m_pSkinnedAnimationController->SetTrackEnable(0, true);
+
+	CGameObject::Animate(fTimeElapsed);
 }
 
 

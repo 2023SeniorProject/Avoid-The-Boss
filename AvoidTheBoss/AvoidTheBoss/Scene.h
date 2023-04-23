@@ -114,7 +114,12 @@ public:
 	ID3D12Resource* m_pd3dcbLights = NULL;
 	LIGHTS* m_pcbMappedLights = NULL;
 
-	CSwitch* m_pSwitch = NULL;
+	int nSwitch = 3;
+	CSwitch** m_ppSwitch = NULL;
+
+	int m_nCountButtonClick = 0;
+
+	bool m_bIsExitReady = false;
 protected:
 	ID3D12RootSignature* m_pd3dGraphicsRootSignature = NULL;
 

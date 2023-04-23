@@ -79,7 +79,7 @@ void CPlayer::Update(float fTimeElapsed, PLAYER_TYPE ptype)
 	
 	DWORD nCameraMode = m_pCamera->GetMode();
 	//플레이어의 위치가 변경되었으므로 3인칭 카메라를 갱신한다. 
-	if (nCameraMode == THIRD_PERSON_CAMERA) m_pCamera->Update(m_xmf3Position,fTimeElapsed);
+	m_pCamera->Update(m_xmf3Position,fTimeElapsed);
 	//카메라의 위치가 변경될 때 추가로 수행할 작업을 수행한다. 
 	if (m_pCameraUpdatedContext) OnCameraUpdateCallback();
 	//카메라가 3인칭 카메라이면 카메라가 변경된 플레이어 위치를 바라보도록 한다. 
@@ -160,7 +160,8 @@ void CPlayer::UpdateShaderVariables(ID3D12GraphicsCommandList* pd3dCommandList)
 
 CCamera* CPlayer::OnChangeCamera(DWORD nNewCameraMode, DWORD nCurrentCameraMode)
 {
-	//새로운 카메라의 모드에 따라 카메라를 새로 생성한다. 
+	//새로운 카메라의 모드에 따라 카메라를 새로 생성한다.
+
 	CCamera* pNewCamera = NULL;
 	switch (nNewCameraMode)
 	{
@@ -179,7 +180,8 @@ CCamera* CPlayer::OnChangeCamera(DWORD nNewCameraMode, DWORD nCurrentCameraMode)
 		pNewCamera->SetPlayer(this);
 	}
 	if (m_pCamera) delete m_pCamera;
-
+	m_pCamera = pNewCamera;
+	
 	return(pNewCamera);
 }
 

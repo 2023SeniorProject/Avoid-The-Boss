@@ -131,7 +131,7 @@ void Room::Update()
 	
 	{
 		std::unique_lock<std::shared_mutex> ql(_jobQueueLock); // Queue Lock 호출
-		_jobQueue->DoNormalTasks();
+		_jobQueue->DoTasks();
 	}
 	for (int i = 0; i < PLAYERNUM; ++i) _players[i].Update(_timer.GetTimeElapsed());
 	
@@ -156,7 +156,7 @@ void Room::Update()
 void Room::AddEvent(queueEvent* qe, float after)
 {
 	std::unique_lock<std::shared_mutex> ql(_jobQueueLock); // Queue Lock 호출
-	_jobQueue->PushTask(qe,DEAD_RECORNING_TPS);
+	_jobQueue->PushTask(qe,after);
 }
 
 void Room::AddEvent(queueEvent* qe)

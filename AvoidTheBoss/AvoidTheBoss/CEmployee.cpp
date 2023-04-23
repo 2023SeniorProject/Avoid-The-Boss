@@ -77,7 +77,7 @@ CCamera* CEmployee::ChangeCamera(DWORD nNewCameraMode, float fTimeElapsed)
 	}
 	m_pCamera->SetPosition(Vector3::Add(m_xmf3Position, m_pCamera->GetOffset()));
 
-	Update(fTimeElapsed, PLAYER_TYPE::NONE);
+	Update(fTimeElapsed, PLAYER_TYPE::OWNER);
 
 	return(m_pCamera);
 }

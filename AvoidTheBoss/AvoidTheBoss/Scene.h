@@ -69,6 +69,12 @@ public:
 
 	void ReleaseUploadBuffers();
 
+	void ChangeMyPlayerCamera() 
+	{
+		_players[_playerIdx]->OnChangeCamera(FIRST_PERSON_CAMERA, 0.f);
+		m_pCamera = _players[_playerIdx]->GetCamera();
+		m_pd3dcbLights->Map(0, NULL, (void**)&m_pcbMappedLights);
+	}
 	CPlayer* GetScenePlayer(const int16 sid) 
 	{ 
 		for (int i = 0; i < PLAYERNUM; ++i)

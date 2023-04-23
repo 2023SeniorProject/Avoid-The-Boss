@@ -212,6 +212,16 @@ void CFirstPersonCamera::Rotate(float x, float y, float z)
 	}
 }
 
+void CFirstPersonCamera::RayCasting(BoundingSphere& targetBox)
+{
+	XMFLOAT3 rayOrigin = m_xmf3Position;
+	XMFLOAT3 rayDir = m_xmf3Look;
+	float rayDisatance = 5.0f;
+	std::cout << m_xmf3Look.x << " " << m_xmf3Look.z << "\n";
+	if(targetBox.Intersects(XMLoadFloat3(&rayOrigin), XMLoadFloat3(&rayDir),rayDisatance)) std::cout << "RayCasting\n";
+
+}
+
 CThirdPersonCamera::CThirdPersonCamera(CCamera* pCamera)
 {
 	m_nMode = THIRD_PERSON_CAMERA;

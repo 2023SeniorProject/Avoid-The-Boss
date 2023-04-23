@@ -307,7 +307,7 @@ void CGameScene::ProcessInput(HWND hWnd)
 			{
 				if (_players[_playerIdx]->m_nCharacterType == CHARACTER_TYPE::BOSS)
 				{
-					if (_players[_playerIdx]->m_InteractionCountTime == INTERACTION_TIME)
+					if (_players[_playerIdx]->m_InteractionCountTime == BOSS_INTERACTION_TIME)
 					{
 						_players[_playerIdx]->SetOnInteraction(true);
 					}

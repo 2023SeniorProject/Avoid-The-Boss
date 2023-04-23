@@ -273,7 +273,7 @@ CWorker::CWorker(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dComman
 	m_pCamera = ChangeCamera(THIRD_PERSON_CAMERA, 0.0f);
 
 	m_nCharacterType = CHARACTER_TYPE::BOSS;
-	m_InteractionCountTime = INTERACTION_TIME;
+	m_InteractionCountTime = BOSS_INTERACTION_TIME;
 
 	CLoadedModelInfo* pBossModel = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, g_pstrCharactorRefernece[(int)m_nCharacterType], NULL, Layout::PLAYER);
 	SetChild(pBossModel->m_pModelRootObject, true);
@@ -366,6 +366,7 @@ void CWorker::Move(DWORD dwDirection, float fDistance)
 	{
 		m_pSkinnedAnimationController->SetTrackEnable(0, false);
 		m_pSkinnedAnimationController->SetTrackEnable(1, true);
+		//m_pSkinnedAnimationController->SetTrackPosition(1, 0.0f);
 	}
 
 	CPlayer::Move(dwDirection, fDistance);
@@ -383,9 +384,14 @@ void CWorker::Update(float fTimeElapsed, PLAYER_TYPE ptype)
 
 	if (m_pBullet)
 	{
-		if(!m_pBullet->GetOnShoot())
+		if (!m_pBullet->GetOnShoot())
+		{
 			m_pBullet->SetPosition(GetPosition().x, 1.25f, GetPosition().z);
-		m_pBullet->Update(fTimeElapsed);
+			//m_pBullet->SetLook(m_xmf3Look);
+			//m_pBullet->SetRight(m_xmf3Right);
+			//m_pBullet->SetUp(m_xmf3Up);
+		}
+		//m_pBullet->Update(fTimeElapsed);
 	}
 
 	if (m_pSkinnedAnimationController&&!m_OnInteraction)
@@ -405,18 +411,23 @@ void CWorker::OnInteractive()
 {
 	if (m_OnInteraction == true && m_InteractionCountTime > 0)
 	{
-		if (m_pSkinnedAnimationController->GetTrackEnable(2)) // idle
-		{
-			m_pSkinnedAnimationController->SetTrackEnable(2, false);
-			m_pSkinnedAnimationController->SetTrackEnable(0, true);//idle_shoot
-			m_pSkinnedAnimationController->SetTrackPosition(0, 0.0f);
-		}
-		else if (m_pSkinnedAnimationController->GetTrackEnable(1))//run
-		{
-			m_pSkinnedAnimationController->SetTrackEnable(1, false);
-			m_pSkinnedAnimationController->SetTrackEnable(3, true);//running shoot
-			m_pSkinnedAnimationController->SetTrackPosition(0, 0.0f);
-		}
+		//if (m_pSkinnedAnimationController->GetTrackEnable(2)) // idle
+		//{
+		//	m_pSkinnedAnimationController->SetTrackEnable(2, false);
+		//	m_pSkinnedAnimationController->SetTrackEnable(0, true);//idle_shoot
+		//	//m_pSkinnedAnimationController->SetTrackPosition(0, 0.0f);
+		//}
+		//else if (m_pSkinnedAnimationController->GetTrackEnable(1))//run
+		//{
+		//	m_pSkinnedAnimationController->SetTrackEnable(1, false);
+		//	m_pSkinnedAnimationController->SetTrackEnable(3, true);//running shoot
+		//	//m_pSkinnedAnimationController->SetTrackPosition(3, 0.0f);
+		//}
+		m_pSkinnedAnimationController->SetTrackEnable(0, false);
+		m_pSkinnedAnimationController->SetTrackEnable(1, false);
+		m_pSkinnedAnimationController->SetTrackEnable(3, true);//running shoot
+		m_pSkinnedAnimationController->SetTrackPosition(3, 0.0f);
+
 
 		m_InteractionCountTime -= 1;
 	}
@@ -424,8 +435,9 @@ void CWorker::OnInteractive()
 	{
 		m_pSkinnedAnimationController->SetTrackEnable(0, false);
 		m_pSkinnedAnimationController->SetTrackEnable(3, false);
+
 		m_OnInteraction = false;
-		m_InteractionCountTime = INTERACTION_TIME;
+		m_InteractionCountTime = BOSS_INTERACTION_TIME;
 	}
 }
 
@@ -435,7 +447,7 @@ CEmployee::CEmployee(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCo
 
 	m_nCharacterType = nType;
 
-	m_InteractionCountTime = INTERACTION_TIME;
+	m_InteractionCountTime = EMPLOYEE_INTERACTION_TIME;
 
 	CLoadedModelInfo* pEmployeeModel = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, g_pstrCharactorRefernece[(int)m_nCharacterType], NULL, Layout::PLAYER);
 	SetChild(pEmployeeModel->m_pModelRootObject, true);
@@ -572,7 +584,7 @@ void CEmployee::OnInteractive()
 		m_pSkinnedAnimationController->SetTrackEnable(1, false);
 		m_pSkinnedAnimationController->SetTrackEnable(6, false);
 		m_OnInteraction = false;
-		m_InteractionCountTime = INTERACTION_TIME;
+		m_InteractionCountTime = EMPLOYEE_INTERACTION_TIME;
 	}
 }
 bool CEmployee::CheckSwitchArea()

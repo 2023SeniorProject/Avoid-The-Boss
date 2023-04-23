@@ -475,20 +475,20 @@ public:
 	virtual ~CDoor();
 };
 
+#define BUIIET_DISTANCE 2.5f
+#define BULLET_NUMBER 1
 class CBullet : public CGameObject
 {
 private:
-	float m_fSpeed = 0.1f;
-	float m_fDistance = 0.20f;
-
+	float		m_fSpeed = 0.5f;
+	float		m_fDistance = 0.0f;
 	//XMFLOAT3 m_xmf3Position = XMFLOAT3(0.0f, 0.0f, 0.0f);
-	XMFLOAT3 m_xmf3Look = XMFLOAT3(0.0f, 0.0f, 1.0f);
-	XMFLOAT3					m_xmf3Right = XMFLOAT3(1.0f, 0.0f, 0.0f);
-	XMFLOAT3					m_xmf3Up = XMFLOAT3(0.0f, 1.0f, 0.0f);
-	//XMFLOAT3					m_xmf3Look = XMFLOAT3(0.0f, 0.0f, 1.0f);
-	XMFLOAT3 m_xmf3Velocity = XMFLOAT3(0.0f, 0.0f, 0.0f);
+	XMFLOAT3	m_xmf3Look = XMFLOAT3(0.0f, 0.0f, 1.0f);
+	XMFLOAT3	m_xmf3Right = XMFLOAT3(1.0f, 0.0f, 0.0f);
+	XMFLOAT3	m_xmf3Up = XMFLOAT3(0.0f, 1.0f, 0.0f);
+	XMFLOAT3	m_xmf3Velocity = XMFLOAT3(0.0f, 0.0f, 0.0f);
 
-	bool m_OnShoot = false;
+	bool		m_OnShoot = false;
 public:
 	CBullet();
 	CBullet(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature);
@@ -499,4 +499,14 @@ public:
 
 	void SetOnShoot(bool value) { m_OnShoot = value; }
 	bool GetOnShoot() { return m_OnShoot; }
+
+	void SetVelocity(XMFLOAT3 xmf3Look) { m_xmf3Velocity = xmf3Look; }
+	XMFLOAT3 GetVelocity() { return m_xmf3Velocity; }
+
+	void SetLook(XMFLOAT3 xmf3Look) { m_xmf3Look = xmf3Look; }
+	XMFLOAT3 GetLook() { return m_xmf3Look; }
+	void SetRight(XMFLOAT3 xmf3Look) { m_xmf3Look = xmf3Look; }
+	XMFLOAT3 GetRight() { return m_xmf3Look; }
+	void SetUp(XMFLOAT3 xmf3Look) { m_xmf3Look = xmf3Look; }
+	XMFLOAT3 GetUp() { return m_xmf3Look; }
 };

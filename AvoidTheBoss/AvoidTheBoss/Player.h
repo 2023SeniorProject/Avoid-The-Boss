@@ -21,7 +21,8 @@ static const char *g_pstrCharactorRefernece[5] =
 	"Model/Character4_Idle.bin"
 };
 
-#define INTERACTION_TIME 40
+#define BOSS_INTERACTION_TIME 65
+#define EMPLOYEE_INTERACTION_TIME 40
 
 class CPlayer : public CGameObject
 {
@@ -120,7 +121,7 @@ public:
 	virtual void Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera =NULL);
 public:
 	bool m_OnInteraction = false;
-	int m_InteractionCountTime = INTERACTION_TIME;
+	int m_InteractionCountTime;
 
 	void SetOnInteraction(bool value) { m_OnInteraction = value; }
 	bool GetOnInteraction() { return m_OnInteraction; }
@@ -167,11 +168,9 @@ public:
 	virtual void OnCameraUpdateCallback();
 
 	virtual void Move(DWORD dwDirection, float fDistance);
-
 	virtual void Update(float fTimeElapsed, PLAYER_TYPE ptype);
 
 	virtual void OnInteractive();
-
 	void SetSwitchArea(bool value) { m_bIsSwitchArea = value; }
 	bool GetSwitchArea() { return m_bIsSwitchArea; }
 

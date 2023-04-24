@@ -439,20 +439,17 @@ private:
 	float radius = 0.0f;
 
 public:
-	bool StateOn = false;
-	bool m_bOnSwitch = false;
-	int m_nAnimationCount = BUTTON_ANIM_FRAME;
+	bool m_bSwitchAvailable = false;
+	bool m_bSwitchInteractionOn = false;
+	int  m_nAnimationCount = BUTTON_ANIM_FRAME;
 
 	CSwitch();
 	CSwitch(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, CLoadedModelInfo* pModel, int nAnimationTracks,int number);
 	virtual ~CSwitch();
-	
-	void SetRandomPosition(XMFLOAT3 pos);
-	void SetBounds();
 	float GetRadius() { return radius; }
-
-	void SetOnSwitch(bool value) { m_bOnSwitch = value; }
-	bool GetOnSwitch() { return m_bOnSwitch; }
+	void SetRandomPosition(XMFLOAT3 pos);
+	void SetOnSwitch(bool value) { m_bSwitchInteractionOn = value; }
+	bool GetOnSwitch() { return m_bSwitchInteractionOn; }
 
 	void SetAnimationCount(int value) { m_nAnimationCount = value; }
 	bool GetAnimationCount() { return m_nAnimationCount; }

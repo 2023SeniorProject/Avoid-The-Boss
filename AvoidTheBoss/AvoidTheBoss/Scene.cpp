@@ -236,7 +236,7 @@ void CGameScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandLis
 	pBulletObjectShader->BuildObjects(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, NULL, NULL);
 	m_ppShaders[2] = pBulletObjectShader;
 
-	m_pSwitch = (CSwitch*)m_ppHierarchicalGameObjects[2];
+	m_pSwitches = (CSwitch*)m_ppHierarchicalGameObjects[2];
 	for (int i = 0; i < PLAYERNUM; ++i)
 	{
 		if (/*i == (int)CHARACTER_TYPE::BOSS*/false)
@@ -249,8 +249,8 @@ void CGameScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandLis
 		{
 			_players[i] = new CEmployee(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, /*(CHARACTER_TYPE)i*/CHARACTER_TYPE::YELLOW_EMP);
 
-			((CEmployee*)_players[i])->m_pSwitch.position = m_pSwitch->GetPosition();
-			((CEmployee*)_players[i])->m_pSwitch.radius = m_pSwitch->GetRadius();
+			((CEmployee*)_players[i])->m_pSwitches.position = m_pSwitches->GetPosition();
+			((CEmployee*)_players[i])->m_pSwitches.radius = m_pSwitches->GetRadius();
 		}
 	}
 	m_pCamera = _players[0]->GetCamera();
@@ -275,11 +275,11 @@ void CGameScene::ProcessInput(HWND hWnd)
 			{
 				if (_players[_playerIdx]->m_nCharacterType != CHARACTER_TYPE::BOSS) // 플레이어의 타입이 아닐 때
 				{
-					if (!m_pSwitch->StateOn) // 만약 켜진 상태가 아니라면
+					if (!m_pSwitches->m_bSwitchAvailable) // 만약 켜진 상태가 아니라면
 					{
 						CEmployee* myPlayer = static_cast<CEmployee*>(_players[_playerIdx]);
 						
-						if (myPlayer->GetSwitchArea())
+						if (myPlayer->CanSwitchInteraction())
 						{
 							if (!myPlayer->m_bIsSwitchInterationing) 
 							{
@@ -298,12 +298,12 @@ void CGameScene::ProcessInput(HWND hWnd)
 				dwDirection |= DIR_BUTTON_F;
 				
 			}
-			else // F키가 안눌렸는데 
+			else // F키가 안눌린 상태일 때
 			{
 				if (_players[_playerIdx]->m_nCharacterType != CHARACTER_TYPE::BOSS) // 플레이어의 타입이 아닐 때
 				{
 					CEmployee* myPlayer = static_cast<CEmployee*>(_players[_playerIdx]);
-					if (myPlayer->m_bIsSwitchInterationing && !m_pSwitch->StateOn)
+					if (myPlayer->m_bIsSwitchInterationing && !m_pSwitches->m_bSwitchAvailable) // 눌렀다 땐 상황이라면
 					{
 						SC_EVENTPACKET packet;
 						packet.eventId = 5;
@@ -331,10 +331,10 @@ void CGameScene::ProcessInput(HWND hWnd)
 		CEmployee* myPlayer = static_cast<CEmployee*>(_players[_playerIdx]);
 		if (myPlayer->GetOnInteraction() && myPlayer->m_bIsSwitchInterationing)
 		{
-			if (m_pSwitch)
+			if (m_pSwitches)
 			{
-				m_pSwitch->SetOnSwitch(true);
-				m_pSwitch->SetAnimationCount(BUTTON_ANIM_FRAME);
+				m_pSwitches->SetOnSwitch(true);
+				m_pSwitches->SetAnimationCount(BUTTON_ANIM_FRAME);
 			}
 		}
 	}

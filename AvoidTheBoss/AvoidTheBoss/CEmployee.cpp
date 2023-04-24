@@ -106,16 +106,10 @@ void CEmployee::Update(float fTimeElapsed, PLAYER_TYPE ptype)
 {
 	CPlayer::Update(fTimeElapsed, ptype);
 
-	if (CheckSwitchArea())
-	{
-		SetSwitchArea(true);
-	}
-	else
-		SetSwitchArea(false);
-
-	if (m_OnInteraction)
-		OnInteractive();
-
+	if (CheckSwitchArea()) m_bIsInSwitchArea = true;
+	else m_bIsInSwitchArea = false;
+		
+	if (m_OnInteraction) OnInteractive();
 	if (m_pSkinnedAnimationController && !m_OnInteraction)
 	{
 		float fLength = sqrtf(m_xmf3Velocity.x * m_xmf3Velocity.x + m_xmf3Velocity.z * m_xmf3Velocity.z);
@@ -150,17 +144,10 @@ void CEmployee::OnInteractive()
 }
 bool CEmployee::CheckSwitchArea()
 {
-	//캐릭터 원 - 스위치 영역 원 충돌체크
-	XMFLOAT3 v1 = m_pSwitch.position;
-	XMFLOAT3 v2 = m_xmf3Position;
+	XMFLOAT3 distanceVec = Vector3::Subtract(m_xmf3Position, m_pSwitches.position);
+	float distance = Vector3::Length(distanceVec);
+	float sumRange = m_playerBV.Radius + m_pSwitches.radius;
 
-	float fDistance = sqrt(pow(v1.x - v2.x, 2) + pow(v1.y - v2.y, 2) + pow(v1.y - v2.y, 2));
-	float fSumRange = m_pSwitch.radius + m_playerBV.Radius + 1.0f;
-
-	if (fDistance <= fSumRange)
-		return true;
-	else
-		return false;
-
+	if (distance <= sumRange) return true;
 	return false;
 }

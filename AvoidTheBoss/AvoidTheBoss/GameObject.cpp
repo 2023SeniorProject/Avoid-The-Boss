@@ -1292,17 +1292,12 @@ void CSwitch::SetRandomPosition(XMFLOAT3 pos)
 	//고정된 위치에 생성
 }
 
-void CSwitch::SetBounds()
-{
-	
-
-}
 
 void CSwitch::Animate(float fTimeElapsed)
 {
 	if (m_pSkinnedAnimationController)
 	{
-		if (m_bOnSwitch)
+		if (m_bSwitchInteractionOn)
 		{
 			if (m_nAnimationCount > 0)
 			{
@@ -1314,15 +1309,15 @@ void CSwitch::Animate(float fTimeElapsed)
 			}
 			else
 			{
-				m_bOnSwitch = false;
+				m_bSwitchInteractionOn = false;
 				m_nAnimationCount = 0;
-				StateOn = true;
+				m_bSwitchAvailable = true;
 			}
 		}
 	}
 	else 
 	{
-		if (m_bOnSwitch)
+		if (m_bSwitchInteractionOn)
 		{
 			CGameObject* pButton = FindFrame("Cylinder");
 
@@ -1334,9 +1329,9 @@ void CSwitch::Animate(float fTimeElapsed)
 			}
 			else
 			{
-				m_bOnSwitch = false;
+				m_bSwitchInteractionOn = false;
 				m_nAnimationCount = 0;
-				StateOn = true;
+				m_bSwitchAvailable = true;
 			}
 		}
 	}

@@ -37,7 +37,6 @@ struct LIGHTS
 	int						m_nLights;
 };
 
-
 class CGameScene : public SceneInterface
 {
 	friend class CSession;
@@ -115,7 +114,7 @@ public:
 	ID3D12Resource*						m_pd3dcbLights = NULL;
 	LIGHTS*								m_pcbMappedLights = NULL;
 
-	CSwitch* m_pSwitch = NULL;
+	CSwitch* m_pSwitches = NULL;
 public:
 	Atomic<uint8> _curFrameIdx;
 	int32 m_cid = -1;

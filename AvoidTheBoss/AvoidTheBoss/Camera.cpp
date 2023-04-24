@@ -157,9 +157,15 @@ void CCamera::SetViewportsAndScissorRects(ID3D12GraphicsCommandList* pd3dCommand
 }
 
 
+
 CFirstPersonCamera::CFirstPersonCamera(CCamera* pCamera)
 {
 	m_nMode = FIRST_PERSON_CAMERA;
+}
+
+void CFirstPersonCamera::Update(XMFLOAT3& xmf3LookAt, float fTimeElapsed)
+{
+	
 }
 
 void CFirstPersonCamera::Rotate(float x, float y, float z)

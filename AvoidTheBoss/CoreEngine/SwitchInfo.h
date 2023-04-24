@@ -11,10 +11,10 @@ public:
 	float _GuageOffset = 1.0f;
 	std::mutex _lock;
 	float _coolTime;
-	float _ActiveRadius = 0.2f;
+	float _ActiveRadius = 1.0f;
 
 public:
-	SwitchInfo() {}
+	SwitchInfo() { _pos = XMFLOAT3(0.0f, 0.25f, -50.0f); }
 	~SwitchInfo() {}
 
 	void SwitchInterationOn() 

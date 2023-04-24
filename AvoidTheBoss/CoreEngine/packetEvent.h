@@ -3,13 +3,13 @@
 #include "Session.h"
 
 enum class INTERACTION_TYPE : uint8 {
-	ATTACK_EVENT,
-	COOLTIME_EVENT,
-	SWITCH_START_EVENT,
-	SWITCH_AVAILABLE,
-	SWITCH_UNAVAILABLE,
-	SWITCH_END_EVENT, 
-	SWITCH_ACTIVATE_EVENT,
+	ATTACK_EVENT = 0,
+	COOLTIME_EVENT = 1,
+	SWITCH_START_EVENT = 2,
+	SWITCH_AVAILABLE = 3,
+	SWITCH_UNAVAILABLE = 4,
+	SWITCH_END_EVENT = 5, 
+	SWITCH_ACTIVATE_EVENT =6,
 
 };
 
@@ -86,7 +86,7 @@ public:
 					ServerIocpCore._rmgr->GetRoom(sid)._switchs[switchIdx].SwitchInterationOn();
 					SC_EVENTPACKET packet;
 					packet.size = sizeof(SC_EVENTPACKET);
-					packet.type = S_PACKET_TYPE::GAMEEVENT;
+					packet.type = SC_PACKET_TYPE::GAMEEVENT;
 					packet.eventId = eventId; // 0: 발전기 시작 // 발전기 종료 // 1: 발전기 완료 // 2: 사장님 공격 처리 // 3: 사장님 공격 쿨타임 
 					ServerIocpCore._rmgr->GetRoom(sid).BroadCasting(&packet);
 				}
@@ -97,11 +97,13 @@ public:
 			if (!ServerIocpCore._rmgr->GetRoom(sid)._switchs[switchIdx]._IsActive &&
 				ServerIocpCore._rmgr->GetRoom(sid)._switchs[switchIdx]._IsOnInteraction) // 발전기 상호작용이 도중에 발생한 경우
 			{
+				std::cout << "Guage Stop And ResetGuage\n";
 				// 상호작용 상태로 변경
 				ServerIocpCore._rmgr->GetRoom(sid)._switchs[switchIdx].ResetGuage(); // 발전기 게이지 초기화
+				ServerIocpCore._rmgr->GetRoom(sid)._switchs[switchIdx]._IsOnInteraction = false;
 				SC_EVENTPACKET packet;
 				packet.size = sizeof(SC_EVENTPACKET);
-				packet.type = S_PACKET_TYPE::GAMEEVENT;
+				packet.type = SC_PACKET_TYPE::GAMEEVENT;
 				packet.eventId = eventId; // 0: 발전기 시작 // 발전기 종료 // 1: 발전기 완료 // 2: 사장님 공격 처리 // 3: 사장님 공격 쿨타임 
 				ServerIocpCore._rmgr->GetRoom(sid).BroadCasting(&packet);
 			}
@@ -111,7 +113,7 @@ public:
 			
 				SC_EVENTPACKET packet;
 				packet.size = sizeof(SC_EVENTPACKET);
-				packet.type = S_PACKET_TYPE::GAMEEVENT;
+				packet.type = SC_PACKET_TYPE::GAMEEVENT;
 				packet.eventId = eventId; // 0: 발전기 시작 // 발전기 종료 // 1: 발전기 완료 // 2: 사장님 공격 처리 // 3: 사장님 공격 쿨타임 
 				ServerIocpCore._rmgr->GetRoom(sid).BroadCasting(&packet);
 		}

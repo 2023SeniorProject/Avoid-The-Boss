@@ -134,7 +134,7 @@ void Room::Update()
 		_jobQueue->DoTasks();
 	}
 	for (int i = 0; i < PLAYERNUM; ++i) _players[i].Update(_timer.GetTimeElapsed());
-	
+	for (int i = 0; i < 3; ++i) _switchs[i].UpdateGuage(_timer.GetTimeElapsed());
 	if (_timer.IsAfterTick(60))
 	{
 		_history.AddHistory(_players);

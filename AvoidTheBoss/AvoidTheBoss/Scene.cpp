@@ -166,21 +166,21 @@ void CGameScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandLis
 	m_ppHierarchicalGameObjects[2] = new CSwitch(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, Button1, 1,0);
 	m_ppHierarchicalGameObjects[2]->m_pSkinnedAnimationController->SetTrackAnimationSet(0, 0);
 	m_ppHierarchicalGameObjects[2]->m_pSkinnedAnimationController->SetTrackEnable(0, false);
-	m_ppHierarchicalGameObjects[2]->SetPosition(-23.12724, 1.146619, 1.814123);//left ㅇ
+	m_ppHierarchicalGameObjects[2]->SetPosition(0, 1.25, -50);//left ㅇ
 	if (Button1) delete Button1;
 
 	CLoadedModelInfo* Button2 = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "Model/Button2.bin", NULL, Layout::SWITCH);
 	m_ppHierarchicalGameObjects[3] = new CSwitch(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, Button2, 1,1);
 	m_ppHierarchicalGameObjects[3]->m_pSkinnedAnimationController->SetTrackAnimationSet(0, 0);
 	m_ppHierarchicalGameObjects[3]->m_pSkinnedAnimationController->SetTrackEnable(0, false);
-	m_ppHierarchicalGameObjects[3]->SetPosition(23.08867, 1.083242, 3.155997);//right x
+	m_ppHierarchicalGameObjects[3]->SetPosition(0, 1.25, -50);//left ㅇ
 	if (Button2) delete Button2;
 
 	CLoadedModelInfo* Button3 = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "Model/Button3.bin", NULL, Layout::SWITCH);
 	m_ppHierarchicalGameObjects[4] = new CSwitch(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, Button3, 1,2);
 	m_ppHierarchicalGameObjects[4]->m_pSkinnedAnimationController->SetTrackAnimationSet(0, 0);
 	m_ppHierarchicalGameObjects[4]->m_pSkinnedAnimationController->SetTrackEnable(0, false);
-	m_ppHierarchicalGameObjects[4]->SetPosition(0.6774719,  1.083242, -23.05909);//back 회전
+	m_ppHierarchicalGameObjects[4]->SetPosition(0, 1.25, -50);//left ㅇ
 	if (Button3) delete Button3;
 
 	CLoadedModelInfo* Front_Door = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "Model/Front_Hanger_Door_Open.bin", NULL, Layout::DOOR);
@@ -278,11 +278,20 @@ void CGameScene::ProcessInput(HWND hWnd)
 					if (!m_pSwitch->StateOn) // 만약 켜진 상태가 아니라면
 					{
 						CEmployee* myPlayer = static_cast<CEmployee*>(_players[_playerIdx]);
-						if(!myPlayer->m_bIsSwitchInterationing) myPlayer->m_bIsSwitchInterationing = true;
+						
 						if (myPlayer->GetSwitchArea())
 						{
-							dwDirection = 0;
-							myPlayer->SetOnInteraction(true);
+							if (!myPlayer->m_bIsSwitchInterationing) 
+							{
+								myPlayer->m_bIsSwitchInterationing = true;
+								dwDirection = 0;
+								myPlayer->SetOnInteraction(true);
+								SC_EVENTPACKET packet;
+								packet.eventId = 2;
+								packet.size = sizeof(SC_EVENTPACKET);
+								packet.type = SC_PACKET_TYPE::GAMEEVENT;
+								clientCore._client->DoSend(&packet);
+							}
 						}
 					}
 				}
@@ -294,7 +303,15 @@ void CGameScene::ProcessInput(HWND hWnd)
 				if (_players[_playerIdx]->m_nCharacterType != CHARACTER_TYPE::BOSS) // 플레이어의 타입이 아닐 때
 				{
 					CEmployee* myPlayer = static_cast<CEmployee*>(_players[_playerIdx]);
-					if (myPlayer->m_bIsSwitchInterationing) myPlayer->m_bIsSwitchInterationing = false;
+					if (myPlayer->m_bIsSwitchInterationing && !m_pSwitch->StateOn)
+					{
+						SC_EVENTPACKET packet;
+						packet.eventId = 5;
+						packet.size = sizeof(SC_EVENTPACKET);
+						packet.type = SC_PACKET_TYPE::GAMEEVENT;
+						myPlayer->m_bIsSwitchInterationing = false;
+						clientCore._client->DoSend(&packet);
+					}
 				}
 			}
 

@@ -75,8 +75,7 @@ void CPlayer::Update(float fTimeElapsed, PLAYER_TYPE ptype)
 {
 
 	m_playerBV.Center = GetPosition();
-	
-	
+
 	DWORD nCameraMode = m_pCamera->GetMode();
 	//플레이어의 위치가 변경되었으므로 3인칭 카메라를 갱신한다. 
 	m_pCamera->Update(m_xmf3Position,fTimeElapsed);
@@ -84,6 +83,7 @@ void CPlayer::Update(float fTimeElapsed, PLAYER_TYPE ptype)
 	if (m_pCameraUpdatedContext) OnCameraUpdateCallback();
 	//카메라가 3인칭 카메라이면 카메라가 변경된 플레이어 위치를 바라보도록 한다. 
 	if (nCameraMode == THIRD_PERSON_CAMERA) m_pCamera->SetLookAt(m_xmf3Position);
+	else m_pCamera->SetPosition(m_xmf3Position);
 	//카메라의 카메라 변환 행렬을 다시 생성한다. 
 	m_pCamera->RegenerateViewMatrix();
 	//m_xmf3Velocity = XMFLOAT3(0.0f, 0.0f, 0.0f);

@@ -141,11 +141,7 @@ class CFirstPersonCamera : public CCamera
 public:
 	CFirstPersonCamera(CCamera* pCamera);
 	virtual ~CFirstPersonCamera() { }
-	virtual void Update(XMFLOAT3& xmf3LookAt, float fTimeElapsed)
-	{
-		SetLookAt(xmf3LookAt);
-	}
-	
+	virtual void Update(XMFLOAT3& xmf3LookAt, float fTimeElapsed);
 	virtual void Rotate(float x = 0.0f, float y = 0.0f, float z = 0.0f);
 	void RayCasting(BoundingSphere& targetBox);
 };

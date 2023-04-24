@@ -188,7 +188,17 @@ void ServerSession::ProcessPacket(char* packet)
 			ServerIocpCore._rmgr->CreateRoom(_sid);
 		}
 		break;
+		case SC_PACKET_TYPE::GAMEEVENT:
+		{
+			SC_EVENTPACKET* ep = reinterpret_cast<SC_EVENTPACKET*>(packet);
+			SwitchInteractionEvent* swev = new SwitchInteractionEvent();
+			swev->eventId = ep->eventId;
+			std::cout << (int32)swev->eventId << "\n";
+ 			swev->sid = _sid;
+			swev->switchIdx = 0;
+			ServerIocpCore._rmgr->GetRoom(_myRm).AddEvent(swev, 0.f);
+		}
+		break;
 	}
-	//DoRecv();
 }
 

@@ -1294,42 +1294,9 @@ void CSwitch::SetRandomPosition(XMFLOAT3 pos)
 
 void CSwitch::SetBounds()
 {
-	//CGameObject* pRoot = FindFrame("Switch");
-	//if (pRoot)
-	//{
-	//	//m_pAABB.Center = XMFLOAT3(pRoot->GetPosition().x, 0.0f, pRoot->GetPosition().z);
-	//	if (pRoot->m_pAABB.Extents.x > pRoot->m_pAABB.Extents.z)
-	//	{
-	//		radius = pRoot->m_pAABB.Extents.x;
-	//	}
-	//	else
-	//	{
-	//		radius = pRoot->m_pAABB.Extents.z;
-	//	}
-	//}
+	
 
 }
-
-//void CSwitch::Animate(float fTimeElapsed)
-//{
-//	if (m_bOnSwitch)
-//	{
-//		CGameObject* pButton = FindFrame("Cylinder");
-//
-//		if (m_nAnimationCount > 0)
-//		{
-//			pButton->MoveForward(0.00001f * fTimeElapsed * m_nAnimationCount);
-//			m_nAnimationCount--;
-//		}
-//		else
-//		{
-//			m_bOnSwitch = false;
-//			m_nAnimationCount = 0;
-//			StateOn = true;
-//		}
-//	}
-//	//UpdateTransform(NULL);
-//}
 
 void CSwitch::Animate(float fTimeElapsed)
 {

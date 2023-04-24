@@ -511,7 +511,7 @@ void CSwitchObjectShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsC
 		m_ppObjects[i] = new CSwitch();
 		m_ppObjects[i]->SetChild(pSwitchModel);
 		m_ppObjects[i]->AddRef();
-		//m_ppObjects[i]->SetPosition(XMFLOAT3(0.0f, 0.0f, 0.0f));
+		m_ppObjects[i]->SetPosition(XMFLOAT3(0.0f, 1.25f, 50.0f));
 	}
 
 	CreateShaderVariables(pd3dDevice, pd3dCommandList);

@@ -482,11 +482,10 @@ class CDoor : public CGameObject
 private:
 	bool m_OpenDoor = false;
 public:
-
 	CDoor(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, CLoadedModelInfo* pModel, int nAnimationTracks,int number);
 	virtual ~CDoor();
 
-	virtual void Animate(float fTimeElapsed);
+	void Animate(float fTimeElapsed);
 };
 
 #define BUIIET_DISTANCE 2.5f

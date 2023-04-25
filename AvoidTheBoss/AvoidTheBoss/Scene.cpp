@@ -154,7 +154,7 @@ void CGameScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandLis
 	m_nHierarchicalGameObjects = 2 + 3 + 5;
 	m_ppHierarchicalGameObjects = new CGameObject * [m_nHierarchicalGameObjects];
 
-	CLoadedModelInfo* pSiren_L = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "Model/Siren_Alarm2_(1).bin", NULL, Layout::SIREN);
+	CLoadedModelInfo* pSiren_L = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "Model/Siren_Alarm_(1).bin", NULL, Layout::SIREN);
 	m_ppHierarchicalGameObjects[0] = new CSiren(pd3dDevice,pd3dCommandList,m_pd3dGraphicsRootSignature, pSiren_L,1);
 	m_ppHierarchicalGameObjects[0]->m_pSkinnedAnimationController->SetTrackAnimationSet(0, 0);
 	m_ppHierarchicalGameObjects[0]->m_pSkinnedAnimationController->SetTrackEnable(0, true);
@@ -265,7 +265,7 @@ void CGameScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandLis
 
 	for (int i = 0; i < PLAYERNUM; ++i)
 	{
-		if (false/*i == (int)CHARACTER_TYPE::BOSS*/)
+		if (i != (int)CHARACTER_TYPE::BOSS)
 		{
 			_players[i] = new CWorker(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature);
 			if (m_ppShaders[2])
@@ -361,9 +361,9 @@ void CGameScene::ProcessInput(HWND hWnd)
 			}
 	}
 
-	bool IsReadyExit = OnExitReadyCount();
 	if (_players[_playerIdx]->m_nCharacterType != CHARACTER_TYPE::BOSS)
 	{
+		bool IsReadyExit = OnExitReadyCount();
 		if (((CEmployee*)_players[_playerIdx])->GetOnInteraction())
 		{
 			if (!IsReadyExit)

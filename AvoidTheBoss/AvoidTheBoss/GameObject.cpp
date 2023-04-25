@@ -1348,8 +1348,7 @@ CSiren::CSiren(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandL
 {
 	CLoadedModelInfo* pSirenModel = pModel;
 	if (!pSirenModel) 
-		pSirenModel = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "Model/Siren_Alarm2.bin", NULL,Layout::SIREN);
-
+		pSirenModel = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "Model/Siren_Alarm_(1).bin", NULL,Layout::SIREN);
 
 	SetChild(pSirenModel->m_pModelRootObject, true);
 	m_pSkinnedAnimationController = new CAnimationController(pd3dDevice, pd3dCommandList, nAnimationTracks, pSirenModel);

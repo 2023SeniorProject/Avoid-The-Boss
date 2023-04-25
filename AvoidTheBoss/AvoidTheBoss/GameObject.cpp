@@ -459,8 +459,8 @@ void CAnimationController::SetTrackEnable(int nAnimationTrack, bool bEnable)
 
 bool CAnimationController::GetTrackEnable(int nAnimationTrack)
 {
-	if (m_pAnimationTracks) return m_pAnimationTracks[nAnimationTrack].GetEnable();
-	return false;
+	if (m_pAnimationTracks) 
+		return m_pAnimationTracks[nAnimationTrack].GetEnable();
 }
 
 void CAnimationController::SetTrackPosition(int nAnimationTrack, float fPosition)
@@ -777,7 +777,7 @@ void CGameObject::SetScale(float x, float y, float z)
 	UpdateTransform(NULL);
 }
 
-XMFLOAT3 CGameObject::GetPosition()
+const XMFLOAT3 CGameObject::GetPosition()
 {
 	return(XMFLOAT3(m_xmf4x4World._41, m_xmf4x4World._42, m_xmf4x4World._43));
 }
@@ -1009,7 +1009,7 @@ CGameObject *CGameObject::LoadFrameHierarchyFromFile(ID3D12Device *pd3dDevice, I
 	int nFrame = 0, nTextures = 0;
 
 	CGameObject *pGameObject = new CGameObject();
-
+	pGameObject->objLayer = objType;
 	for ( ; ; )
 	{
 		::ReadStringFromFile(pInFile, pstrToken);
@@ -1315,26 +1315,26 @@ void CSwitch::Animate(float fTimeElapsed)
 			}
 		}
 	}
-	else 
-	{
-		if (m_bSwitchInteractionOn)
-		{
-			CGameObject* pButton = FindFrame("Cylinder");
-
-			if (m_nAnimationCount > 0)
-			{
-
-				pButton->MoveForward(0.00001f * fTimeElapsed * m_nAnimationCount);
-				m_nAnimationCount--;
-			}
-			else
-			{
-				m_bSwitchInteractionOn = false;
-				m_nAnimationCount = 0;
-				m_bSwitchAvailable = true;
-			}
-		}
-	}
+	//else 
+	//{
+	//	if (m_bOnSwitch)
+	//	{
+	//		CGameObject* pButton = FindFrame("Cylinder");
+	//
+	//		if (m_nAnimationCount > 0)
+	//		{
+	//
+	//			pButton->MoveForward(0.00001f * fTimeElapsed * m_nAnimationCount);
+	//			m_nAnimationCount--;
+	//		}
+	//		else
+	//		{
+	//			m_bOnSwitch = false;
+	//			m_nAnimationCount = 0;
+	//			StateOn = true;
+	//		}
+	//	}
+	//}
 
 	//UpdateTransform(NULL);
 }
@@ -1344,7 +1344,7 @@ CSiren::CSiren(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandL
 {
 	CLoadedModelInfo* pSirenModel = pModel;
 	if (!pSirenModel) 
-		pSirenModel = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "Model/Siren_Alarm2.bin", NULL,Layout::SIREN);
+		pSirenModel = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "Model/Siren_Alarm_(1).bin", NULL,Layout::SIREN);
 
 	SetChild(pSirenModel->m_pModelRootObject, true);
 	m_pSkinnedAnimationController = new CAnimationController(pd3dDevice, pd3dCommandList, nAnimationTracks, pSirenModel);
@@ -1352,6 +1352,14 @@ CSiren::CSiren(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandL
 
 CSiren::~CSiren()
 {
+}
+
+void CSiren::Animate(float fTimeElapsed)
+{
+	if(m_bIsExitReady)
+		m_pSkinnedAnimationController->SetTrackEnable(0, false);
+
+	CGameObject::Animate(fTimeElapsed);
 }
 
 CDoor::CDoor(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, CLoadedModelInfo* pModel, int nAnimationTracks,int number)
@@ -1375,4 +1383,53 @@ CDoor::CDoor(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandLis
 
 CDoor::~CDoor()
 {
+}
+
+void CDoor::Animate(float fTimeElapsed)
+{
+	if(m_bIsExitReady)
+		m_pSkinnedAnimationController->SetTrackEnable(0, false);
+
+	CGameObject::Animate(fTimeElapsed);
+}
+
+
+CBullet::CBullet()
+{
+}
+
+CBullet::CBullet(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature)
+{
+	CLoadedModelInfo* pBulletModel = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "Model/Sphere.bin", NULL, Layout::Bullet);
+	SetChild(pBulletModel->m_pModelRootObject, true);
+}
+
+CBullet::~CBullet()
+{
+}
+
+void CBullet::Update(float fTimeElapsed)
+{
+
+}
+
+void CBullet::Animate(float fTimeElapsed)
+{
+	if (m_OnShoot)
+	{
+		if (m_fDistance > BUIIET_DISTANCE)
+		{
+			m_OnShoot = false;
+			m_fDistance = 0.0f;
+			m_xmf3Velocity = XMFLOAT3(0.0f, 0.0f, 0.0f);
+		}
+		XMFLOAT3 xmf3Shift = XMFLOAT3(0, 0, 0);
+		xmf3Shift = Vector3::Add(xmf3Shift, m_xmf3Look,
+			m_fSpeed);
+		m_xmf3Velocity = Vector3::Add(m_xmf3Velocity, xmf3Shift);
+
+		XMFLOAT3 xmf3Velocity = Vector3::ScalarProduct(m_xmf3Velocity, fTimeElapsed, false);
+		SetPosition(Vector3::Add(GetPosition(), xmf3Velocity));
+		m_fDistance += m_fSpeed;
+	}
 }

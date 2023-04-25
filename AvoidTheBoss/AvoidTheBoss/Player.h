@@ -13,14 +13,15 @@ enum class CHARACTER_TYPE: int32
 
 static const char *g_pstrCharactorRefernece[5] =
 {
-	"Model/Boss_Run.bin",
+	"Model/Boss_Run.bin",/*"Model/Boss_Idle.bin"*/
 	"Model/Character1_Idle.bin",
 	"Model/Character2_Idle.bin",
 	"Model/Character3_Idle.bin",
 	"Model/Character4_Idle.bin"
 };
 
-#define INTERACTION_TIME 40
+#define BOSS_INTERACTION_TIME 65
+#define EMPLOYEE_INTERACTION_TIME 40
 
 class CPlayer : public CGameObject
 {
@@ -118,23 +119,58 @@ public:
 	virtual void OnPrepareRender();
 	//플레이어의 카메라가 3인칭 카메라일 때 플레이어(메쉬)를 렌더링한다. 
 	virtual void Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera =NULL);
-public:
+protected:
+	int nInteractionNum = -1;
 	bool m_OnInteraction = false;
-	int m_InteractionCountTime = INTERACTION_TIME;
-
+	int m_InteractionCountTime;
+public:
 	void SetOnInteraction(bool value) { m_OnInteraction = value; }
 	bool GetOnInteraction() { return m_OnInteraction; }
+
+	void SetnInteractionNum(int value) { nInteractionNum = value; }
+	int GetnInteractionNum() { return nInteractionNum; }
+	
+	void SetnInteractionCountTime(int value) { m_InteractionCountTime = value; }
+	int GetnInteractionCountTime() { return m_InteractionCountTime; }
+
 	virtual void OnInteractive() {}
 };
 
 
+enum InteracionType
+{
+	Switch1,Switch2,Switch3,
+};
 struct SwitchInformation
 {
 	XMFLOAT3 position;
 	float radius; //raderArea
 };
 
+class CEmployee : public CPlayer
+{
+private:
+	bool m_bIsSwitchArea[3];
+public:
+	CEmployee(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, CHARACTER_TYPE nType);
+	virtual ~CEmployee();
 
+	virtual CCamera* ChangeCamera(DWORD nNewCameraMode, float fTimeElapsed);
+	virtual void OnPlayerUpdateCallback();
+	virtual void OnCameraUpdateCallback();
+
+	virtual void Move(DWORD dwDirection, float fDistance);
+	virtual void Update(float fTimeElapsed, PLAYER_TYPE ptype);
+	virtual void Update(float fTimeElapsed, PLAYER_TYPE ptype);
+	virtual void OnInteractive();
+	void SetSwitchArea(bool value,int nIndex) { m_bIsSwitchArea[nIndex] = value; }
+	bool GetSwitchArea(int nIndex) { return m_bIsSwitchArea[nIndex]; }
+
+	bool CheckSwitchArea();
+	SwitchInformation m_ppSwitch[3];
+};
+	SwitchInformation m_pSwitch;
+};
 
 
 class CSoundCallbackHandler : public CAnimationCallbackHandler

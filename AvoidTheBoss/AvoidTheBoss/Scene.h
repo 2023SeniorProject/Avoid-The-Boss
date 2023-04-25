@@ -65,8 +65,10 @@ public:
 	void AnimateObjects();
 	void Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera);
 	bool CollisionCheck();
-
+	void InteractionUpdate(DWORD dwDirection);
 	void ReleaseUploadBuffers();
+
+	bool OnExitReadyCount();
 
 	void ChangeMyPlayerCamera() 
 	{
@@ -114,7 +116,12 @@ public:
 	ID3D12Resource*						m_pd3dcbLights = NULL;
 	LIGHTS*								m_pcbMappedLights = NULL;
 
-	CSwitch* m_pSwitches = NULL;
+	int nSwitch = 3;
+	CSwitch** m_ppSwitch = NULL;
+
+	int m_nCountButtonClick = 0;
+
+	bool m_bIsExitReady = false;
 public:
 	Atomic<uint8> _curFrameIdx;
 	int32 m_cid = -1;

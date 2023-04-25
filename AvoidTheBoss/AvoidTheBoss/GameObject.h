@@ -332,6 +332,9 @@ public:
     virtual ~CGameObject();
 
 public:
+	Layout							objLayer;
+	bool m_bIsExitReady = false;
+
 	char							m_pstrFrameName[64];
 
 	CMesh							*m_pMesh = NULL;
@@ -373,7 +376,7 @@ public:
 
 	virtual void ReleaseUploadBuffers();
 
-	XMFLOAT3 GetPosition();
+	const XMFLOAT3 GetPosition();
 	XMFLOAT3 GetLook();
 	XMFLOAT3 GetUp();
 	XMFLOAT3 GetRight();
@@ -454,20 +457,65 @@ public:
 	void SetAnimationCount(int value) { m_nAnimationCount = value; }
 	bool GetAnimationCount() { return m_nAnimationCount; }
 
+	bool GetStateOn() { return StateOn; }
 	virtual void Animate(float fTimeElapsed);
 };
 
 class CSiren : public CGameObject
 {
+private:
+	bool m_OnSiren = false;
 public:
+
 	CSiren(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, CLoadedModelInfo* pModel, int nAnimationTracks);
 	virtual ~CSiren();
+
+	virtual void Animate(float fTimeElapsed);
 };
 
 class CDoor : public CGameObject
 {
+private:
+	bool m_OpenDoor = false;
 public:
 	CDoor(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, CLoadedModelInfo* pModel, int nAnimationTracks,int number);
 	virtual ~CDoor();
+
+	void Animate(float fTimeElapsed);
 };
 
+#define BUIIET_DISTANCE 2.5f
+#define BULLET_NUMBER 1
+class CBullet : public CGameObject
+{
+private:
+	float		m_fSpeed = 0.5f;
+	float		m_fDistance = 0.0f;
+	//XMFLOAT3 m_xmf3Position = XMFLOAT3(0.0f, 0.0f, 0.0f);
+	XMFLOAT3	m_xmf3Look = XMFLOAT3(0.0f, 0.0f, 1.0f);
+	XMFLOAT3	m_xmf3Right = XMFLOAT3(1.0f, 0.0f, 0.0f);
+	XMFLOAT3	m_xmf3Up = XMFLOAT3(0.0f, 1.0f, 0.0f);
+	XMFLOAT3	m_xmf3Velocity = XMFLOAT3(0.0f, 0.0f, 0.0f);
+
+	bool		m_OnShoot = false;
+public:
+	CBullet();
+	CBullet(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature);
+	virtual ~CBullet();
+
+	virtual void Update(float fTimeElapsed);
+	virtual void Animate(float fTimeElapsed);
+
+	void SetOnShoot(bool value) { m_OnShoot = value; }
+	bool GetOnShoot() { return m_OnShoot; }
+
+	void SetVelocity(XMFLOAT3 xmf3Look) { m_xmf3Velocity = xmf3Look; }
+	XMFLOAT3 GetVelocity() { return m_xmf3Velocity; }
+
+	void SetLook(XMFLOAT3 xmf3Look) { m_xmf3Look = xmf3Look; }
+	XMFLOAT3 GetLook() { return m_xmf3Look; }
+	void SetRight(XMFLOAT3 xmf3Look) { m_xmf3Look = xmf3Look; }
+	XMFLOAT3 GetRight() { return m_xmf3Look; }
+	void SetUp(XMFLOAT3 xmf3Look) { m_xmf3Look = xmf3Look; }
+	XMFLOAT3 GetUp() { return m_xmf3Look; }
+};

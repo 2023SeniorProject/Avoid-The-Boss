@@ -157,6 +157,10 @@ public:
 	virtual void OnInteractive();
 };
 
+enum InteracionType
+{
+	Switch1,Switch2,Switch3,
+};
 struct SwitchInformation
 {
 	XMFLOAT3 position;
@@ -166,7 +170,7 @@ struct SwitchInformation
 class CEmployee : public CPlayer
 {
 private:
-	bool m_bIsSwitchArea = false;
+	bool m_bIsSwitchArea[3];
 public:
 	CEmployee(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, CHARACTER_TYPE nType);
 	virtual ~CEmployee();
@@ -179,11 +183,11 @@ public:
 	virtual void Update(float fTimeElapsed, PLAYER_TYPE ptype);
 
 	virtual void OnInteractive();
-	void SetSwitchArea(bool value) { m_bIsSwitchArea = value; }
-	bool GetSwitchArea() { return m_bIsSwitchArea; }
+	void SetSwitchArea(bool value,int nIndex) { m_bIsSwitchArea[nIndex] = value; }
+	bool GetSwitchArea(int nIndex) { return m_bIsSwitchArea[nIndex]; }
 
 	bool CheckSwitchArea();
-	SwitchInformation m_pSwitch[3];
+	SwitchInformation m_ppSwitch[3];
 };
 
 

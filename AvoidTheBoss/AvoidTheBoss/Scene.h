@@ -66,8 +66,10 @@ public:
 	void AnimateObjects();
 	void Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera);
 	bool CollisionCheck();
-
+	void InteractionUpdate(DWORD dwDirection);
 	void ReleaseUploadBuffers();
+
+	bool OnExitReadyCount();
 
 	CPlayer* GetScenePlayer(const int16 sid) 
 	{ 

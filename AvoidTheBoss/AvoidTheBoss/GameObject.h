@@ -378,7 +378,7 @@ public:
 
 	virtual void ReleaseUploadBuffers();
 
-	XMFLOAT3 GetPosition();
+	const XMFLOAT3 GetPosition();
 	XMFLOAT3 GetLook();
 	XMFLOAT3 GetUp();
 	XMFLOAT3 GetRight();
@@ -461,6 +461,7 @@ public:
 	void SetAnimationCount(int value) { m_nAnimationCount = value; }
 	bool GetAnimationCount() { return m_nAnimationCount; }
 
+	bool GetStateOn() { return StateOn; }
 	virtual void Animate(float fTimeElapsed);
 };
 

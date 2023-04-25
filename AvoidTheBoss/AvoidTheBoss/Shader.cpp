@@ -545,7 +545,6 @@ void CBulletObjectsShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12Graphics
 void CBulletObjectsShader::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera)
 {
 	CStandardShader::Render(pd3dCommandList, pCamera);
-
 	for (int j = 0; j < m_nObjects; j++)
 	{
 		if (m_ppObjects[j])

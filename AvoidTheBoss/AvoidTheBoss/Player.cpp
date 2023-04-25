@@ -44,8 +44,7 @@ void CPlayer::Move(DWORD dwDirection, float fDistance)
 	if (dwDirection)
 	{	
 		//화살표 키 ‘↑’를 누르면 로컬 z-축 방향으로 이동(전진)한다. ‘↓’를 누르면 반대 방향으로 이동한다. 
-		if (dwDirection & DIR_FORWARD) 
-			if (dwDirection & DIR_FORWARD) xmf3Shift = Vector3::Add(xmf3Shift, m_xmf3Look, fDistance);
+		if (dwDirection & DIR_FORWARD) xmf3Shift = Vector3::Add(xmf3Shift, m_xmf3Look, fDistance);
 		if (dwDirection & DIR_BACKWARD) xmf3Shift = Vector3::Add(xmf3Shift, m_xmf3Look, -fDistance);
 		if (dwDirection & DIR_RIGHT) xmf3Shift = Vector3::Add(xmf3Shift, m_xmf3Right, fDistance);
 		if (dwDirection & DIR_LEFT) xmf3Shift = Vector3::Add(xmf3Shift, m_xmf3Right, -fDistance);
@@ -547,10 +546,10 @@ void CEmployee::Update(float fTimeElapsed, PLAYER_TYPE ptype)
 
 	if (CheckSwitchArea())
 	{
-		SetSwitchArea(true);
+		SetSwitchArea(true,nInteractionNum);
 	}
 	else
-		SetSwitchArea(false);
+		SetSwitchArea(false,nInteractionNum);
 
 	if (m_OnInteraction)
 			OnInteractive();
@@ -589,18 +588,21 @@ void CEmployee::OnInteractive()
 }
 bool CEmployee::CheckSwitchArea()
 {
-	//캐릭터 원 - 스위치 영역 원 충돌체크
-	XMFLOAT3 v1 = m_pSwitch[nInteractionNum].position;
-	XMFLOAT3 v2 = m_xmf3Position;
+	//캐릭터 원 - 스위치 영역 원 충돌체크 
+	for (int i = 0; i < 3; i++)
+	{
+		XMFLOAT3 v1 = m_ppSwitch[i].position;
+		XMFLOAT3 v2 = m_xmf3Position;
 
-	float fDistance = sqrt(pow(v1.x - v2.x, 2) + pow(v1.y - v2.y, 2) + pow(v1.y -v2.y, 2));
-	float fSumRange = m_pSwitch[nInteractionNum].radius + m_playerBV.Radius + 1.0f;
+		float fDistance = sqrt(pow(v1.x - v2.x, 2) + pow(v1.y - v2.y, 2) + pow(v1.y - v2.y, 2));
+		float fSumRange = m_ppSwitch[i].radius + m_playerBV.Radius + 1.0f;
 
-	if (fDistance <= fSumRange)
-		return true;
-	else
-		return false;
-
+		if (fDistance <= fSumRange)
+		{
+			nInteractionNum = i;
+			return true;
+		}
+	}
 	return false;
 }
 

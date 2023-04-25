@@ -157,12 +157,16 @@ void CGameScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandLis
 	CLoadedModelInfo* pSiren_L = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "Model/Siren_Alarm2_(1).bin", NULL, Layout::SIREN);
 	m_ppHierarchicalGameObjects[0] = new CSiren(pd3dDevice,pd3dCommandList,m_pd3dGraphicsRootSignature, pSiren_L,1);
 	m_ppHierarchicalGameObjects[0]->m_pSkinnedAnimationController->SetTrackAnimationSet(0, 0);
+	m_ppHierarchicalGameObjects[0]->AddRef();
+	m_ppHierarchicalGameObjects[0]->objLayer = SIREN;
 	if (pSiren_L) delete pSiren_L;
 
 	CLoadedModelInfo* pSiren_R = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "Model/Siren_Alarm2.bin", NULL, Layout::SIREN);
 	m_ppHierarchicalGameObjects[1] = new CSiren(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, pSiren_R, 1);
 	m_ppHierarchicalGameObjects[1]->m_pSkinnedAnimationController->SetTrackAnimationSet(0, 0);
-	m_ppHierarchicalGameObjects[0]->SetPosition(0.0f, 0.0f, 0.0f);
+	m_ppHierarchicalGameObjects[1]->SetPosition(0.0f, 0.0f, 0.0f);
+	m_ppHierarchicalGameObjects[1]->AddRef();
+	m_ppHierarchicalGameObjects[1]->objLayer = SIREN;
 	if (pSiren_R) delete pSiren_R;
 
 	CLoadedModelInfo* Button1 = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "Model/Button1.bin", NULL, Layout::SWITCH);
@@ -170,6 +174,8 @@ void CGameScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandLis
 	m_ppHierarchicalGameObjects[2]->m_pSkinnedAnimationController->SetTrackAnimationSet(0, 0);
 	m_ppHierarchicalGameObjects[2]->m_pSkinnedAnimationController->SetTrackEnable(0, false);
 	m_ppHierarchicalGameObjects[2]->SetPosition(-23.12724, 1.146619, 1.814123);//left ¤·
+	m_ppHierarchicalGameObjects[2]->AddRef();
+	m_ppHierarchicalGameObjects[2]->objLayer = SWITCH;
 	if (Button1) delete Button1;
 
 	CLoadedModelInfo* Button2 = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "Model/Button2.bin", NULL, Layout::SWITCH);
@@ -177,6 +183,8 @@ void CGameScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandLis
 	m_ppHierarchicalGameObjects[3]->m_pSkinnedAnimationController->SetTrackAnimationSet(0, 0);
 	m_ppHierarchicalGameObjects[3]->m_pSkinnedAnimationController->SetTrackEnable(0, false);
 	m_ppHierarchicalGameObjects[3]->SetPosition(23.08867, 1.083242, 3.155997);//right x
+	m_ppHierarchicalGameObjects[3]->AddRef();
+	m_ppHierarchicalGameObjects[3]->objLayer = SWITCH;
 	if (Button2) delete Button2;
 
 	CLoadedModelInfo* Button3 = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "Model/Button3.bin", NULL, Layout::SWITCH);
@@ -184,35 +192,47 @@ void CGameScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandLis
 	m_ppHierarchicalGameObjects[4]->m_pSkinnedAnimationController->SetTrackAnimationSet(0, 0);
 	m_ppHierarchicalGameObjects[4]->m_pSkinnedAnimationController->SetTrackEnable(0, false);
 	m_ppHierarchicalGameObjects[4]->SetPosition(0.6774719,  1.083242, -23.05909);//back È¸Àü
+	m_ppHierarchicalGameObjects[4]->AddRef();
+	m_ppHierarchicalGameObjects[4]->objLayer = SWITCH;
 	if (Button3) delete Button3;
 
 	CLoadedModelInfo* Front_Door = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "Model/Front_Hanger_Door_Open.bin", NULL, Layout::DOOR);
 	m_ppHierarchicalGameObjects[5] = new CDoor(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, Front_Door, 1, 0);
 	m_ppHierarchicalGameObjects[5]->m_pSkinnedAnimationController->SetTrackAnimationSet(0, 0);
+	m_ppHierarchicalGameObjects[5]->AddRef();
+	m_ppHierarchicalGameObjects[5]->objLayer = DOOR;
 	//m_ppHierarchicalGameObjects[5]->m_pSkinnedAnimationController->SetTrackEnable(0, false);
 	if (Front_Door) delete Front_Door;
 
 	CLoadedModelInfo* LShtter_Door = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "Model/Left_Sutter_Open.bin", NULL, Layout::DOOR);
 	m_ppHierarchicalGameObjects[6] = new CDoor(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, LShtter_Door, 1, 1);
 	m_ppHierarchicalGameObjects[6]->m_pSkinnedAnimationController->SetTrackAnimationSet(0, 0);
+	m_ppHierarchicalGameObjects[6]->AddRef();
+	m_ppHierarchicalGameObjects[6]->objLayer = DOOR;
 	//m_ppHierarchicalGameObjects[6]->m_pSkinnedAnimationController->SetTrackEnable(0, false);
 	if (LShtter_Door) delete LShtter_Door;
 
 	CLoadedModelInfo* RShtter_Door = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "Model/Right_Sutter_Open.bin", NULL, Layout::DOOR);
 	m_ppHierarchicalGameObjects[7] = new CDoor(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, RShtter_Door, 1, 2);
 	m_ppHierarchicalGameObjects[7]->m_pSkinnedAnimationController->SetTrackAnimationSet(0, 0);
+	m_ppHierarchicalGameObjects[7]->AddRef();
+	m_ppHierarchicalGameObjects[7]->objLayer = DOOR;
 	//m_ppHierarchicalGameObjects[7]->m_pSkinnedAnimationController->SetTrackEnable(0, false);
 	if (RShtter_Door) delete RShtter_Door;
 
 	CLoadedModelInfo* LEmergenct_Door = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "Model/Left_Emergency_Door_Open.bin", NULL, Layout::DOOR);
 	m_ppHierarchicalGameObjects[8] = new CDoor(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, LEmergenct_Door, 1, 3);
 	m_ppHierarchicalGameObjects[8]->m_pSkinnedAnimationController->SetTrackAnimationSet(0, 0);
+	m_ppHierarchicalGameObjects[8]->AddRef();
+	m_ppHierarchicalGameObjects[8]->objLayer = DOOR;
 	//m_ppHierarchicalGameObjects[8]->m_pSkinnedAnimationController->SetTrackEnable(0, false);
 	if (LEmergenct_Door) delete LEmergenct_Door;
 
 	CLoadedModelInfo* REmergenct_Door = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "Model/Right_Emergency_Door_Open.bin", NULL, Layout::DOOR);
 	m_ppHierarchicalGameObjects[9] = new CDoor(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, REmergenct_Door, 1, 4);
 	m_ppHierarchicalGameObjects[9]->m_pSkinnedAnimationController->SetTrackAnimationSet(0, 0);
+	m_ppHierarchicalGameObjects[9]->AddRef();
+	m_ppHierarchicalGameObjects[9]->objLayer = DOOR;
 	//m_ppHierarchicalGameObjects[9]->m_pSkinnedAnimationController->SetTrackEnable(0, false);
 	if (REmergenct_Door) delete REmergenct_Door;
 
@@ -241,11 +261,6 @@ void CGameScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandLis
 
 	m_ppSwitch = new CSwitch * [nSwitch];
 
-
-	//m_ppSwitch[0] = (CSwitch*)m_ppHierarchicalGameObjects[2];
-	//m_ppSwitch[1] = (CSwitch*)m_ppHierarchicalGameObjects[3];
-	//m_ppSwitch[2] = (CSwitch*)m_ppHierarchicalGameObjects[4];
-
 	for (int i = 0; i < PLAYERNUM; ++i)
 	{
 		if (false/*i == (int)CHARACTER_TYPE::BOSS*/)
@@ -259,13 +274,16 @@ void CGameScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandLis
 		else
 		{
 			_players[i] = new CEmployee(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, CHARACTER_TYPE::GOGGLE_EMP);
-			for (int i = 0; i < nSwitch; i++)
+			for (int j = 0; j < nSwitch; j++)
 			{
-				if (m_ppHierarchicalGameObjects[i]&&m_ppSwitch[i])
+				if (m_ppHierarchicalGameObjects[j+2])
 				{
-					m_ppSwitch[i] = (CSwitch*)m_ppHierarchicalGameObjects[i+2];
-					((CEmployee*)_players[i])->m_pSwitch[i].position = m_ppSwitch[i]->GetPosition();
-					((CEmployee*)_players[i])->m_pSwitch[i].radius = m_ppSwitch[i]->GetRadius();
+					m_ppSwitch[j] = (CSwitch*)m_ppHierarchicalGameObjects[j + 2];
+					if (m_ppSwitch[j])
+					{
+						((CEmployee*)_players[i])->m_ppSwitch[j].position = m_ppSwitch[j]->GetPosition();
+						((CEmployee*)_players[i])->m_ppSwitch[j].radius = m_ppSwitch[j]->GetRadius();
+					}
 				}
 			}
 		}
@@ -304,11 +322,9 @@ void CGameScene::ProcessInput(HWND hWnd)
 					{
 						if (!m_ppSwitch[i]->StateOn)
 						{
-							if (((CEmployee*)_players[_playerIdx])->GetSwitchArea())
+							if (((CEmployee*)_players[_playerIdx])->GetSwitchArea(i))
 							{
 								_players[_playerIdx]->SetOnInteraction(true);
-								_players[_playerIdx]->SetnInteractionNum(i);
-								break;
 							}
 						}
 					}
@@ -322,11 +338,9 @@ void CGameScene::ProcessInput(HWND hWnd)
 					{
 						if (!m_ppSwitch[i]->StateOn)
 						{
-							if (((CEmployee*)_players[_playerIdx])->GetSwitchArea())
+							if (((CEmployee*)_players[_playerIdx])->GetSwitchArea(i))
 							{
 								_players[_playerIdx]->SetOnInteraction(true);
-								_players[_playerIdx]->SetnInteractionNum(i);
-								break;
 							}
 						}
 					}
@@ -344,31 +358,25 @@ void CGameScene::ProcessInput(HWND hWnd)
 				}
 			}
 	}
+
+	bool IsReadyExit = OnExitReadyCount();
 	if (_players[_playerIdx]->m_nCharacterType != CHARACTER_TYPE::BOSS)
 	{
 		if (((CEmployee*)_players[_playerIdx])->GetOnInteraction())
 		{
-			if (m_nCountButtonClick < 3)
+			if (!IsReadyExit)
 			{
 				dwDirection |= DIR_BUTTON_CENTER;
-				int nIndex = ((CEmployee*)_players[_playerIdx])->GetnInteractionCountTime();
+				int nIndex = ((CEmployee*)_players[_playerIdx])->GetnInteractionNum();
 				if (m_ppSwitch[nIndex])
 				{
 					m_ppSwitch[nIndex]->SetOnSwitch(true);
 					m_ppSwitch[nIndex]->SetAnimationCount(BUTTON_ANIM_FRAME);
-					m_nCountButtonClick++;
-				}
-			}
-			else if (m_nCountButtonClick == 3)
-			{
-				for (int i = 0; i < m_nHierarchicalGameObjects; i++)
-				{
-					if (m_ppHierarchicalGameObjects[i]->objLayer == Layout::SIREN && m_ppHierarchicalGameObjects[i]->objLayer == Layout::DOOR)
-						m_ppHierarchicalGameObjects[i]->m_bIsExitReady = true;
 				}
 			}
 		}
 	}
+
 
 	float cxDelta = 0.0f, cyDelta = 0.0f;
 	POINT ptCursorPos;
@@ -460,6 +468,11 @@ bool CGameScene::CollisionCheck()
 	_players[_playerIdx]->m_playerBV.Center = _players[_playerIdx]->GetPosition();
 	_players[_playerIdx]->m_playerBV.Radius = 3.0f;
 	return false;
+}
+
+void CGameScene::InteractionUpdate(DWORD dwDirection)
+{
+
 }
 
 
@@ -700,6 +713,31 @@ void CGameScene::ReleaseUploadBuffers()
 	for (int i = 0; i < m_nShaders; i++) if (m_ppShaders[i])m_ppShaders[i]->ReleaseUploadBuffers();
 	for (int i = 0; i < m_nGameObjects; i++) if (m_ppGameObjects[i]) m_ppGameObjects[i]->ReleaseUploadBuffers();
 	for (int i = 0; i < m_nHierarchicalGameObjects; i++) m_ppHierarchicalGameObjects[i]->ReleaseUploadBuffers();
+}
+
+bool CGameScene::OnExitReadyCount()
+{
+	int nOnStateSwitch = 0;
+	for (int i = 0; i < nSwitch; i++)
+	{
+		if (m_ppSwitch[i]->GetStateOn())
+			nOnStateSwitch++;
+	}
+	if (nOnStateSwitch == nSwitch)
+	{
+		for (int i = 0; i < m_nHierarchicalGameObjects; i++)
+		{
+			if (m_ppHierarchicalGameObjects[i])
+			{
+				if ((m_ppHierarchicalGameObjects[i]->objLayer == Layout::SIREN) || (m_ppHierarchicalGameObjects[i]->objLayer == Layout::DOOR))
+				{
+					m_ppHierarchicalGameObjects[i]->m_bIsExitReady = true;
+				}
+			}
+		}	
+		return true;
+	}
+	return false;
 }
 
 void CGameScene::CreateCbvSrvDescriptorHeaps(ID3D12Device* pd3dDevice, int nConstantBufferViews, int nShaderResourceViews)

@@ -459,7 +459,8 @@ void CAnimationController::SetTrackEnable(int nAnimationTrack, bool bEnable)
 
 bool CAnimationController::GetTrackEnable(int nAnimationTrack)
 {
-	if (m_pAnimationTracks) return m_pAnimationTracks[nAnimationTrack].GetEnable();
+	if (m_pAnimationTracks) 
+		return m_pAnimationTracks[nAnimationTrack].GetEnable();
 }
 
 void CAnimationController::SetTrackPosition(int nAnimationTrack, float fPosition)
@@ -776,7 +777,7 @@ void CGameObject::SetScale(float x, float y, float z)
 	UpdateTransform(NULL);
 }
 
-XMFLOAT3 CGameObject::GetPosition()
+const XMFLOAT3 CGameObject::GetPosition()
 {
 	return(XMFLOAT3(m_xmf4x4World._41, m_xmf4x4World._42, m_xmf4x4World._43));
 }
@@ -1293,42 +1294,8 @@ void CSwitch::SetRandomPosition(XMFLOAT3 pos)
 
 void CSwitch::SetBounds()
 {
-	//CGameObject* pRoot = FindFrame("Switch");
-	//if (pRoot)
-	//{
-	//	//m_pAABB.Center = XMFLOAT3(pRoot->GetPosition().x, 0.0f, pRoot->GetPosition().z);
-	//	if (pRoot->m_pAABB.Extents.x > pRoot->m_pAABB.Extents.z)
-	//	{
-	//		radius = pRoot->m_pAABB.Extents.x;
-	//	}
-	//	else
-	//	{
-	//		radius = pRoot->m_pAABB.Extents.z;
-	//	}
-	//}
 
 }
-
-//void CSwitch::Animate(float fTimeElapsed)
-//{
-//	if (m_bOnSwitch)
-//	{
-//		CGameObject* pButton = FindFrame("Cylinder");
-//
-//		if (m_nAnimationCount > 0)
-//		{
-//			pButton->MoveForward(0.00001f * fTimeElapsed * m_nAnimationCount);
-//			m_nAnimationCount--;
-//		}
-//		else
-//		{
-//			m_bOnSwitch = false;
-//			m_nAnimationCount = 0;
-//			StateOn = true;
-//		}
-//	}
-//	//UpdateTransform(NULL);
-//}
 
 void CSwitch::Animate(float fTimeElapsed)
 {
@@ -1352,26 +1319,26 @@ void CSwitch::Animate(float fTimeElapsed)
 			}
 		}
 	}
-	else 
-	{
-		if (m_bOnSwitch)
-		{
-			CGameObject* pButton = FindFrame("Cylinder");
-
-			if (m_nAnimationCount > 0)
-			{
-
-				pButton->MoveForward(0.00001f * fTimeElapsed * m_nAnimationCount);
-				m_nAnimationCount--;
-			}
-			else
-			{
-				m_bOnSwitch = false;
-				m_nAnimationCount = 0;
-				StateOn = true;
-			}
-		}
-	}
+	//else 
+	//{
+	//	if (m_bOnSwitch)
+	//	{
+	//		CGameObject* pButton = FindFrame("Cylinder");
+	//
+	//		if (m_nAnimationCount > 0)
+	//		{
+	//
+	//			pButton->MoveForward(0.00001f * fTimeElapsed * m_nAnimationCount);
+	//			m_nAnimationCount--;
+	//		}
+	//		else
+	//		{
+	//			m_bOnSwitch = false;
+	//			m_nAnimationCount = 0;
+	//			StateOn = true;
+	//		}
+	//	}
+	//}
 
 	//UpdateTransform(NULL);
 }

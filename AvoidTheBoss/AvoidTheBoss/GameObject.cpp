@@ -1362,7 +1362,7 @@ CSiren::~CSiren()
 void CSiren::Animate(float fTimeElapsed)
 {
 	if(m_bIsExitReady)
-		m_pSkinnedAnimationController->SetTrackEnable(0, true);
+		m_pSkinnedAnimationController->SetTrackEnable(0, false);
 
 	CGameObject::Animate(fTimeElapsed);
 }
@@ -1393,7 +1393,7 @@ CDoor::~CDoor()
 void CDoor::Animate(float fTimeElapsed)
 {
 	if(m_bIsExitReady)
-		m_pSkinnedAnimationController->SetTrackEnable(0, true);
+		m_pSkinnedAnimationController->SetTrackEnable(0, false);
 
 	CGameObject::Animate(fTimeElapsed);
 }

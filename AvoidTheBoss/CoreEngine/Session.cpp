@@ -195,7 +195,6 @@ void ServerSession::ProcessPacket(char* packet)
 			swev->eventId = ep->eventId;
 			std::cout << "EVENT ID : " << (int32)swev->eventId << "\n";
  			swev->sid = _sid;
-			swev->switchIdx = 0;
 			ServerIocpCore._rmgr->GetRoom(_myRm).AddEvent(swev, 0.f);
 		}
 		break;

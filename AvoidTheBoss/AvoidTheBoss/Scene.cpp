@@ -315,22 +315,26 @@ void CGameScene::ProcessInput(HWND hWnd)
 			int32 switchIdx = myPlayer->IsPlayerInSwitchArea(); // 몇 번 스위치 영역에 있는지 파악한다.
 			if ((pKeyBuffer[0x46] & 0xF0) || (pKeyBuffer[0x66] & 0xF0)) // F키가 눌렸을 경우
 			{
-				m_ppSwitches[switchIdx]->m_lock.lock();
-				if (myPlayer->IsPlayerCanSwitchInteraction() && !m_ppSwitches[switchIdx]->m_bOtherPlayerInteractionOn) // 다른 플레이어가 상호작용 상태가 아닐 때 && 플레이어가 스위치 위치에 있다면
+		
+				if (switchIdx != -1)
 				{
-					if (!myPlayer->m_bIsPlayerOnSwitchInteration) // 플레이어가 상호작용 상태가 아니였다면 
+					m_ppSwitches[switchIdx]->m_lock.lock();
+					if (myPlayer->IsPlayerCanSwitchInteraction() && !m_ppSwitches[switchIdx]->m_bOtherPlayerInteractionOn) // 다른 플레이어가 상호작용 상태가 아닐 때 && 플레이어가 스위치 위치에 있다면
 					{
-						myPlayer->m_bIsPlayerOnSwitchInteration = true;
-						myPlayer->SetOnInteraction(true);
-						dwDirection = 0;
-						SC_EVENTPACKET packet;
-						packet.eventId = switchIdx + 2;
-						packet.size = sizeof(SC_EVENTPACKET);
-						packet.type = SC_PACKET_TYPE::GAMEEVENT;
-						clientCore._client->DoSend(&packet);
+						if (!myPlayer->m_bIsPlayerOnSwitchInteration) // 플레이어가 상호작용 상태가 아니였다면 
+						{
+							myPlayer->m_bIsPlayerOnSwitchInteration = true;
+							myPlayer->SetOnInteraction(true);
+							dwDirection = 0;
+							SC_EVENTPACKET packet;
+							packet.eventId = switchIdx + 2;
+							packet.size = sizeof(SC_EVENTPACKET);
+							packet.type = SC_PACKET_TYPE::GAMEEVENT;
+							clientCore._client->DoSend(&packet);
+						}
 					}
+					m_ppSwitches[switchIdx]->m_lock.unlock();
 				}
-				m_ppSwitches[switchIdx]->m_lock.unlock();
 				dwDirection |= DIR_BUTTON_F;
 			}
 			else // F키가 안눌린 상태일 때

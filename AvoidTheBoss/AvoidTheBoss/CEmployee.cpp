@@ -151,7 +151,6 @@ int32 CEmployee::IsPlayerInSwitchArea()
 		float sumRange = m_playerBV.Radius + m_pSwitches[i].radius;
 		if (distance <= sumRange)
 		{
-			std::cout << "In SwitchArea\n";
 			return i;
 		}
 	}

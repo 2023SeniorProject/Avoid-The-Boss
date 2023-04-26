@@ -94,7 +94,10 @@ void Room::UserIn(int32 sid)
 			_switchs[0]._pos = XMFLOAT3(-23.12724, 1.146619, 1.814123);
 			_switchs[1]._pos = XMFLOAT3(23.08867, 1.083242, 3.155997);
 			_switchs[2]._pos = XMFLOAT3(0.6774719, 1.083242, -23.05909);
-			
+			for (int i = 0; i < 3; ++i)
+			{
+				_switchs[i]._idx = i;
+			}
 		}
 	}		
 	std::cout << "RM [" << _num << "][" << _cList.size() << "/4]" << std::endl;

@@ -8,7 +8,7 @@ CBoss::CBoss(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandLis
 	m_pCamera = ChangeCamera(THIRD_PERSON_CAMERA, 0.0f);
 
 	m_nCharacterType = CHARACTER_TYPE::BOSS;
-	//m_InteractionCountTime = INTERACTION_TIME;
+	m_InteractionCountTime = 65;
 
 	CLoadedModelInfo* pBossModel = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, g_pstrCharactorRefernece[(int)m_nCharacterType], NULL, Layout::PLAYER);
 	SetChild(pBossModel->m_pModelRootObject, true);
@@ -156,6 +156,6 @@ void CBoss::OnInteractive()
 		m_pSkinnedAnimationController->SetTrackEnable(0, false);
 		m_pSkinnedAnimationController->SetTrackEnable(3, false);
 		m_OnInteraction = false;
-		//m_InteractionCountTime = INTERACTION_TIME;
+		m_InteractionCountTime = 65;
 	}
 }

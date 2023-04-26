@@ -243,6 +243,7 @@ void CSession::ProcessPacket(char* packet)
 			std::cout << "Switch Activate\n";
 			if (mainGame.m_pScene->m_ActiveSwitchCnt.load() == mainGame.m_pScene->nSwitch) // 만약 3개의 스위치가 모두 활성화 되었다면, 
 			{
+				std::cout << "Clear\n";
 				mainGame.m_pScene->m_bIsExitReady = true; // 탈출 조건 true
 			}
 		}

@@ -7,7 +7,7 @@ CEmployee::CEmployee(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCo
 
 	m_nCharacterType = nType;
 
-	//m_InteractionCountTime = INTERACTION_TIME;
+	m_InteractionCountTime = 40;
 
 	CLoadedModelInfo* pEmployeeModel = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, g_pstrCharactorRefernece[(int)m_nCharacterType], NULL, Layout::PLAYER);
 	SetChild(pEmployeeModel->m_pModelRootObject, true);
@@ -139,7 +139,7 @@ void CEmployee::OnInteractive()
 		m_pSkinnedAnimationController->SetTrackEnable(1, false);
 		m_pSkinnedAnimationController->SetTrackEnable(6, false);
 		m_OnInteraction = false;
-		//m_InteractionCountTime = INTERACTION_TIME;
+		m_InteractionCountTime = 45;
 	}
 }
 int32 CEmployee::IsPlayerInSwitchArea()

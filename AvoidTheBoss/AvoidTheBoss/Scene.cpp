@@ -266,7 +266,7 @@ void CGameScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandLis
 
 	for (int i = 0; i < PLAYERNUM; ++i)
 	{
-		if (i != (int)CHARACTER_TYPE::BOSS)
+		if (i == (int)CHARACTER_TYPE::BOSS)
 		{
 			_players[i] = new CBoss(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature);
 			if (m_ppShaders[2])
@@ -325,6 +325,8 @@ void CGameScene::ProcessInput(HWND hWnd)
 						{
 							myPlayer->m_bIsPlayerOnSwitchInteration = true;
 							myPlayer->SetOnInteraction(true);
+							m_ppSwitches[switchIdx]->m_bSwitchInteractionOn = true;
+							m_ppSwitches[switchIdx]->SetAnimationCount(BUTTON_ANIM_FRAME);
 							dwDirection = 0;
 							SC_EVENTPACKET packet;
 							packet.eventId = switchIdx + 2;
@@ -422,7 +424,16 @@ void CGameScene::ProcessInput(HWND hWnd)
 
 	if (m_bIsExitReady) // 탈출 성공 시 , 해야할 일 처리
 	{
-		OnExitReadyCount();
+		for (int i = 0; i < m_nHierarchicalGameObjects; i++)
+		{
+			if (m_ppHierarchicalGameObjects[i])
+			{
+				if ((m_ppHierarchicalGameObjects[i]->objLayer == Layout::SIREN) || (m_ppHierarchicalGameObjects[i]->objLayer == Layout::DOOR))
+				{
+					m_ppHierarchicalGameObjects[i]->m_bIsExitReady = true;
+				}
+			}
+		}
 	}
 
 
@@ -692,17 +703,17 @@ bool CGameScene::OnExitReadyCount()
 	//}
 	//if (nOnStateSwitch == nSwitch)
 	//{
-	//	for (int i = 0; i < m_nHierarchicalGameObjects; i++)
-	//	{
-	//		if (m_ppHierarchicalGameObjects[i])
-	//		{
-	//			if ((m_ppHierarchicalGameObjects[i]->objLayer == Layout::SIREN) || (m_ppHierarchicalGameObjects[i]->objLayer == Layout::DOOR))
-	//			{
-	//				m_ppHierarchicalGameObjects[i]->m_bIsExitReady = true;
-	//			}
-	//		}
-	//	}	
-	//	return true;
+	//	
+	//	
+	//	
+	//	
+	//	
+	//	
+	//	
+	//	
+	//	
+	//	
+	//	
 	//}
 	//return false;
 	return false;

@@ -345,7 +345,7 @@ void CGameScene::ProcessInput(HWND hWnd)
 					if (myPlayer->m_bIsPlayerOnSwitchInteration && !m_ppSwitches[switchIdx]->m_bSwitchActive) // 눌렀다 땐 상황이라면
 					{
 						SC_EVENTPACKET packet;
-						packet.eventId = 3;
+						packet.eventId = switchIdx + 5;
 						packet.size = sizeof(SC_EVENTPACKET);
 						packet.type = SC_PACKET_TYPE::GAMEEVENT;
 						myPlayer->m_bIsPlayerOnSwitchInteration = false;
@@ -422,16 +422,7 @@ void CGameScene::ProcessInput(HWND hWnd)
 
 	if (m_bIsExitReady) // 탈출 성공 시 , 해야할 일 처리
 	{
-		for (int i = 0; i < m_nHierarchicalGameObjects; i++)
-		{
-			if (m_ppHierarchicalGameObjects[i])
-			{
-				if ((m_ppHierarchicalGameObjects[i]->objLayer == Layout::SIREN) || (m_ppHierarchicalGameObjects[i]->objLayer == Layout::DOOR))
-				{
-					m_ppHierarchicalGameObjects[i]->m_bIsExitReady = true;
-				}
-			}
-		}
+		OnExitReadyCount();
 	}
 
 

@@ -16,13 +16,7 @@ Room::Room()
 {
 	_jobQueue = new Scheduler();
 	
-	for (int i = 0; i < 3; ++i)
-	{
-		_switchs[i]._idx = i;
-	}
-	_switchs[0]._pos = XMFLOAT3(-23.12724, 1.146619, 1.814123);
-	_switchs[1]._pos = XMFLOAT3(23.08867, 1.083242, 3.155997);
-	_switchs[2]._pos = XMFLOAT3(0.6774719, 1.083242, -23.05909);
+	
 }
 
 Room::~Room()
@@ -97,6 +91,9 @@ void Room::UserIn(int32 sid)
 				++k;
 			}
 			BroadCasting(&packet);
+			_switchs[0]._pos = XMFLOAT3(-23.12724, 1.146619, 1.814123);
+			_switchs[1]._pos = XMFLOAT3(23.08867, 1.083242, 3.155997);
+			_switchs[2]._pos = XMFLOAT3(0.6774719, 1.083242, -23.05909);
 			
 		}
 	}		
@@ -146,10 +143,11 @@ void Room::Update()
 	{
 		if(_switchs[i].UpdateGuage(_timer.GetTimeElapsed()))
 		{ 
+			std::cout << "Complete\n";
 			SC_EVENTPACKET packet;
 			packet.type = SC_PACKET_TYPE::GAMEEVENT;
 			packet.size = sizeof(SC_EVENTPACKET);
-			packet.eventId = 10 + (i - 8);
+			packet.eventId = 10 - i;
 			BroadCasting(&packet);
 		}
 	}

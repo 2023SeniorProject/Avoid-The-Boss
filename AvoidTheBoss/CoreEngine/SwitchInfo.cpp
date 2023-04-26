@@ -30,11 +30,11 @@ bool SwitchInfo::UpdateGuage(float elapsedTime)
 bool SwitchInfo::CanInteraction(int32 sid)
 {
 	ServerIocpCore._rmgr->GetRoom(sid).GetMyPlayerFromRoom(sid)._lock.lock();
-	XMFLOAT3 distance = Vector3::Subtract(ServerIocpCore._rmgr->GetRoom(sid).GetMyPlayerFromRoom(sid).GetPosition(),_pos);
+	XMFLOAT3 myPlayerpos = ServerIocpCore._rmgr->GetRoom(sid).GetMyPlayerFromRoom(sid).GetPosition();
+	XMFLOAT3 distance = Vector3::Subtract(myPlayerpos,_pos);
+	std::cout << myPlayerpos.x << " " << myPlayerpos.z << "\n";
 	float range = 0.2 + _ActiveRadius;
 	ServerIocpCore._rmgr->GetRoom(sid).GetMyPlayerFromRoom(sid)._lock.unlock();
 	if (Vector3::Length(distance) <= range) return true;
-	
-	std::cout << "Fail\n";
 	return false;
 }

@@ -235,7 +235,7 @@ void CSession::ProcessPacket(char* packet)
 		case 9:
 		case 10:
 		{
-			CSwitch* mSwitch = mainGame.m_pScene->m_ppSwitches[ev->eventId - 5];
+			CSwitch* mSwitch = mainGame.m_pScene->m_ppSwitches[ev->eventId - 8];
 			mSwitch->m_lock.lock();
 			mainGame.m_pScene->m_ppSwitches[ev->eventId - 8]->m_bSwitchActive = true;
 			mSwitch->m_lock.unlock();

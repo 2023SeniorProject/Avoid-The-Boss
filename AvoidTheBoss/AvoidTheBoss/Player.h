@@ -53,7 +53,6 @@ public:
 	int16 m_sid = -1; // 切重生 Session Id
 	std::mutex m_lock; // 切重税 Lock
 	BoundingSphere m_playerBV; // BV = bounding volume
-
 	CHARACTER_TYPE m_nCharacterType;
 public: 
 	CPlayer();

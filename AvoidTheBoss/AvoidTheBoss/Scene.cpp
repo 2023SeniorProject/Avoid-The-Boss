@@ -312,10 +312,11 @@ void CGameScene::ProcessInput(HWND hWnd)
 		if (_players[_playerIdx]->m_nCharacterType != CHARACTER_TYPE::BOSS) // 플레이어의 타입이 아닐 때
 		{
 			CEmployee* myPlayer = static_cast<CEmployee*>(_players[_playerIdx]);
-			int32 switchIdx = myPlayer->IsPlayerInSwitchArea(); // 어떤 스위치 영역에 있는지 파악한다.
+			int32 switchIdx = myPlayer->IsPlayerInSwitchArea(); // 몇 번 스위치 영역에 있는지 파악한다.
 			if ((pKeyBuffer[0x46] & 0xF0) || (pKeyBuffer[0x66] & 0xF0)) // F키가 눌렸을 경우
 			{
-				if (myPlayer->IsPlayerCanSwitchInteraction())
+				m_ppSwitches[switchIdx]->m_lock.lock();
+				if (myPlayer->IsPlayerCanSwitchInteraction() && !m_ppSwitches[switchIdx]->m_bOtherPlayerInteractionOn) // 다른 플레이어가 상호작용 상태가 아닐 때 && 플레이어가 스위치 위치에 있다면
 				{
 					if (!myPlayer->m_bIsPlayerOnSwitchInteration) // 플레이어가 상호작용 상태가 아니였다면 
 					{
@@ -323,27 +324,30 @@ void CGameScene::ProcessInput(HWND hWnd)
 						myPlayer->SetOnInteraction(true);
 						dwDirection = 0;
 						SC_EVENTPACKET packet;
-						packet.eventId = 2;
+						packet.eventId = switchIdx + 2;
 						packet.size = sizeof(SC_EVENTPACKET);
 						packet.type = SC_PACKET_TYPE::GAMEEVENT;
 						clientCore._client->DoSend(&packet);
 					}
 				}
+				m_ppSwitches[switchIdx]->m_lock.unlock();
 				dwDirection |= DIR_BUTTON_F;
 			}
 			else // F키가 안눌린 상태일 때
 			{
 				if (switchIdx != -1 && myPlayer->IsPlayerCanSwitchInteraction())
 				{
+					m_ppSwitches[switchIdx]->m_lock.lock();
 					if (myPlayer->m_bIsPlayerOnSwitchInteration && !m_ppSwitches[switchIdx]->m_bSwitchActive) // 눌렀다 땐 상황이라면
 					{
 						SC_EVENTPACKET packet;
-						packet.eventId = 5;
+						packet.eventId = 3;
 						packet.size = sizeof(SC_EVENTPACKET);
 						packet.type = SC_PACKET_TYPE::GAMEEVENT;
 						myPlayer->m_bIsPlayerOnSwitchInteration = false;
 						clientCore._client->DoSend(&packet);
 					}
+					m_ppSwitches[switchIdx]->m_lock.unlock();
 				}
 			}
 		}
@@ -411,6 +415,22 @@ void CGameScene::ProcessInput(HWND hWnd)
 		else _players[k]->Update(_timer.GetTimeElapsed(), PLAYER_TYPE::OTHER_PLAYER);
 		_players[k]->m_lock.unlock();
 	}
+
+	if (m_bIsExitReady) // 탈출 성공 시 , 해야할 일 처리
+	{
+		for (int i = 0; i < m_nHierarchicalGameObjects; i++)
+		{
+			if (m_ppHierarchicalGameObjects[i])
+			{
+				if ((m_ppHierarchicalGameObjects[i]->objLayer == Layout::SIREN) || (m_ppHierarchicalGameObjects[i]->objLayer == Layout::DOOR))
+				{
+					m_ppHierarchicalGameObjects[i]->m_bIsExitReady = true;
+				}
+			}
+		}
+	}
+
+
 	// 평균 프레임 레이트 출력
 	std::wstring str = L"[";
 	str.append(std::to_wstring(m_cid));
@@ -428,8 +448,6 @@ bool CGameScene::CollisionCheck()
 	_players[_playerIdx]->m_playerBV.Radius = 3.0f;
 	return false;
 }
-
-
 
 void CGameScene::ReleaseObjects()
 {

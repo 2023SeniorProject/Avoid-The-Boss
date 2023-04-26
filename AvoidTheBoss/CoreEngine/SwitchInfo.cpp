@@ -5,27 +5,26 @@
 
 bool SwitchInfo::UpdateGuage(float elapsedTime)
 {
-		if (_IsOnInteraction)
+	if (_IsOnInteraction && !_IsActive)
+	{
+		_coolTime -= elapsedTime;
+		if (_coolTime <= 0.f)
 		{
-			_coolTime -= elapsedTime;
-			if (_coolTime <= 0.f)
-			{
-				_lock.lock();
-				_coolTime = 100.f / 1000.f;
-				_curGuage += _GuageOffset;
-				_lock.unlock();
-				std::cout << _curGuage << "%\n";
-			}
-			else return false;
-
+			_lock.lock();
+			_coolTime = 100.f / 1000.f;
+			_curGuage += _GuageOffset;
+			_lock.unlock();
+			std::cout << "["<< _idx << "]" << _curGuage << "%\n";
+	
 			if (_curGuage == _maxGuage)
 			{
 				SwitchActivate();
 				return true;
 			}
 		}
+	}
 
-		return false;
+	return false;
 }
 
 bool SwitchInfo::CanInteraction(int32 sid)

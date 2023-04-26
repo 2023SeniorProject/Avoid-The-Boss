@@ -12,9 +12,13 @@ public:
 	std::mutex _lock;
 	float _coolTime;
 	float _ActiveRadius = 0.2f;
-
+	int32 _idx;
 public:
-	SwitchInfo() { _pos = XMFLOAT3(0.0f, 0.25f, -50.0f); }
+	SwitchInfo() 
+	{
+		_pos = XMFLOAT3(0.0f, 0.0f, 0.0f);
+		_idx = 0;
+	}
 	~SwitchInfo() {}
 
 	void SwitchInterationOn() 

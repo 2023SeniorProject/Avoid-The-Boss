@@ -65,7 +65,7 @@ public:
 	void AnimateObjects();
 	void Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera);
 	bool CollisionCheck();
-	void InteractionUpdate(DWORD dwDirection);
+	//void InteractionUpdate(DWORD dwDirection);
 	void ReleaseUploadBuffers();
 
 	bool OnExitReadyCount();
@@ -118,8 +118,8 @@ public:
 
 	int nSwitch = 3;
 	CSwitch** m_ppSwitches = NULL;
-
 	int m_nCountButtonClick = 0;
+	Atomic<int32> m_ActiveSwitchCnt = 0; // 활성화 된 스위치 카운트;
 
 	bool m_bIsExitReady = false;
 public:

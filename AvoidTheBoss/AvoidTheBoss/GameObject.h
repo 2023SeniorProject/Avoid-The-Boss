@@ -444,8 +444,9 @@ private:
 public:
 	bool m_bSwitchActive = false;
 	bool m_bSwitchInteractionOn = false;
+	bool m_bOtherPlayerInteractionOn = false;
 	int  m_nAnimationCount = BUTTON_ANIM_FRAME;
-
+	std::mutex m_lock;
 	CSwitch();
 	CSwitch(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, CLoadedModelInfo* pModel, int nAnimationTracks,int number);
 	virtual ~CSwitch();

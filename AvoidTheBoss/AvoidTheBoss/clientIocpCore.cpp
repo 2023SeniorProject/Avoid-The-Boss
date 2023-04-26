@@ -204,6 +204,46 @@ void CSession::ProcessPacket(char* packet)
 		std::cout << "Fail to Create Room!!(MAX_CAPACITY)" << std::endl;
 	}
 	break;
+	case SC_PACKET_TYPE::GAMEEVENT:
+	{
+		SC_EVENTPACKET* ev = (SC_EVENTPACKET*)packet;
+		switch (ev->eventId)
+		{
+		case 2:
+		case 3:
+		case 4:
+			CSwitch * mSwitch = mainGame.m_pScene->m_ppSwitches[ev->eventId - 2];
+			mSwitch->m_lock.lock();
+			mSwitch->m_bOtherPlayerInteractionOn = true;
+			mSwitch->m_lock.unlock();
+			break;
+		case 5:
+		case 6:
+		case 7:
+			CSwitch* mSwitch = mainGame.m_pScene->m_ppSwitches[ev->eventId - 5];
+			mSwitch->m_lock.lock();
+			mSwitch->m_bOtherPlayerInteractionOn = false;
+			mSwitch->m_lock.unlock();
+			break;
+		// 만약 스위치 활성화가 됐다는 패킷이 전송 되었을 때,
+		case 8:
+		case 9:
+		case 10:
+			CSwitch * mSwitch = mainGame.m_pScene->m_ppSwitches[ev->eventId - 5];
+			mSwitch->m_lock.lock();
+			mainGame.m_pScene->m_ppSwitches[ev->eventId - 8]->m_bSwitchActive = true;
+			mSwitch->m_lock.unlock();
+			mainGame.m_pScene->m_ActiveSwitchCnt.fetch_add(1);
+			if (mainGame.m_pScene->m_ActiveSwitchCnt.load() == mainGame.m_pScene->nSwitch) // 만약 3개의 스위치가 모두 활성화 되었다면, 
+			{
+				mainGame.m_pScene->m_bIsExitReady = true; // 탈출 조건 true
+			}
+			break;
+			default:
+				break;
+		}
+	}
+	break;
 	}
 }
 

@@ -5,11 +5,15 @@
 enum class INTERACTION_TYPE : uint8 {
 	ATTACK_EVENT = 0,
 	COOLTIME_EVENT = 1,
-	SWITCH_START_EVENT = 2,
-	SWITCH_AVAILABLE = 3,
-	SWITCH_UNAVAILABLE = 4,
-	SWITCH_END_EVENT = 5, 
-	SWITCH_ACTIVATE_EVENT =6,
+	SWITCH_ONE_START_EVENT = 2,
+	SWITCH_TWO_START_EVENT = 3,
+	SWITCH_THREE_START_EVENT = 4,
+	SWITCH_ONE_END_EVENT = 5, 
+	SWITCH_TWO_END_EVENT = 6,
+	SWITCH_THREE_END_EVENT = 7,
+	SWITCH_ONE_ACTIVATE_EVENT = 8,
+	SWITCH_TWO_ACTIVATE_EVENT = 9,
+	SWITCH_THREE_ACTIVATE_EVENT = 10,
 
 };
 
@@ -69,7 +73,9 @@ public:
 		int16 roomNum = ServerIocpCore._clients[sid]->_myRm;
 		switch ((INTERACTION_TYPE)eventId)
 		{
-		case INTERACTION_TYPE::SWITCH_START_EVENT:
+		case INTERACTION_TYPE::SWITCH_ONE_START_EVENT:
+		case INTERACTION_TYPE::SWITCH_TWO_START_EVENT:
+		case INTERACTION_TYPE::SWITCH_THREE_START_EVENT:
 		{
 			if (!ServerIocpCore._rmgr->GetRoom(sid)._switchs[switchIdx]._IsActive &&
 				!ServerIocpCore._rmgr->GetRoom(sid)._switchs[switchIdx]._IsOnInteraction) // 발전기 상호작용이 가능할 경우
@@ -88,16 +94,18 @@ public:
 					packet.size = sizeof(SC_EVENTPACKET);
 					packet.type = SC_PACKET_TYPE::GAMEEVENT;
 					packet.eventId = eventId; // 0: 발전기 시작 // 발전기 종료 // 1: 발전기 완료 // 2: 사장님 공격 처리 // 3: 사장님 공격 쿨타임 
-					ServerIocpCore._rmgr->GetRoom(sid).BroadCasting(&packet);
+					ServerIocpCore._rmgr->GetRoom(sid).BroadCastingExcept(&packet , sid);
 				}
 			}
 		}
 		break;
-		case INTERACTION_TYPE::SWITCH_END_EVENT: // 상호작용 도중에 끝낸 경우
+		case INTERACTION_TYPE::SWITCH_ONE_END_EVENT: // 상호작용 도중에 끝낸 경우
+		case INTERACTION_TYPE::SWITCH_TWO_END_EVENT: // 상호작용 도중에 끝낸 경우
+		case INTERACTION_TYPE::SWITCH_THREE_END_EVENT: // 상호작용 도중에 끝낸 경우
 			if (!ServerIocpCore._rmgr->GetRoom(sid)._switchs[switchIdx]._IsActive &&
 				ServerIocpCore._rmgr->GetRoom(sid)._switchs[switchIdx]._IsOnInteraction) // 발전기 상호작용이 도중에 발생한 경우
 			{
-				std::cout << "Guage Stop And ResetGuage\n";
+				std::cout << "switch[" << switchIdx << "] " << "Guage Stop And ResetGuage\n";
 				// 상호작용 상태로 변경
 				ServerIocpCore._rmgr->GetRoom(sid)._switchs[switchIdx].ResetGuage(); // 발전기 게이지 초기화
 				ServerIocpCore._rmgr->GetRoom(sid)._switchs[switchIdx]._IsOnInteraction = false;
@@ -108,16 +116,6 @@ public:
 				ServerIocpCore._rmgr->GetRoom(sid).BroadCasting(&packet);
 			}
 			break;
-		case INTERACTION_TYPE::SWITCH_ACTIVATE_EVENT:
-		{
-			
-				SC_EVENTPACKET packet;
-				packet.size = sizeof(SC_EVENTPACKET);
-				packet.type = SC_PACKET_TYPE::GAMEEVENT;
-				packet.eventId = eventId; // 0: 발전기 시작 // 발전기 종료 // 1: 발전기 완료 // 2: 사장님 공격 처리 // 3: 사장님 공격 쿨타임 
-				ServerIocpCore._rmgr->GetRoom(sid).BroadCasting(&packet);
-		}
-		break;
 		default:
 			std::cout << "UnKnown Game Event Please Check Your Packet Type\n";
 			break;

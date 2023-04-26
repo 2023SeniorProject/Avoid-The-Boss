@@ -7,7 +7,7 @@ CEmployee::CEmployee(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCo
 
 	m_nCharacterType = nType;
 
-	m_InteractionCountTime = INTERACTION_TIME;
+	//m_InteractionCountTime = INTERACTION_TIME;
 
 	CLoadedModelInfo* pEmployeeModel = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, g_pstrCharactorRefernece[(int)m_nCharacterType], NULL, Layout::PLAYER);
 	SetChild(pEmployeeModel->m_pModelRootObject, true);
@@ -38,7 +38,7 @@ CEmployee::CEmployee(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCo
 	//SetCameraUpdatedContext();
 
 	SetScale(XMFLOAT3(1.f, 1.f, 1.f));
-	SetPosition(XMFLOAT3(0.0f, 0.25f, -50.0f));
+	SetPosition(XMFLOAT3(0.0f, 0.25f, -30.0f));
 
 	if (pEmployeeModel) delete pEmployeeModel;
 }
@@ -106,7 +106,7 @@ void CEmployee::Update(float fTimeElapsed, PLAYER_TYPE ptype)
 {
 	CPlayer::Update(fTimeElapsed, ptype);
 
-	if (CheckSwitchArea()) m_bIsInSwitchArea = true;
+	if (IsPlayerInSwitchArea() != -1) m_bIsInSwitchArea = true;
 	else m_bIsInSwitchArea = false;
 		
 	if (m_OnInteraction) OnInteractive();
@@ -139,15 +139,22 @@ void CEmployee::OnInteractive()
 		m_pSkinnedAnimationController->SetTrackEnable(1, false);
 		m_pSkinnedAnimationController->SetTrackEnable(6, false);
 		m_OnInteraction = false;
-		m_InteractionCountTime = INTERACTION_TIME;
+		//m_InteractionCountTime = INTERACTION_TIME;
 	}
 }
-bool CEmployee::CheckSwitchArea()
+int32 CEmployee::IsPlayerInSwitchArea()
 {
-	XMFLOAT3 distanceVec = Vector3::Subtract(m_xmf3Position, m_pSwitches.position);
-	float distance = Vector3::Length(distanceVec);
-	float sumRange = m_playerBV.Radius + m_pSwitches.radius;
-
-	if (distance <= sumRange) return true;
-	return false;
+	for (int i = 0; i < 3; ++i)
+	{
+		XMFLOAT3 distanceVec = Vector3::Subtract(m_xmf3Position, m_pSwitches[i].position);
+		float distance = Vector3::Length(distanceVec);
+		float sumRange = m_playerBV.Radius + m_pSwitches[i].radius;
+		if (distance <= sumRange)
+		{
+			std::cout << "In SwitchArea\n";
+			return i;
+		}
+	}
+	
+	return -1;
 }

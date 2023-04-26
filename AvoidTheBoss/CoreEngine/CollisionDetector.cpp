@@ -58,7 +58,7 @@ void OcTree::ReadBoundingBoxInfoFromFile(const char* filename)
 		BoundingBox bv;
 		bv.Center = XMFLOAT3(cx, cy, cz);
 		bv.Extents = XMFLOAT3(ex, ey, ez);
-		std::cout << "(" << cx << " " << cy << " " << cz << ") (" << ex << " " << ey << " " << ez << ")		[" << i++ << "]\n";
+		//std::cout << "(" << cx << " " << cy << " " << cz << ") (" << ex << " " << ey << " " << ez << ")		[" << i++ << "]\n";
 		AddBoundingBox(bv);
 	}
 	std::cout << "End BoundingBox Loaded\n";

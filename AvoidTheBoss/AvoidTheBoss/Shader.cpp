@@ -4,6 +4,7 @@
 
 #include "pch.h"
 #include "Shader.h"
+#include "CBullet.h"
 
 CShader::CShader()
 {

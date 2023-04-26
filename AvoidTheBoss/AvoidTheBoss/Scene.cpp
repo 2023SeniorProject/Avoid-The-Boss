@@ -186,7 +186,7 @@ void CGameScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandLis
 	m_ppHierarchicalGameObjects[3]->SetPosition(23.08867, 1.083242, 3.155997);//right x
 	m_ppHierarchicalGameObjects[3]->AddRef();
 	m_ppHierarchicalGameObjects[3]->objLayer = SWITCH;
-	//m_ppHierarchicalGameObjects[3]->SetPosition(0, 1.25, -50);//left ㅇ
+	
 	if (Button2) delete Button2;
 
 	CLoadedModelInfo* Button3 = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "Model/Button3.bin", NULL, Layout::SWITCH);
@@ -196,7 +196,7 @@ void CGameScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandLis
 	m_ppHierarchicalGameObjects[4]->SetPosition(0.6774719,  1.083242, -23.05909);//back 회전
 	m_ppHierarchicalGameObjects[4]->AddRef();
 	m_ppHierarchicalGameObjects[4]->objLayer = SWITCH;
-	//m_ppHierarchicalGameObjects[4]->SetPosition(0, 1.25, -50);//left ㅇ
+	
 	if (Button3) delete Button3;
 
 	CLoadedModelInfo* Front_Door = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "Model/Front_Hanger_Door_Open.bin", NULL, Layout::DOOR);
@@ -262,16 +262,16 @@ void CGameScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandLis
 	pBulletObjectShader->BuildObjects(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, NULL, NULL);
 	m_ppShaders[2] = pBulletObjectShader;
 
-	m_ppSwitch = new CSwitch * [nSwitch];
+	m_ppSwitches = new CSwitch * [nSwitch];
 
 	for (int i = 0; i < PLAYERNUM; ++i)
 	{
 		if (i != (int)CHARACTER_TYPE::BOSS)
 		{
-			_players[i] = new CWorker(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature);
+			_players[i] = new CBoss(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature);
 			if (m_ppShaders[2])
 			{
-				((CWorker*)_players[i])->m_pBullet = (CBullet*)pBulletObjectShader->m_ppObjects[0];
+				((CBoss*)_players[i])->m_pBullet = (CBullet*)pBulletObjectShader->m_ppObjects[0];
 			}
 		}
 		else
@@ -281,11 +281,11 @@ void CGameScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandLis
 			{
 				if (m_ppHierarchicalGameObjects[j+2])
 				{
-					m_ppSwitch[j] = (CSwitch*)m_ppHierarchicalGameObjects[j + 2];
-					if (m_ppSwitch[j])
+					m_ppSwitches[j] = (CSwitch*)m_ppHierarchicalGameObjects[j + 2];
+					if (m_ppSwitches[j])
 					{
-						((CEmployee*)_players[i])->m_ppSwitch[j].position = m_ppSwitch[j]->GetPosition();
-						((CEmployee*)_players[i])->m_ppSwitch[j].radius = m_ppSwitch[j]->GetRadius();
+						((CEmployee*)_players[i])->m_pSwitches[j].position = m_ppSwitches[j]->GetPosition();
+						((CEmployee*)_players[i])->m_pSwitches[j].radius = m_ppSwitches[j]->GetRadius();
 					}
 				}
 			}
@@ -304,63 +304,51 @@ void CGameScene::ProcessInput(HWND hWnd)
 	DWORD dwDirection = 0;
 	if (::GetKeyboardState(pKeyBuffer))
 	{
-			if ((pKeyBuffer[0x57] & 0xF0) || (pKeyBuffer[0x77] & 0xF0)) dwDirection |= DIR_FORWARD;
-			if ((pKeyBuffer[0x53] & 0xF0) || (pKeyBuffer[0x73] & 0xF0)) dwDirection |= DIR_BACKWARD;
-			if ((pKeyBuffer[0x61] & 0xF0) || (pKeyBuffer[0x41] & 0xF0)) dwDirection |= DIR_LEFT;
-			if ((pKeyBuffer[0x44] & 0xF0) || (pKeyBuffer[0x64] & 0xF0)) dwDirection |= DIR_RIGHT;
+		if ((pKeyBuffer[0x57] & 0xF0) || (pKeyBuffer[0x77] & 0xF0)) dwDirection |= DIR_FORWARD;
+		if ((pKeyBuffer[0x53] & 0xF0) || (pKeyBuffer[0x73] & 0xF0)) dwDirection |= DIR_BACKWARD;
+		if ((pKeyBuffer[0x61] & 0xF0) || (pKeyBuffer[0x41] & 0xF0)) dwDirection |= DIR_LEFT;
+		if ((pKeyBuffer[0x44] & 0xF0) || (pKeyBuffer[0x64] & 0xF0)) dwDirection |= DIR_RIGHT;
 
+		if (_players[_playerIdx]->m_nCharacterType != CHARACTER_TYPE::BOSS) // 플레이어의 타입이 아닐 때
+		{
+			CEmployee* myPlayer = static_cast<CEmployee*>(_players[_playerIdx]);
+			int32 switchIdx = myPlayer->IsPlayerInSwitchArea(); // 어떤 스위치 영역에 있는지 파악한다.
 			if ((pKeyBuffer[0x46] & 0xF0) || (pKeyBuffer[0x66] & 0xF0)) // F키가 눌렸을 경우
 			{
-				if (_players[_playerIdx]->m_nCharacterType != CHARACTER_TYPE::BOSS) // 플레이어의 타입이 아닐 때
+				if (myPlayer->IsPlayerCanSwitchInteraction())
 				{
-					for (int i = 0; i < nSwitch; i++)
+					if (!myPlayer->m_bIsPlayerOnSwitchInteration) // 플레이어가 상호작용 상태가 아니였다면 
 					{
-					if (!m_pSwitches->m_bSwitchAvailable) // 만약 켜진 상태가 아니라면
-					{
-						CEmployee* myPlayer = static_cast<CEmployee*>(_players[_playerIdx]);
-						
-						if (myPlayer->CanSwitchInteraction())
-						{
-							if (!myPlayer->m_bIsSwitchInterationing) 
-							{
-								myPlayer->m_bIsSwitchInterationing = true;
-								dwDirection = 0;
-								myPlayer->SetOnInteraction(true);
-								SC_EVENTPACKET packet;
-								packet.eventId = 2;
-								packet.size = sizeof(SC_EVENTPACKET);
-								packet.type = SC_PACKET_TYPE::GAMEEVENT;
-								clientCore._client->DoSend(&packet);
-							}
-						}
+						myPlayer->m_bIsPlayerOnSwitchInteration = true;
+						myPlayer->SetOnInteraction(true);
+						dwDirection = 0;
+						SC_EVENTPACKET packet;
+						packet.eventId = 2;
+						packet.size = sizeof(SC_EVENTPACKET);
+						packet.type = SC_PACKET_TYPE::GAMEEVENT;
+						clientCore._client->DoSend(&packet);
 					}
 				}
 				dwDirection |= DIR_BUTTON_F;
-				
 			}
 			else // F키가 안눌린 상태일 때
 			{
-				if (_players[_playerIdx]->m_nCharacterType != CHARACTER_TYPE::BOSS) // 플레이어의 타입이 아닐 때
+				if (switchIdx != -1 && myPlayer->IsPlayerCanSwitchInteraction())
 				{
-					for (int i = 0; i < nSwitch; i++)
+					if (myPlayer->m_bIsPlayerOnSwitchInteration && !m_ppSwitches[switchIdx]->m_bSwitchActive) // 눌렀다 땐 상황이라면
 					{
-						if (!m_ppSwitch[i]->StateOn)
-						{
-							CEmployee* myPlayer = static_cast<CEmployee*>(_players[_playerIdx]);
-							if (myPlayer->m_bIsSwitchInterationing && !m_pSwitches->m_bSwitchAvailable) // 눌렀다 땐 상황이라면
-							{
-								SC_EVENTPACKET packet;
-								packet.eventId = 5;
-								packet.size = sizeof(SC_EVENTPACKET);
-								packet.type = SC_PACKET_TYPE::GAMEEVENT;
-								myPlayer->m_bIsSwitchInterationing = false;
-								clientCore._client->DoSend(&packet);
-							}
-						}
+						SC_EVENTPACKET packet;
+						packet.eventId = 5;
+						packet.size = sizeof(SC_EVENTPACKET);
+						packet.type = SC_PACKET_TYPE::GAMEEVENT;
+						myPlayer->m_bIsPlayerOnSwitchInteration = false;
+						clientCore._client->DoSend(&packet);
+					}
 				}
 			}
+		}
 
-			if (pKeyBuffer[VK_SPACE] & 0xF0)
+		if (pKeyBuffer[VK_SPACE] & 0xF0)
 			{
 				if (_players[_playerIdx]->m_nCharacterType == CHARACTER_TYPE::BOSS)
 				{
@@ -370,26 +358,8 @@ void CGameScene::ProcessInput(HWND hWnd)
 					}
 				}
 			}
+		
 	}
-
-	if (_players[_playerIdx]->m_nCharacterType != CHARACTER_TYPE::BOSS)
-	{
-		bool IsReadyExit = OnExitReadyCount();
-		if (((CEmployee*)_players[_playerIdx])->GetOnInteraction())
-		{
-			if (!IsReadyExit)
-			{
-				//dwDirection |= DIR_BUTTON_CENTER;
-				int nIndex = ((CEmployee*)_players[_playerIdx])->GetnInteractionNum();
-				if (m_ppSwitch[nIndex])
-				{
-					m_ppSwitch[nIndex]->SetOnSwitch(true);
-					m_ppSwitch[nIndex]->SetAnimationCount(BUTTON_ANIM_FRAME);
-				}
-			}
-		}
-	}
-
 
 	float cxDelta = 0.0f, cyDelta = 0.0f;
 	POINT ptCursorPos;
@@ -419,11 +389,10 @@ void CGameScene::ProcessInput(HWND hWnd)
 
 		if (LOBYTE(dwDirection)) _players[_playerIdx]->Move(LOBYTE(dwDirection), PLAYER_VELOCITY);
 	}
-	
 
 	if (LOBYTE(m_lastKeyInput) != LOBYTE(dwDirection) || (LOBYTE(dwDirection) != 0 && (cxDelta != 0.0f))) // 이전과 방향(키입력이 다른 경우에만 무브 이벤트 패킷을 보낸다)
 	{
-	
+
 		C2S_KEY packet; // 키 입력 + 방향 정보를 보낸다.
 		packet.size = sizeof(C2S_KEY);
 		packet.type = C_PACKET_TYPE::CKEY;
@@ -432,19 +401,16 @@ void CGameScene::ProcessInput(HWND hWnd)
 		packet.z = _players[_playerIdx]->GetLook().z;
 		clientCore._client->DoSend(&packet);
 	}
-	
-	m_lastKeyInput = dwDirection;
-	
 
+	m_lastKeyInput = dwDirection;
 	//카메라를 갱신한다. 중력과 마찰력의 영향을 속도 벡터에 적용한다.
 	for (int k = 0; k < PLAYERNUM; ++k)
-	{	
+	{
 		_players[k]->m_lock.lock();
-		if (k == _playerIdx) _players[k]->Update(_timer.GetTimeElapsed(),PLAYER_TYPE::OWNER);
-		else _players[k]->Update(_timer.GetTimeElapsed(),PLAYER_TYPE::OTHER_PLAYER);
+		if (k == _playerIdx) _players[k]->Update(_timer.GetTimeElapsed(), PLAYER_TYPE::OWNER);
+		else _players[k]->Update(_timer.GetTimeElapsed(), PLAYER_TYPE::OTHER_PLAYER);
 		_players[k]->m_lock.unlock();
 	}
-
 	// 평균 프레임 레이트 출력
 	std::wstring str = L"[";
 	str.append(std::to_wstring(m_cid));
@@ -456,8 +422,6 @@ void CGameScene::ProcessInput(HWND hWnd)
 	str.append(std::to_wstring((int32)_curFrameIdx.load()));
 	::SetWindowText(hWnd, str.c_str());
 }
-
-
 bool CGameScene::CollisionCheck()
 {
 	_players[_playerIdx]->m_playerBV.Center = _players[_playerIdx]->GetPosition();
@@ -707,26 +671,27 @@ void CGameScene::ReleaseUploadBuffers()
 
 bool CGameScene::OnExitReadyCount()
 {
-	int nOnStateSwitch = 0;
-	for (int i = 0; i < nSwitch; i++)
-	{
-		if (m_ppSwitch[i]->GetStateOn())
-			nOnStateSwitch++;
-	}
-	if (nOnStateSwitch == nSwitch)
-	{
-		for (int i = 0; i < m_nHierarchicalGameObjects; i++)
-		{
-			if (m_ppHierarchicalGameObjects[i])
-			{
-				if ((m_ppHierarchicalGameObjects[i]->objLayer == Layout::SIREN) || (m_ppHierarchicalGameObjects[i]->objLayer == Layout::DOOR))
-				{
-					m_ppHierarchicalGameObjects[i]->m_bIsExitReady = true;
-				}
-			}
-		}	
-		return true;
-	}
+	//int nOnStateSwitch = 0;
+	//for (int i = 0; i < nSwitch; i++)
+	//{
+	//	if (m_ppSwitch[i]->GetStateOn())
+	//		nOnStateSwitch++;
+	//}
+	//if (nOnStateSwitch == nSwitch)
+	//{
+	//	for (int i = 0; i < m_nHierarchicalGameObjects; i++)
+	//	{
+	//		if (m_ppHierarchicalGameObjects[i])
+	//		{
+	//			if ((m_ppHierarchicalGameObjects[i]->objLayer == Layout::SIREN) || (m_ppHierarchicalGameObjects[i]->objLayer == Layout::DOOR))
+	//			{
+	//				m_ppHierarchicalGameObjects[i]->m_bIsExitReady = true;
+	//			}
+	//		}
+	//	}	
+	//	return true;
+	//}
+	//return false;
 	return false;
 }
 

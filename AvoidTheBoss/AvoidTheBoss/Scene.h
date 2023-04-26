@@ -117,7 +117,7 @@ public:
 	LIGHTS*								m_pcbMappedLights = NULL;
 
 	int nSwitch = 3;
-	CSwitch** m_ppSwitch = NULL;
+	CSwitch** m_ppSwitches = NULL;
 
 	int m_nCountButtonClick = 0;
 

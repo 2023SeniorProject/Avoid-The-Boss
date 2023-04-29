@@ -262,7 +262,7 @@ void CGameScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandLis
 	pBulletObjectShader->BuildObjects(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, NULL, NULL);
 	m_ppShaders[2] = pBulletObjectShader;
 
-	m_ppSwitches = new CSwitch * [nSwitch];
+	m_ppSwitches = new CGenerator * [nSwitch];
 
 	for (int i = 0; i < PLAYERNUM; ++i)
 	{
@@ -281,7 +281,7 @@ void CGameScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandLis
 			{
 				if (m_ppHierarchicalGameObjects[j+2])
 				{
-					m_ppSwitches[j] = (CSwitch*)m_ppHierarchicalGameObjects[j + 2];
+					m_ppSwitches[j] = (CGenerator*)m_ppHierarchicalGameObjects[j + 2];
 					if (m_ppSwitches[j])
 					{
 						((CEmployee*)_players[i])->m_pSwitches[j].position = m_ppSwitches[j]->GetPosition();

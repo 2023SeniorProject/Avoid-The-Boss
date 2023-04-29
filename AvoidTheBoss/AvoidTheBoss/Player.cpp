@@ -3,6 +3,7 @@
 #include "Player.h"
 #include "CBullet.h"
 
+
 CPlayer::CPlayer()
 {
 	m_type = 0;

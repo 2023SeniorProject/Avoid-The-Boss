@@ -46,6 +46,9 @@
     <ClCompile Include="CEmployee.cpp">
       <Filter>Player\EMPLOYEE</Filter>
     </ClCompile>
+    <ClCompile Include="CGenerator.cpp">
+      <Filter>GameObject</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameObject.h">
@@ -99,6 +102,9 @@
     </ClInclude>
     <ClInclude Include="CEmployee.h">
       <Filter>Player\EMPLOYEE</Filter>
+    </ClInclude>
+    <ClInclude Include="CGenerator.h">
+      <Filter>GameObject</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

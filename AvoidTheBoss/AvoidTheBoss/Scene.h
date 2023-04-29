@@ -5,7 +5,7 @@
 #include "Player.h"
 #include "CEmployee.h"
 #include "CBoss.h"
-
+#include "CGenerator.h" // 스위치 분리
 
 #define MAX_LIGHTS			16 
 
@@ -120,7 +120,7 @@ public: // 씬에 있는 오브젝트 관련 변수
 	int16						_playerIdx = 0;
 	uint8						m_lastKeyInput = 0;
 	int							nSwitch = 3;
-	CSwitch**					m_ppSwitches = NULL;
+	CGenerator**					m_ppSwitches = NULL;
 	Atomic<int32>				m_ActiveSwitchCnt = 0; // 활성화 된 스위치 카운트;
 
 	bool						m_bIsExitReady = false;

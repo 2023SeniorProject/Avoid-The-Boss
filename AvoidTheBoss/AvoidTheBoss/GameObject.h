@@ -443,7 +443,7 @@ private:
 
 public:
 	bool m_bSwitchActive = false;
-	bool m_bSwitchInteractionOn = false;
+	bool m_bSwitchAnimationOn = false;
 	bool m_bOtherPlayerInteractionOn = false;
 	int  m_nAnimationCount = BUTTON_ANIM_FRAME;
 	std::mutex m_lock;

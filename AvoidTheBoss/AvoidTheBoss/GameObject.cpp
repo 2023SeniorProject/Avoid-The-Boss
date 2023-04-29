@@ -1292,7 +1292,7 @@ void CSwitch::Animate(float fTimeElapsed)
 {
 	if (m_pSkinnedAnimationController)
 	{
-		if (m_bSwitchInteractionOn)
+		if (m_bSwitchAnimationOn)
 		{
 			if (m_nAnimationCount > 0)
 			{
@@ -1304,7 +1304,7 @@ void CSwitch::Animate(float fTimeElapsed)
 			}
 			else
 			{
-				m_bSwitchInteractionOn = false;
+				m_bSwitchAnimationOn = false;
 				m_nAnimationCount = 0;
 				m_bSwitchActive = true;
 			}

@@ -213,7 +213,7 @@ void CSession::ProcessPacket(char* packet)
 		case 3:
 		case 4:
 		{
-			CSwitch* mSwitch = mainGame.m_pScene->m_ppSwitches[ev->eventId - 2];
+			CGenerator* mSwitch = mainGame.m_pScene->m_ppSwitches[ev->eventId - 2];
 			mSwitch->m_lock.lock();
 			mSwitch->m_bOtherPlayerInteractionOn = true;
 			mSwitch->m_lock.unlock();
@@ -224,7 +224,7 @@ void CSession::ProcessPacket(char* packet)
 		case 7:
 		{
 			std::cout << "Switch Cancel\n";
-			CSwitch* mSwitch = mainGame.m_pScene->m_ppSwitches[ev->eventId - 5];
+			CGenerator* mSwitch = mainGame.m_pScene->m_ppSwitches[ev->eventId - 5];
 			mSwitch->m_lock.lock();
 			mSwitch->m_bOtherPlayerInteractionOn = false;
 			mSwitch->m_lock.unlock();
@@ -235,7 +235,7 @@ void CSession::ProcessPacket(char* packet)
 		case 9:
 		case 10:
 		{
-			CSwitch* mSwitch = mainGame.m_pScene->m_ppSwitches[ev->eventId - 8];
+			CGenerator* mSwitch = mainGame.m_pScene->m_ppSwitches[ev->eventId - 8];
 			mSwitch->m_lock.lock();
 			mainGame.m_pScene->m_ppSwitches[ev->eventId - 8]->m_bSwitchActive = true;
 			mSwitch->m_lock.unlock();

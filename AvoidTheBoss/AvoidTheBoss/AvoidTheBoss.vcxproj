@@ -163,6 +163,7 @@
     <ClInclude Include="CBoss.h" />
     <ClInclude Include="CBullet.h" />
     <ClInclude Include="CEmployee.h" />
+    <ClInclude Include="CGenerator.h" />
     <ClInclude Include="DDSTextureLoader12.h" />
     <ClInclude Include="clientIocpCore.h" />
     <ClInclude Include="GameFramework.h" />
@@ -182,6 +183,7 @@
     <ClCompile Include="CBoss.cpp" />
     <ClCompile Include="CBullet.cpp" />
     <ClCompile Include="CEmployee.cpp" />
+    <ClCompile Include="CGenerator.cpp" />
     <ClCompile Include="clientIocpCore.cpp" />
     <ClCompile Include="DDSTextureLoader12.cpp" />
     <ClCompile Include="GameFramework.cpp" />

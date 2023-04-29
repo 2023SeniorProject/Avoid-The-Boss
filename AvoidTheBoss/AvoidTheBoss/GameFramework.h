@@ -8,6 +8,7 @@
 class CGameFramework
 {
 	friend class CSession;
+	friend class CEmployee;
 private:
 	HINSTANCE m_hInstance;
 	HWND m_hWnd;

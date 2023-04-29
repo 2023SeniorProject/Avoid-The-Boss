@@ -364,7 +364,7 @@ void CGameFramework::ReleaseObjects()
 
 void CGameFramework::ProcessInput()
 {
-	m_pScene->ProcessInput(m_hWnd);
+	m_pScene->Update(m_hWnd);
 }
 
 void CGameFramework::AnimateObjects()

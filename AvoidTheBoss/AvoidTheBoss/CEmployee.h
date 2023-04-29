@@ -16,7 +16,7 @@ public:
 	virtual void Move(DWORD dwDirection, float fDistance);
 	virtual void Update(float fTimeElapsed, PLAYER_TYPE ptype);
 	virtual void OnInteractive();
-	
+	virtual void ProcessInput(DWORD&);
 	bool IsPlayerCanSwitchInteraction() { return m_bIsInSwitchArea; }
 	int32 IsPlayerInSwitchArea();
 

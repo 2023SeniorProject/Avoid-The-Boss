@@ -118,6 +118,9 @@ public:
 	virtual void OnPrepareRender();
 	//플레이어의 카메라가 3인칭 카메라일 때 플레이어(메쉬)를 렌더링한다. 
 	virtual void Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera =NULL);
+
+public: //04-29 추가함수 
+	virtual void ProcessInput(DWORD&) { };
 protected:
 	int nInteractionNum = -1;
 	bool m_OnInteraction = false;
@@ -136,10 +139,7 @@ public:
 };
 
 
-enum InteracionType
-{
-	Switch1,Switch2,Switch3,
-};
+
 struct SwitchInformation
 {
 	XMFLOAT3 position;

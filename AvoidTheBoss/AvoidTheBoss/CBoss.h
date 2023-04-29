@@ -34,9 +34,9 @@ public:
 	virtual CCamera* ChangeCamera(DWORD nNewCameraMode, float fTimeElapsed);
 	virtual void OnPlayerUpdateCallback();
 	virtual void OnCameraUpdateCallback();
-
 	virtual void Move(DWORD dwDirection, float fDistance);
-
 	virtual void Update(float fTimeElapsed, PLAYER_TYPE ptype);
 	virtual void OnInteractive();
+
+	virtual void ProcessInput(DWORD&); // 04-29 Ãß°¡
 };

@@ -1,5 +1,8 @@
 #include "pch.h"
 #include "CEmployee.h"
+#include "clientIocpCore.h"
+#include "GameFramework.h"
+
 
 CEmployee::CEmployee(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, CHARACTER_TYPE nType)
 {
@@ -142,6 +145,7 @@ void CEmployee::OnInteractive()
 		m_InteractionCountTime = 45;
 	}
 }
+
 int32 CEmployee::IsPlayerInSwitchArea()
 {
 	for (int i = 0; i < 3; ++i)
@@ -156,4 +160,70 @@ int32 CEmployee::IsPlayerInSwitchArea()
 	}
 	
 	return -1;
+}
+
+
+// 04-29 직원 키입력 처리 추가
+void CEmployee::ProcessInput(DWORD& dwDirection)
+{
+
+	static UCHAR pKeyBuffer[256];
+	// 방향키를 바이트로 처리한다.
+	if (::GetKeyboardState(pKeyBuffer))
+	{
+		if ((pKeyBuffer[0x57] & 0xF0) || (pKeyBuffer[0x77] & 0xF0)) dwDirection |= DIR_FORWARD;
+		if ((pKeyBuffer[0x53] & 0xF0) || (pKeyBuffer[0x73] & 0xF0)) dwDirection |= DIR_BACKWARD;
+		if ((pKeyBuffer[0x61] & 0xF0) || (pKeyBuffer[0x41] & 0xF0)) dwDirection |= DIR_LEFT;
+		if ((pKeyBuffer[0x44] & 0xF0) || (pKeyBuffer[0x64] & 0xF0)) dwDirection |= DIR_RIGHT;
+
+		int32 switchIdx = IsPlayerInSwitchArea(); // 몇 번 스위치 영역에 있는지 파악한다.
+		if ((pKeyBuffer[0x46] & 0xF0) || (pKeyBuffer[0x66] & 0xF0)) // F키가 눌렸을 경우
+		{
+
+			if (switchIdx != -1)
+			{
+				CSwitch* targetSwitch = mainGame.m_pScene->m_ppSwitches[switchIdx];
+				targetSwitch->m_lock.lock(); // 다른 플레이어가 활성화 했을 경우를 생각해서
+				if (IsPlayerCanSwitchInteraction() && targetSwitch->m_bOtherPlayerInteractionOn)
+					// 다른 플레이어가 상호작용 상태가 아닐 때 && 플레이어가 스위치 위치에 있다면
+				{
+					if (m_bIsPlayerOnSwitchInteration) // 플레이어가 상호작용 상태가 아니였다면 
+					{
+						m_bIsPlayerOnSwitchInteration = true;
+						SetOnInteraction(true);
+						targetSwitch->m_bSwitchInteractionOn = true;
+						targetSwitch->SetAnimationCount(BUTTON_ANIM_FRAME);
+						dwDirection = 0;
+						SC_EVENTPACKET packet;
+						packet.eventId = switchIdx + 2;
+						packet.size = sizeof(SC_EVENTPACKET);
+						packet.type = SC_PACKET_TYPE::GAMEEVENT;
+						clientCore._client->DoSend(&packet);
+					}
+				}
+				targetSwitch->m_lock.unlock();
+			}
+			dwDirection |= DIR_BUTTON_F;
+		}
+		else // F키가 안눌린 상태일 때
+		{
+			if (switchIdx != -1 && IsPlayerCanSwitchInteraction())
+			{
+				CSwitch* targetSwitch = mainGame.m_pScene->m_ppSwitches[switchIdx];
+				targetSwitch->m_lock.lock();
+				// 그냥 평상시 상태일 때 F키가 안눌렀을 때와 F키가 눌러져있었는데 땐 상황인지 구별
+				if (m_bIsPlayerOnSwitchInteration && !targetSwitch->m_bSwitchActive) // 발전기가 다 활성화가 안되었는데 키를 땐 상황이라면
+				{
+					// 스위치 도중 캔슬 이벤트 패킷을 보낸다 --> 발전기 게이지 초기화
+					SC_EVENTPACKET packet;
+					packet.eventId = switchIdx + 5;
+					packet.size = sizeof(SC_EVENTPACKET);
+					packet.type = SC_PACKET_TYPE::GAMEEVENT;
+					m_bIsPlayerOnSwitchInteration = false;
+					clientCore._client->DoSend(&packet);
+				}
+				targetSwitch->m_lock.unlock();
+			}
+		}
+	}
 }

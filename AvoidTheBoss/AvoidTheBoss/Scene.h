@@ -61,7 +61,7 @@ public:
 	ID3D12RootSignature* CreateGraphicsRootSignature(ID3D12Device* pd3dDevice);
 	ID3D12RootSignature* GetGraphicsRootSignature() { return(m_pd3dGraphicsRootSignature); }
 
-	virtual void ProcessInput(HWND hWnd);
+	virtual void Update(HWND hWnd);
 	void AnimateObjects();
 	void Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera);
 	bool CollisionCheck();
@@ -92,9 +92,7 @@ public:
 	CCamera*					m_pCamera;
 	WCHAR						txtFrameBuf[20];
 
-	CPlayer*					_players[4];
-	int16						_playerIdx = 0;
-	uint8						m_lastKeyInput = 0;
+	
 	//마지막으로 마우스 버튼을 클릭할 때의 마우스 커서의 위치이다. 
 	POINT								m_ptOldCursorPos;
 
@@ -116,12 +114,16 @@ public:
 	ID3D12Resource*						m_pd3dcbLights = NULL;
 	LIGHTS*								m_pcbMappedLights = NULL;
 
-	int nSwitch = 3;
-	CSwitch** m_ppSwitches = NULL;
-	int m_nCountButtonClick = 0;
-	Atomic<int32> m_ActiveSwitchCnt = 0; // 활성화 된 스위치 카운트;
 
-	bool m_bIsExitReady = false;
+public: // 씬에 있는 오브젝트 관련 변수
+	CPlayer*					_players[4];
+	int16						_playerIdx = 0;
+	uint8						m_lastKeyInput = 0;
+	int							nSwitch = 3;
+	CSwitch**					m_ppSwitches = NULL;
+	Atomic<int32>				m_ActiveSwitchCnt = 0; // 활성화 된 스위치 카운트;
+
+	bool						m_bIsExitReady = false;
 public:
 	Atomic<uint8> _curFrameIdx;
 	int32 m_cid = -1;

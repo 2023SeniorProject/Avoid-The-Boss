@@ -266,7 +266,7 @@ void CGameScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandLis
 
 	for (int i = 0; i < PLAYERNUM; ++i)
 	{
-		if (i == (int)CHARACTER_TYPE::BOSS)
+		if (i != (int)CHARACTER_TYPE::BOSS)
 		{
 			_players[i] = new CBoss(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature);
 			if (m_ppShaders[2])
@@ -296,81 +296,18 @@ void CGameScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandLis
 	CreateShaderVariables(pd3dDevice, pd3dCommandList);
 }
 
-void CGameScene::ProcessInput(HWND hWnd)
+void CGameScene::Update(HWND hWnd)
 {
 	_timer.Tick(0);
-	static UCHAR pKeyBuffer[256];
+	
 	// 방향키를 바이트로 처리한다.
 	DWORD dwDirection = 0;
-	if (::GetKeyboardState(pKeyBuffer))
-	{
-		if ((pKeyBuffer[0x57] & 0xF0) || (pKeyBuffer[0x77] & 0xF0)) dwDirection |= DIR_FORWARD;
-		if ((pKeyBuffer[0x53] & 0xF0) || (pKeyBuffer[0x73] & 0xF0)) dwDirection |= DIR_BACKWARD;
-		if ((pKeyBuffer[0x61] & 0xF0) || (pKeyBuffer[0x41] & 0xF0)) dwDirection |= DIR_LEFT;
-		if ((pKeyBuffer[0x44] & 0xF0) || (pKeyBuffer[0x64] & 0xF0)) dwDirection |= DIR_RIGHT;
+	_players[_playerIdx]->ProcessInput(dwDirection);
+	
+	UCHAR pKeyBuffer[256];
+	::GetKeyboardState(pKeyBuffer);
 
-		if (_players[_playerIdx]->m_nCharacterType != CHARACTER_TYPE::BOSS) // 플레이어의 타입이 아닐 때
-		{
-			CEmployee* myPlayer = static_cast<CEmployee*>(_players[_playerIdx]);
-			int32 switchIdx = myPlayer->IsPlayerInSwitchArea(); // 몇 번 스위치 영역에 있는지 파악한다.
-			if ((pKeyBuffer[0x46] & 0xF0) || (pKeyBuffer[0x66] & 0xF0)) // F키가 눌렸을 경우
-			{
-		
-				if (switchIdx != -1)
-				{
-					m_ppSwitches[switchIdx]->m_lock.lock();
-					if (myPlayer->IsPlayerCanSwitchInteraction() && !m_ppSwitches[switchIdx]->m_bOtherPlayerInteractionOn) // 다른 플레이어가 상호작용 상태가 아닐 때 && 플레이어가 스위치 위치에 있다면
-					{
-						if (!myPlayer->m_bIsPlayerOnSwitchInteration) // 플레이어가 상호작용 상태가 아니였다면 
-						{
-							myPlayer->m_bIsPlayerOnSwitchInteration = true;
-							myPlayer->SetOnInteraction(true);
-							m_ppSwitches[switchIdx]->m_bSwitchInteractionOn = true;
-							m_ppSwitches[switchIdx]->SetAnimationCount(BUTTON_ANIM_FRAME);
-							dwDirection = 0;
-							SC_EVENTPACKET packet;
-							packet.eventId = switchIdx + 2;
-							packet.size = sizeof(SC_EVENTPACKET);
-							packet.type = SC_PACKET_TYPE::GAMEEVENT;
-							clientCore._client->DoSend(&packet);
-						}
-					}
-					m_ppSwitches[switchIdx]->m_lock.unlock();
-				}
-				dwDirection |= DIR_BUTTON_F;
-			}
-			else // F키가 안눌린 상태일 때
-			{
-				if (switchIdx != -1 && myPlayer->IsPlayerCanSwitchInteraction())
-				{
-					m_ppSwitches[switchIdx]->m_lock.lock();
-					if (myPlayer->m_bIsPlayerOnSwitchInteration && !m_ppSwitches[switchIdx]->m_bSwitchActive) // 눌렀다 땐 상황이라면
-					{
-						SC_EVENTPACKET packet;
-						packet.eventId = switchIdx + 5;
-						packet.size = sizeof(SC_EVENTPACKET);
-						packet.type = SC_PACKET_TYPE::GAMEEVENT;
-						myPlayer->m_bIsPlayerOnSwitchInteration = false;
-						clientCore._client->DoSend(&packet);
-					}
-					m_ppSwitches[switchIdx]->m_lock.unlock();
-				}
-			}
-		}
-
-		if (pKeyBuffer[VK_SPACE] & 0xF0)
-			{
-				if (_players[_playerIdx]->m_nCharacterType == CHARACTER_TYPE::BOSS)
-				{
-					if (_players[_playerIdx]->GetnInteractionCountTime() == BOSS_INTERACTION_TIME)
-					{
-						_players[_playerIdx]->SetOnInteraction(true);
-					}
-				}
-			}
-		
-	}
-
+	// 마우스 처리는 동일하게 진행되므로 그냥 남겨놨습니다.
 	float cxDelta = 0.0f, cyDelta = 0.0f;
 	POINT ptCursorPos;
 	if (::GetCapture() == hWnd)
@@ -413,7 +350,7 @@ void CGameScene::ProcessInput(HWND hWnd)
 	}
 
 	m_lastKeyInput = dwDirection;
-	//카메라를 갱신한다. 중력과 마찰력의 영향을 속도 벡터에 적용한다.
+
 	for (int k = 0; k < PLAYERNUM; ++k)
 	{
 		_players[k]->m_lock.lock();

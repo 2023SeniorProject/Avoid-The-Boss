@@ -20,6 +20,6 @@ public:
 		return;
 	};
 
-	virtual void ProcessInput(HWND hWnd) {}
+	virtual void Update(HWND hWnd) {}
 };
 

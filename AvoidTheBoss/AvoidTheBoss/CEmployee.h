@@ -18,7 +18,7 @@ public:
 	virtual void OnInteractive();
 	virtual void ProcessInput(DWORD&);
 	bool IsPlayerCanSwitchInteraction() { return m_bIsInSwitchArea; }
-	int32 IsPlayerInSwitchArea();
+	int32 GetAvailableSwitchIdx();
 
 	SwitchInformation m_pSwitches[3];
 };

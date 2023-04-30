@@ -110,7 +110,7 @@ void CEmployee::Update(float fTimeElapsed, PLAYER_TYPE ptype)
 {
 	CPlayer::Update(fTimeElapsed, ptype);
 
-	if (IsPlayerInSwitchArea() != -1) m_bIsInSwitchArea = true;
+	if (GetAvailableSwitchIdx() != -1) m_bIsInSwitchArea = true;
 	else m_bIsInSwitchArea = false;
 		
 	if (m_OnInteraction) OnInteractive();
@@ -147,7 +147,7 @@ void CEmployee::OnInteractive()
 	}
 }
 
-int32 CEmployee::IsPlayerInSwitchArea()
+int32 CEmployee::GetAvailableSwitchIdx()
 {
 	for (int i = 0; i < 3; ++i)
 	{
@@ -177,7 +177,7 @@ void CEmployee::ProcessInput(DWORD& dwDirection)
 		if ((pKeyBuffer[0x61] & 0xF0) || (pKeyBuffer[0x41] & 0xF0)) dwDirection |= DIR_LEFT;
 		if ((pKeyBuffer[0x44] & 0xF0) || (pKeyBuffer[0x64] & 0xF0)) dwDirection |= DIR_RIGHT;
 
-		int32 switchIdx = IsPlayerInSwitchArea(); // 몇 번 스위치 영역에 있는지 파악한다.
+		int32 switchIdx = GetAvailableSwitchIdx(); // 몇 번 스위치 영역에 있는지 파악한다.
 		if ((pKeyBuffer[0x46] & 0xF0) || (pKeyBuffer[0x66] & 0xF0)) // F키가 눌렸을 경우
 		{
 
@@ -212,9 +212,11 @@ void CEmployee::ProcessInput(DWORD& dwDirection)
 			{
 				CGenerator* targetGenerator = mainGame.m_pScene->m_ppSwitches[switchIdx];
 				targetGenerator->m_lock.lock();
+				if (targetGenerator->m_bSwitchActive) std::cout << switchIdx <<" Bug\n";
 				// 그냥 평상시 상태일 때 F키가 안눌렀을 때와 F키가 눌러져있었는데 땐 상황인지 구별
 				if (m_bIsPlayerOnSwitchInteration && !targetGenerator->m_bSwitchActive) // 발전기가 다 활성화가 안되었는데 키를 땐 상황이라면
 				{
+				
 					// 스위치 도중 캔슬 이벤트 패킷을 보낸다 --> 발전기 게이지 초기화
 					targetGenerator->InteractAnimation(false); // 애니메이션 재생을 정지한다.
 					SC_EVENTPACKET packet;
@@ -223,6 +225,7 @@ void CEmployee::ProcessInput(DWORD& dwDirection)
 					packet.type = SC_PACKET_TYPE::GAMEEVENT;
 					m_bIsPlayerOnSwitchInteration = false;
 					clientCore._client->DoSend(&packet);
+					std::cout << "Send KeyUp Event";
 				}
 				targetGenerator->m_lock.unlock();
 			}

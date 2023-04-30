@@ -205,11 +205,11 @@ void CSession::ProcessPacket(char* packet)
 	case SC_PACKET_TYPE::GAMEEVENT:
 	{
 		SC_EVENTPACKET* ev = (SC_EVENTPACKET*)packet;
-		switch (ev->eventId)
+		switch ((INTERACTION_TYPE)ev->eventId)
 		{
-		case 2:
-		case 3:
-		case 4:
+		case INTERACTION_TYPE::SWITCH_ONE_START_EVENT:
+		case INTERACTION_TYPE::SWITCH_TWO_START_EVENT:
+		case INTERACTION_TYPE::SWITCH_THREE_START_EVENT:
 		{
 			CGenerator* mSwitch = mainGame.m_pScene->m_ppSwitches[ev->eventId - 2];
 			mSwitch->m_lock.lock();
@@ -217,9 +217,9 @@ void CSession::ProcessPacket(char* packet)
 			mSwitch->m_lock.unlock();
 		}
 		break;
-		case 5:
-		case 6:
-		case 7:
+		case INTERACTION_TYPE::SWITCH_ONE_END_EVENT:
+		case INTERACTION_TYPE::SWITCH_TWO_END_EVENT:
+		case INTERACTION_TYPE::SWITCH_THREE_END_EVENT:
 		{
 			std::cout << "Switch Cancel\n";
 			CGenerator* mSwitch = mainGame.m_pScene->m_ppSwitches[ev->eventId - 5];
@@ -229,9 +229,9 @@ void CSession::ProcessPacket(char* packet)
 		}
 		break;
 		// 만약 스위치 활성화가 됐다는 패킷이 전송 되었을 때,
-		case 8:
-		case 9:
-		case 10:
+		case INTERACTION_TYPE::SWITCH_ONE_ACTIVATE_EVENT:
+		case INTERACTION_TYPE::SWITCH_TWO_ACTIVATE_EVENT:
+		case INTERACTION_TYPE::SWITCH_THREE_ACTIVATE_EVENT:
 		{
 			CGenerator* mSwitch = mainGame.m_pScene->m_ppSwitches[ev->eventId - 8];
 			mSwitch->m_lock.lock();

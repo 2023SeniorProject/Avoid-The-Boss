@@ -436,25 +436,6 @@ public:
 
 #define BUTTON_ANIM_FRAME 15*10
 
-class CSwitch : public CGameObject
-{
-private:
-	float radius = 0.0f;
-
-public:
-	bool m_bSwitchActive = false;
-	bool m_bSwitchAnimationOn = false;
-	bool m_bOtherPlayerInteractionOn = false;
-	int  m_nAnimationCount = BUTTON_ANIM_FRAME;
-	std::mutex m_lock;
-	CSwitch();
-	CSwitch(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, CLoadedModelInfo* pModel, int nAnimationTracks,int number);
-	virtual ~CSwitch();
-	float GetRadius() { return radius; }
-	void SetAnimationCount(int value) { m_nAnimationCount = value; }
-	bool GetAnimationCount() { return m_nAnimationCount; }
-	virtual void Animate(float fTimeElapsed);
-};
 
 class CSiren : public CGameObject
 {

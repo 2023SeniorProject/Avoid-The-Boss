@@ -3,20 +3,7 @@
 #include "Session.h"
 #include "CSIocpCore.h"
 // 0 1 2
-enum class INTERACTION_TYPE : uint8 {
-	ATTACK_EVENT = 0,
-	COOLTIME_EVENT = 1,
-	SWITCH_ONE_START_EVENT = 2,
-	SWITCH_TWO_START_EVENT = 3,
-	SWITCH_THREE_START_EVENT = 4,
-	SWITCH_ONE_END_EVENT = 5, 
-	SWITCH_TWO_END_EVENT = 6,
-	SWITCH_THREE_END_EVENT = 7,
-	SWITCH_ONE_ACTIVATE_EVENT = 8, 
-	SWITCH_TWO_ACTIVATE_EVENT = 9, 
-	SWITCH_THREE_ACTIVATE_EVENT = 10,
 
-};
 
 class queueEvent
 {
@@ -66,7 +53,7 @@ class SwitchInteractionEvent : public queueEvent
 public:
 	SwitchInteractionEvent() {};
 	virtual ~SwitchInteractionEvent() {};
-	uint8 eventId;
+	uint8 eventId = -1;
 public:
 	virtual void Task() 
 	{ 
@@ -89,8 +76,8 @@ public:
 				}
 				else
 				{
-					std::cout << (int)(eventId - 2) << ") Switch On\n";
-					ServerIocpCore._rmgr->GetRoom(sid)._switchs[eventId - 2].SwitchInterationOn();
+					std::cout << (int)(eventId - 2) << ") Switch Interaction On\n";
+					ServerIocpCore._rmgr->GetRoom(sid)._switchs[eventId - 2].SwitchInteractionOn(true);
 					SC_EVENTPACKET packet;
 					packet.size = sizeof(SC_EVENTPACKET);
 					packet.type = SC_PACKET_TYPE::GAMEEVENT;
@@ -106,10 +93,10 @@ public:
 			if (!ServerIocpCore._rmgr->GetRoom(sid)._switchs[eventId - 5]._IsActive &&
 				ServerIocpCore._rmgr->GetRoom(sid)._switchs[eventId - 5]._IsOnInteraction) // 발전기 상호작용이 도중에 발생한 경우
 			{
-				std::cout << "switch[" << eventId - 5 << "] " << "Guage Stop And ResetGuage\n";
+				std::cout << "switch[" << eventId - 5 << "] " << "Cancel \n";
 				// 상호작용 상태로 변경
+				ServerIocpCore._rmgr->GetRoom(sid)._switchs[eventId - 5].SwitchInteractionOn(false);
 				ServerIocpCore._rmgr->GetRoom(sid)._switchs[ eventId - 5].ResetGuage(); // 발전기 게이지 초기화
-				ServerIocpCore._rmgr->GetRoom(sid)._switchs[ eventId - 5]._IsOnInteraction = false;
 				SC_EVENTPACKET packet;
 				packet.size = sizeof(SC_EVENTPACKET);
 				packet.type = SC_PACKET_TYPE::GAMEEVENT;

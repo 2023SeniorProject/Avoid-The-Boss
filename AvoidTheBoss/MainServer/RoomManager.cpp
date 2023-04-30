@@ -144,7 +144,8 @@ void Room::Update()
 	for (int i = 0; i < PLAYERNUM; ++i) _players[i].Update(_timer.GetTimeElapsed());
 	for (int i = 0; i < 3; ++i)
 	{
-		if(_switchs[i].UpdateGuage(_timer.GetTimeElapsed()))
+		_switchs[i].UpdateGuage(_timer.GetTimeElapsed());
+		if(_switchs[i]._IsActive)
 		{ 
 			std::cout << "Complete\n";
 			SC_EVENTPACKET packet;

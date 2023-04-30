@@ -5,6 +5,7 @@
 #include "pch.h"
 #include "Shader.h"
 #include "CBullet.h"
+#include "CGenerator.h"
 
 CShader::CShader()
 {
@@ -509,7 +510,7 @@ void CSwitchObjectShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsC
 	{
 		CGameObject* pSwitchModel = CGameObject::LoadGeometryFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, path[i], NULL, Layout::SWITCH);
 		pSwitchModel->m_type = 1;
-		m_ppObjects[i] = new CSwitch();
+		m_ppObjects[i] = new CGenerator();
 		m_ppObjects[i]->SetChild(pSwitchModel);
 		m_ppObjects[i]->AddRef();
 		m_ppObjects[i]->SetPosition(XMFLOAT3(0.0f, 1.25f, 50.0f));

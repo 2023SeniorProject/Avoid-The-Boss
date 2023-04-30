@@ -21,20 +21,16 @@ public:
 	}
 	~SwitchInfo() {}
 
-	void SwitchInterationOn() 
+	void SwitchInteractionOn(bool value) 
 	{
-		bool expected = false;
-		bool desired = true;
-		if (_IsOnInteraction.compare_exchange_strong(expected, desired));
-		else std::cout << "Already Interactioning\n";
-
+		_IsOnInteraction = value;
 	}
 
-	void SwitchActivate()
+	void SwitchActivate(bool value)
 	{
-		bool expected = false;
-		bool desired = true;
-		_IsActive.compare_exchange_strong(expected, desired);
+		
+		_IsActive = value;
+		
 	}
 	
 	void ResetGuage()
@@ -45,5 +41,5 @@ public:
 		_lock.unlock();
 	}
 	bool CanInteraction(int32 sid);
-	bool UpdateGuage(float elapsedTime);
+	void UpdateGuage(float elapsedTime);
 };

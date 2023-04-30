@@ -171,7 +171,7 @@ void CGameScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandLis
 	if (pSiren_R) delete pSiren_R;
 
 	CLoadedModelInfo* Button1 = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "Model/Button1.bin", NULL, Layout::SWITCH);
-	m_ppHierarchicalGameObjects[2] = new CSwitch(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, Button1, 1,0);
+	m_ppHierarchicalGameObjects[2] = new CGenerator(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, Button1, 1,0);
 	m_ppHierarchicalGameObjects[2]->m_pSkinnedAnimationController->SetTrackAnimationSet(0, 0);
 	m_ppHierarchicalGameObjects[2]->SetPosition(-23.12724, 1.146619, 1.814123);//left ㅇ
 	m_ppHierarchicalGameObjects[2]->AddRef();
@@ -180,7 +180,7 @@ void CGameScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandLis
 	if (Button1) delete Button1;
 
 	CLoadedModelInfo* Button2 = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "Model/Button2.bin", NULL, Layout::SWITCH);
-	m_ppHierarchicalGameObjects[3] = new CSwitch(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, Button2, 1,1);
+	m_ppHierarchicalGameObjects[3] = new CGenerator(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, Button2, 1,1);
 	m_ppHierarchicalGameObjects[3]->m_pSkinnedAnimationController->SetTrackAnimationSet(0, 0);
 	m_ppHierarchicalGameObjects[3]->m_pSkinnedAnimationController->SetTrackEnable(0, false);
 	m_ppHierarchicalGameObjects[3]->SetPosition(23.08867, 1.083242, 3.155997);//right x
@@ -190,7 +190,7 @@ void CGameScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandLis
 	if (Button2) delete Button2;
 
 	CLoadedModelInfo* Button3 = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "Model/Button3.bin", NULL, Layout::SWITCH);
-	m_ppHierarchicalGameObjects[4] = new CSwitch(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, Button3, 1,2);
+	m_ppHierarchicalGameObjects[4] = new CGenerator(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, Button3, 1,2);
 	m_ppHierarchicalGameObjects[4]->m_pSkinnedAnimationController->SetTrackAnimationSet(0, 0);
 	m_ppHierarchicalGameObjects[4]->m_pSkinnedAnimationController->SetTrackEnable(0, false);
 	m_ppHierarchicalGameObjects[4]->SetPosition(0.6774719,  1.083242, -23.05909);//back 회전
@@ -305,7 +305,7 @@ void CGameScene::Update(HWND hWnd)
 	_players[_playerIdx]->ProcessInput(dwDirection);
 	
 	UCHAR pKeyBuffer[256];
-	::GetKeyboardState(pKeyBuffer);
+	if(::GetKeyboardState(pKeyBuffer));
 
 	// 마우스 처리는 동일하게 진행되므로 그냥 남겨놨습니다.
 	float cxDelta = 0.0f, cyDelta = 0.0f;

@@ -194,7 +194,7 @@ void CEmployee::ProcessInput(DWORD& dwDirection)
 						m_bIsPlayerOnSwitchInteration = true;
 						targetGenerator->InteractAnimation(true); // 애니메이션 재생을 시작한다.
 						targetGenerator->SetAnimationCount(BUTTON_ANIM_FRAME);
-						dwDirection = 0;
+						
 						SC_EVENTPACKET packet;
 						packet.eventId = switchIdx + 2;
 						packet.size = sizeof(SC_EVENTPACKET);
@@ -204,6 +204,7 @@ void CEmployee::ProcessInput(DWORD& dwDirection)
 				}
 				targetGenerator->m_lock.unlock();
 			}
+			dwDirection = 0;
 			dwDirection |= DIR_BUTTON_F;
 		}
 		else // F키가 안눌린 상태일 때

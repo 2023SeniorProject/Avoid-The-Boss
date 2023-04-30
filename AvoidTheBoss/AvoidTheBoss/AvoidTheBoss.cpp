@@ -236,7 +236,7 @@ BOOL CALLBACK MyDialogBox(HWND hWndDlg, UINT message, WPARAM wParam, LPARAM lPar
             loginPacket.type = C_PACKET_TYPE::ACQ_LOGIN;
             GetDlgItemText(hWndDlg, IDC_ID, loginPacket.name, 10);
             GetDlgItemText(hWndDlg, IDC_PW, loginPacket.pw, 10);
-            clientCore.InitConnect("127.0.0.1");
+            clientCore.InitConnect("192.168.0.2");
             clientCore.DoConnect(&loginPacket);
             EndDialog(hWndDlg, IDOK);
             return TRUE;

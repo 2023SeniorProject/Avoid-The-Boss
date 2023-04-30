@@ -71,7 +71,7 @@ void Timer::Tick(float fLockFPS)
 
 	_accumulateElapsedTime += _fTimeElapsed;
 	_accumulateFPSLockTime += _fTimeElapsed;
-
+	_accumulateTimeForHistory += _fTimeElapsed;
 	if (fLockFPS != 0.0f && (_fTimeElapsed > _fTimeElapsedAvg))
 	{
 		_nFramePerSec++;

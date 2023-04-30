@@ -155,9 +155,10 @@ void Room::Update()
 			BroadCasting(&packet);
 		}
 	}
-	if (_timer.IsAfterTick(60))
+	if (_timer.IsTimeToAddHistory()) _history.AddHistory(_players);
+	if (_timer.IsAfterTick(30))
 	{
-		_history.AddHistory(_players);
+		
 		for (int i = 0; i < PLAYERNUM; ++i)
 		{
 			if (Vector3::IsZero(_players[i].GetVelocity())) continue;

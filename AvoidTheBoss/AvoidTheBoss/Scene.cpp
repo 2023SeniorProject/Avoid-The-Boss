@@ -350,7 +350,6 @@ void CGameScene::Update(HWND hWnd)
 	}
 
 	m_lastKeyInput = dwDirection;
-
 	for (int k = 0; k < PLAYERNUM; ++k)
 	{
 		_players[k]->m_lock.lock();
@@ -382,7 +381,7 @@ void CGameScene::Update(HWND hWnd)
 	str.append(L" ");
 	str.append(std::to_wstring(_players[_playerIdx]->GetPosition().z));
 	str.append(L")-");
-	str.append(std::to_wstring((int32)_curFrameIdx.load()));
+	str.append(std::to_wstring((int32)(_curFrameIdx)));
 	::SetWindowText(hWnd, str.c_str());
 }
 bool CGameScene::CollisionCheck()

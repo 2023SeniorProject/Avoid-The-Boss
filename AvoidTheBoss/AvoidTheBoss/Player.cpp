@@ -70,7 +70,8 @@ void CPlayer::UpdateMove(const XMFLOAT3& xmf3Shift)
 
 void CPlayer::Update(float fTimeElapsed, PLAYER_TYPE ptype)
 {
-
+	m_xmf3Velocity = Vector3::ScalarProduct(m_xmf3Velocity, fTimeElapsed, false);
+	UpdateMove(m_xmf3Velocity);
 	m_playerBV.Center = GetPosition();
 
 	DWORD nCameraMode = m_pCamera->GetMode();

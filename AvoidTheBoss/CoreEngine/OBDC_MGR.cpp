@@ -62,8 +62,7 @@ void USER_DB_MANAGER::RetrieveResult()
         // Fetch and print each row of data. On an error, display a message and exit.  
         for (int i = 0; ; i++) {
             retcode = SQLFetch(hstmt);
-            if (retcode == SQL_ERROR || retcode == SQL_SUCCESS_WITH_INFO)
-                show_error(hstmt, SQL_HANDLE_STMT, retcode);
+            if (retcode == SQL_ERROR || retcode == SQL_SUCCESS_WITH_INFO) show_error(hstmt, SQL_HANDLE_STMT, retcode);
             if (retcode == SQL_SUCCESS || retcode == SQL_SUCCESS_WITH_INFO)
             {   
                 break;

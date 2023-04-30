@@ -1,6 +1,6 @@
 #include "pch.h"
 #include "SwitchInfo.h"
-#include "IocpCore.h"
+#include "CSIocpCore.h"
 
 
 bool SwitchInfo::UpdateGuage(float elapsedTime)

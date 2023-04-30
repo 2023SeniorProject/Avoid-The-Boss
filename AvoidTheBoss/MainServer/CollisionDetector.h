@@ -6,6 +6,7 @@ struct Ray
 	XMFLOAT3 dir;
 	float distance;
 };
+
 class LeafNode
 {
 public:

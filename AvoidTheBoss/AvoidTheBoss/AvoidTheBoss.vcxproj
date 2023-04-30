@@ -164,6 +164,7 @@
     <ClInclude Include="CBullet.h" />
     <ClInclude Include="CEmployee.h" />
     <ClInclude Include="CGenerator.h" />
+    <ClInclude Include="ClientSession.h" />
     <ClInclude Include="DDSTextureLoader12.h" />
     <ClInclude Include="clientIocpCore.h" />
     <ClInclude Include="GameFramework.h" />
@@ -185,6 +186,7 @@
     <ClCompile Include="CEmployee.cpp" />
     <ClCompile Include="CGenerator.cpp" />
     <ClCompile Include="clientIocpCore.cpp" />
+    <ClCompile Include="ClientSession.cpp" />
     <ClCompile Include="DDSTextureLoader12.cpp" />
     <ClCompile Include="GameFramework.cpp" />
     <ClCompile Include="GameObject.cpp" />

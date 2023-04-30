@@ -1,6 +1,7 @@
 #pragma once
 #include "IocpCore.h"
 #include "Session.h"
+#include "CSIocpCore.h"
 // 0 1 2
 enum class INTERACTION_TYPE : uint8 {
 	ATTACK_EVENT = 0,

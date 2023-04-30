@@ -4,7 +4,7 @@
 #include "CoreGlobal.h"
 #include "CoreMacro.h"
 #include "CoreTLS.h"
-#include "RWLock.h"
+//#include "RWLock.h"
 
 
 #include <vector>
@@ -82,7 +82,7 @@ using namespace DirectX;
 using namespace DirectX::PackedVector;
 
 #include "protocol.h"
-#include "CollisionDetector.h"
+
 
 
 bool XMVerifyCPUSupport(); // 응용프로그램에서 SIMD 기능(벡터 연산 명령집합 확장 기능 / 벡터의 병렬 연산 ) 제공여부 확인 
@@ -404,6 +404,4 @@ namespace Plane
 #define DIR_BACKWARD 0x02
 #define DIR_LEFT	 0x04
 #define DIR_RIGHT	 0x08
-#define DIR_UP		 0x10
-#define DIR_DOWN	 0x20
 

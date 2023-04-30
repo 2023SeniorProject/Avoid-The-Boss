@@ -1,6 +1,6 @@
 #include "pch.h"
-#include "CollisionDetector.h"
 #include "PlayerInfo.h"
+#include "CollisionDetector.h"
 #include <string>
 
 OcTree* BoxTree = nullptr;

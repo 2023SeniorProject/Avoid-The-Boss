@@ -1,11 +1,9 @@
 #include "pch.h"
 #include "IocpCore.h"
-#include "IocpEvent.h"
-#include "Session.h"
-#include "CollisionDetector.h"
+#include "ASession.h"
 #include "SocketUtil.h"
 
-SIocpCore ServerIocpCore;
+//SIocpCore ServerIocpCore;
 
 IocpCore::IocpCore()
 {
@@ -52,7 +50,7 @@ bool IocpCore::Processing(uint32_t time_limit) // worker thread 기능 완료된 비동
 				// TODO : 로그 찍기
 			{
 				std::cout << ::WSAGetLastError() << "\n";
-				ServerSession* s = static_cast<ServerSession*>(iocpObject);
+				ASession* s = static_cast<ASession*>(iocpObject);
 				Disconnect(s->_sid);
 			}
 			return false;
@@ -63,7 +61,7 @@ bool IocpCore::Processing(uint32_t time_limit) // worker thread 기능 완료된 비동
 	if (numOfBytes == 0 && (iocpEvent->_comp == EventType::Recv || iocpEvent->_comp == EventType::Send))
 	{
 		//Disconnect
-		ServerSession* s = static_cast<ServerSession*>(iocpObject);
+		ASession* s = static_cast<ASession*>(iocpObject);
 		Disconnect(s->_sid);
 		if (iocpEvent->_comp == EventType::Send) delete iocpEvent;
 		return false;
@@ -77,29 +75,4 @@ void IocpCore::Disconnect(int32 sid)
 {
 }
 
-SIocpCore::SIocpCore()
-{
-	_rmgr = new RoomManager();
-	_rmgr->Init();
-	BoxTree = new OcTree(XMFLOAT3(0, 0, 0), 60);
-	BoxTree->BuildTree();
-	BoxTree->ReadBoundingBoxInfoFromFile("bounding_boxes.txt");
-}
-
-SIocpCore::~SIocpCore()
-{
-	delete _rmgr;
-}
-
-void SIocpCore::Disconnect(int32 sid)
-{
-	std::cout << "[" << _clients[sid]->_cid << "] Disconnected" << std::endl;
-	if(sid >= 0 && _clients[sid]->_myRm != -1) _rmgr->ExitRoom(sid, _clients[sid]->_myRm);
-	{
-		std::unique_lock<std::shared_mutex> disconnectLock(_lock);
-	
-		_cList.erase(_clients[sid]->_cid);
-		_clients.erase(sid);
-	}
-}
 

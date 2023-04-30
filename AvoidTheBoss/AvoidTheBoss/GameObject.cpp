@@ -5,7 +5,7 @@
 #include "pch.h"
 #include "GameObject.h"
 #include "Shader.h"
-#include "CollisionDetector.h"
+
 #include "Scene.h"
 
 std::vector<BoundingBox> bv;

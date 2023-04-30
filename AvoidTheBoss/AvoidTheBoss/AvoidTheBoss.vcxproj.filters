@@ -28,9 +28,6 @@
     <ClCompile Include="Scene.cpp">
       <Filter>GameScene</Filter>
     </ClCompile>
-    <ClCompile Include="clientIocpCore.cpp">
-      <Filter>ClientIocpCore</Filter>
-    </ClCompile>
     <ClCompile Include="pch.cpp">
       <Filter>AvoidTheBoss</Filter>
     </ClCompile>
@@ -48,6 +45,12 @@
     </ClCompile>
     <ClCompile Include="CGenerator.cpp">
       <Filter>GameObject</Filter>
+    </ClCompile>
+    <ClCompile Include="ClientSession.cpp">
+      <Filter>ForClient\ClientSession</Filter>
+    </ClCompile>
+    <ClCompile Include="clientIocpCore.cpp">
+      <Filter>ForClient\IocpCore</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -71,9 +74,6 @@
     </ClInclude>
     <ClInclude Include="Player.h">
       <Filter>Player</Filter>
-    </ClInclude>
-    <ClInclude Include="clientIocpCore.h">
-      <Filter>ClientIocpCore</Filter>
     </ClInclude>
     <ClInclude Include="Shader.h">
       <Filter>Shader</Filter>
@@ -105,6 +105,12 @@
     </ClInclude>
     <ClInclude Include="CGenerator.h">
       <Filter>GameObject</Filter>
+    </ClInclude>
+    <ClInclude Include="ClientSession.h">
+      <Filter>ForClient\ClientSession</Filter>
+    </ClInclude>
+    <ClInclude Include="clientIocpCore.h">
+      <Filter>ForClient\IocpCore</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -325,9 +331,6 @@
     <Filter Include="Shader">
       <UniqueIdentifier>{ce5abe85-1be1-4ab6-90e7-dd9b8e242c3d}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ClientIocpCore">
-      <UniqueIdentifier>{b14711bd-5e60-4f7a-aa97-db4ecafd7931}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Texture">
       <UniqueIdentifier>{ba2c4739-1739-4582-b450-0442272e3d24}</UniqueIdentifier>
     </Filter>
@@ -342,6 +345,15 @@
     </Filter>
     <Filter Include="Player\EMPLOYEE">
       <UniqueIdentifier>{c925e172-b1e8-4fa0-8725-2a71f2dee802}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ForClient">
+      <UniqueIdentifier>{eef5b8c8-2750-4883-b424-1f76a001346d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ForClient\ClientSession">
+      <UniqueIdentifier>{b14711bd-5e60-4f7a-aa97-db4ecafd7931}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ForClient\IocpCore">
+      <UniqueIdentifier>{98cfeba8-062d-4d76-88ef-d41e0396c086}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

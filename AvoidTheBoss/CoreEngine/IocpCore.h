@@ -1,16 +1,10 @@
 #pragma once
 // Worker Thread 기능을 클래스로 랩핑
-#include "RoomManager.h"
-
+//#include "RoomManager.h"
 // IOCP에 등록할 수 있는 모든 오브젝트에 관해서 정의
-class IocpObject 
-{
-public:
-	virtual HANDLE GetHandle() abstract;
-	virtual void Processing(class IocpEvent* iocpEvent, int32 numBytes) abstract; // 어떤 일감으로  Iocp에 등록했니?
-	// iocpEvent에 따라 적절한 일을 처리
-};
 
+
+class IocpObject;
 class IocpCore
 {
 
@@ -24,21 +18,4 @@ public:
 protected:
 	HANDLE _hIocp = INVALID_HANDLE_VALUE;
 };
-
-class SIocpCore : public IocpCore
-{
-
-public:
-	SIocpCore();
-	~SIocpCore();
-	virtual void Disconnect(int32 sid) override;
-public:
-	std::shared_mutex _lock;
-	std::unordered_map<int32, ServerSession*> _clients;
-	std::set<int32> _cList;
-	RoomManager* _rmgr;
-};
-
-
-extern SIocpCore ServerIocpCore;
 

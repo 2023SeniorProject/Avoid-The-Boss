@@ -363,6 +363,7 @@ public:
 
 	virtual void OnPrepareAnimate() { }
 	virtual void Animate(float fTimeElapsed);
+	virtual void Update(float fTimeElapsed){ }
 
 	virtual void OnPrepareRender() { }
 	virtual void Render(ID3D12GraphicsCommandList *pd3dCommandList, CCamera *pCamera=NULL);
@@ -445,7 +446,7 @@ public:
 	bool m_bSwitchActive = false;
 	bool m_bSwitchAnimationOn = false;
 	bool m_bOtherPlayerInteractionOn = false;
-	int  m_nAnimationCount = BUTTON_ANIM_FRAME;
+	int  m_nAnimationCount = 0;
 	std::mutex m_lock;
 	CSwitch();
 	CSwitch(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, CLoadedModelInfo* pModel, int nAnimationTracks,int number);
@@ -476,6 +477,6 @@ public:
 	CDoor(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, CLoadedModelInfo* pModel, int nAnimationTracks,int number);
 	virtual ~CDoor();
 
-	void Animate(float fTimeElapsed);
+	//virtual void Animate(float fTimeElapsed);
 };
 

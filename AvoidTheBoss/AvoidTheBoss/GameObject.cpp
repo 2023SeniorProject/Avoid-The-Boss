@@ -1271,18 +1271,18 @@ CSwitch::CSwitch(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dComman
 {
 	radius = 1.25f;
 
-	CLoadedModelInfo* pSirenModel = pModel;
+	CLoadedModelInfo* pButtonModel = pModel;
 
 	const char* path[3] = {
 		"Model/Button1.bin",
 		"Model/Button2.bin",
 		"Model/Button3.bin"
 	};
-	if (!pSirenModel)
-		pSirenModel = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, path[number], NULL, Layout::SIREN);
+	if (!pButtonModel)
+		pButtonModel = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, path[number], NULL, Layout::SIREN);
 
-	SetChild(pSirenModel->m_pModelRootObject, true);
-	m_pSkinnedAnimationController = new CAnimationController(pd3dDevice, pd3dCommandList, nAnimationTracks, pSirenModel);
+	SetChild(pButtonModel->m_pModelRootObject, true);
+	m_pSkinnedAnimationController = new CAnimationController(pd3dDevice, pd3dCommandList, nAnimationTracks, pButtonModel);
 }
 CSwitch::~CSwitch()
 {
@@ -1300,7 +1300,6 @@ void CSwitch::Animate(float fTimeElapsed)
 				m_pSkinnedAnimationController->SetTrackPosition(0, 0.0f);
 
 				m_nAnimationCount--;
-				CGameObject::Animate(fTimeElapsed);
 			}
 			else
 			{
@@ -1310,6 +1309,7 @@ void CSwitch::Animate(float fTimeElapsed)
 			}
 		}
 	}
+	CGameObject::Animate(fTimeElapsed);
 }
 
 
@@ -1358,10 +1358,10 @@ CDoor::~CDoor()
 {
 }
 
-void CDoor::Animate(float fTimeElapsed)
-{
-	if(m_bIsExitReady)
-		m_pSkinnedAnimationController->SetTrackEnable(0, false);
-
-	CGameObject::Animate(fTimeElapsed);
-}
+//void CDoor::Animate(float fTimeElapsed)
+//{
+//	if(m_bIsExitReady)
+//		m_pSkinnedAnimationController->SetTrackEnable(0, false);
+//
+//	CGameObject::Animate(fTimeElapsed);
+//}

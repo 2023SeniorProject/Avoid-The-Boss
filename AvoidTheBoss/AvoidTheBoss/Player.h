@@ -13,7 +13,7 @@ enum class CHARACTER_TYPE: int32
 
 static const char *g_pstrCharactorRefernece[5] =
 {
-	"Model/Boss_Run.bin",/*"Model/Boss_Idle.bin"*/
+	"Model/Boss_Run.bin",/*"Model/Boss_Idle.bin",*/
 	"Model/Character1_Idle.bin",
 	"Model/Character2_Idle.bin",
 	"Model/Character3_Idle.bin",

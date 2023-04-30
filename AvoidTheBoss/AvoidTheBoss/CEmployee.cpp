@@ -42,7 +42,7 @@ CEmployee::CEmployee(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCo
 	//SetCameraUpdatedContext();
 
 	SetScale(XMFLOAT3(1.f, 1.f, 1.f));
-	SetPosition(XMFLOAT3(0.0f, 0.25f, -30.0f));
+	SetPosition(XMFLOAT3(0.0f, 0.25f, -40.0f));//-30.0f
 
 	if (pEmployeeModel) delete pEmployeeModel;
 }

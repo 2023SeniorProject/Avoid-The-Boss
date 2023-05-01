@@ -23,7 +23,7 @@ public:
 
 public:
 	BoundingSphere m_playerBV;
-	int32 m_sid;
+	int32 m_sid = -1;
 public:
 	PlayerInfo();
 	virtual ~PlayerInfo();

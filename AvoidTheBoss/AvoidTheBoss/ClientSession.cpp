@@ -3,7 +3,7 @@
 #include "SocketUtil.h"
 #include "GameFramework.h"
 #include "IocpEvent.h"
-
+#include <string>
 
 CSession::CSession()
 {
@@ -144,8 +144,8 @@ void CSession::ProcessPacket(char* packet)
 	{
 		S2C_POS* posPacket = reinterpret_cast<S2C_POS*>(packet);
 		CPlayer* player = mainGame.m_pScene->GetScenePlayer(posPacket->sid);
-		mainGame.m_pScene->_curFrameIdx.store(posPacket->fidx);
-		;		if (player == nullptr) break;
+		mainGame.m_pScene->_curFrameIdx.store(posPacket->fidx);		
+		if (player == nullptr) break;
 		player->m_lock.lock();
 		player->MakePosition(XMFLOAT3(posPacket->x, player->GetPosition().y, posPacket->z));
 		player->m_lock.unlock();
@@ -163,8 +163,13 @@ void CSession::ProcessPacket(char* packet)
 			if (gsp->sids[i] == _sid) mainGame.m_pScene->_playerIdx = i;
 			mainGame.m_pScene->_players[i]->SetPlayerSid(gsp->sids[i]);
 		}
+		for (int i = 0; i < PLAYERNUM; ++i) std::cout << gsp->sids[i] << " ";
+		std::cout << "\n";
+		std::cout << "MYPLAYER IDX : " << mainGame.m_pScene->_playerIdx << "\n";
 		CPlayer* myPlayer = mainGame.m_pScene->_players[mainGame.m_pScene->_playerIdx];
-		//	myPlayer->OnChangeCamera(THIRD_PERSON_CAMERA, 0.f);
+		std::wstring str = L"Client";
+		str.append(std::to_wstring(mainGame.m_pScene->_playerIdx));
+		::SetConsoleTitle(str.c_str());
 		mainGame.m_pScene->m_pCamera = myPlayer->GetCamera();
 		mainGame.m_pScene->m_cid = _cid;
 		mainGame._curScene.store(SceneInfo::GAMEROOM);
@@ -238,8 +243,8 @@ void CSession::ProcessPacket(char* packet)
 			mainGame.m_pScene->m_ppSwitches[ev->eventId - 8]->m_bSwitchActive = true;
 			mSwitch->m_lock.unlock();
 			mainGame.m_pScene->m_ActiveSwitchCnt.fetch_add(1);
-			std::cout << "Switch Activate\n";
-			if (mainGame.m_pScene->m_ActiveSwitchCnt.load() == mainGame.m_pScene->nSwitch) // 만약 3개의 스위치가 모두 활성화 되었다면, 
+			std::cout  << (int)(ev->eventId -  8) << "Switch Activate\n";
+			if (mainGame.m_pScene->m_ActiveSwitchCnt == mainGame.m_pScene->nSwitch) // 만약 3개의 스위치가 모두 활성화 되었다면, 
 			{
 				std::cout << "Clear\n";
 				mainGame.m_pScene->m_bIsExitReady = true; // 탈출 조건 true

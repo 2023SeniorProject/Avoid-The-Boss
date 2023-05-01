@@ -18,7 +18,7 @@ D3D12_GPU_DESCRIPTOR_HANDLE	CGameScene::m_d3dSrvGPUDescriptorNextHandle;
 
 CGameScene::CGameScene()
 {
-	//m_ppSwitch = new CSwitch * [3];
+
 }
 
 CGameScene::~CGameScene()
@@ -266,7 +266,7 @@ void CGameScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandLis
 
 	for (int i = 0; i < PLAYERNUM; ++i)
 	{
-		if (i != (int)CHARACTER_TYPE::BOSS)
+		if (i == (int)CHARACTER_TYPE::BOSS)
 		{
 			_players[i] = new CBoss(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature);
 			if (m_ppShaders[2])
@@ -631,27 +631,7 @@ void CGameScene::ReleaseUploadBuffers()
 
 bool CGameScene::OnExitReadyCount()
 {
-	//int nOnStateSwitch = 0;
-	//for (int i = 0; i < nSwitch; i++)
-	//{
-	//	if (m_ppSwitch[i]->GetStateOn())
-	//		nOnStateSwitch++;
-	//}
-	//if (nOnStateSwitch == nSwitch)
-	//{
-	//	
-	//	
-	//	
-	//	
-	//	
-	//	
-	//	
-	//	
-	//	
-	//	
-	//	
-	//}
-	//return false;
+	
 	return false;
 }
 

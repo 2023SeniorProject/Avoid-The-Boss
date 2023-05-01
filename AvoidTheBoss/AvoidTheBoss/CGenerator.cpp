@@ -8,7 +8,7 @@ CGenerator::CGenerator()
 
 CGenerator::CGenerator(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, CLoadedModelInfo* pModel, int nAnimationTracks, int number)
 {
-	radius = 1.25f;
+	radius = 0.5f;
 
 	CLoadedModelInfo* pSirenModel = pModel;
 

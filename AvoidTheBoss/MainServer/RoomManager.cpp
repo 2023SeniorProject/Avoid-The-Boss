@@ -15,8 +15,6 @@ using namespace std;
 Room::Room()
 {
 	_jobQueue = new Scheduler();
-	
-	
 }
 
 Room::~Room()
@@ -30,6 +28,8 @@ void Room::UserOut(int32 sid)
 		std::unique_lock<std::shared_mutex> wll(_listLock);
 		auto i = std::find(_cList.begin(), _cList.end(), sid); // 리스트에 있는지 탐색 후
 		if (i != _cList.end()) _cList.erase(i); // 리스트에서 제거
+		for (auto i : _cList) std::cout << i << " ";
+		std::cout << "\n";
 	}
 
 	if (IsDestroyRoom())
@@ -90,6 +90,8 @@ void Room::UserIn(int32 sid)
 				_players[k].m_sid = i;
 				++k;
 			}
+			for (int i = 0; i < 4; ++i) std::cout << _players[i].m_sid << " ";
+			std::cout << "\n";
 			BroadCasting(&packet);
 			_switchs[0]._pos = XMFLOAT3(-23.12724, 1.146619, 1.814123);
 			_switchs[1]._pos = XMFLOAT3(23.08867, 1.083242, 3.155997);
@@ -145,14 +147,15 @@ void Room::Update()
 	for (int i = 0; i < 3; ++i)
 	{
 		_switchs[i].UpdateGuage(_timer.GetTimeElapsed());
-		if(_switchs[i]._IsActive)
+		if(_switchs[i]._IsActive && _switchs[i]._curGuage == 100)
 		{ 
-			std::cout << "Complete\n";
+			std::cout << i << " Complete\n";
 			SC_EVENTPACKET packet;
 			packet.type = SC_PACKET_TYPE::GAMEEVENT;
 			packet.size = sizeof(SC_EVENTPACKET);
 			packet.eventId = 10 - i;
 			BroadCasting(&packet);
+			_switchs[i]._curGuage = 0.f;
 		}
 	}
 	if (_timer.IsTimeToAddHistory()) _history.AddHistory(_players);
@@ -169,7 +172,7 @@ void Room::Update()
 			packet.x = _players[i].GetPosition().x;
 			packet.z = _players[i].GetPosition().z;
 			packet.fidx = _history.GetCurFrameIdx();
-			BroadCasting(&packet);	
+			BroadCasting(&packet);
 		}
 	}
 }

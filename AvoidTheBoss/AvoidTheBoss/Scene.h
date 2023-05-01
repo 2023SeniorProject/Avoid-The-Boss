@@ -80,7 +80,10 @@ public:
 	{ 
 		for (int i = 0; i < PLAYERNUM; ++i)
 		{
-			if (_players[i]->m_sid == sid) return _players[i];
+			if (_players[i]->m_sid == sid)
+			{
+				return _players[i];
+			}
 		}
 		return nullptr;
 	}

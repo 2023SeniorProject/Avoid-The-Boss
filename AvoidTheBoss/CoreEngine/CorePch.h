@@ -99,7 +99,7 @@ using Microsoft::WRL::ComPtr;
 //----클라이언트 영역 크기 및 후면 버퍼 크기
 #define FRAME_BUFFER_WIDTH  800
 #define FRAME_BUFFER_HEIGHT 600
-#define PLAYERNUM 1
+#define PLAYERNUM 2
 
 #define _WITH_CB_WORLD_MATRIX_DESCRIPTOR_TABLE
 //----전체 화면 모드로 시작
@@ -109,7 +109,7 @@ using Microsoft::WRL::ComPtr;
 #define UNIT 1.0f // 1m = 1 unit
 
 
-const float PLAYER_VELOCITY = UNIT * 1.2f;
+const float PLAYER_VELOCITY = UNIT * 5.f;
 
 extern UINT	gnCbvSrvDescriptorIncrementSize;
 extern UINT	gnRtvDescriptorIncrementSize;

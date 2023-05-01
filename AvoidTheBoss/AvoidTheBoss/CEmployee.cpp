@@ -188,7 +188,7 @@ void CEmployee::ProcessInput(DWORD& dwDirection)
 				if (IsPlayerCanSwitchInteraction() && !targetGenerator->m_bOtherPlayerInteractionOn)
 					// 다른 플레이어가 상호작용 상태가 아닐 때 && 플레이어가 스위치 위치에 있다면
 				{
-					if (!m_bIsPlayerOnSwitchInteration) // 플레이어가 상호작용 상태가 아니였다면 
+					if (!m_bIsPlayerOnSwitchInteration && !targetGenerator->m_bSwitchActive) // 플레이어가 상호작용 상태가 아니였다면 
 					{	
 						SetOnInteraction(true);
 						m_bIsPlayerOnSwitchInteration = true;
@@ -213,7 +213,6 @@ void CEmployee::ProcessInput(DWORD& dwDirection)
 			{
 				CGenerator* targetGenerator = mainGame.m_pScene->m_ppSwitches[switchIdx];
 				targetGenerator->m_lock.lock();
-				if (targetGenerator->m_bSwitchActive) std::cout << switchIdx <<" Bug\n";
 				// 그냥 평상시 상태일 때 F키가 안눌렀을 때와 F키가 눌러져있었는데 땐 상황인지 구별
 				if (m_bIsPlayerOnSwitchInteration && !targetGenerator->m_bSwitchActive) // 발전기가 다 활성화가 안되었는데 키를 땐 상황이라면
 				{
@@ -226,7 +225,6 @@ void CEmployee::ProcessInput(DWORD& dwDirection)
 					packet.type = SC_PACKET_TYPE::GAMEEVENT;
 					m_bIsPlayerOnSwitchInteration = false;
 					clientCore._client->DoSend(&packet);
-					std::cout << "Send KeyUp Event";
 				}
 				targetGenerator->m_lock.unlock();
 			}

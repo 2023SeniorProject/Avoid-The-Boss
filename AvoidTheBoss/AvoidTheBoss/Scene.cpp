@@ -149,7 +149,7 @@ void CGameScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandLis
 	XMFLOAT3 xmf3Scale(8.0f, 2.0f, 8.0f);
 	XMFLOAT4 xmf4Color(0.0f, 0.3f, 0.0f, 0.0f);
 
-	m_nHierarchicalGameObjects = 2 + 3 + 5 + 1;
+	m_nHierarchicalGameObjects = 2 + 3;
 	m_ppHierarchicalGameObjects = new CGameObject * [m_nHierarchicalGameObjects];
 
 	CLoadedModelInfo* pSiren_L = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "Model/Siren_Alarm_(1).bin", NULL, Layout::SIREN);
@@ -207,56 +207,56 @@ void CGameScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandLis
 	//m_ppHierarchicalGameObjects[5]->m_pSkinnedAnimationController->SetTrackEnable(0, true);
 	//if (Front_Door) delete Front_Door;
 
-	CLoadedModelInfo* Front_Door = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList,m_pd3dGraphicsRootSignature, "Model/Left_Sutter_Open.bin", NULL, Layout::DOOR);
-	m_ppHierarchicalGameObjects[5] = new CDoor(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, Front_Door, 1, 0);
-	m_ppHierarchicalGameObjects[5]->m_pSkinnedAnimationController->SetTrackAnimationSet(0, 0);
-	m_ppHierarchicalGameObjects[5]->m_pSkinnedAnimationController->SetTrackSpeed(0, 0.01f);
-	m_ppHierarchicalGameObjects[5]->AddRef();
-	m_ppHierarchicalGameObjects[5]->objLayer = DOOR;
-	m_ppHierarchicalGameObjects[5]->m_pSkinnedAnimationController->SetTrackEnable(0, true);
-	if (Front_Door) delete Front_Door;
+	//CLoadedModelInfo* Front_Door = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList,m_pd3dGraphicsRootSignature, "Model/Left_Sutter_Open.bin", NULL, Layout::DOOR);
+	//m_ppHierarchicalGameObjects[5] = new CDoor(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, Front_Door, 1, 0);
+	//m_ppHierarchicalGameObjects[5]->m_pSkinnedAnimationController->SetTrackAnimationSet(0, 0);
+	//m_ppHierarchicalGameObjects[5]->m_pSkinnedAnimationController->SetTrackSpeed(0, 0.01f);
+	//m_ppHierarchicalGameObjects[5]->AddRef();
+	//m_ppHierarchicalGameObjects[5]->objLayer = DOOR;
+	//m_ppHierarchicalGameObjects[5]->m_pSkinnedAnimationController->SetTrackEnable(0, true);
+	//if (Front_Door) delete Front_Door;
 
-	CLoadedModelInfo* LShtter_Door = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "Model/Left_Sutter_Open.bin", NULL, Layout::DOOR);
-	m_ppHierarchicalGameObjects[6] = new CDoor(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, LShtter_Door, 1, 1);
-	m_ppHierarchicalGameObjects[6]->m_pSkinnedAnimationController->SetTrackAnimationSet(0, 0);
-	m_ppHierarchicalGameObjects[6]->AddRef();
-	m_ppHierarchicalGameObjects[6]->objLayer = DOOR;
-	m_ppHierarchicalGameObjects[6]->m_pSkinnedAnimationController->SetTrackEnable(0, true);
-	if (LShtter_Door) delete LShtter_Door;
+	//CLoadedModelInfo* LShtter_Door = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "Model/Left_Sutter_Open.bin", NULL, Layout::DOOR);
+	//m_ppHierarchicalGameObjects[6] = new CDoor(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, LShtter_Door, 1, 1);
+	//m_ppHierarchicalGameObjects[6]->m_pSkinnedAnimationController->SetTrackAnimationSet(0, 0);
+	//m_ppHierarchicalGameObjects[6]->AddRef();
+	//m_ppHierarchicalGameObjects[6]->objLayer = DOOR;
+	//m_ppHierarchicalGameObjects[6]->m_pSkinnedAnimationController->SetTrackEnable(0, true);
+	//if (LShtter_Door) delete LShtter_Door;
 
-	CLoadedModelInfo* RShtter_Door = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "Model/Right_Sutter_Open.bin", NULL, Layout::DOOR);
-	m_ppHierarchicalGameObjects[7] = new CDoor(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, RShtter_Door, 1, 2);
-	m_ppHierarchicalGameObjects[7]->m_pSkinnedAnimationController->SetTrackAnimationSet(0, 0);
-	m_ppHierarchicalGameObjects[7]->AddRef();
-	m_ppHierarchicalGameObjects[7]->objLayer = DOOR;
-	m_ppHierarchicalGameObjects[7]->m_pSkinnedAnimationController->SetTrackEnable(0, true);
-	if (RShtter_Door) delete RShtter_Door;
+	//CLoadedModelInfo* RShtter_Door = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "Model/Right_Sutter_Open.bin", NULL, Layout::DOOR);
+	//m_ppHierarchicalGameObjects[7] = new CDoor(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, RShtter_Door, 1, 2);
+	//m_ppHierarchicalGameObjects[7]->m_pSkinnedAnimationController->SetTrackAnimationSet(0, 0);
+	//m_ppHierarchicalGameObjects[7]->AddRef();
+	//m_ppHierarchicalGameObjects[7]->objLayer = DOOR;
+	//m_ppHierarchicalGameObjects[7]->m_pSkinnedAnimationController->SetTrackEnable(0, true);
+	//if (RShtter_Door) delete RShtter_Door;
 
-	CLoadedModelInfo* LEmergenct_Door = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "Model/Left_Emergency_Door_Open.bin", NULL, Layout::DOOR);
-	m_ppHierarchicalGameObjects[8] = new CDoor(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, LEmergenct_Door, 1, 3);
-	m_ppHierarchicalGameObjects[8]->m_pSkinnedAnimationController->SetTrackAnimationSet(0, 0);
-	m_ppHierarchicalGameObjects[8]->AddRef();
-	m_ppHierarchicalGameObjects[8]->objLayer = DOOR;
-	m_ppHierarchicalGameObjects[8]->m_pSkinnedAnimationController->SetTrackEnable(0, true);
-	if (LEmergenct_Door) delete LEmergenct_Door;
+	//CLoadedModelInfo* LEmergenct_Door = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "Model/Left_Emergency_Door_Open.bin", NULL, Layout::DOOR);
+	//m_ppHierarchicalGameObjects[8] = new CDoor(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, LEmergenct_Door, 1, 3);
+	//m_ppHierarchicalGameObjects[8]->m_pSkinnedAnimationController->SetTrackAnimationSet(0, 0);
+	//m_ppHierarchicalGameObjects[8]->AddRef();
+	//m_ppHierarchicalGameObjects[8]->objLayer = DOOR;
+	//m_ppHierarchicalGameObjects[8]->m_pSkinnedAnimationController->SetTrackEnable(0, true);
+	//if (LEmergenct_Door) delete LEmergenct_Door;
 
-	CLoadedModelInfo* REmergenct_Door = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "Model/Right_Emergency_Door_Open.bin", NULL, Layout::DOOR);
-	m_ppHierarchicalGameObjects[9] = new CDoor(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, REmergenct_Door, 1, 4);
-	m_ppHierarchicalGameObjects[9]->m_pSkinnedAnimationController->SetTrackAnimationSet(0, 0);
-	m_ppHierarchicalGameObjects[9]->AddRef();
-	m_ppHierarchicalGameObjects[9]->objLayer = DOOR;
-	m_ppHierarchicalGameObjects[9]->m_pSkinnedAnimationController->SetTrackEnable(0, true);
-	if (REmergenct_Door) delete REmergenct_Door;
+	//CLoadedModelInfo* REmergenct_Door = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "Model/Right_Emergency_Door_Open.bin", NULL, Layout::DOOR);
+	//m_ppHierarchicalGameObjects[9] = new CDoor(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, REmergenct_Door, 1, 4);
+	//m_ppHierarchicalGameObjects[9]->m_pSkinnedAnimationController->SetTrackAnimationSet(0, 0);
+	//m_ppHierarchicalGameObjects[9]->AddRef();
+	//m_ppHierarchicalGameObjects[9]->objLayer = DOOR;
+	//m_ppHierarchicalGameObjects[9]->m_pSkinnedAnimationController->SetTrackEnable(0, true);
+	//if (REmergenct_Door) delete REmergenct_Door;
 
-	CLoadedModelInfo* Generator = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "Model/Generator.bin", NULL, Layout::GENERATOR);
-	m_ppHierarchicalGameObjects[10] = new CGenerator(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, Generator, 1, 0);
-	m_ppHierarchicalGameObjects[10]->m_pSkinnedAnimationController->SetTrackAnimationSet(0, 0);
-	m_ppHierarchicalGameObjects[10]->AddRef();
-	m_ppHierarchicalGameObjects[10]->SetPosition(0, 0, -40.0f);
-	m_ppHierarchicalGameObjects[10]->Rotate(0, 90.0f,0);
-	m_ppHierarchicalGameObjects[10]->objLayer = GENERATOR;
-	//m_ppHierarchicalGameObjects[10]->m_pSkinnedAnimationController->SetTrackEnable(0, true);
-	if (Generator) delete Generator;
+	//CLoadedModelInfo* Generator = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "Model/Generator.bin", NULL, Layout::GENERATOR);
+	//m_ppHierarchicalGameObjects[10] = new CGenerator(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, Generator, 1, 0);
+	//m_ppHierarchicalGameObjects[10]->m_pSkinnedAnimationController->SetTrackAnimationSet(0, 0);
+	//m_ppHierarchicalGameObjects[10]->AddRef();
+	//m_ppHierarchicalGameObjects[10]->SetPosition(0, 0, -40.0f);
+	//m_ppHierarchicalGameObjects[10]->Rotate(0, 90.0f,0);
+	//m_ppHierarchicalGameObjects[10]->objLayer = GENERATOR;
+	////m_ppHierarchicalGameObjects[10]->m_pSkinnedAnimationController->SetTrackEnable(0, true);
+	//if (Generator) delete Generator;
 
 	m_nShaders = 2 +1;
 	m_ppShaders = new CShader * [m_nShaders];
@@ -284,9 +284,10 @@ void CGameScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandLis
 
 	for (int i = 0; i < PLAYERNUM; ++i)
 	{
-		if (i != (int)CHARACTER_TYPE::BOSS)
+		if (i == (int)CHARACTER_TYPE::BOSS)
 		{
 			_players[i] = new CBoss(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature);
+			//_players[i]->OnPrepareAnimate();
 			if (m_ppShaders[1])
 			{
 				((CBoss*)_players[i])->m_pBullet = (CBullet*)pBulletObjectShader->m_ppObjects[0];

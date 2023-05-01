@@ -4,6 +4,8 @@ class CBullet;
 
 class CBoss : public CPlayer
 {
+private:
+	CGameObject* m_RightHands = NULL;
 public:
 	int nBullet = 50;
 	CBullet* m_pBullet = NULL;
@@ -14,6 +16,8 @@ public:
 	virtual CCamera* ChangeCamera(DWORD nNewCameraMode, float fTimeElapsed);
 	virtual void OnPlayerUpdateCallback();
 	virtual void OnCameraUpdateCallback();
+	
+	virtual void PrepareAnimate();
 	virtual void Move(DWORD dwDirection, float fDistance);
 	virtual void Update(float fTimeElapsed, PLAYER_TYPE ptype);
 	virtual void OnInteractive();

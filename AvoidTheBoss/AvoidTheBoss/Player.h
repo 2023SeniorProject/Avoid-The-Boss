@@ -13,7 +13,7 @@ enum class CHARACTER_TYPE: int32
 
 static const char *g_pstrCharactorRefernece[5] =
 {
-	"Model/Boss_Run.bin",/*"Model/Boss_Idle.bin",*/
+	"Model/Boss_Idle.bin",
 	"Model/Character1_Idle.bin",
 	"Model/Character2_Idle.bin",
 	"Model/Character3_Idle.bin",
@@ -32,7 +32,6 @@ protected:
 	XMFLOAT3					m_xmf3Up = XMFLOAT3(0.0f, 1.0f, 0.0f);
 	XMFLOAT3					m_xmf3Look = XMFLOAT3(0.0f, 0.0f, 1.0f);
 	XMFLOAT3					m_xmf3Scale = XMFLOAT3(1.0f, 1.0f, 1.0f);
-
 	
 	float m_fPitch;
 	float m_fYaw;

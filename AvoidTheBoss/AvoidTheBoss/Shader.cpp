@@ -575,10 +575,11 @@ void CDoorObjectsShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCo
 
 	CGameObject* pDoor = CGameObject::LoadGeometryFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "Model/Front_Hanger_Door_Open.bin", NULL, Layout::DOOR);
 
-	m_ppObjects[0] = new CGameObject();
+	m_ppObjects[0] = new CFrontDoor();
 	m_ppObjects[0]->SetChild(pDoor);
 	pDoor->AddRef();
 	m_ppObjects[0]->SetPosition(XMFLOAT3(0.0f, 0.0f, 0.0f));
+	m_ppObjects[0]->OnPrepareAnimate();
 
 	CreateShaderVariables(pd3dDevice, pd3dCommandList);
 }

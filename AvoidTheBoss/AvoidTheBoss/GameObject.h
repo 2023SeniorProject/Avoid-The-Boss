@@ -469,14 +469,18 @@ public:
 	virtual void Animate(float fTimeElapsed);
 };
 
-class CDoor : public CGameObject
+#define DOOR_ANIMATION_TIME 5.0f
+
+class CFrontDoor : public CGameObject
 {
 private:
-	bool m_OpenDoor = false;
+	float m_AnimationDistance = DOOR_ANIMATION_TIME;
+	CGameObject* m_pLeftDoorFrame = NULL;
+	CGameObject* m_pRightDoorFrame = NULL;
 public:
-	CDoor(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, CLoadedModelInfo* pModel, int nAnimationTracks,int number);
-	virtual ~CDoor();
+	CFrontDoor();
+	virtual ~CFrontDoor();
 
-	//virtual void Animate(float fTimeElapsed);
+	virtual void OnPrepareAnimate();
+	virtual void Animate(float fTimeElapsed);
 };
-

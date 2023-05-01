@@ -244,7 +244,7 @@ void CSession::ProcessPacket(char* packet)
 			mSwitch->m_lock.unlock();
 			mainGame.m_pScene->m_ActiveSwitchCnt.fetch_add(1);
 			std::cout  << (int)(ev->eventId -  8) << "Switch Activate\n";
-			if (mainGame.m_pScene->m_ActiveSwitchCnt == mainGame.m_pScene->nSwitch) // 만약 3개의 스위치가 모두 활성화 되었다면, 
+			if (mainGame.m_pScene->m_ActiveSwitchCnt == 1) // 만약 3개의 스위치가 모두 활성화 되었다면, 
 			{
 				std::cout << "Clear\n";
 				mainGame.m_pScene->m_bIsExitReady = true; // 탈출 조건 true

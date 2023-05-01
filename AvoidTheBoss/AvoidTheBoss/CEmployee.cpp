@@ -42,7 +42,7 @@ CEmployee::CEmployee(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCo
 	//SetCameraUpdatedContext();
 
 	//SetScale(XMFLOAT3(1.f, 1.f, 1.f));
-	//SetPosition(XMFLOAT3(0.0f, 0.25f, -40.0f));//-30.0f
+	SetPosition(XMFLOAT3(0.0f, 0.25f, -50.0f));//-30.0f
 
 	if (pEmployeeModel) delete pEmployeeModel;
 }
@@ -117,10 +117,10 @@ void CEmployee::Update(float fTimeElapsed, PLAYER_TYPE ptype)
 	if (m_pSkinnedAnimationController && !m_OnInteraction)
 	{
 		//float fLength = sqrtf(m_xmf3Velocity.x * m_xmf3Velocity.x + m_xmf3Velocity.z * m_xmf3Velocity.z);
-		if (Vector3::IsZero(m_xmf3Velocity))
+		if (!Vector3::IsZero(m_xmf3Velocity))
 		{
-			m_pSkinnedAnimationController->SetTrackEnable(0, true);
-			m_pSkinnedAnimationController->SetTrackEnable(1, false);
+			m_pSkinnedAnimationController->SetTrackEnable(0, true); // 아이들 상태
+			m_pSkinnedAnimationController->SetTrackEnable(1, false); // 달리기
 			m_pSkinnedAnimationController->SetTrackPosition(0, 0.0f);
 		}
 	}

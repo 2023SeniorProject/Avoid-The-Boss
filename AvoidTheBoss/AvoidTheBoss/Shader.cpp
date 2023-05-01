@@ -581,6 +581,7 @@ void CDoorObjectsShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCo
 	pDoor->AddRef();
 	m_ppObjects[0]->SetPosition(XMFLOAT3(0.0f, 0.0f, 0.0f));
 	m_ppObjects[0]->OnPrepareAnimate();
+	m_ppObjects[0]->objLayer = Layout::DOOR;
 
 	CreateShaderVariables(pd3dDevice, pd3dCommandList);
 }

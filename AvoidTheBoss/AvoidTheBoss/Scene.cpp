@@ -284,7 +284,7 @@ void CGameScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandLis
 
 	for (int i = 0; i < PLAYERNUM; ++i)
 	{
-		if (i == (int)CHARACTER_TYPE::BOSS)
+		if (i != (int)CHARACTER_TYPE::BOSS)
 		{
 			_players[i] = new CBoss(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature);
 			//_players[i]->OnPrepareAnimate();
@@ -319,23 +319,7 @@ void CGameScene::Update(HWND hWnd)
 {
 	_timer.Tick(0);
 	
-	//for (int i = 0; i < m_nGameObjects; i++) if (m_ppGameObjects[i]) m_ppGameObjects[i]->Update();
-	//for (int i = 0; i < m_nShaders; i++) if (m_ppShaders[i]) m_ppShaders[i]->Update(pd3dCommandList, pCamera);
-	//
-	//for (int i = 0; i < m_nHierarchicalGameObjects; i++)
-	//{
-	//	if (m_ppHierarchicalGameObjects[i])
-	//	{
-	//		m_ppHierarchicalGameObjects[i]->Update(m_fElapsedTime);
-	//		if (!m_ppHierarchicalGameObjects[i]->m_pSkinnedAnimationController) m_ppHierarchicalGameObjects[i]->Update(NULL);
-	//		m_ppHierarchicalGameObjects[i]->Update(pd3dCommandList, pCamera);
-	//	}
-	//}
-	//
-	//for (int i = 0; i < PLAYERNUM; ++i)
-	//{
-	//	_players[i]->Update(pd3dCommandList, pCamera);
-	//}
+
 
 	// 방향키를 바이트로 처리한다.
 	DWORD dwDirection = 0;
@@ -397,16 +381,19 @@ void CGameScene::Update(HWND hWnd)
 
 	if (m_bIsExitReady) // 탈출 성공 시 , 해야할 일 처리
 	{
-		for (int i = 0; i < m_nHierarchicalGameObjects; i++)
+		((CStandardObjectsShader*)m_ppShaders[2])->m_ppObjects[0]->m_bIsExitReady = true;
+		/*for (int i = 0; i < m_nHierarchicalGameObjects; i++)
 		{
+
 			if (m_ppHierarchicalGameObjects[i])
 			{
 				if ((m_ppHierarchicalGameObjects[i]->objLayer == Layout::SIREN) || (m_ppHierarchicalGameObjects[i]->objLayer == Layout::DOOR))
 				{
+					
 					m_ppHierarchicalGameObjects[i]->m_bIsExitReady = true;
 				}
 			}
-		}
+		}*/
 	}
 
 

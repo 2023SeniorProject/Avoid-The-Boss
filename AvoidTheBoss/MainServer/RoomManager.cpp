@@ -159,7 +159,7 @@ void Room::Update()
 			SC_EVENTPACKET packet;
 			packet.type = SC_PACKET_TYPE::GAMEEVENT;
 			packet.size = sizeof(SC_EVENTPACKET);
-			packet.eventId = 10 - i;
+			packet.eventId = 10 + (i - 2);
 			BroadCasting(&packet);
 			_switchs[i]._curGuage = 0.f;
 		}

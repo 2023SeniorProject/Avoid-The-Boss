@@ -19,7 +19,8 @@ public:
 	void SetAnimationCount(int value) { m_nAnimationCount = value; }
 	bool GetAnimationCount() { return m_nAnimationCount; }
 	void InteractAnimation(bool value) { m_bSwitchAnimationOn = value; };
-	virtual void Animate(float fTimeElapsed);
 
+	virtual void Update(float fTimeElapsed);
+	virtual void Animate(float fTimeElapsed);
 };
 

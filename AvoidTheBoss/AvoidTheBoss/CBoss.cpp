@@ -15,10 +15,10 @@ CBoss::CBoss(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandLis
 	SetChild(pBossModel->m_pModelRootObject, true);
 
 	m_pSkinnedAnimationController = new CAnimationController(pd3dDevice, pd3dCommandList, 4, pBossModel);
-	m_pSkinnedAnimationController->SetTrackAnimationSet(2, 0);//Idle
-	m_pSkinnedAnimationController->SetTrackAnimationSet(0, 1);//Shoot
-	m_pSkinnedAnimationController->SetTrackAnimationSet(3, 2);//RunningShoot
-	m_pSkinnedAnimationController->SetTrackAnimationSet(1, 3);//Run
+	m_pSkinnedAnimationController->SetTrackAnimationSet(0, 0);//Idle
+	m_pSkinnedAnimationController->SetTrackAnimationSet(1, 1);//Run
+	m_pSkinnedAnimationController->SetTrackAnimationSet(2, 2);//Shoot
+	m_pSkinnedAnimationController->SetTrackAnimationSet(3, 3);//RunningShoot
 
 	m_pSkinnedAnimationController->SetTrackEnable(0, true);
 	m_pSkinnedAnimationController->SetTrackEnable(1, false);
@@ -42,7 +42,7 @@ CBoss::CBoss(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandLis
 	//SetCameraUpdatedContext();
 
 	SetScale(XMFLOAT3(1.f, 1.f, 1.f));
-	SetPosition(XMFLOAT3(0.0f, 0.25f, -30.0f));
+	SetPosition(XMFLOAT3(0.0f, 0.25f, 15.0f));
 
 	CreateShaderVariables(pd3dDevice, pd3dCommandList);
 	if (pBossModel) delete pBossModel;
@@ -96,13 +96,18 @@ void CBoss::OnCameraUpdateCallback()
 {
 }
 
+void CBoss::PrepareAnimate()
+{
+	m_RightHands = FindFrame("Bip001_R_Hand");
+}
+
 void CBoss::Move(DWORD dwDirection, float fDistance)
 {
 	if (dwDirection && !m_OnInteraction)
 	{
 		m_pSkinnedAnimationController->SetTrackEnable(0, false);
 		m_pSkinnedAnimationController->SetTrackEnable(1, true);
-		//m_pSkinnedAnimationController->SetTrackPosition(1, 0.0f);
+		m_pSkinnedAnimationController->SetTrackPosition(1, 0.0f);
 	}
 
 	CPlayer::Move(dwDirection, fDistance);
@@ -123,9 +128,7 @@ void CBoss::Update(float fTimeElapsed, PLAYER_TYPE ptype)
 		if (!m_pBullet->GetOnShoot())
 		{
 			m_pBullet->SetPosition(GetPosition().x, 1.25f, GetPosition().z);
-			//m_pBullet->SetLook(m_xmf3Look);
-			//m_pBullet->SetRight(m_xmf3Right);
-			//m_pBullet->SetUp(m_xmf3Up);
+			//m_pBullet->m_xmf4x4ToParent = XMMatrixMultiply(m_pBullet->m_xmf4x4ToParent,m_RightHands->m_xmf4x4World );
 		}
 		m_pBullet->Update(fTimeElapsed);
 	}
@@ -145,36 +148,39 @@ void CBoss::Update(float fTimeElapsed, PLAYER_TYPE ptype)
 
 void CBoss::OnInteractive()
 {
-	if (m_OnInteraction == true && m_InteractionCountTime > 0)
+	if (m_OnInteraction)
 	{
-		//if (m_pSkinnedAnimationController->GetTrackEnable(2)) // idle
-		//{
-		//	m_pSkinnedAnimationController->SetTrackEnable(2, false);
-		//	m_pSkinnedAnimationController->SetTrackEnable(0, true);//idle_shoot
-		//	//m_pSkinnedAnimationController->SetTrackPosition(0, 0.0f);
-		//}
-		//else if (m_pSkinnedAnimationController->GetTrackEnable(1))//run
-		//{
-		//	m_pSkinnedAnimationController->SetTrackEnable(1, false);
-		//	m_pSkinnedAnimationController->SetTrackEnable(3, true);//running shoot
-		//	//m_pSkinnedAnimationController->SetTrackPosition(3, 0.0f);
-		//}
-		m_pSkinnedAnimationController->SetTrackEnable(0, false);
-		m_pSkinnedAnimationController->SetTrackEnable(1, false);
-		m_pSkinnedAnimationController->SetTrackEnable(3, true);//running shoot
-		m_pSkinnedAnimationController->SetTrackPosition(3, 0.0f);
-
-
-		m_InteractionCountTime -= 1;
+		if (m_InteractionCountTime == BOSS_INTERACTION_TIME)
+		{
+			if (m_pSkinnedAnimationController->GetTrackEnable(0)) // idle
+			{
+				m_pSkinnedAnimationController->SetTrackEnable(0, false);
+				m_pSkinnedAnimationController->SetTrackEnable(2, true);//
+				//m_pSkinnedAnimationController->SetTrackPosition(0, 0.0f);
+			}
+			else if (m_pSkinnedAnimationController->GetTrackEnable(1))//run
+			{
+				m_pSkinnedAnimationController->SetTrackEnable(1, false);
+				m_pSkinnedAnimationController->SetTrackEnable(3, true);//running shoot
+				//m_pSkinnedAnimationController->SetTrackPosition(3, 0.0f);
+			}
+			m_InteractionCountTime -= 1;
+		}
+		else if (m_InteractionCountTime > 0)
+		{
+			m_InteractionCountTime -= 1;
+		}
+		else
+		{
+			if (m_pSkinnedAnimationController->GetTrackEnable(2))
+				m_pSkinnedAnimationController->SetTrackEnable(2, false);
+			else if(m_pSkinnedAnimationController->GetTrackEnable(3))
+				m_pSkinnedAnimationController->SetTrackEnable(3, false);
+			m_OnInteraction = false;
+			m_InteractionCountTime = BOSS_INTERACTION_TIME;
+		}
 	}
-	else
-	{
-		m_pSkinnedAnimationController->SetTrackEnable(0, false);
-		m_pSkinnedAnimationController->SetTrackEnable(3, false);
 
-		m_OnInteraction = false;
-		m_InteractionCountTime = BOSS_INTERACTION_TIME;
-	}
 }
 
 void CBoss::ProcessInput(DWORD& dwDirection)

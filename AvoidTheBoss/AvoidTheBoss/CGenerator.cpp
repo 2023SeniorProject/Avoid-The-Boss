@@ -8,26 +8,20 @@ CGenerator::CGenerator()
 
 CGenerator::CGenerator(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, CLoadedModelInfo* pModel, int nAnimationTracks, int number)
 {
+	CLoadedModelInfo* pGeneratorModel = pModel;
 	radius = 0.5f;
 
-	CLoadedModelInfo* pSirenModel = pModel;
+	if (!pGeneratorModel)
+		pGeneratorModel = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "Model/Generator.bin", NULL, Layout::GENERATOR);
 
-	const char* path[3] = {
-		"Model/Button1.bin",
-		"Model/Button2.bin",
-		"Model/Button3.bin"
-	};
-	if (!pSirenModel)
-		pSirenModel = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, path[number], NULL, Layout::SIREN);
-
-	SetChild(pSirenModel->m_pModelRootObject, true);
-	m_pSkinnedAnimationController = new CAnimationController(pd3dDevice, pd3dCommandList, nAnimationTracks, pSirenModel);
+	SetChild(pGeneratorModel->m_pModelRootObject, true);
+	m_pSkinnedAnimationController = new CAnimationController(pd3dDevice, pd3dCommandList, nAnimationTracks, pGeneratorModel);
 }
 CGenerator::~CGenerator()
 {
 }
 
-void CGenerator::Animate(float fTimeElapsed)
+void CGenerator::Update(float fTimeElapsed)
 {
 	if (m_pSkinnedAnimationController)
 	{
@@ -39,13 +33,18 @@ void CGenerator::Animate(float fTimeElapsed)
 				m_pSkinnedAnimationController->SetTrackPosition(0, 0.0f);
 
 				m_nAnimationCount--;
-				CGameObject::Animate(fTimeElapsed);
 			}
 			else
 			{
+				m_pSkinnedAnimationController->SetTrackEnable(0, false);
 				m_bSwitchAnimationOn = false;
 				m_nAnimationCount = 0;
 			}
 		}
 	}
+}
+
+void CGenerator::Animate(float fTimeElapsed)
+{	
+	CGameObject::Animate(fTimeElapsed);
 }

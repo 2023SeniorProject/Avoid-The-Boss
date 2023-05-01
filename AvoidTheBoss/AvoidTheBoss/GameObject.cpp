@@ -1284,33 +1284,61 @@ void CSiren::Animate(float fTimeElapsed)
 	CGameObject::Animate(fTimeElapsed);
 }
 
-CDoor::CDoor(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, CLoadedModelInfo* pModel, int nAnimationTracks,int number)
+
+//CDoor::CDoor(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, CLoadedModelInfo* pModel, int nAnimationTracks,int number)
+//{
+//	CLoadedModelInfo* pDoorModel = pModel;
+//
+//	const char* path[5] = {
+//	"Model/Front_Hanger_Door_Open.bin",
+//	"Model/Left_Sutter_Open.bin",
+//	"Model/Right_Sutter_Open.bin",
+//	"Model/Left_Emergency_Door_Open.bin",
+//	"Model/Right_Emergency_Door_Open.bin"
+//	};
+//
+//	if (!pDoorModel)
+//		pDoorModel = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, path[number], NULL, Layout::DOOR);
+//
+//	SetChild(pDoorModel->m_pModelRootObject, true);
+//	m_pSkinnedAnimationController = new CAnimationController(pd3dDevice, pd3dCommandList, nAnimationTracks, pDoorModel);
+//}
+
+
+CFrontDoor::CFrontDoor()
 {
-	CLoadedModelInfo* pDoorModel = pModel;
-
-	const char* path[5] = {
-	"Model/Front_Hanger_Door_Open.bin",
-	"Model/Left_Sutter_Open.bin",
-	"Model/Right_Sutter_Open.bin",
-	"Model/Left_Emergency_Door_Open.bin",
-	"Model/Right_Emergency_Door_Open.bin"
-	};
-
-	if (!pDoorModel)
-		pDoorModel = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, path[number], NULL, Layout::DOOR);
-
-	SetChild(pDoorModel->m_pModelRootObject, true);
-	m_pSkinnedAnimationController = new CAnimationController(pd3dDevice, pd3dCommandList, nAnimationTracks, pDoorModel);
 }
 
-CDoor::~CDoor()
+CFrontDoor::~CFrontDoor()
 {
 }
 
-void CDoor::Animate(float fTimeElapsed)
+void CFrontDoor::OnPrepareAnimate()
 {
-	if(m_bIsExitReady)
-		m_pSkinnedAnimationController->SetTrackEnable(0, false);
+	m_pLeftDoorFrame = FindFrame("Hanger_Door_Left");
+	m_pRightDoorFrame = FindFrame("Hanger_Door_Right");
+}
+void CFrontDoor::Animate(float fTimeElapsed)
+{
+	if (m_bIsExitReady)
+	{
+		float delta = 1.0f;
 
-	CGameObject::Animate(fTimeElapsed);
+		if (m_AnimationDistance > 0.0f)
+		{
+			if (m_pLeftDoorFrame)
+			{
+				XMMATRIX xmmtxTranslate = DirectX::XMMatrixTranslation(delta * fTimeElapsed, 0.0f, 0.0f);
+				m_pLeftDoorFrame->m_xmf4x4ToParent = Matrix4x4::Multiply(xmmtxTranslate, m_pLeftDoorFrame->m_xmf4x4ToParent);
+			}
+			if (m_pRightDoorFrame)
+			{
+				XMMATRIX xmmtxTranslate = DirectX::XMMatrixTranslation(-delta * fTimeElapsed, 0.0f, 0.0f);
+				m_pRightDoorFrame->m_xmf4x4ToParent = Matrix4x4::Multiply(xmmtxTranslate, m_pRightDoorFrame->m_xmf4x4ToParent);
+			}
+			m_AnimationDistance -= delta * fTimeElapsed;
+		}
+
+		CGameObject::Animate(fTimeElapsed);
+	}
 }

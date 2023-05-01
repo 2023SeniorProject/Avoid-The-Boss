@@ -110,7 +110,7 @@ void CBoss::Move(DWORD dwDirection, float fDistance)
 
 void CBoss::Update(float fTimeElapsed, PLAYER_TYPE ptype)
 {
-	CPlayer::Update(fTimeElapsed, PLAYER_TYPE::OWNER);
+	CPlayer::Update(fTimeElapsed, ptype);
 
 	if (m_OnInteraction)
 	{
@@ -132,15 +132,15 @@ void CBoss::Update(float fTimeElapsed, PLAYER_TYPE ptype)
 
 	if (m_pSkinnedAnimationController && !m_OnInteraction)
 	{
-		float fLength = sqrtf(m_xmf3Velocity.x * m_xmf3Velocity.x + m_xmf3Velocity.z * m_xmf3Velocity.z);
-		if (::IsZero(fLength))
+		
+		if (Vector3::IsZero(m_xmf3Velocity))
 		{
 			m_pSkinnedAnimationController->SetTrackEnable(0, true);
 			m_pSkinnedAnimationController->SetTrackEnable(1, false);
 			m_pSkinnedAnimationController->SetTrackPosition(0, 0.0f);
 		}
 	}
-	m_xmf3Velocity = XMFLOAT3(0.0f, 0.0f, 0.0f);
+	if (ptype == PLAYER_TYPE::OWNER) m_xmf3Velocity = XMFLOAT3(0.0f, 0.0f, 0.0f);
 }
 
 void CBoss::OnInteractive()

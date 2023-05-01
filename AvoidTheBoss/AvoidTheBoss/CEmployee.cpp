@@ -97,10 +97,10 @@ void CEmployee::OnCameraUpdateCallback()
 
 void CEmployee::Move(DWORD dwDirection, float fDistance)
 {
-	if (dwDirection && !m_OnInteraction)
+	if (!Vector3::IsZero(m_xmf3Velocity) && !m_OnInteraction)
 	{
-		m_pSkinnedAnimationController->SetTrackEnable(0, false);
-		m_pSkinnedAnimationController->SetTrackEnable(1, true);
+		m_pSkinnedAnimationController->SetTrackEnable(0, false); // °È±â
+		m_pSkinnedAnimationController->SetTrackEnable(1, true); // ´Þ¸®±â
 	}
 
 	CPlayer::Move(dwDirection, fDistance);
@@ -116,8 +116,8 @@ void CEmployee::Update(float fTimeElapsed, PLAYER_TYPE ptype)
 	if (m_OnInteraction) OnInteractive();
 	if (m_pSkinnedAnimationController && !m_OnInteraction)
 	{
-		float fLength = sqrtf(m_xmf3Velocity.x * m_xmf3Velocity.x + m_xmf3Velocity.z * m_xmf3Velocity.z);
-		if (::IsZero(fLength))
+		//float fLength = sqrtf(m_xmf3Velocity.x * m_xmf3Velocity.x + m_xmf3Velocity.z * m_xmf3Velocity.z);
+		if (Vector3::IsZero(m_xmf3Velocity))
 		{
 			m_pSkinnedAnimationController->SetTrackEnable(0, true);
 			m_pSkinnedAnimationController->SetTrackEnable(1, false);

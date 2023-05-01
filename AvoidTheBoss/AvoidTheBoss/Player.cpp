@@ -84,7 +84,7 @@ void CPlayer::Update(float fTimeElapsed, PLAYER_TYPE ptype)
 	else m_pCamera->SetPosition(m_xmf3Position);
 	//카메라의 카메라 변환 행렬을 다시 생성한다. 
 	m_pCamera->RegenerateViewMatrix();
-	//m_xmf3Velocity = XMFLOAT3(0.0f, 0.0f, 0.0f);
+	
 }
 
 //플레이어를 로컬 x-축, y-축, z-축을 중심으로 회전한다.

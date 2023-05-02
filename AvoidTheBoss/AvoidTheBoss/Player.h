@@ -125,7 +125,7 @@ protected:
 	bool m_OnInteraction = false;
 	int m_InteractionCountTime;
 public:
-	void SetOnInteraction(bool value) { m_OnInteraction = value; }
+	void SetInteractionAnimation(bool value) { m_OnInteraction = value; }
 	bool GetOnInteraction() { return m_OnInteraction; }
 
 	void SetnInteractionNum(int value) { nInteractionNum = value; }
@@ -134,7 +134,7 @@ public:
 	void SetnInteractionCountTime(int value) { m_InteractionCountTime = value; }
 	int GetnInteractionCountTime() { return m_InteractionCountTime; }
 
-	virtual void OnInteractive() {}
+	virtual void OnInteractionAnimation() {}
 };
 
 

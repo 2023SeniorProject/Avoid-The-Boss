@@ -97,12 +97,19 @@ void CEmployee::OnCameraUpdateCallback()
 
 void CEmployee::Move(DWORD dwDirection, float fDistance)
 {
-	if (!Vector3::IsZero(m_xmf3Velocity) && !m_OnInteraction)
+	
+	if (LOBYTE(dwDirection) && !m_OnInteraction)
 	{
 		m_pSkinnedAnimationController->SetTrackEnable(0, false); // 걷기
 		m_pSkinnedAnimationController->SetTrackEnable(1, true); // 달리기
 	}
-
+	else if(!LOBYTE(dwDirection))
+	{
+		std::cout << "idle\n";
+		m_pSkinnedAnimationController->SetTrackEnable(1, false); // 달리기
+		m_pSkinnedAnimationController->SetTrackEnable(0, true); // 아이들 상태
+		m_pSkinnedAnimationController->SetTrackPosition(0, 0.0f);
+	}
 	CPlayer::Move(dwDirection, fDistance);
 }
 
@@ -112,21 +119,10 @@ void CEmployee::Update(float fTimeElapsed, PLAYER_TYPE ptype)
 
 	if (GetAvailableSwitchIdx() != -1) m_bIsInSwitchArea = true;
 	else m_bIsInSwitchArea = false;
-		
-	if (m_OnInteraction) OnInteractive();
-	if (m_pSkinnedAnimationController && !m_OnInteraction)
-	{
-		//float fLength = sqrtf(m_xmf3Velocity.x * m_xmf3Velocity.x + m_xmf3Velocity.z * m_xmf3Velocity.z);
-		if (!Vector3::IsZero(m_xmf3Velocity))
-		{
-			m_pSkinnedAnimationController->SetTrackEnable(0, true); // 아이들 상태
-			m_pSkinnedAnimationController->SetTrackEnable(1, false); // 달리기
-			m_pSkinnedAnimationController->SetTrackPosition(0, 0.0f);
-		}
-	}
+	if (m_OnInteraction) OnInteractionAnimation();
 	if (ptype == PLAYER_TYPE::OWNER) m_xmf3Velocity = XMFLOAT3(0.0f, 0.0f, 0.0f);
 }
-void CEmployee::OnInteractive()
+void CEmployee::OnInteractionAnimation()
 {
 	if (m_OnInteraction == true && m_InteractionCountTime > 0)
 	{
@@ -137,12 +133,16 @@ void CEmployee::OnInteractive()
 
 		m_InteractionCountTime -= 1;
 	}
-	else
+	else if(m_OnInteraction == false) // 상호작용이 멈추면 재생 취소
 	{
 		m_pSkinnedAnimationController->SetTrackEnable(0, true);
 		m_pSkinnedAnimationController->SetTrackEnable(1, false);
 		m_pSkinnedAnimationController->SetTrackEnable(6, false);
 		m_OnInteraction = false;
+		
+	}
+	else if (m_InteractionCountTime <= 0) // 상호작용 동작 연속 재생하게 한다
+	{
 		m_InteractionCountTime = 45;
 	}
 }
@@ -190,7 +190,7 @@ void CEmployee::ProcessInput(DWORD& dwDirection)
 				{
 					if (!m_bIsPlayerOnSwitchInteration && !targetGenerator->m_bSwitchActive) // 플레이어가 상호작용 상태가 아니였다면 
 					{	
-						SetOnInteraction(true);
+						SetInteractionAnimation(true);
 						m_bIsPlayerOnSwitchInteration = true;
 						targetGenerator->InteractAnimation(true); // 애니메이션 재생을 시작한다.
 						targetGenerator->SetAnimationCount(BUTTON_ANIM_FRAME);

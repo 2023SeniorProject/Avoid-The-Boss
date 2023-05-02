@@ -103,14 +103,20 @@ void CBoss::PrepareAnimate()
 
 void CBoss::Move(DWORD dwDirection, float fDistance)
 {
-	if (dwDirection && !m_OnInteraction)
+	if (LOBYTE(dwDirection) && !m_OnInteraction)
 	{
 		m_pSkinnedAnimationController->SetTrackEnable(0, false);
 		m_pSkinnedAnimationController->SetTrackEnable(1, true);
 		m_pSkinnedAnimationController->SetTrackPosition(1, 0.0f);
 	}
-
+	else if(!LOBYTE(dwDirection) && !m_OnInteraction)
+	{
+		m_pSkinnedAnimationController->SetTrackEnable(0, true);
+		m_pSkinnedAnimationController->SetTrackEnable(1, false);
+		m_pSkinnedAnimationController->SetTrackPosition(0, 0.0f);
+	}
 	CPlayer::Move(dwDirection, fDistance);
+	
 }
 
 void CBoss::Update(float fTimeElapsed, PLAYER_TYPE ptype)
@@ -119,7 +125,7 @@ void CBoss::Update(float fTimeElapsed, PLAYER_TYPE ptype)
 
 	if (m_OnInteraction)
 	{
-		OnInteractive();
+		OnInteractionAnimation();
 		m_pBullet->SetOnShoot(true);
 	}
 
@@ -128,25 +134,14 @@ void CBoss::Update(float fTimeElapsed, PLAYER_TYPE ptype)
 		if (!m_pBullet->GetOnShoot())
 		{
 			m_pBullet->SetPosition(GetPosition().x, 1.25f, GetPosition().z);
-			//m_pBullet->m_xmf4x4ToParent = XMMatrixMultiply(m_pBullet->m_xmf4x4ToParent,m_RightHands->m_xmf4x4World );
 		}
 		m_pBullet->Update(fTimeElapsed);
 	}
 
-	if (m_pSkinnedAnimationController && !m_OnInteraction)
-	{
-		
-		if (Vector3::IsZero(m_xmf3Velocity))
-		{
-			m_pSkinnedAnimationController->SetTrackEnable(0, true);
-			m_pSkinnedAnimationController->SetTrackEnable(1, false);
-			m_pSkinnedAnimationController->SetTrackPosition(0, 0.0f);
-		}
-	}
 	if (ptype == PLAYER_TYPE::OWNER) m_xmf3Velocity = XMFLOAT3(0.0f, 0.0f, 0.0f);
 }
 
-void CBoss::OnInteractive()
+void CBoss::OnInteractionAnimation()
 {
 	if (m_OnInteraction)
 	{
@@ -196,7 +191,7 @@ void CBoss::ProcessInput(DWORD& dwDirection)
 		{
 			if (GetnInteractionCountTime() == BOSS_INTERACTION_TIME)
 			{
-				SetOnInteraction(true);
+				SetInteractionAnimation(true);
 			}
 		}
 

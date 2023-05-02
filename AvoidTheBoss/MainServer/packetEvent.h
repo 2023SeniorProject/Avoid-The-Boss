@@ -76,7 +76,6 @@ public:
 				}
 				else
 				{
-					std::cout << (int)(eventId - 2) << ") Switch Interaction On\n";
 					ServerIocpCore._rmgr->GetRoom(sid)._switchs[eventId - 2].SwitchInteractionOn(true);
 					SC_EVENTPACKET packet;
 					packet.size = sizeof(SC_EVENTPACKET);

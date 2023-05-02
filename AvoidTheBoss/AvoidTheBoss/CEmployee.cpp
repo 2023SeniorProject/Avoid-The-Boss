@@ -103,18 +103,24 @@ void CEmployee::Move(DWORD dwDirection, float fDistance)
 		m_pSkinnedAnimationController->SetTrackEnable(0, false); // 걷기
 		m_pSkinnedAnimationController->SetTrackEnable(1, true); // 달리기
 		m_pSkinnedAnimationController->SetTrackEnable(6, false);
+		m_pSkinnedAnimationController->SetTrackPosition(0, 0);
+		m_pSkinnedAnimationController->SetTrackPosition(6, 0);
 	}
 	else if (!LOBYTE(dwDirection) && !m_OnInteraction)
 	{
-		m_pSkinnedAnimationController->SetTrackEnable(1, false); // 달리기
 		m_pSkinnedAnimationController->SetTrackEnable(0, true); // 아이들 상태
+		m_pSkinnedAnimationController->SetTrackEnable(1, false); // 달리기
 		m_pSkinnedAnimationController->SetTrackEnable(6, false);
+		m_pSkinnedAnimationController->SetTrackPosition(1, 0);
+		m_pSkinnedAnimationController->SetTrackPosition(6, 0);
 	}
 	else if (m_OnInteraction)
 	{
 		m_pSkinnedAnimationController->SetTrackEnable(0, false);
 		m_pSkinnedAnimationController->SetTrackEnable(1, false);
 		m_pSkinnedAnimationController->SetTrackEnable(6, true);
+		m_pSkinnedAnimationController->SetTrackPosition(0, 0);
+		m_pSkinnedAnimationController->SetTrackPosition(1, 0);
 	}
 	CPlayer::Move(dwDirection, fDistance);
 }
@@ -199,11 +205,10 @@ void CEmployee::ProcessInput(DWORD& dwDirection)
 			{
 				CGenerator* targetGenerator = mainGame.m_pScene->m_ppSwitches[switchIdx];
 				targetGenerator->m_lock.lock();
+				SetInteractionAnimation(false);
 				// 그냥 평상시 상태일 때 F키가 안눌렀을 때와 F키가 눌러져있었는데 땐 상황인지 구별
 				if (m_bIsPlayerOnSwitchInteration && !targetGenerator->m_bSwitchActive) // 발전기가 다 활성화가 안되었는데 키를 땐 상황이라면
 				{
-				
-					SetInteractionAnimation(false);
 					// 스위치 도중 캔슬 이벤트 패킷을 보낸다 --> 발전기 게이지 초기화
 					targetGenerator->InteractAnimation(false); // 애니메이션 재생을 정지한다.
 					SC_EVENTPACKET packet;
@@ -213,6 +218,7 @@ void CEmployee::ProcessInput(DWORD& dwDirection)
 					m_bIsPlayerOnSwitchInteration = false;
 					clientCore._client->DoSend(&packet);
 				}
+
 				targetGenerator->m_lock.unlock();
 			}
 		}

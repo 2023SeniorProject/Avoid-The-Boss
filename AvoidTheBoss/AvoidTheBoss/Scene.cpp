@@ -382,18 +382,7 @@ void CGameScene::Update(HWND hWnd)
 	if (m_bIsExitReady) // 탈출 성공 시 , 해야할 일 처리
 	{
 		((CStandardObjectsShader*)m_ppShaders[2])->m_ppObjects[0]->m_bIsExitReady = true;
-		/*for (int i = 0; i < m_nHierarchicalGameObjects; i++)
-		{
 
-			if (m_ppHierarchicalGameObjects[i])
-			{
-				if ((m_ppHierarchicalGameObjects[i]->objLayer == Layout::SIREN) || (m_ppHierarchicalGameObjects[i]->objLayer == Layout::DOOR))
-				{
-					
-					m_ppHierarchicalGameObjects[i]->m_bIsExitReady = true;
-				}
-			}
-		}*/
 	}
 
 

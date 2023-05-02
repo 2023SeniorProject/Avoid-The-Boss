@@ -115,6 +115,11 @@ void CBoss::Move(DWORD dwDirection, float fDistance)
 		m_pSkinnedAnimationController->SetTrackEnable(1, false);
 		m_pSkinnedAnimationController->SetTrackPosition(0, 0.0f);
 	}
+	else if (m_OnInteraction)
+	{
+		OnInteractionAnimation();
+		m_pBullet->SetOnShoot(true);
+	}
 	CPlayer::Move(dwDirection, fDistance);
 	
 }
@@ -123,11 +128,7 @@ void CBoss::Update(float fTimeElapsed, PLAYER_TYPE ptype)
 {
 	CPlayer::Update(fTimeElapsed, ptype);
 
-	if (m_OnInteraction)
-	{
-		OnInteractionAnimation();
-		m_pBullet->SetOnShoot(true);
-	}
+
 
 	if (m_pBullet)
 	{

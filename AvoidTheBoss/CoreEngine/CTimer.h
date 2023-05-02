@@ -57,7 +57,7 @@ public:
 			_accumulateTimeForHistory;
 			return true;
 		}
-		return false;
+		else return false;
 	}
 };
 

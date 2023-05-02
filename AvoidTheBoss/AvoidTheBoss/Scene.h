@@ -76,7 +76,7 @@ public:
 		m_pCamera = _players[_playerIdx]->GetCamera();
 		m_pd3dcbLights->Map(0, NULL, (void**)&m_pcbMappedLights);
 	}
-	CPlayer* GetScenePlayer(const int16 sid) 
+	CPlayer* GetScenePlayer(const int32 sid) 
 	{ 
 		for (int i = 0; i < PLAYERNUM; ++i)
 		{

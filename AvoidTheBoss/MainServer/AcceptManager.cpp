@@ -113,19 +113,20 @@ void LoginProcess(ServerSession& s, std::wstring sqlexec)
 	udb.ExecuteStatementDirect(a);
 	udb.RetrieveResult();
 
+	
+	s._cid = udb.user_cid;
 	{
-		s._cid = udb.user_cid;
 		READ_SERVER_LOCK;
-		auto i = ServerIocpCore._cList.find(s._cid);
-		if (s._cid == -1 ||  i != ServerIocpCore._cList.end())
+		auto i = ServerIocpCore._cList.find(s._sid);
+		if (s._cid == -1 || i != ServerIocpCore._cList.end())
 		{
-			cout << "LoginFail" << endl;
+			std::cout << "LoginFail" << endl;
 			udb.DisconnectDataSource();
 			s.DoSendLoginPacket(false);
 			return;
 		}
+		std::cout << "client[" << s._sid << "] " << "LoginSuccess" << endl;
 	}
-	cout << "client[" << s._cid << "] " << "LoginSuccess" << endl;
 	udb.DisconnectDataSource();
 	s.DoSendLoginPacket(true);
 }
@@ -143,7 +144,6 @@ void AcceptManager::ProcessAccept(AcceptEvent* acceptEvent)
 	sqlExec += lp->pw;
 
 	int32 sid = GetNewSessionIdx();
-	session->DoSendLoginPacket(true);
 	session->_sid = sid;
 	LoginProcess(*session, sqlExec);
 	//클라이언트 소켓과 서버 리슨 소켓과 옵션을 동일하게 맞춰준다.

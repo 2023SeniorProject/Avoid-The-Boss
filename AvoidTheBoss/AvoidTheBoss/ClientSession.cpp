@@ -117,10 +117,10 @@ void CSession::ProcessPacket(char* packet)
 	case S_PACKET_TYPE::SKEY:
 	{
 		S2C_KEY* movePacket = reinterpret_cast<S2C_KEY*>(packet);
+		if(movePacket->sid != _sid) std::cout << movePacket->sid << std::endl;
 		CPlayer* player = mainGame.m_pScene->GetScenePlayer(movePacket->sid);
-		if (player != nullptr && _sid != movePacket->sid)
+		if (player != nullptr)
 		{
-
 			player->m_lock.lock();
 			player->Move(movePacket->key, PLAYER_VELOCITY);
 			player->m_lock.unlock();
@@ -133,7 +133,7 @@ void CSession::ProcessPacket(char* packet)
 	{
 		S2C_ROTATE* rotatePacket = reinterpret_cast<S2C_ROTATE*>(packet);
 		CPlayer* player = mainGame.m_pScene->GetScenePlayer(rotatePacket->sid);
-		if (player != nullptr && _sid != rotatePacket->sid)
+		if (player != nullptr)
 		{
 			player->Rotate(0, rotatePacket->angle, 0);
 		}
@@ -144,6 +144,7 @@ void CSession::ProcessPacket(char* packet)
 	{
 		S2C_POS* posPacket = reinterpret_cast<S2C_POS*>(packet);
 		CPlayer* player = mainGame.m_pScene->GetScenePlayer(posPacket->sid);
+		if(posPacket->sid != _sid) std::cout << posPacket->sid << "\n";
 		mainGame.m_pScene->_curFrameIdx.store(posPacket->fidx);		
 		if (player == nullptr) break;
 		XMFLOAT3 curPos = player->GetPosition();
@@ -155,6 +156,7 @@ void CSession::ProcessPacket(char* packet)
 			player->MakePosition(XMFLOAT3(posPacket->x, player->GetPosition().y, posPacket->z));
 			player->m_lock.unlock();
 		}
+		else std::cout << "Almost Same Pos\n";
 	}
 	break;
 	case S_PACKET_TYPE::SCHAT:

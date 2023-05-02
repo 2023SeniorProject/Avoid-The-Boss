@@ -149,7 +149,7 @@ void ServerSession::ProcessPacket(char* packet)
 			packet.type = S_PACKET_TYPE::SKEY;
 			packet.sid = _sid;
 			packet.key = movePacket->key;
-			//std::cout << _sid << "\n";
+			std::cout << "[" << _sid << "]\n";
 			ServerIocpCore._rmgr->GetRoom(_myRm).AddEvent(me , 0.f);
 			ServerIocpCore._rmgr->GetRoom(_myRm).BroadCastingExcept(&packet, _sid);
 		}
@@ -173,7 +173,7 @@ void ServerSession::ProcessPacket(char* packet)
 			_CHAT  np;
 			memcpy(&np, cp, sizeof(_CHAT));
 			np.type = S_PACKET_TYPE::SCHAT;
-			READ_SERVER_LOCK;
+	
 			ServerIocpCore._rmgr->_rooms[_myRm].BroadCasting(&np);
 		}
 		break;

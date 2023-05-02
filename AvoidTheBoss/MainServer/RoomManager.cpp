@@ -25,13 +25,17 @@ void Room::UserOut(int32 sid)
 {
 	{
 		// cList Lock 쓰기 호출
+		GetMyPlayerFromRoom(sid).SetVelocity(XMFLOAT3(0, 0, 0));
 		std::unique_lock<std::shared_mutex> wll(_listLock);
 		auto i = std::find(_cList.begin(), _cList.end(), sid); // 리스트에 있는지 탐색 후
 		if (i != _cList.end()) _cList.erase(i); // 리스트에서 제거
-		std::cout << "LEFT USER SID LIST [";
-		for (auto i : _cList) std::cout << i << ", ";
-		std::cout << " ]\n";
 	}
+		
+	std::cout << "LEFT USER SID LIST [";
+	for (auto i : _cList) std::cout << i << ", ";
+	std::cout << " ]\n";
+		
+	
 
 	if (IsDestroyRoom())
 	{
@@ -41,11 +45,11 @@ void Room::UserOut(int32 sid)
 		packet.rmNum = _num;*/
 		// 업데이트 리스트를 보내준다. ==> 빈방이므로 더 이상 표시 X
 		{
-			READ_SERVER_LOCK;
-			for (auto i : ServerIocpCore._clients)
-			{
+			//READ_SERVER_LOCK;
+			//for (auto i : ServerIocpCore._clients)
+			//{
 				//i.second->DoSend(&packet);
-			}
+			//}
 		}
 		std::cout << "Destroy Room\n";
 	}
@@ -111,15 +115,18 @@ void Room::UserIn(int32 sid)
 void Room::BroadCasting(void* packet) // 방에 속하는 클라이언트에게만 전달하기
 {
 	// cList Lock 읽기 호출 
+	std::cout << "[";
 	std::shared_lock<std::shared_mutex> rll(_listLock);
 	for (auto i =  _cList.begin(); i != _cList.end(); ++i)
 	{
+		std::cout << *i << ",";
 		if (ServerIocpCore._clients[*i] == nullptr) continue;
 		if(!ServerIocpCore._clients[*i]->DoSend(packet))
 		{ 
 			continue;
 		}
 	}
+	std::cout << "\n";
 }
 
 void Room::BroadCastingExcept(void* packet, int32 sid) // 방에 속하는 클라이언트에게만 전달하기
@@ -134,6 +141,7 @@ void Room::BroadCastingExcept(void* packet, int32 sid) // 방에 속하는 클라이언트
 			continue;
 		}
 	}
+	
 }
 
 // 방에 있는 유저에 대한 게임 로직 업데이트 진행 

@@ -28,7 +28,7 @@ void Room::UserOut(int32 sid)
 		std::unique_lock<std::shared_mutex> wll(_listLock);
 		auto i = std::find(_cList.begin(), _cList.end(), sid); // 리스트에 있는지 탐색 후
 		if (i != _cList.end()) _cList.erase(i); // 리스트에서 제거
-		std::cout << "LEFT USER SID LIST[";
+		std::cout << "LEFT USER SID LIST [";
 		for (auto i : _cList) std::cout << i << ", ";
 		std::cout << " ]\n";
 	}
@@ -93,10 +93,6 @@ void Room::UserIn(int32 sid)
 			}
 			std::cout << "TOTAL USER SID LIST[";
 			for (auto i : _cList) std::cout << i << ", ";
-			std::cout << " ]\n";
-
-			std::cout << "PLAYERS SID ASSIGN LIST [ ";
-			for (int i = 0; i < 4; ++i) std::cout << _players[i].m_sid << ", ";
 			std::cout << " ]\n";
 			BroadCasting(&packet);
 			_switchs[0]._pos = XMFLOAT3(-23.12724, 1.146619, 1.814123);
@@ -164,8 +160,9 @@ void Room::Update()
 			_switchs[i]._curGuage = 0.f;
 		}
 	}
-	if (_timer.IsTimeToAddHistory()) _history.AddHistory(_players);
-	if (_timer.IsAfterTick(30))
+
+	if (_timer.IsTimeToAddHistory()) _history.AddHistory(_players); // 1 (1/60초) 프레임마다 월드 상태를 기록한다.
+	if (_timer.IsAfterTick(30)) // 1/30초마다 정확한 위치값을 브로드캐스팅 한다.
 	{
 		
 		for (int i = 0; i < PLAYERNUM; ++i)

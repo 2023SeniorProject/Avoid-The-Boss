@@ -42,7 +42,7 @@ CBoss::CBoss(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandLis
 	//SetCameraUpdatedContext();
 
 	SetScale(XMFLOAT3(1.f, 1.f, 1.f));
-	SetPosition(XMFLOAT3(0.0f, 0.25f, 15.0f));
+	SetPosition(XMFLOAT3(0.0f, 0.25f, -30.0f));
 
 	CreateShaderVariables(pd3dDevice, pd3dCommandList);
 	if (pBossModel) delete pBossModel;

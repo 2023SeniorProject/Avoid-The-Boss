@@ -130,6 +130,7 @@ public: // 씬에 있는 오브젝트 관련 변수
 public:
 	Atomic<uint8> _curFrameIdx;
 	int32 m_cid = -1;
+	int32 m_sid = -1;
 protected:
 	ID3D12RootSignature* m_pd3dGraphicsRootSignature = NULL;
 

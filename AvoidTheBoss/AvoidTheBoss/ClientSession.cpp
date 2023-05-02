@@ -172,6 +172,7 @@ void CSession::ProcessPacket(char* packet)
 		::SetConsoleTitle(str.c_str());
 		mainGame.m_pScene->m_pCamera = myPlayer->GetCamera();
 		mainGame.m_pScene->m_cid = _cid;
+		mainGame.m_pScene->m_sid = _sid;
 		mainGame._curScene.store(SceneInfo::GAMEROOM);
 		mainGame.m_pScene->InitScene();
 	}

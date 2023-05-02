@@ -143,10 +143,9 @@ void AcceptManager::ProcessAccept(AcceptEvent* acceptEvent)
 	sqlExec += lp->pw;
 
 	int32 sid = GetNewSessionIdx();
-	session->_sid = 0;
-	session->_cid = 1;
 	session->DoSendLoginPacket(true);
-	//LoginProcess(*session, sqlExec);
+	session->_sid = sid;
+	LoginProcess(*session, sqlExec);
 	//클라이언트 소켓과 서버 리슨 소켓과 옵션을 동일하게 맞춰준다.
 	
 	

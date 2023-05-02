@@ -319,9 +319,7 @@ void CGameScene::Update(HWND hWnd)
 {
 	_timer.Tick(0);
 	
-
-
-	// 방향키를 바이트로 처리한다.
+	
 	DWORD dwDirection = 0;
 	_players[_playerIdx]->ProcessInput(dwDirection);
 	_players[_playerIdx]->Move(dwDirection, PLAYER_VELOCITY);

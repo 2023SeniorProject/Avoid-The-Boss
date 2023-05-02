@@ -107,13 +107,13 @@ void CBoss::Move(DWORD dwDirection, float fDistance)
 	{
 		m_pSkinnedAnimationController->SetTrackEnable(0, false);
 		m_pSkinnedAnimationController->SetTrackEnable(1, true);
-		m_pSkinnedAnimationController->SetTrackPosition(1, 0.0f);
+		m_pSkinnedAnimationController->SetTrackPosition(0, 0.0f);
 	}
 	else if(!LOBYTE(dwDirection) && !m_OnInteraction)
 	{
 		m_pSkinnedAnimationController->SetTrackEnable(0, true);
 		m_pSkinnedAnimationController->SetTrackEnable(1, false);
-		m_pSkinnedAnimationController->SetTrackPosition(0, 0.0f);
+		m_pSkinnedAnimationController->SetTrackPosition(1, 0.0f);
 	}
 	else if (m_OnInteraction)
 	{
@@ -152,13 +152,13 @@ void CBoss::OnInteractionAnimation()
 			{
 				m_pSkinnedAnimationController->SetTrackEnable(0, false);
 				m_pSkinnedAnimationController->SetTrackEnable(2, true);//
-				//m_pSkinnedAnimationController->SetTrackPosition(0, 0.0f);
+				m_pSkinnedAnimationController->SetTrackPosition(0, 0.0f);
 			}
 			else if (m_pSkinnedAnimationController->GetTrackEnable(1))//run
 			{
 				m_pSkinnedAnimationController->SetTrackEnable(1, false);
 				m_pSkinnedAnimationController->SetTrackEnable(3, true);//running shoot
-				//m_pSkinnedAnimationController->SetTrackPosition(3, 0.0f);
+				m_pSkinnedAnimationController->SetTrackPosition(1, 0.0f);
 			}
 			m_InteractionCountTime -= 1;
 		}
@@ -168,10 +168,8 @@ void CBoss::OnInteractionAnimation()
 		}
 		else
 		{
-			if (m_pSkinnedAnimationController->GetTrackEnable(2))
-				m_pSkinnedAnimationController->SetTrackEnable(2, false);
-			else if(m_pSkinnedAnimationController->GetTrackEnable(3))
-				m_pSkinnedAnimationController->SetTrackEnable(3, false);
+			if (m_pSkinnedAnimationController->GetTrackEnable(2))	  m_pSkinnedAnimationController->SetTrackEnable(2, false);
+			else if(m_pSkinnedAnimationController->GetTrackEnable(3)) m_pSkinnedAnimationController->SetTrackEnable(3, false);
 			m_OnInteraction = false;
 			m_InteractionCountTime = BOSS_INTERACTION_TIME;
 		}

@@ -284,7 +284,7 @@ void CGameScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandLis
 
 	for (int i = 0; i < PLAYERNUM; ++i)
 	{
-		if (i != (int)CHARACTER_TYPE::BOSS)
+		if (i == (int)CHARACTER_TYPE::BOSS)
 		{
 			_players[i] = new CBoss(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature);
 			//_players[i]->OnPrepareAnimate();

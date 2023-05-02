@@ -1285,26 +1285,6 @@ void CSiren::Animate(float fTimeElapsed)
 }
 
 
-//CDoor::CDoor(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, CLoadedModelInfo* pModel, int nAnimationTracks,int number)
-//{
-//	CLoadedModelInfo* pDoorModel = pModel;
-//
-//	const char* path[5] = {
-//	"Model/Front_Hanger_Door_Open.bin",
-//	"Model/Left_Sutter_Open.bin",
-//	"Model/Right_Sutter_Open.bin",
-//	"Model/Left_Emergency_Door_Open.bin",
-//	"Model/Right_Emergency_Door_Open.bin"
-//	};
-//
-//	if (!pDoorModel)
-//		pDoorModel = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, path[number], NULL, Layout::DOOR);
-//
-//	SetChild(pDoorModel->m_pModelRootObject, true);
-//	m_pSkinnedAnimationController = new CAnimationController(pd3dDevice, pd3dCommandList, nAnimationTracks, pDoorModel);
-//}
-
-
 CFrontDoor::CFrontDoor()
 {
 }
@@ -1342,3 +1322,59 @@ void CFrontDoor::Animate(float fTimeElapsed)
 		CGameObject::Animate(fTimeElapsed);
 	}
 }
+
+CEmergencyDoor::CEmergencyDoor()
+{
+}
+
+CEmergencyDoor::~CEmergencyDoor()
+{
+}
+void CEmergencyDoor::Animate(float fTimeElapsed)
+{
+	if (!m_bIsExitReady)
+	{
+		float delta = 100.0f;
+
+		if (m_AnimationDegree > 0.0f)
+		{
+			XMMATRIX xmmtxRotate = XMMatrixRotationY(XMConvertToRadians(-delta * fTimeElapsed));
+			m_xmf4x4ToParent = Matrix4x4::Multiply(xmmtxRotate, m_xmf4x4ToParent);
+			m_AnimationDegree -= delta * fTimeElapsed;
+		}
+		CGameObject::Animate(fTimeElapsed);		
+	}
+}
+
+CShutterDoor::CShutterDoor()
+{
+}
+
+CShutterDoor::~CShutterDoor()
+{
+}
+
+void CShutterDoor::OnPrepareAnimate()
+{
+	m_pShutter = FindFrame("Sutter_Open");
+}
+
+void CShutterDoor::Animate(float fTimeElapsed)
+{
+	//if (!m_bIsExitReady)
+	//{
+		float delta = 1.0f;
+
+		if (m_AnimationDistance > 0.0f)
+		{
+			if (m_pShutter)
+			{
+				XMMATRIX xmmtxTranslate = DirectX::XMMatrixTranslation(0.0f, 0.0f, delta * fTimeElapsed);
+				m_pShutter->m_xmf4x4ToParent = Matrix4x4::Multiply(xmmtxTranslate, m_pShutter->m_xmf4x4ToParent);
+				m_AnimationDistance -= delta * fTimeElapsed;
+			}
+		}
+		CGameObject::Animate(fTimeElapsed);
+	//}
+}
+

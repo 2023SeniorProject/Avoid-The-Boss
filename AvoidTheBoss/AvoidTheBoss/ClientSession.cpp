@@ -183,8 +183,8 @@ void CSession::ProcessPacket(char* packet)
 		// 각 플레이어 초기 위치 값 셋팅
 		mainGame.m_pScene->_players[0]->MakePosition(XMFLOAT3(0, 0.25, -20));
 		mainGame.m_pScene->_players[1]->MakePosition(XMFLOAT3(10, 0.25, -20));
-		//mainGame.m_pScene->_players[2]->MakePosition(XMFLOAT3(15, 0.25, -20));
-		//mainGame.m_pScene->_players[3]->MakePosition(XMFLOAT3(20, 0.25, -20));
+		mainGame.m_pScene->_players[2]->MakePosition(XMFLOAT3(15, 0.25, -20));
+		mainGame.m_pScene->_players[3]->MakePosition(XMFLOAT3(20, 0.25, -20));
 		// 자신의 클라이언트 Idx 값 출력
 
 		std::cout << "MYPLAYER IDX : " << mainGame.m_pScene->_playerIdx << "\n";

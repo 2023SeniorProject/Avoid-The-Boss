@@ -158,7 +158,6 @@ void CGameScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandLis
 	m_ppHierarchicalGameObjects[0]->SetPosition(-23.12724, 1.146619, 1.814123);//left ¤·
 	m_ppHierarchicalGameObjects[0]->AddRef();
 	m_ppHierarchicalGameObjects[0]->objLayer = SWITCH;
-	m_ppHierarchicalGameObjects[0]->SetPosition(0, 1.25, -50);//left ¤·
 	if (Button1) delete Button1;
 
 	CLoadedModelInfo* Button2 = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "Model/Button2.bin", NULL, Layout::SWITCH);
@@ -321,19 +320,6 @@ void CGameScene::Update(HWND hWnd)
 				}
 			}
 		}
-
-		/*for (int i = 0; i < m_nHierarchicalGameObjects; i++)
-		{
-
-			if (m_ppHierarchicalGameObjects[i])
-			{
-				if ((m_ppHierarchicalGameObjects[i]->objLayer == Layout::SIREN) || (m_ppHierarchicalGameObjects[i]->objLayer == Layout::DOOR))
-				{
-					
-					m_ppHierarchicalGameObjects[i]->m_bIsExitReady = true;
-				}
-			}
-		}*/
 	}
 
 

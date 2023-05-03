@@ -144,19 +144,18 @@ void CSession::ProcessPacket(char* packet)
 	{
 		S2C_POS* posPacket = reinterpret_cast<S2C_POS*>(packet);
 		CPlayer* player = mainGame.m_pScene->GetScenePlayer(posPacket->sid);
-		if(posPacket->sid != _sid) std::cout << posPacket->sid << "\n";
 		mainGame.m_pScene->_curFrameIdx.store(posPacket->fidx);		
 		if (player == nullptr) break;
 		XMFLOAT3 curPos = player->GetPosition();
 		XMFLOAT3 newPos = XMFLOAT3(posPacket->x, player->GetPosition().y, posPacket->z);
 		XMFLOAT3 distance = Vector3::Subtract(curPos, newPos);
-		if (Vector3::Length(distance) > 0.1f)
+		if (Vector3::Length(distance) > 0.2f)
 		{
+			std::cout << "Mass Offset Detected. Reseting Pos\n";
 			player->m_lock.lock();
 			player->MakePosition(XMFLOAT3(posPacket->x, player->GetPosition().y, posPacket->z));
 			player->m_lock.unlock();
 		}
-		else std::cout << "Almost Same Pos\n";
 	}
 	break;
 	case S_PACKET_TYPE::SCHAT:

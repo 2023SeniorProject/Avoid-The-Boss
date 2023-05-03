@@ -115,18 +115,15 @@ void Room::UserIn(int32 sid)
 void Room::BroadCasting(void* packet) // 방에 속하는 클라이언트에게만 전달하기
 {
 	// cList Lock 읽기 호출 
-	std::cout << "[";
 	std::shared_lock<std::shared_mutex> rll(_listLock);
 	for (auto i =  _cList.begin(); i != _cList.end(); ++i)
 	{
-		std::cout << *i << ",";
 		if (ServerIocpCore._clients[*i] == nullptr) continue;
 		if(!ServerIocpCore._clients[*i]->DoSend(packet))
 		{ 
 			continue;
 		}
 	}
-	std::cout << "\n";
 }
 
 void Room::BroadCastingExcept(void* packet, int32 sid) // 방에 속하는 클라이언트에게만 전달하기
@@ -170,7 +167,7 @@ void Room::Update()
 	}
 
 	if (_timer.IsTimeToAddHistory()) _history.AddHistory(_players); // 1 (1/60초) 프레임마다 월드 상태를 기록한다.
-	if (_timer.IsAfterTick(30)) // 1/30초마다 정확한 위치값을 브로드캐스팅 한다.
+	if (_timer.IsAfterTick(45)) // 1/45초마다 정확한 위치값을 브로드캐스팅 한다.
 	{
 		
 		for (int i = 0; i < PLAYERNUM; ++i)

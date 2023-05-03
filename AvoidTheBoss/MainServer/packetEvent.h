@@ -40,7 +40,7 @@ public:
 			packet.x = ServerIocpCore._rmgr->GetRoom(roomNum).GetMyPlayerFromRoom(sid).GetPosition().x;
 			packet.z = ServerIocpCore._rmgr->GetRoom(roomNum).GetMyPlayerFromRoom(sid).GetPosition().z;
 			std::cout << "[" << sid << "] (" << packet.x << "," << packet.z << ")\n";
-			ServerIocpCore._rmgr->GetRoom(roomNum).BroadCastingExcept(&packet, sid);
+			ServerIocpCore._rmgr->GetRoom(roomNum).BroadCasting(&packet);
 		}
 	};
 	

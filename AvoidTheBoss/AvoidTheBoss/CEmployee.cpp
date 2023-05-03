@@ -98,7 +98,7 @@ void CEmployee::OnCameraUpdateCallback()
 void CEmployee::Move(DWORD dwDirection, float fDistance)
 {
 	
-	if (LOBYTE(dwDirection) && !m_OnInteraction)
+	if (LOBYTE(dwDirection) && !m_OnInteraction) // 이동 중에 
 	{
 		m_pSkinnedAnimationController->SetTrackEnable(0, false); // 걷기
 		m_pSkinnedAnimationController->SetTrackEnable(1, true); // 달리기
@@ -182,9 +182,9 @@ void CEmployee::ProcessInput(DWORD& dwDirection)
 				{
 					if (!m_bIsPlayerOnSwitchInteration && !targetGenerator->m_bSwitchActive) // 플레이어가 상호작용 상태가 아니였다면 
 					{	
-						SetInteractionAnimation(true);
-						m_bIsPlayerOnSwitchInteration = true;
-						targetGenerator->InteractAnimation(true); // 애니메이션 재생을 시작한다.
+						SetInteractionAnimation(true); // 캐릭터 애니메이션 재생을 시작한다.
+						m_bIsPlayerOnSwitchInteration = true; // 플레이어가 상호작용 상태임을 기록한다.
+						targetGenerator->InteractAnimation(true); // 발전기 애니메이션 재생을 시작한다.
 						targetGenerator->SetAnimationCount(BUTTON_ANIM_FRAME);
 						
 						SC_EVENTPACKET packet;

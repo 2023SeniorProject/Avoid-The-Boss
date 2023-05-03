@@ -366,7 +366,6 @@ void CGameScene::Update(HWND hWnd)
 		packet.x = _players[_playerIdx]->GetLook().x;
 		packet.z = _players[_playerIdx]->GetLook().z;
 		clientCore._client->DoSend(&packet);
-		std::cout << "DoSend\n";
 	}
 
 	m_lastKeyInput = dwDirection;

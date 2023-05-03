@@ -609,5 +609,6 @@ void CSirenObjectsShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsC
 	m_ppObjects[1]->OnPrepareAnimate();
 	m_ppObjects[1]->objLayer = Layout::SIREN;
 
+
 	CreateShaderVariables(pd3dDevice, pd3dCommandList);
 }

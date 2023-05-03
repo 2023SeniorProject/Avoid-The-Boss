@@ -212,7 +212,7 @@ void CGameScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandLis
 
 	for (int i = 0; i < PLAYERNUM; ++i)
 	{
-		if (i != (int)CHARACTER_TYPE::BOSS)
+		if (i == (int)CHARACTER_TYPE::BOSS)
 		{
 			_players[i] = new CBoss(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature);
 			if (m_ppShaders[1])
@@ -246,8 +246,6 @@ void CGameScene::Update(HWND hWnd)
 {
 	_timer.Tick(0);
 	
-
-
 	// 방향키를 바이트로 처리한다.
 	DWORD dwDirection = 0;
 	_players[_playerIdx]->ProcessInput(dwDirection);

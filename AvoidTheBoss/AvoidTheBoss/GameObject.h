@@ -441,12 +441,17 @@ public:
 class CSiren : public CGameObject
 {
 private:
-	bool m_OnSiren = false;
-public:
+	int m_nSirenBody = 16;
+	CGameObject** m_ppSirenBody = NULL;
 
+	int m_nSirenBell = 16;
+	CGameObject** m_ppSirenBell = NULL;
+public:
+	CSiren();
 	CSiren(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, CLoadedModelInfo* pModel, int nAnimationTracks);
 	virtual ~CSiren();
 
+	virtual void OnPrepareAnimate();
 	virtual void Animate(float fTimeElapsed);
 };
 

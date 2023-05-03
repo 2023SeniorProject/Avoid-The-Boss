@@ -571,10 +571,12 @@ CDoorObjectsShader::~CDoorObjectsShader()
 
 void CDoorObjectsShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, CLoadedModelInfo* pModel, void* pContext)
 {
-	m_nObjects = 4;
+	m_nObjects = 5;
 	m_ppObjects = new CGameObject * [m_nObjects];
 
 	CGameObject* pFrontDoor = CGameObject::LoadGeometryFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "Model/Front_Hanger_Door_Open.bin", NULL, Layout::DOOR);
+	CGameObject* pEmergencyDoor = CGameObject::LoadGeometryFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "Model/Emergency_Door_Open.bin", NULL, Layout::DOOR);
+	CGameObject* pShutterDoor = CGameObject::LoadGeometryFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "Model/Shutter_Door_Side.bin", NULL, Layout::DOOR);
 
 	m_ppObjects[0] = new CFrontDoor();
 	m_ppObjects[0]->SetChild(pFrontDoor);
@@ -582,11 +584,9 @@ void CDoorObjectsShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCo
 	m_ppObjects[0]->OnPrepareAnimate();
 	m_ppObjects[0]->objLayer = Layout::DOOR;
 
-	CGameObject* pEmergencyDoor = CGameObject::LoadGeometryFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "Model/Emergency_Door_Open.bin", NULL, Layout::DOOR);
-
 	m_ppObjects[1] = new CEmergencyDoor();
 	m_ppObjects[1]->SetChild(pEmergencyDoor);
-	m_ppObjects[1]->SetPosition(XMFLOAT3(-25.60735f, 0.0180029f, -22.80892f));
+	m_ppObjects[1]->SetPosition(XMFLOAT3(-25.60735, 0.01800204, -22.68291f));
 	m_ppObjects[1]->Rotate(0.0f, 90.0f, 0.0f);
 	m_ppObjects[1]->OnPrepareAnimate();
 	m_ppObjects[1]->objLayer = Layout::DOOR;
@@ -598,7 +598,6 @@ void CDoorObjectsShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCo
 	m_ppObjects[2]->OnPrepareAnimate();
 	m_ppObjects[2]->objLayer = Layout::DOOR;
 
-	CGameObject* pShutterDoor = CGameObject::LoadGeometryFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "Model/Shutter_Door_Side.bin", NULL, Layout::DOOR);
 	m_ppObjects[3] = new CShutterDoor();
 	m_ppObjects[3]->SetChild(pShutterDoor);
 	m_ppObjects[3]->SetPosition(XMFLOAT3(-0.044f, -0.5005361f, 0.06f));
@@ -606,12 +605,12 @@ void CDoorObjectsShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCo
 	m_ppObjects[3]->OnPrepareAnimate();
 	m_ppObjects[3]->objLayer = Layout::DOOR;
 
-	//m_ppObjects[4] = new CShutterDoor();
-	//m_ppObjects[4]->SetChild(pShutterDoor);
-	//m_ppObjects[4]->SetPosition(XMFLOAT3(50.43907f, -0.503039f, -0.1099938f));
-	//m_ppObjects[4]->Rotate(-90.0f, 0.0f, 90.0f);
-	//m_ppObjects[4]->OnPrepareAnimate();
-	//m_ppObjects[4]->objLayer = Layout::DOOR;
+	m_ppObjects[4] = new CShutterDoor();
+	m_ppObjects[4]->SetChild(pShutterDoor);
+	m_ppObjects[4]->SetPosition(XMFLOAT3(50.43907f, -0.503039f, -0.1099938f));
+	m_ppObjects[4]->Rotate(-90.0f, 0.0f, 90.0f);
+	m_ppObjects[4]->OnPrepareAnimate();
+	m_ppObjects[4]->objLayer = Layout::DOOR;
 
 	CreateShaderVariables(pd3dDevice, pd3dCommandList);
 
@@ -620,3 +619,24 @@ void CDoorObjectsShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCo
 	//if (pShutterDoor) delete pShutterDoor;
 }
 
+CSirenObjectsShader::CSirenObjectsShader()
+{
+}
+
+CSirenObjectsShader::~CSirenObjectsShader()
+{
+}
+
+void CSirenObjectsShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, CLoadedModelInfo* pModel, void* pContext)
+{
+	m_nObjects = 1;
+	m_ppObjects = new CGameObject * [m_nObjects];
+
+	CGameObject* pSiren = CGameObject::LoadGeometryFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "Model/Siren_Alarm.bin", NULL, Layout::BOUDS);
+	m_ppObjects[0] = new CGameObject();
+	m_ppObjects[0]->SetChild(pSiren);
+	pSiren->AddRef();
+	m_ppObjects[0]->SetPosition(XMFLOAT3(0.0f, 0.0f, 0.0f));
+
+	CreateShaderVariables(pd3dDevice, pd3dCommandList);
+}

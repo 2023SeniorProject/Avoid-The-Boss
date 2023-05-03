@@ -1262,6 +1262,11 @@ void CSkyBox::Render(ID3D12GraphicsCommandList *pd3dCommandList, CCamera *pCamer
 }
 
 
+CSiren::CSiren()
+{
+}
+
+
 CSiren::CSiren(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, CLoadedModelInfo* pModel, int nAnimationTracks)
 {
 	CLoadedModelInfo* pSirenModel = pModel;
@@ -1276,14 +1281,34 @@ CSiren::~CSiren()
 {
 }
 
-void CSiren::Animate(float fTimeElapsed)
-{
-	if(m_bIsExitReady)
-		m_pSkinnedAnimationController->SetTrackEnable(0, false);
 
-	CGameObject::Animate(fTimeElapsed);
+void CSiren::OnPrepareAnimate()
+{
+	m_ppSirenBell = new CGameObject*[m_nSirenBell];
+	for (int i = 0; i < m_nSirenBell; i++)
+	{
+		m_ppSirenBell[i] = FindFrame("Siren_Bell");
+	}
+
+	m_ppSirenBody = new CGameObject * [m_nSirenBody];
+	for (int i = 0; i < m_nSirenBell; i++)
+	{
+		m_ppSirenBell[i] = FindFrame("Siren_Body");
+	}
 }
 
+void CSiren::Animate(float fTimeElapsed)
+{
+	if (!m_bIsExitReady)
+	{
+		float delta = 1.0f;
+
+		XMMATRIX xmmtxRotate = XMMatrixRotationY(XMConvertToRadians(delta * fTimeElapsed));
+		m_xmf4x4ToParent = Matrix4x4::Multiply(xmmtxRotate, m_xmf4x4ToParent);
+
+		CGameObject::Animate(fTimeElapsed);
+	}
+}
 
 CFrontDoor::CFrontDoor()
 {
@@ -1302,23 +1327,29 @@ void CFrontDoor::Animate(float fTimeElapsed)
 {
 	if (m_bIsExitReady)
 	{
-		float delta = 1.0f;
-
+		float delta = 0.1f;
+	
 		if (m_AnimationDistance > 0.0f)
 		{
 			if (m_pLeftDoorFrame)
 			{
 				XMMATRIX xmmtxTranslate = DirectX::XMMatrixTranslation(delta * fTimeElapsed, 0.0f, 0.0f);
 				m_pLeftDoorFrame->m_xmf4x4ToParent = Matrix4x4::Multiply(xmmtxTranslate, m_pLeftDoorFrame->m_xmf4x4ToParent);
+				//std::cout <<"FrontDoor : " << GetPosition().x << " " << GetPosition().y << " " << GetPosition().z << std::endl;
 			}
 			if (m_pRightDoorFrame)
 			{
 				XMMATRIX xmmtxTranslate = DirectX::XMMatrixTranslation(-delta * fTimeElapsed, 0.0f, 0.0f);
 				m_pRightDoorFrame->m_xmf4x4ToParent = Matrix4x4::Multiply(xmmtxTranslate, m_pRightDoorFrame->m_xmf4x4ToParent);
+
 			}
 			m_AnimationDistance -= delta * fTimeElapsed;
+			std::cout << " CFrontDoor " << m_AnimationDistance << std::endl;
 		}
-
+		else
+		{
+			m_AnimationDistance = 0.0f;
+		}
 		CGameObject::Animate(fTimeElapsed);
 	}
 }
@@ -1332,17 +1363,24 @@ CEmergencyDoor::~CEmergencyDoor()
 }
 void CEmergencyDoor::Animate(float fTimeElapsed)
 {
-	if (!m_bIsExitReady)
+	if (m_bIsExitReady)
 	{
-		float delta = 100.0f;
-
+		float delta = 10.0f;
+	
 		if (m_AnimationDegree > 0.0f)
 		{
-			XMMATRIX xmmtxRotate = XMMatrixRotationY(XMConvertToRadians(-delta * fTimeElapsed));
+			XMMATRIX xmmtxRotate = XMMatrixRotationY(XMConvertToRadians(-delta *fTimeElapsed));
 			m_xmf4x4ToParent = Matrix4x4::Multiply(xmmtxRotate, m_xmf4x4ToParent);
 			m_AnimationDegree -= delta * fTimeElapsed;
+
+			std::cout << " EmergencyDoor " << m_AnimationDegree << std::endl;
+			//std::cout << "EmergencyDoor : " << GetPosition().x << " " << GetPosition().y << " " << GetPosition().z << std::endl;
 		}
-		CGameObject::Animate(fTimeElapsed);		
+		else 
+		{
+			m_AnimationDegree = 0.0f;
+		}
+		CGameObject::Animate(fTimeElapsed);
 	}
 }
 
@@ -1361,10 +1399,10 @@ void CShutterDoor::OnPrepareAnimate()
 
 void CShutterDoor::Animate(float fTimeElapsed)
 {
-	//if (!m_bIsExitReady)
-	//{
-		float delta = 1.0f;
-
+	if (m_bIsExitReady)
+	{
+		float delta = 0.1f;
+	
 		if (m_AnimationDistance > 0.0f)
 		{
 			if (m_pShutter)
@@ -1372,9 +1410,10 @@ void CShutterDoor::Animate(float fTimeElapsed)
 				XMMATRIX xmmtxTranslate = DirectX::XMMatrixTranslation(0.0f, 0.0f, delta * fTimeElapsed);
 				m_pShutter->m_xmf4x4ToParent = Matrix4x4::Multiply(xmmtxTranslate, m_pShutter->m_xmf4x4ToParent);
 				m_AnimationDistance -= delta * fTimeElapsed;
+	 			std::cout <<"ShutterDoor : " << m_AnimationDistance << std::endl;
 			}
 		}
 		CGameObject::Animate(fTimeElapsed);
-	//}
+	}
 }
 

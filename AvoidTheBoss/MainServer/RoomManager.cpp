@@ -27,6 +27,7 @@ void Room::UserOut(int32 sid)
 	{
 		// cList Lock 쓰기 호출
 		GetMyPlayerFromRoom(sid).SetVelocity(XMFLOAT3(0, 0, 0));
+		GetMyPlayerFromRoom(sid).m_hide = true;
 		std::unique_lock<std::shared_mutex> wll(_listLock);
 		auto i = std::find(_cList.begin(), _cList.end(), sid); // 리스트에 있는지 탐색 후
 		if (i != _cList.end()) _cList.erase(i); // 리스트에서 제거
@@ -41,6 +42,7 @@ void Room::UserOut(int32 sid)
 	packet.size = sizeof(SC_EVENTPACKET);
 	packet.type = SC_PACKET_TYPE::GAMEEVENT;
 	packet.eventId = (uint8)EVENT_TYPE::HIDE_PLAYER_ONE + idx;
+	BroadCasting(&packet);
 	if (IsDestroyRoom())
 	{
 		/*_status = ROOM_STATUS::EMPTY;
@@ -183,7 +185,10 @@ void Room::Update()
 		
 		for (int i = 0; i < PLAYERNUM; ++i)
 		{
-			if (Vector3::IsZero(_players[i].GetVelocity())) continue;
+			if (Vector3::IsZero(_players[i].GetVelocity()) || _players[i].m_hide)
+			{
+				continue;
+			}
 			S2C_POS packet;
 			packet.sid = _players[i].m_sid;
 			packet.size = sizeof(S2C_POS);

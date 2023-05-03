@@ -135,7 +135,7 @@ void ServerSession::ProcessPacket(char* packet)
 	{
 		case C_PACKET_TYPE::CKEY:
 		{
-
+			// 키 패킷 처리
 			C2S_KEY* movePacket = reinterpret_cast<C2S_KEY*>(packet);
 			moveEvent* mv = new moveEvent;
 			mv->sid = _sid;
@@ -143,7 +143,8 @@ void ServerSession::ProcessPacket(char* packet)
 			mv->_dir.x = movePacket->x;
 			mv->_dir.z = movePacket->z;
 			queueEvent* me = static_cast<queueEvent*>(mv);
-
+			
+			// 서버키 패킷 전송
 			S2C_KEY packet;
 			packet.size = sizeof(S2C_KEY);
 			packet.type = S_PACKET_TYPE::SKEY;
@@ -151,6 +152,7 @@ void ServerSession::ProcessPacket(char* packet)
 			packet.key = movePacket->key;
 			packet.x = movePacket->x;
 			packet.z = movePacket->z;
+			
 			ServerIocpCore._rmgr->GetRoom(_myRm).AddEvent(me , 0.f);
 			ServerIocpCore._rmgr->GetRoom(_myRm).BroadCastingExcept(&packet, _sid);
 		}

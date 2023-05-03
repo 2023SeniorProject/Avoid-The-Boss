@@ -27,6 +27,7 @@ void Room::UserOut(int32 sid)
 	{
 		// cList Lock 쓰기 호출
 		GetMyPlayerFromRoom(sid).SetVelocity(XMFLOAT3(0, 0, 0));
+		idx = GetMyPlayerFromRoom(sid).m_idx;
 		GetMyPlayerFromRoom(sid).m_hide = true;
 		std::unique_lock<std::shared_mutex> wll(_listLock);
 		auto i = std::find(_cList.begin(), _cList.end(), sid); // 리스트에 있는지 탐색 후
@@ -163,7 +164,7 @@ void Room::Update()
 		std::unique_lock<std::shared_mutex> ql(_jobQueueLock); // Queue Lock 호출
 		_jobQueue->DoTasks();
 	}
-	for (int i = 0; i < PLAYERNUM; ++i) _players[i].Update(_timer.GetTimeElapsed());
+	for (int i = 0; i < PLAYERNUM; ++i) if(!_players[i].m_hide)_players[i].Update(_timer.GetTimeElapsed());
 	for (int i = 0; i < 3; ++i)
 	{
 		_switchs[i].UpdateGuage(_timer.GetTimeElapsed());
@@ -180,7 +181,7 @@ void Room::Update()
 	} // 스위치 관련 로직 처리
 
 	if (_timer.IsTimeToAddHistory()) _history.AddHistory(_players); // 1 (1/60초) 프레임마다 월드 상태를 기록한다.
-	if (_timer.IsAfterTick(60)) // 1/45초마다 정확한 위치값을 브로드캐스팅 한다.
+	if (_timer.IsAfterTick(45)) // 1/45초마다 정확한 위치값을 브로드캐스팅 한다.
 	{
 		
 		for (int i = 0; i < PLAYERNUM; ++i)

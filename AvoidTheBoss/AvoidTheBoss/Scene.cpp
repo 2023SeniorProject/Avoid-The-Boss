@@ -325,7 +325,6 @@ void CGameScene::Update(HWND hWnd)
 	}
 	DWORD dwDirection = 0;
 	_players[_playerIdx]->ProcessInput(dwDirection);
-	_players[_playerIdx]->Move(dwDirection, PLAYER_VELOCITY);
 	UCHAR pKeyBuffer[256];
 	if(::GetKeyboardState(pKeyBuffer));
 
@@ -348,17 +347,18 @@ void CGameScene::Update(HWND hWnd)
 			if (pKeyBuffer[VK_LBUTTON] & 0xF0)
 			{
 				_players[_playerIdx]->Rotate(0.f, cxDelta, 0.0f);
-				C2S_ROTATE packet;
-				packet.size = sizeof(C2S_ROTATE);
-				packet.type = C_PACKET_TYPE::CROT;
-				packet.angle = cxDelta;
-				clientCore._client->DoSend(&packet);
+				if (LOBYTE(dwDirection) == 0)
+				{
+					C2S_ROTATE packet;
+					packet.size = sizeof(C2S_ROTATE);
+					packet.type = C_PACKET_TYPE::CROT;
+					packet.angle = cxDelta;
+					clientCore._client->DoSend(&packet);
+				}
 			}
 		}
-
-		if (LOBYTE(dwDirection)) _players[_playerIdx]->Move(LOBYTE(dwDirection), PLAYER_VELOCITY);
 	}
-
+	_players[_playerIdx]->Move(dwDirection, PLAYER_VELOCITY);
 	if (LOBYTE(m_lastKeyInput) != LOBYTE(dwDirection) || (LOBYTE(dwDirection) != 0 && (cxDelta != 0.0f))) // 이전과 방향(키입력이 다른 경우에만 무브 이벤트 패킷을 보낸다)
 	{
 
@@ -374,10 +374,10 @@ void CGameScene::Update(HWND hWnd)
 	m_lastKeyInput = dwDirection;
 	for (int k = 0; k < PLAYERNUM; ++k)
 	{
-		_players[k]->m_lock.lock();
+		//_players[k]->m_lock.lock();
 		if (k == _playerIdx) _players[k]->Update(_timer.GetTimeElapsed(), PLAYER_TYPE::OWNER);
 		else _players[k]->Update(_timer.GetTimeElapsed(), PLAYER_TYPE::OTHER_PLAYER);
-		_players[k]->m_lock.unlock();
+		//_players[k]->m_lock.unlock();
 	}
 
 	if (m_bIsExitReady) // 탈출 성공 시 , 해야할 일 처리

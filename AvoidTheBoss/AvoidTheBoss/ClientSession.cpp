@@ -128,11 +128,6 @@ void CSession::ProcessPacket(char* packet)
 		mev->_dir.y = 0;
 		mev->_dir.z = movePacket->z;
 		mev->_key = movePacket->key;
-		/*{
-			player->m_lock.lock();
-			player->Move(movePacket->key, PLAYER_VELOCITY);
-			player->m_lock.unlock();
-		}*/
 		mainGame.m_pScene->AddEvent(static_cast<queueEvent*>(mev), 0);
 	}
 	break;
@@ -160,7 +155,7 @@ void CSession::ProcessPacket(char* packet)
 		pe->player = player;
 		pe->_pos = newPos;
 	
-		mainGame.m_pScene->AddEvent(static_cast<queueEvent*>(pe), 0);
+		mainGame.m_pScene->AddEvent(static_cast<queueEvent*>(pe), 0.f);
 		//XMFLOAT3 curPos = player->GetPosition();
 		/*XMFLOAT3 distance = Vector3::Subtract(curPos, newPos);
 		if (Vector3::Length(distance) > 0.2f)

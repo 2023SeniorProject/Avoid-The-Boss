@@ -121,15 +121,12 @@ void CBoss::Move(DWORD dwDirection, float fDistance)
 		m_pBullet->SetOnShoot(true);
 	}
 	CPlayer::Move(dwDirection, fDistance);
-	
+   
 }
 
 void CBoss::Update(float fTimeElapsed, PLAYER_TYPE ptype)
 {
 	CPlayer::Update(fTimeElapsed, ptype);
-
-
-
 	if (m_pBullet)
 	{
 		if (!m_pBullet->GetOnShoot())
@@ -138,8 +135,9 @@ void CBoss::Update(float fTimeElapsed, PLAYER_TYPE ptype)
 		}
 		m_pBullet->Update(fTimeElapsed);
 	}
-
 	if (ptype == PLAYER_TYPE::OWNER) m_xmf3Velocity = XMFLOAT3(0.0f, 0.0f, 0.0f);
+	
+
 }
 
 void CBoss::OnInteractionAnimation()

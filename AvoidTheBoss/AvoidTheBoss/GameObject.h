@@ -438,12 +438,13 @@ public:
 class CSiren : public CGameObject
 {
 private:
-	bool m_OnSiren = false;
+	CGameObject* m_ppSirenCap = NULL;
+	CGameObject* m_ppSirenBell = NULL;
 public:
-
-	CSiren(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, CLoadedModelInfo* pModel, int nAnimationTracks);
+	CSiren();
 	virtual ~CSiren();
 
+	virtual void OnPrepareAnimate();
 	virtual void Animate(float fTimeElapsed);
 };
 
@@ -458,6 +459,30 @@ private:
 public:
 	CFrontDoor();
 	virtual ~CFrontDoor();
+
+	virtual void OnPrepareAnimate();
+	virtual void Animate(float fTimeElapsed);
+};
+
+class CEmergencyDoor : public CGameObject
+{
+private:
+	float m_AnimationDegree = 180.0f;
+public:
+	CEmergencyDoor();
+	virtual ~CEmergencyDoor();
+
+	virtual void Animate(float fTimeElapsed);
+};
+
+class CShutterDoor : public CGameObject
+{
+private:
+	float m_AnimationDistance = 1.5f;//1.9f;
+	CGameObject* m_pShutter = NULL;
+public:
+	CShutterDoor();
+	virtual ~CShutterDoor();
 
 	virtual void OnPrepareAnimate();
 	virtual void Animate(float fTimeElapsed);

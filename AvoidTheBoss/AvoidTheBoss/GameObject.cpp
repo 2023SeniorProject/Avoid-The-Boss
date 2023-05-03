@@ -493,7 +493,8 @@ void CAnimationController::AdvanceTime(float fTimeElapsed, CGameObject *pRootGam
 	if (m_pAnimationTracks)
 	{
 //		for (int k = 0; k < m_nAnimationTracks; k++) m_pAnimationTracks[k].m_fPosition += (fTimeElapsed * m_pAnimationTracks[k].m_fSpeed);
-		for (int k = 0; k < m_nAnimationTracks; k++) m_pAnimationSets->m_pAnimationSets[m_pAnimationTracks[k].m_nAnimationSet]->SetPosition(fTimeElapsed * m_pAnimationTracks[k].m_fSpeed);
+		for (int k = 0; k < m_nAnimationTracks; k++) 
+			m_pAnimationSets->m_pAnimationSets[m_pAnimationTracks[k].m_nAnimationSet]->SetPosition(fTimeElapsed * m_pAnimationTracks[k].m_fSpeed);
 
 		for (int j = 0; j < m_pAnimationSets->m_nAnimatedBoneFrames; j++)
 		{
@@ -1262,48 +1263,46 @@ void CSkyBox::Render(ID3D12GraphicsCommandList *pd3dCommandList, CCamera *pCamer
 }
 
 
-CSiren::CSiren(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, CLoadedModelInfo* pModel, int nAnimationTracks)
+CSiren::CSiren()
 {
-	CLoadedModelInfo* pSirenModel = pModel;
-	if (!pSirenModel) 
-		pSirenModel = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "Model/Siren_Alarm_(1).bin", NULL,Layout::SIREN);
-
-	SetChild(pSirenModel->m_pModelRootObject, true);
-	m_pSkinnedAnimationController = new CAnimationController(pd3dDevice, pd3dCommandList, nAnimationTracks, pSirenModel);
 }
 
 CSiren::~CSiren()
 {
 }
 
-void CSiren::Animate(float fTimeElapsed)
-{
-	if(m_bIsExitReady)
-		m_pSkinnedAnimationController->SetTrackEnable(0, false);
 
-	CGameObject::Animate(fTimeElapsed);
+void CSiren::OnPrepareAnimate()
+{
+	m_ppSirenBell = FindFrame("Siren_Bell");
+	m_ppSirenCap = FindFrame("Siren_Cap");
 }
 
+void CSiren::Animate(float fTimeElapsed)
+{
+	if (m_bIsExitReady)
+	{
+		float delta = 100.0f;
 
-//CDoor::CDoor(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, CLoadedModelInfo* pModel, int nAnimationTracks,int number)
-//{
-//	CLoadedModelInfo* pDoorModel = pModel;
-//
-//	const char* path[5] = {
-//	"Model/Front_Hanger_Door_Open.bin",
-//	"Model/Left_Sutter_Open.bin",
-//	"Model/Right_Sutter_Open.bin",
-//	"Model/Left_Emergency_Door_Open.bin",
-//	"Model/Right_Emergency_Door_Open.bin"
-//	};
-//
-//	if (!pDoorModel)
-//		pDoorModel = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, path[number], NULL, Layout::DOOR);
-//
-//	SetChild(pDoorModel->m_pModelRootObject, true);
-//	m_pSkinnedAnimationController = new CAnimationController(pd3dDevice, pd3dCommandList, nAnimationTracks, pDoorModel);
-//}
+			if (m_ppSirenBell)
+			{
+				XMMATRIX xmmtxRotate = DirectX::XMMatrixRotationZ(XMConvertToRadians(delta * fTimeElapsed));
+				m_ppSirenBell->m_xmf4x4ToParent = Matrix4x4::Multiply(xmmtxRotate, m_ppSirenBell->m_xmf4x4ToParent);
+			}
+			if (m_ppSirenCap)
+			{
+				float radius = 0.000471f/2.0f;
+				XMMATRIX xmmtxRotate = DirectX::XMMatrixRotationZ(XMConvertToRadians(delta * fTimeElapsed));
+				XMMATRIX xmmtxTranslate = DirectX::XMMatrixTranslation(radius * cos(XMConvertToRadians(delta * fTimeElapsed)), 0.0f, radius * sin(XMConvertToRadians(delta * fTimeElapsed)));
+				XMMATRIX xmf4x4Result = DirectX::XMMatrixMultiply(xmmtxTranslate, xmmtxRotate);
+				m_ppSirenCap->m_xmf4x4ToParent = Matrix4x4::Multiply(xmf4x4Result, m_ppSirenCap->m_xmf4x4ToParent);
 
+				//std::cout <<"m_ppSirenCap : " << m_ppSirenCap->GetPosition().x << " " << m_ppSirenCap->GetPosition().y << " " << m_ppSirenCap->GetPosition().z << std::endl;
+			}
+
+		CGameObject::Animate(fTimeElapsed);
+	}
+}
 
 CFrontDoor::CFrontDoor()
 {
@@ -1323,22 +1322,92 @@ void CFrontDoor::Animate(float fTimeElapsed)
 	if (m_bIsExitReady)
 	{
 		float delta = 1.0f;
-
+	
 		if (m_AnimationDistance > 0.0f)
 		{
 			if (m_pLeftDoorFrame)
 			{
 				XMMATRIX xmmtxTranslate = DirectX::XMMatrixTranslation(delta * fTimeElapsed, 0.0f, 0.0f);
 				m_pLeftDoorFrame->m_xmf4x4ToParent = Matrix4x4::Multiply(xmmtxTranslate, m_pLeftDoorFrame->m_xmf4x4ToParent);
+				std::cout <<"FrontDoor : " << GetPosition().x << " " << GetPosition().y << " " << GetPosition().z << std::endl;
 			}
 			if (m_pRightDoorFrame)
 			{
 				XMMATRIX xmmtxTranslate = DirectX::XMMatrixTranslation(-delta * fTimeElapsed, 0.0f, 0.0f);
 				m_pRightDoorFrame->m_xmf4x4ToParent = Matrix4x4::Multiply(xmmtxTranslate, m_pRightDoorFrame->m_xmf4x4ToParent);
+
 			}
 			m_AnimationDistance -= delta * fTimeElapsed;
+			std::cout << " CFrontDoor " << m_AnimationDistance << std::endl;
 		}
-
+		else
+		{
+			m_AnimationDistance = 0.0f;
+		}
 		CGameObject::Animate(fTimeElapsed);
 	}
 }
+
+CEmergencyDoor::CEmergencyDoor()
+{
+}
+
+CEmergencyDoor::~CEmergencyDoor()
+{
+}
+void CEmergencyDoor::Animate(float fTimeElapsed)
+{
+	if (m_bIsExitReady)
+	{
+		float delta = 10.0f;
+	
+		if (m_AnimationDegree > 0.0f)
+		{
+			XMMATRIX xmmtxRotate = XMMatrixRotationY(XMConvertToRadians(-delta *fTimeElapsed));
+			m_xmf4x4ToParent = Matrix4x4::Multiply(xmmtxRotate, m_xmf4x4ToParent);
+			m_AnimationDegree -= delta * fTimeElapsed;
+
+			std::cout << " EmergencyDoor " << m_AnimationDegree << std::endl;
+			//std::cout << "EmergencyDoor : " << GetPosition().x << " " << GetPosition().y << " " << GetPosition().z << std::endl;
+		}
+		else 
+		{
+			m_AnimationDegree = 0.0f;
+		}
+		CGameObject::Animate(fTimeElapsed);
+	}
+}
+
+CShutterDoor::CShutterDoor()
+{
+}
+
+CShutterDoor::~CShutterDoor()
+{
+}
+
+void CShutterDoor::OnPrepareAnimate()
+{
+	m_pShutter = FindFrame("Sutter_Open");
+}
+
+void CShutterDoor::Animate(float fTimeElapsed)
+{
+	if (m_bIsExitReady)
+	{
+		float delta = 0.1f;
+	
+		if (m_AnimationDistance > 0.0f)
+		{
+			if (m_pShutter)
+			{
+				XMMATRIX xmmtxTranslate = DirectX::XMMatrixTranslation(0.0f, 0.0f, delta * fTimeElapsed);
+				m_pShutter->m_xmf4x4ToParent = Matrix4x4::Multiply(xmmtxTranslate, m_pShutter->m_xmf4x4ToParent);
+				m_AnimationDistance -= delta * fTimeElapsed;
+	 			std::cout <<"ShutterDoor : " << m_AnimationDistance << std::endl;
+			}
+		}
+		CGameObject::Animate(fTimeElapsed);
+	}
+}
+

@@ -133,6 +133,7 @@ struct S2C_KEY
 	uint8 type;
 	int16 sid;
 	uint8 key;
+	float x, z;
 };
 
 struct S2C_POS

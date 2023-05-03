@@ -787,7 +787,7 @@ void CGameScene::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCa
 
 	for (int i = 0; i < PLAYERNUM; ++i)
 	{
-		if(!_players[i]->m_hide)_players[i]->Render(pd3dCommandList, pCamera);
+		if(!_players[i]->m_hide) _players[i]->Render(pd3dCommandList, pCamera);
 	}
 }
 

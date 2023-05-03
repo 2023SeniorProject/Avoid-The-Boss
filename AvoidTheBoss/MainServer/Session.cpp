@@ -149,6 +149,8 @@ void ServerSession::ProcessPacket(char* packet)
 			packet.type = S_PACKET_TYPE::SKEY;
 			packet.sid = _sid;
 			packet.key = movePacket->key;
+			packet.x = movePacket->x;
+			packet.z = movePacket->z;
 			ServerIocpCore._rmgr->GetRoom(_myRm).AddEvent(me , 0.f);
 			ServerIocpCore._rmgr->GetRoom(_myRm).BroadCastingExcept(&packet, _sid);
 		}

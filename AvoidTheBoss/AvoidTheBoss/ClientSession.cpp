@@ -124,6 +124,9 @@ void CSession::ProcessPacket(char* packet)
 		if (player == nullptr) break;
 
 		mev->player = player;
+		mev->_dir.x = movePacket->x;
+		mev->_dir.y = 0;
+		mev->_dir.z = movePacket->z;
 		mev->_key = movePacket->key;
 		/*{
 			player->m_lock.lock();
@@ -140,7 +143,7 @@ void CSession::ProcessPacket(char* packet)
 		CPlayer* player = mainGame.m_pScene->GetScenePlayer(rotatePacket->sid);
 		if (player != nullptr)
 		{
-			player->Rotate(0, rotatePacket->angle, 0);
+			//player->Rotate(0, rotatePacket->angle, 0);
 		}
 
 	}
@@ -156,6 +159,7 @@ void CSession::ProcessPacket(char* packet)
 		posEvent* pe = new posEvent();
 		pe->player = player;
 		pe->_pos = newPos;
+	
 		mainGame.m_pScene->AddEvent(static_cast<queueEvent*>(pe), 0);
 		//XMFLOAT3 curPos = player->GetPosition();
 		/*XMFLOAT3 distance = Vector3::Subtract(curPos, newPos);
@@ -182,10 +186,10 @@ void CSession::ProcessPacket(char* packet)
 			// 각 플레이어 별로 세션 아이디 부여
 		}
 		// 각 플레이어 초기 위치 값 셋팅
-		mainGame.m_pScene->_players[0]->SetPosition(XMFLOAT3(0, 0.25, -20));
-		mainGame.m_pScene->_players[1]->SetPosition(XMFLOAT3(10, 0.25, -20));
-		mainGame.m_pScene->_players[2]->SetPosition(XMFLOAT3(15, 0.25, -20));
-		mainGame.m_pScene->_players[3]->SetPosition(XMFLOAT3(20, 0.25, -20));
+		mainGame.m_pScene->_players[0]->MakePosition(XMFLOAT3(0, 0.25, -20));
+		mainGame.m_pScene->_players[1]->MakePosition(XMFLOAT3(10, 0.25, -20));
+		//mainGame.m_pScene->_players[2]->MakePosition(XMFLOAT3(15, 0.25, -20));
+		//mainGame.m_pScene->_players[3]->MakePosition(XMFLOAT3(20, 0.25, -20));
 		// 자신의 클라이언트 Idx 값 출력
 
 		std::cout << "MYPLAYER IDX : " << mainGame.m_pScene->_playerIdx << "\n";
@@ -280,6 +284,7 @@ void CSession::ProcessPacket(char* packet)
 		case EVENT_TYPE::HIDE_PLAYER_THREE:
 		case EVENT_TYPE::HIDE_PLAYER_FOUR:
 		{
+			std::cout << "PLAYER_HIDE\n";
 			mainGame.m_pScene->_players[ev->eventId - (uint8)EVENT_TYPE::HIDE_PLAYER_ONE]->m_hide = true;
 		}
 		break;

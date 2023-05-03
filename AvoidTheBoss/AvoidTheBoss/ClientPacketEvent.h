@@ -18,9 +18,11 @@ public:
 	moveEvent() { };
 	virtual ~moveEvent() {};
 	uint8 _key;
+	XMFLOAT3 _dir{ 0,0,0 };
 public:
 	virtual void Task()
 	{
+		player->SetDirection(_dir);
 		player->Move(_key, PLAYER_VELOCITY);
 	};
 
@@ -32,6 +34,7 @@ public:
 	posEvent() { };
 	virtual ~posEvent() {};
 	XMFLOAT3 _pos {0,0,0};
+
 public:
 	virtual void Task()
 	{

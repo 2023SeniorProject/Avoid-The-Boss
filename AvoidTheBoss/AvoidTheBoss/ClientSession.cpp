@@ -169,9 +169,15 @@ void CSession::ProcessPacket(char* packet)
 		{
 			if (gsp->sids[i] == _sid) mainGame.m_pScene->_playerIdx = i;
 			mainGame.m_pScene->_players[i]->SetPlayerSid(gsp->sids[i]);
+			// 각 플레이어 별로 세션 아이디 부여
 		}
-		for (int i = 0; i < PLAYERNUM; ++i) std::cout << gsp->sids[i] << " ";
-		std::cout << "\n";
+		// 각 플레이어 초기 위치 값 셋팅
+		mainGame.m_pScene->_players[0]->SetPosition(XMFLOAT3(0, 0.25, -20));
+		mainGame.m_pScene->_players[1]->SetPosition(XMFLOAT3(10, 0.25, -20));
+		mainGame.m_pScene->_players[2]->SetPosition(XMFLOAT3(15, 0.25, -20));
+		mainGame.m_pScene->_players[3]->SetPosition(XMFLOAT3(20, 0.25, -20));
+		// 자신의 클라이언트 Idx 값 출력
+
 		std::cout << "MYPLAYER IDX : " << mainGame.m_pScene->_playerIdx << "\n";
 		CPlayer* myPlayer = mainGame.m_pScene->_players[mainGame.m_pScene->_playerIdx];
 		std::wstring str = L"Client";
@@ -218,11 +224,11 @@ void CSession::ProcessPacket(char* packet)
 	case SC_PACKET_TYPE::GAMEEVENT:
 	{
 		SC_EVENTPACKET* ev = (SC_EVENTPACKET*)packet;
-		switch ((INTERACTION_TYPE)ev->eventId)
+		switch ((EVENT_TYPE)ev->eventId)
 		{
-		case INTERACTION_TYPE::SWITCH_ONE_START_EVENT:
-		case INTERACTION_TYPE::SWITCH_TWO_START_EVENT:
-		case INTERACTION_TYPE::SWITCH_THREE_START_EVENT:
+		case EVENT_TYPE::SWITCH_ONE_START_EVENT:
+		case EVENT_TYPE::SWITCH_TWO_START_EVENT:
+		case EVENT_TYPE::SWITCH_THREE_START_EVENT:
 		{
 			CGenerator* mSwitch = mainGame.m_pScene->m_ppSwitches[ev->eventId - 2];
 			mSwitch->m_lock.lock();
@@ -230,9 +236,9 @@ void CSession::ProcessPacket(char* packet)
 			mSwitch->m_lock.unlock();
 		}
 		break;
-		case INTERACTION_TYPE::SWITCH_ONE_END_EVENT:
-		case INTERACTION_TYPE::SWITCH_TWO_END_EVENT:
-		case INTERACTION_TYPE::SWITCH_THREE_END_EVENT:
+		case EVENT_TYPE::SWITCH_ONE_END_EVENT:
+		case EVENT_TYPE::SWITCH_TWO_END_EVENT:
+		case EVENT_TYPE::SWITCH_THREE_END_EVENT:
 		{
 			std::cout << "Switch Cancel\n";
 			CGenerator* mSwitch = mainGame.m_pScene->m_ppSwitches[ev->eventId - 5];
@@ -242,9 +248,9 @@ void CSession::ProcessPacket(char* packet)
 		}
 		break;
 		// 만약 스위치 활성화가 됐다는 패킷이 전송 되었을 때,
-		case INTERACTION_TYPE::SWITCH_ONE_ACTIVATE_EVENT:
-		case INTERACTION_TYPE::SWITCH_TWO_ACTIVATE_EVENT:
-		case INTERACTION_TYPE::SWITCH_THREE_ACTIVATE_EVENT:
+		case EVENT_TYPE::SWITCH_ONE_ACTIVATE_EVENT:
+		case EVENT_TYPE::SWITCH_TWO_ACTIVATE_EVENT:
+		case EVENT_TYPE::SWITCH_THREE_ACTIVATE_EVENT:
 		{
 			CGenerator* mSwitch = mainGame.m_pScene->m_ppSwitches[ev->eventId - 8];
 			mSwitch->m_lock.lock();
@@ -257,6 +263,14 @@ void CSession::ProcessPacket(char* packet)
 				std::cout << "Clear\n";
 				mainGame.m_pScene->m_bIsExitReady = true; // 탈출 조건 true
 			}
+		}
+		break;
+		case EVENT_TYPE::HIDE_PLAYER_ONE:
+		case EVENT_TYPE::HIDE_PLAYER_TWO:
+		case EVENT_TYPE::HIDE_PLAYER_THREE:
+		case EVENT_TYPE::HIDE_PLAYER_FOUR:
+		{
+			mainGame.m_pScene->_players[ev->eventId - (uint8)EVENT_TYPE::HIDE_PLAYER_ONE]->m_hide = true;
 		}
 		break;
 		default:

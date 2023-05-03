@@ -23,8 +23,10 @@ Room::~Room()
 }
 void Room::UserOut(int32 sid)
 {
+	int idx = 0;
 	{
 		// cList Lock 쓰기 호출
+		idx = GetMyPlayerFromRoom(sid).m_idx;
 		GetMyPlayerFromRoom(sid).SetVelocity(XMFLOAT3(0, 0, 0));
 		std::unique_lock<std::shared_mutex> wll(_listLock);
 		auto i = std::find(_cList.begin(), _cList.end(), sid); // 리스트에 있는지 탐색 후
@@ -35,8 +37,11 @@ void Room::UserOut(int32 sid)
 	for (auto i : _cList) std::cout << i << ", ";
 	std::cout << " ]\n";
 		
-	
-
+	// 나간 플레이어는 숨기도록 한다.
+	SC_EVENTPACKET packet;
+	packet.size = sizeof(SC_EVENTPACKET);
+	packet.type = SC_PACKET_TYPE::GAMEEVENT;
+	packet.eventId = (uint8)EVENT_TYPE::HIDE_PLAYER_ONE + idx;
 	if (IsDestroyRoom())
 	{
 		/*_status = ROOM_STATUS::EMPTY;
@@ -93,15 +98,22 @@ void Room::UserIn(int32 sid)
 			{
 				packet.sids[k] = i;
 				_players[k].m_sid = i;
+				_players[k].m_idx = k;
 				++k;
 			}
+			std::cout << "GAME START\n";
 			std::cout << "TOTAL USER SID LIST[";
-			for (auto i : _cList) std::cout << i << ", ";
+			for (auto i : _cList) std::cout << i << " | ";
 			std::cout << " ]\n";
 			BroadCasting(&packet);
 			_switchs[0]._pos = XMFLOAT3(-23.12724, 1.146619, 1.814123);
 			_switchs[1]._pos = XMFLOAT3(23.08867, 1.083242, 3.155997);
 			_switchs[2]._pos = XMFLOAT3(0.6774719, 1.083242, -23.05909);
+
+			_players[0].SetPosition(XMFLOAT3(0,  0.25, -20));
+			_players[1].SetPosition(XMFLOAT3(10, 0.25, -20));
+			_players[2].SetPosition(XMFLOAT3(15, 0.25, -20));
+			_players[3].SetPosition(XMFLOAT3(20, 0.25, -20));
 			for (int i = 0; i < 3; ++i)
 			{
 				_switchs[i]._idx = i;
@@ -164,10 +176,10 @@ void Room::Update()
 			BroadCasting(&packet);
 			_switchs[i]._curGuage = 0.f;
 		}
-	}
+	} // 스위치 관련 로직 처리
 
 	if (_timer.IsTimeToAddHistory()) _history.AddHistory(_players); // 1 (1/60초) 프레임마다 월드 상태를 기록한다.
-	if (_timer.IsAfterTick(45)) // 1/45초마다 정확한 위치값을 브로드캐스팅 한다.
+	if (_timer.IsAfterTick(30)) // 1/45초마다 정확한 위치값을 브로드캐스팅 한다.
 	{
 		
 		for (int i = 0; i < PLAYERNUM; ++i)

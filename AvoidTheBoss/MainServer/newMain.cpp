@@ -42,7 +42,6 @@ int main()
 			}
 			std::cout << "End Thread \n";
 		});
-	GThreadManager->Join();
 	delete GThreadManager;
 	SocketUtil::Clear();
 

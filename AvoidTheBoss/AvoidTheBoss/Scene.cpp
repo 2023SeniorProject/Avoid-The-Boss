@@ -397,8 +397,6 @@ void CGameScene::Update(HWND hWnd)
 }
 bool CGameScene::CollisionCheck()
 {
-	_players[_playerIdx]->m_playerBV.Center = _players[_playerIdx]->GetPosition();
-	_players[_playerIdx]->m_playerBV.Radius = 3.0f;
 	return false;
 }
 
@@ -786,6 +784,6 @@ void CGameScene::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCa
 
 	for (int i = 0; i < PLAYERNUM; ++i)
 	{
-		_players[i]->Render(pd3dCommandList, pCamera);
+		if(!_players[i]->m_hide)_players[i]->Render(pd3dCommandList, pCamera);
 	}
 }

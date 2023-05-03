@@ -36,8 +36,18 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     UNREFERENCED_PARAMETER(lpCmdLine);
    SocketUtil::Init();
    GCThreadManager = new ThreadManager;
-   DialogBox(hInstance, MAKEINTRESOURCE(IDD_LOGINDIALOG), NULL, reinterpret_cast<DLGPROC>(MyDialogBox));
-    // 전역 문자열을 초기화합니다.
+   //DialogBox(hInstance, MAKEINTRESOURCE(IDD_LOGINDIALOG), NULL, reinterpret_cast<DLGPROC>(MyDialogBox));
+   C2S_LOGIN loginPacket;
+   loginPacket.size = sizeof(C2S_LOGIN);
+   loginPacket.type = C_PACKET_TYPE::ACQ_LOGIN;
+   std::cout << "ID: ";
+   std::wcin.getline(loginPacket.name, 10);
+   std::cout << "PW: ";
+   std::wcin.getline(loginPacket.pw, 10);
+   clientCore.InitConnect("172.16.19.148");
+   clientCore.DoConnect(&loginPacket);
+   
+   // 전역 문자열을 초기화합니다.
     ::LoadString(hInstance, IDS_APP_TITLE, szTitle, MAX_LOADSTRING);
     ::LoadString(hInstance, IDC_AVOIDTHEBOSS, szWindowClass, MAX_LOADSTRING);
     MyRegisterClass(hInstance);
@@ -231,13 +241,13 @@ BOOL CALLBACK MyDialogBox(HWND hWndDlg, UINT message, WPARAM wParam, LPARAM lPar
         {
         case IDOK:
             {
-            C2S_LOGIN loginPacket;
+            /*C2S_LOGIN loginPacket;
             loginPacket.size = sizeof(C2S_LOGIN);
             loginPacket.type = C_PACKET_TYPE::ACQ_LOGIN;
             GetDlgItemText(hWndDlg, IDC_ID, loginPacket.name, 10);
             GetDlgItemText(hWndDlg, IDC_PW, loginPacket.pw, 10);
             clientCore.InitConnect("192.168.0.2");
-            clientCore.DoConnect(&loginPacket);
+            clientCore.DoConnect(&loginPacket);*/
             EndDialog(hWndDlg, IDOK);
             return TRUE;
             }

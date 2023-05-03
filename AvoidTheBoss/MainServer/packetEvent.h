@@ -30,7 +30,6 @@ public:
 		int16 roomNum = ServerIocpCore._clients[sid]->_myRm;
 		ServerIocpCore._rmgr->GetRoom(roomNum).GetMyPlayerFromRoom(sid).SetDirection(_dir);
 		ServerIocpCore._rmgr->GetRoom(roomNum).GetMyPlayerFromRoom(sid).Move(_key, PLAYER_VELOCITY);
-		
 		if (_key == 0)
 		{
 			S2C_POS packet;
@@ -40,7 +39,7 @@ public:
 			packet.x = ServerIocpCore._rmgr->GetRoom(roomNum).GetMyPlayerFromRoom(sid).GetPosition().x;
 			packet.z = ServerIocpCore._rmgr->GetRoom(roomNum).GetMyPlayerFromRoom(sid).GetPosition().z;
 			std::cout << "[" << sid << "] (" << packet.x << "," << packet.z << ")\n";
-			ServerIocpCore._rmgr->GetRoom(roomNum).BroadCasting(&packet);
+			ServerIocpCore._rmgr->GetRoom(roomNum).BroadCastingExcept(&packet, sid);
 		}
 	};
 	
@@ -58,11 +57,11 @@ public:
 	virtual void Task() 
 	{ 
 		int16 roomNum = ServerIocpCore._clients[sid]->_myRm;
-		switch ((INTERACTION_TYPE)eventId)
+		switch ((EVENT_TYPE)eventId)
 		{
-		case INTERACTION_TYPE::SWITCH_ONE_START_EVENT:
-		case INTERACTION_TYPE::SWITCH_TWO_START_EVENT:
-		case INTERACTION_TYPE::SWITCH_THREE_START_EVENT:
+		case EVENT_TYPE::SWITCH_ONE_START_EVENT:
+		case EVENT_TYPE::SWITCH_TWO_START_EVENT:
+		case EVENT_TYPE::SWITCH_THREE_START_EVENT:
 		{
 			if (!ServerIocpCore._rmgr->GetRoom(sid)._switchs[eventId - 2]._IsActive &&
 				!ServerIocpCore._rmgr->GetRoom(sid)._switchs[eventId - 2]._IsOnInteraction) // 발전기 상호작용이 가능할 경우
@@ -86,9 +85,9 @@ public:
 			}
 		}
 		break;
-		case INTERACTION_TYPE::SWITCH_ONE_END_EVENT: // 상호작용 도중에 끝낸 경우
-		case INTERACTION_TYPE::SWITCH_TWO_END_EVENT: // 상호작용 도중에 끝낸 경우
-		case INTERACTION_TYPE::SWITCH_THREE_END_EVENT: // 상호작용 도중에 끝낸 경우
+		case EVENT_TYPE::SWITCH_ONE_END_EVENT: // 상호작용 도중에 끝낸 경우
+		case EVENT_TYPE::SWITCH_TWO_END_EVENT: // 상호작용 도중에 끝낸 경우
+		case EVENT_TYPE::SWITCH_THREE_END_EVENT: // 상호작용 도중에 끝낸 경우
 			if (!ServerIocpCore._rmgr->GetRoom(sid)._switchs[eventId - 5]._IsActive &&
 				ServerIocpCore._rmgr->GetRoom(sid)._switchs[eventId - 5]._IsOnInteraction) // 발전기 상호작용이 도중에 발생한 경우
 			{

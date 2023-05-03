@@ -53,6 +53,7 @@ public:
 	std::mutex m_lock; // 자신의 Lock
 	BoundingSphere m_playerBV; // BV = bounding volume
 	CHARACTER_TYPE m_nCharacterType;
+	bool m_hide = false;// 플레이어를 가릴 것이냐 그릴 것이냐
 public: 
 	CPlayer();
 	virtual ~CPlayer();

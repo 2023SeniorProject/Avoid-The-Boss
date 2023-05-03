@@ -20,6 +20,7 @@ CBoss::CBoss(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandLis
 	m_pSkinnedAnimationController->SetTrackAnimationSet(2, 2);//Shoot
 	m_pSkinnedAnimationController->SetTrackAnimationSet(3, 3);//RunningShoot
 
+	//m_pSkinnedAnimationController->SetTrackSpeed(3, 0.83f);
 	m_pSkinnedAnimationController->SetTrackSpeed(2, 0.5f);
 
 	m_pSkinnedAnimationController->SetTrackEnable(0, true);
@@ -112,16 +113,20 @@ void CBoss::Move(DWORD dwDirection, float fDistance)
 			m_pSkinnedAnimationController->SetTrackEnable(0, false);
 			m_pSkinnedAnimationController->SetTrackEnable(1, true);
 			m_pSkinnedAnimationController->SetTrackEnable(2, false);
-			m_pSkinnedAnimationController->SetTrackEnable(3, false);//running shoot
+			m_pSkinnedAnimationController->SetTrackEnable(3, false);
+			m_pSkinnedAnimationController->SetTrackPosition(3, 0.0f);
 			m_pSkinnedAnimationController->SetTrackPosition(1, 0.0f);
+			m_pSkinnedAnimationController->SetTrackPosition(2, 0.0f);
 		}
 		else // 공격 키, 이동키 모두 입력
 		{
 			m_pSkinnedAnimationController->SetTrackEnable(0, false);
 			m_pSkinnedAnimationController->SetTrackEnable(1, false);
 			m_pSkinnedAnimationController->SetTrackEnable(2, false);
-			m_pSkinnedAnimationController->SetTrackEnable(3, true);//running shoot
-			m_pSkinnedAnimationController->SetTrackPosition(3, 0.0f);
+			m_pSkinnedAnimationController->SetTrackEnable(3, true);
+			m_pSkinnedAnimationController->SetTrackPosition(0, 0.0f);
+			m_pSkinnedAnimationController->SetTrackPosition(1, 0.0f);
+			m_pSkinnedAnimationController->SetTrackPosition(2, 0.0f);
 		}
 	}
 
@@ -158,7 +163,9 @@ void CBoss::Update(float fTimeElapsed, PLAYER_TYPE ptype)
 				m_pSkinnedAnimationController->SetTrackEnable(1, false);
 				m_pSkinnedAnimationController->SetTrackEnable(2, false);
 				m_pSkinnedAnimationController->SetTrackEnable(3, false);
-				m_pSkinnedAnimationController->SetTrackPosition(0, 0.0f);
+				m_pSkinnedAnimationController->SetTrackPosition(1, 0.0f);
+				m_pSkinnedAnimationController->SetTrackPosition(2, 0.0f);
+				m_pSkinnedAnimationController->SetTrackPosition(3, 0.0f);
 			}
 			else // 공격 키만 입력, 이동키는 미입력
 			{
@@ -166,7 +173,9 @@ void CBoss::Update(float fTimeElapsed, PLAYER_TYPE ptype)
 				m_pSkinnedAnimationController->SetTrackEnable(1, false);
 				m_pSkinnedAnimationController->SetTrackEnable(2, true);
 				m_pSkinnedAnimationController->SetTrackEnable(3, false);
-				m_pSkinnedAnimationController->SetTrackPosition(2, 0.0f);
+				m_pSkinnedAnimationController->SetTrackPosition(0, 0.0f);
+				m_pSkinnedAnimationController->SetTrackPosition(1, 0.0f);
+				m_pSkinnedAnimationController->SetTrackPosition(3, 0.0f);
 			}
 		}
 	}

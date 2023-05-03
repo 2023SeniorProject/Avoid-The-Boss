@@ -3,6 +3,7 @@
 #include "SocketUtil.h"
 #include "GameFramework.h"
 #include "IocpEvent.h"
+#include "ClientPacketEvent.h"
 #include <string>
 
 CSession::CSession()
@@ -117,15 +118,19 @@ void CSession::ProcessPacket(char* packet)
 	case S_PACKET_TYPE::SKEY:
 	{
 		S2C_KEY* movePacket = reinterpret_cast<S2C_KEY*>(packet);
-		if(movePacket->sid != _sid) std::cout << movePacket->sid << std::endl;
+		moveEvent* mev = new moveEvent();
+
 		CPlayer* player = mainGame.m_pScene->GetScenePlayer(movePacket->sid);
-		if (player != nullptr)
-		{
+		if (player == nullptr) break;
+
+		mev->player = player;
+		mev->_key = movePacket->key;
+		/*{
 			player->m_lock.lock();
 			player->Move(movePacket->key, PLAYER_VELOCITY);
 			player->m_lock.unlock();
-		}
-
+		}*/
+		mainGame.m_pScene->AddEvent(static_cast<queueEvent*>(mev), 0);
 	}
 	break;
 
@@ -146,16 +151,21 @@ void CSession::ProcessPacket(char* packet)
 		CPlayer* player = mainGame.m_pScene->GetScenePlayer(posPacket->sid);
 		mainGame.m_pScene->_curFrameIdx.store(posPacket->fidx);		
 		if (player == nullptr) break;
-		XMFLOAT3 curPos = player->GetPosition();
+		
 		XMFLOAT3 newPos = XMFLOAT3(posPacket->x, player->GetPosition().y, posPacket->z);
-		XMFLOAT3 distance = Vector3::Subtract(curPos, newPos);
+		posEvent* pe = new posEvent();
+		pe->player = player;
+		pe->_pos = newPos;
+		mainGame.m_pScene->AddEvent(static_cast<queueEvent*>(pe), 0);
+		//XMFLOAT3 curPos = player->GetPosition();
+		/*XMFLOAT3 distance = Vector3::Subtract(curPos, newPos);
 		if (Vector3::Length(distance) > 0.2f)
 		{
 			std::cout << "Mass Offset Detected. Reseting Pos\n";
 			player->m_lock.lock();
 			player->MakePosition(XMFLOAT3(posPacket->x, player->GetPosition().y, posPacket->z));
 			player->m_lock.unlock();
-		}
+		}*/
 	}
 	break;
 	case S_PACKET_TYPE::SCHAT:

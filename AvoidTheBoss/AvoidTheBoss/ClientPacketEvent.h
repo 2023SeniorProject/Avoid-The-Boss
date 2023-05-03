@@ -1,15 +1,29 @@
 #pragma once
 // 0 1 2
-
+#include "Player.h"
 class queueEvent
 {
 public:
 	int64 generateTime = 0.f;
-	int32 sid = -1;
+	CPlayer* player;
 public:
 	queueEvent() {};
 	virtual ~queueEvent() {};
 	virtual void Task() {};
+};
+
+class moveEvent : public queueEvent // 33 ms 마다 전송한다.
+{
+public:
+	moveEvent() { };
+	virtual ~moveEvent() {};
+	uint8 _key;
+public:
+	virtual void Task()
+	{
+		player->Move(_key, PLAYER_VELOCITY);
+	};
+
 };
 
 class posEvent : public queueEvent // 33 ms 마다 전송한다.
@@ -21,7 +35,13 @@ public:
 public:
 	virtual void Task()
 	{
-	
+		XMFLOAT3 curPos = player->GetPosition();
+		XMFLOAT3 distance = Vector3::Subtract(curPos, _pos);
+		if (Vector3::Length(distance) > 0.2f)
+		{
+			std::cout << "Mass Offset Detected. Reseting Pos\n";
+			player->MakePosition(XMFLOAT3(_pos.x, _pos.y,_pos.z));
+		}
 	};
 	
 };

@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "Scene.h"
 #include "GameFramework.h"
+#include "CJobQueue.h"
 #include "clientIocpCore.h"
 
 ID3D12DescriptorHeap* CGameScene::m_pd3dCbvSrvDescriptorHeap = NULL;
@@ -18,13 +19,12 @@ D3D12_GPU_DESCRIPTOR_HANDLE	CGameScene::m_d3dSrvGPUDescriptorNextHandle;
 
 CGameScene::CGameScene()
 {
-
+	_jobQueue = new Scheduler();
 }
 
 CGameScene::~CGameScene()
 {
-	//if (m_ppSwitch)
-	//	delete[] m_ppSwitch;
+
 }
 
 void CGameScene::OnProcessingMouseMessage(HWND hWnd, UINT nMessageID, WPARAM wParam, LPARAM lParam)
@@ -319,7 +319,10 @@ void CGameScene::Update(HWND hWnd)
 {
 	_timer.Tick(0);
 	
-	
+	{
+		std::unique_lock<std::shared_mutex> wl(_jobQueueLock);
+		_jobQueue->DoTasks();
+	}
 	DWORD dwDirection = 0;
 	_players[_playerIdx]->ProcessInput(dwDirection);
 	_players[_playerIdx]->Move(dwDirection, PLAYER_VELOCITY);
@@ -786,4 +789,10 @@ void CGameScene::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCa
 	{
 		if(!_players[i]->m_hide)_players[i]->Render(pd3dCommandList, pCamera);
 	}
+}
+
+void CGameScene::AddEvent(queueEvent* ev, float after)
+{
+	std::unique_lock<std::shared_mutex> wl(_jobQueueLock);
+	_jobQueue->PushTask(ev, after);
 }

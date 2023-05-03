@@ -171,7 +171,7 @@
     <ClInclude Include="clientIocpCore.h" />
     <ClInclude Include="GameFramework.h" />
     <ClInclude Include="GameObject.h" />
-    <ClInclude Include="JobQueue.h" />
+    <ClInclude Include="CJobQueue.h" />
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="Player.h" />
@@ -195,7 +195,7 @@
     <ClCompile Include="DDSTextureLoader12.cpp" />
     <ClCompile Include="GameFramework.cpp" />
     <ClCompile Include="GameObject.cpp" />
-    <ClCompile Include="JobQueue.cpp" />
+    <ClCompile Include="CJobQueue.cpp" />
     <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>

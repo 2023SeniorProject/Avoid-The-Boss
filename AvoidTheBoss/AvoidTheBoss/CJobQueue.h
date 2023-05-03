@@ -1,5 +1,4 @@
 #pragma once
-
 #include "ClientPacketEvent.h"
 
 struct JobComparator // 우선 순위 큐에서 비교연산 수행

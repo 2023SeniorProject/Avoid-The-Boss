@@ -13,6 +13,7 @@
 #define SPOT_LIGHT			2
 #define DIRECTIONAL_LIGHT	3
 
+class Scheduler;
 struct LIGHT
 {
 	XMFLOAT4				m_xmf4Ambient;
@@ -40,6 +41,7 @@ struct LIGHTS
 class CGameScene : public SceneInterface
 {
 	friend class CSession;
+	friend class queueEvent;
 public:
 	CGameScene();
 	~CGameScene();
@@ -87,6 +89,8 @@ public:
 		}
 		return nullptr;
 	}
+
+	void AddEvent(queueEvent*, float);
 public:
 	Timer _timer;
 //protected:
@@ -117,20 +121,23 @@ public:
 	ID3D12Resource*						m_pd3dcbLights = NULL;
 	LIGHTS*								m_pcbMappedLights = NULL;
 
-
+// ========== 서버 처리를 위해 사용하는 변수들 ==============
 public: // 씬에 있는 오브젝트 관련 변수
 	CPlayer*					_players[4];
 	int16						_playerIdx = 0;
 	uint8						m_lastKeyInput = 0;
 	int							nSwitch = 3;
-	CGenerator**					m_ppSwitches = NULL;
+	CGenerator**				m_ppSwitches = NULL;
 	Atomic<int32>				m_ActiveSwitchCnt = 0; // 활성화 된 스위치 카운트;
 
 	bool						m_bIsExitReady = false;
 public:
+	Scheduler* _jobQueue;
+	std::shared_mutex _jobQueueLock;
 	Atomic<uint8> _curFrameIdx;
 	int32 m_cid = -1;
 	int32 m_sid = -1;
+// ========================================================
 protected:
 	ID3D12RootSignature* m_pd3dGraphicsRootSignature = NULL;
 

@@ -49,17 +49,17 @@
     <ClCompile Include="ClientSession.cpp">
       <Filter>ForClient\ClientSession</Filter>
     </ClCompile>
-    <ClCompile Include="clientIocpCore.cpp">
-      <Filter>ForClient\IocpCore</Filter>
-    </ClCompile>
     <ClCompile Include="CollisionDetector.cpp">
       <Filter>Physics</Filter>
     </ClCompile>
     <ClCompile Include="ClientPacketEvent.cpp">
       <Filter>PacketEvent</Filter>
     </ClCompile>
-    <ClCompile Include="JobQueue.cpp">
+    <ClCompile Include="CJobQueue.cpp">
       <Filter>JobQueue</Filter>
+    </ClCompile>
+    <ClCompile Include="clientIocpCore.cpp">
+      <Filter>ForClient\IocpCore</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -127,7 +127,7 @@
     <ClInclude Include="ClientPacketEvent.h">
       <Filter>PacketEvent</Filter>
     </ClInclude>
-    <ClInclude Include="JobQueue.h">
+    <ClInclude Include="CJobQueue.h">
       <Filter>JobQueue</Filter>
     </ClInclude>
   </ItemGroup>

@@ -1,5 +1,5 @@
 #include "pch.h"
-#include "JobQueue.h"
+#include "CJobQueue.h"
 
 Scheduler::Scheduler()
 {

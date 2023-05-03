@@ -486,39 +486,6 @@ void CBoundsObjectsShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12Graphics
 	CreateShaderVariables(pd3dDevice, pd3dCommandList);
 }
 
-CSwitchObjectShader::CSwitchObjectShader()
-{
-}
-
-CSwitchObjectShader::~CSwitchObjectShader()
-{
-}
-
-void CSwitchObjectShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, CLoadedModelInfo* pModel, void* pContext)
-{
-	m_nObjects = 1;
-	m_ppObjects = new CGameObject * [m_nObjects];
-
-	const char* path[3] =
-	{
-		"Model/Switch.bin",
-		"Model/Switch_(1).bin",
-		"Model/Switch_(2).bin"
-	};
-
-	for (int i = 0; i < m_nObjects; i++)
-	{
-		CGameObject* pSwitchModel = CGameObject::LoadGeometryFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, path[i], NULL, Layout::SWITCH);
-		pSwitchModel->m_type = 1;
-		m_ppObjects[i] = new CGenerator();
-		m_ppObjects[i]->SetChild(pSwitchModel);
-		m_ppObjects[i]->AddRef();
-		m_ppObjects[i]->SetPosition(XMFLOAT3(0.0f, 1.25f, 50.0f));
-	}
-
-	CreateShaderVariables(pd3dDevice, pd3dCommandList);
-}
-
 CBulletObjectsShader::CBulletObjectsShader()
 {
 }
@@ -613,10 +580,6 @@ void CDoorObjectsShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCo
 	m_ppObjects[4]->objLayer = Layout::DOOR;
 
 	CreateShaderVariables(pd3dDevice, pd3dCommandList);
-
-	//if (pFrontDoor) delete pFrontDoor;
-	//if (pEmergencyDoor) delete pEmergencyDoor;
-	//if (pShutterDoor) delete pShutterDoor;
 }
 
 CSirenObjectsShader::CSirenObjectsShader()
@@ -629,14 +592,22 @@ CSirenObjectsShader::~CSirenObjectsShader()
 
 void CSirenObjectsShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, CLoadedModelInfo* pModel, void* pContext)
 {
-	m_nObjects = 1;
+	m_nObjects = 2;
 	m_ppObjects = new CGameObject * [m_nObjects];
 
-	CGameObject* pSiren = CGameObject::LoadGeometryFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "Model/Siren_Alarm.bin", NULL, Layout::BOUDS);
-	m_ppObjects[0] = new CGameObject();
+	CGameObject* pSiren = CGameObject::LoadGeometryFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "Model/Siren_Alarm_One.bin", NULL, Layout::SIREN);
+	m_ppObjects[0] = new CSiren();
 	m_ppObjects[0]->SetChild(pSiren);
-	pSiren->AddRef();
 	m_ppObjects[0]->SetPosition(XMFLOAT3(0.0f, 0.0f, 0.0f));
+	m_ppObjects[0]->OnPrepareAnimate();
+	m_ppObjects[0]->objLayer = Layout::SIREN;
+
+	m_ppObjects[1] = new CSiren();
+	m_ppObjects[1]->SetChild(pSiren);
+	m_ppObjects[1]->SetPosition(XMFLOAT3(4.897f, 3.721f, 23.64812f));
+	m_ppObjects[1]->Rotate(-90.0f, 0.0f, 0.0f);
+	m_ppObjects[1]->OnPrepareAnimate();
+	m_ppObjects[1]->objLayer = Layout::SIREN;
 
 	CreateShaderVariables(pd3dDevice, pd3dCommandList);
 }

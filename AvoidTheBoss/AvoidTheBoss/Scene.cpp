@@ -137,7 +137,7 @@ void CGameScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandLis
 	//그래픽 루트 시그너쳐를 생성한다. 
 	m_pd3dGraphicsRootSignature = CreateGraphicsRootSignature(pd3dDevice);
 
-	CreateCbvSrvDescriptorHeaps(pd3dDevice, 0, 52+1+1+12+3+12+3 + 89 + 5 + 5*4 + 4*4 + 2*50+ 3*2 + 14 + 1);//Albedomap 52 / player 1 / skybox 1 / box subTexture 3 * 4/ tile subTexture 3 * 1/ woodPallet 3 * 4 / pillar2 3 * 1 / BoundsMap 89 / 스위치 2 + 3 / 문 / 사이렌 6 / 총알 100 / 사이드 문 3*2 / 14
+	CreateCbvSrvDescriptorHeaps(pd3dDevice, 0, 52+1+1+12+3+12+3 + 89 + 5 + 5*4 + 6*17 + 2*50+ 3*2 + 14 + 1);//Albedomap 52 / player 1 / skybox 1 / box subTexture 3 * 4/ tile subTexture 3 * 1/ woodPallet 3 * 4 / pillar2 3 * 1 / BoundsMap 89 / 스위치 2 + 3 / 문 / 사이렌 6 / 총알 100 / 사이드 문 3*2 / 14
 
 	CMaterial::PrepareShaders(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature);
 
@@ -149,57 +149,39 @@ void CGameScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandLis
 	XMFLOAT3 xmf3Scale(8.0f, 2.0f, 8.0f);
 	XMFLOAT4 xmf4Color(0.0f, 0.3f, 0.0f, 0.0f);
 
-	m_nHierarchicalGameObjects = 2 + 3;
+	m_nHierarchicalGameObjects = 3;
 	m_ppHierarchicalGameObjects = new CGameObject * [m_nHierarchicalGameObjects];
 
-	CLoadedModelInfo* pSiren_L = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "Model/Siren_Alarm_(1).bin", NULL, Layout::SIREN);
-	m_ppHierarchicalGameObjects[0] = new CSiren(pd3dDevice,pd3dCommandList,m_pd3dGraphicsRootSignature, pSiren_L,1);
-	m_ppHierarchicalGameObjects[0]->m_pSkinnedAnimationController->SetTrackAnimationSet(0, 0);
-	m_ppHierarchicalGameObjects[0]->m_pSkinnedAnimationController->SetTrackEnable(0, true);
-	m_ppHierarchicalGameObjects[0]->AddRef();
-	m_ppHierarchicalGameObjects[0]->objLayer = SIREN;
-	if (pSiren_L) delete pSiren_L;
-
-	CLoadedModelInfo* pSiren_R = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "Model/Siren_Alarm2.bin", NULL, Layout::SIREN);
-	m_ppHierarchicalGameObjects[1] = new CSiren(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, pSiren_R, 1);
-	m_ppHierarchicalGameObjects[1]->m_pSkinnedAnimationController->SetTrackAnimationSet(0, 0);
-	m_ppHierarchicalGameObjects[1]->m_pSkinnedAnimationController->SetTrackEnable(0, true);
-	m_ppHierarchicalGameObjects[1]->SetPosition(0.0f, 0.0f, 0.0f);
-	m_ppHierarchicalGameObjects[1]->AddRef();
-	m_ppHierarchicalGameObjects[1]->objLayer = SIREN;
-	if (pSiren_R) delete pSiren_R;
-
 	CLoadedModelInfo* Button1 = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "Model/Button1.bin", NULL, Layout::SWITCH);
-	m_ppHierarchicalGameObjects[2] = new CGenerator(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, Button1, 1,0);
-	m_ppHierarchicalGameObjects[2]->m_pSkinnedAnimationController->SetTrackAnimationSet(0, 0);
-	m_ppHierarchicalGameObjects[2]->SetPosition(-23.12724, 1.146619, 1.814123);//left ㅇ
-	m_ppHierarchicalGameObjects[2]->AddRef();
-	m_ppHierarchicalGameObjects[2]->objLayer = SWITCH;
-	//m_ppHierarchicalGameObjects[2]->SetPosition(0, 1.25, -50);//left ㅇ
+	m_ppHierarchicalGameObjects[0] = new CGenerator(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, Button1, 1,0);
+	m_ppHierarchicalGameObjects[0]->m_pSkinnedAnimationController->SetTrackAnimationSet(0, 0);
+	m_ppHierarchicalGameObjects[0]->SetPosition(-23.12724, 1.146619, 1.814123);//left ㅇ
+	m_ppHierarchicalGameObjects[0]->AddRef();
+	m_ppHierarchicalGameObjects[0]->objLayer = SWITCH;
+	m_ppHierarchicalGameObjects[0]->SetPosition(0, 1.25, -50);//left ㅇ
 	if (Button1) delete Button1;
 
 	CLoadedModelInfo* Button2 = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "Model/Button2.bin", NULL, Layout::SWITCH);
-	m_ppHierarchicalGameObjects[3] = new CGenerator(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, Button2, 1,1);
-	m_ppHierarchicalGameObjects[3]->m_pSkinnedAnimationController->SetTrackAnimationSet(0, 0);
-	m_ppHierarchicalGameObjects[3]->m_pSkinnedAnimationController->SetTrackEnable(0, false);
-	m_ppHierarchicalGameObjects[3]->SetPosition(23.08867, 1.083242, 3.155997);//right x
-	m_ppHierarchicalGameObjects[3]->AddRef();
-	m_ppHierarchicalGameObjects[3]->objLayer = SWITCH;
+	m_ppHierarchicalGameObjects[1] = new CGenerator(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, Button2, 1,1);
+	m_ppHierarchicalGameObjects[1]->m_pSkinnedAnimationController->SetTrackAnimationSet(0, 0);
+	m_ppHierarchicalGameObjects[1]->m_pSkinnedAnimationController->SetTrackEnable(0, false);
+	m_ppHierarchicalGameObjects[1]->SetPosition(23.08867, 1.083242, 3.155997);//right x
+	m_ppHierarchicalGameObjects[1]->AddRef();
+	m_ppHierarchicalGameObjects[1]->objLayer = SWITCH;
 	
 	if (Button2) delete Button2;
 
 	CLoadedModelInfo* Button3 = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "Model/Button3.bin", NULL, Layout::SWITCH);
-	m_ppHierarchicalGameObjects[4] = new CGenerator(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, Button3, 1,2);
-	m_ppHierarchicalGameObjects[4]->m_pSkinnedAnimationController->SetTrackAnimationSet(0, 0);
-	m_ppHierarchicalGameObjects[4]->m_pSkinnedAnimationController->SetTrackEnable(0, false);
-	m_ppHierarchicalGameObjects[4]->SetPosition(0.6774719,  1.083242, -23.05909);//back 회전
-	m_ppHierarchicalGameObjects[4]->AddRef();
-	m_ppHierarchicalGameObjects[4]->objLayer = SWITCH;
+	m_ppHierarchicalGameObjects[2] = new CGenerator(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, Button3, 1,2);
+	m_ppHierarchicalGameObjects[2]->m_pSkinnedAnimationController->SetTrackAnimationSet(0, 0);
+	m_ppHierarchicalGameObjects[2]->m_pSkinnedAnimationController->SetTrackEnable(0, false);
+	m_ppHierarchicalGameObjects[2]->SetPosition(0.6774719,  1.083242, -23.05909);//back 회전
+	m_ppHierarchicalGameObjects[2]->AddRef();
+	m_ppHierarchicalGameObjects[2]->objLayer = SWITCH;
 	
 	if (Button3) delete Button3;
 
-
-	m_nShaders = 2 +1;
+	m_nShaders = 4;
 	m_ppShaders = new CShader * [m_nShaders];
 
 	CMapObjectsShader* pMapShader = new CMapObjectsShader();
@@ -217,6 +199,11 @@ void CGameScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandLis
 	pDoorObjectShader->BuildObjects(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, NULL, NULL);
 	m_ppShaders[2] = pDoorObjectShader;
 
+	CSirenObjectsShader* pSirenObjectShader = new CSirenObjectsShader();
+	pSirenObjectShader->CreateShader(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature);
+	pSirenObjectShader->BuildObjects(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, NULL, NULL);
+	m_ppShaders[3] = pSirenObjectShader;
+
 	CBoundsObjectsShader* pBoundsMapShader = new CBoundsObjectsShader();
 	pBoundsMapShader->CreateShader(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature);
 	pBoundsMapShader->BuildObjects(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature,NULL,NULL);
@@ -228,7 +215,6 @@ void CGameScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandLis
 		if (i != (int)CHARACTER_TYPE::BOSS)
 		{
 			_players[i] = new CBoss(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature);
-			//_players[i]->OnPrepareAnimate();
 			if (m_ppShaders[1])
 			{
 				((CBoss*)_players[i])->m_pBullet = (CBullet*)pBulletObjectShader->m_ppObjects[0];
@@ -239,9 +225,9 @@ void CGameScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandLis
 			_players[i] = new CEmployee(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, CHARACTER_TYPE::GOGGLE_EMP);
 			for (int j = 0; j < nSwitch; j++)
 			{
-				if (m_ppHierarchicalGameObjects[j+2])
+				if (m_ppHierarchicalGameObjects[j])
 				{
-					m_ppSwitches[j] = (CGenerator*)m_ppHierarchicalGameObjects[j + 2];
+					m_ppSwitches[j] = (CGenerator*)m_ppHierarchicalGameObjects[j];
 					if (m_ppSwitches[j])
 					{
 						((CEmployee*)_players[i])->m_pSwitches[j].position = m_ppSwitches[j]->GetPosition();
@@ -322,15 +308,19 @@ void CGameScene::Update(HWND hWnd)
 
 	if (m_bIsExitReady) // 탈출 성공 시 , 해야할 일 처리
 	{
-		CStandardObjectsShader* pDoorShader = (CStandardObjectsShader*)m_ppShaders[2];
-		for (int i = 0; i < pDoorShader->m_nObjects; i++)
+		for (int i = 0; i < m_nShaders; i++)
 		{
-			if (pDoorShader->m_ppObjects[i])
+			CStandardObjectsShader* pShaderObjects = (CStandardObjectsShader*)m_ppShaders[i];
+			for (int i = 0; i < pShaderObjects->m_nObjects; i++)
 			{
-				if((pDoorShader->m_ppObjects[i]->objLayer == Layout::SIREN) || (pDoorShader->m_ppObjects[i]->objLayer == Layout::DOOR))
-					pDoorShader->m_ppObjects[i]->m_bIsExitReady = true;
+				if (pShaderObjects->m_ppObjects[i])
+				{
+					if ((pShaderObjects->m_ppObjects[i]->objLayer == Layout::SIREN) || (pShaderObjects->m_ppObjects[i]->objLayer == Layout::DOOR))
+						pShaderObjects->m_ppObjects[i]->m_bIsExitReady = true;
+				}
 			}
 		}
+
 		/*for (int i = 0; i < m_nHierarchicalGameObjects; i++)
 		{
 

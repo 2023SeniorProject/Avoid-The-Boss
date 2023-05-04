@@ -145,10 +145,21 @@ void AcceptManager::ProcessAccept(AcceptEvent* acceptEvent)
 
 	int32 sid = GetNewSessionIdx();
 	session->_sid = sid;
-	LoginProcess(*session, sqlExec);
+	session->_cid = sid;
+	//LoginProcess(*session, sqlExec);
 	//클라이언트 소켓과 서버 리슨 소켓과 옵션을 동일하게 맞춰준다.
 	
-	
+	{
+		READ_SERVER_LOCK;
+		auto i = ServerIocpCore._cList.find(session->_sid);
+		if (session->_cid == -1 || i != ServerIocpCore._cList.end())
+		{
+			std::cout << "LoginFail" << endl;
+			session->DoSendLoginPacket(false);
+			return;
+		}
+		std::cout << "client[" << session->_sid << "] " << "LoginSuccess" << endl;
+	}
 
 	if (false == SocketUtil::SetUpdateAcceptSocket(session->_sock, _listenSock))
 	{
@@ -165,7 +176,7 @@ void AcceptManager::ProcessAccept(AcceptEvent* acceptEvent)
 		WRITE_SERVER_LOCK;
 		ServerIocpCore._cList.insert(sid);                 // 세션 id 추가
 		ServerIocpCore._clients.try_emplace(sid, session); // 세션 추가 후
-		if (ServerIocpCore._clients[sid]->_cid == 1) ServerIocpCore._rmgr->CreateRoom(sid);
+		if (ServerIocpCore._clients[sid]->_cid == 0) ServerIocpCore._rmgr->CreateRoom(sid);
 		else if(ServerIocpCore._clients[sid]->_cid != -1) ServerIocpCore._rmgr->EnterRoom(sid,0);
 	}
 	

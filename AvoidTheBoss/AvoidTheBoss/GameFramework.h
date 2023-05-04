@@ -7,6 +7,9 @@
 
 class CGameFramework
 {
+	friend class queueEvent;
+	friend class moveEvnet;
+	friend class posEvent;
 	friend class CSession;
 	friend class CEmployee;
 private:

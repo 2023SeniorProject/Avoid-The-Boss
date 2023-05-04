@@ -42,7 +42,7 @@ CEmployee::CEmployee(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCo
 	//SetCameraUpdatedContext();
 
 	//SetScale(XMFLOAT3(1.f, 1.f, 1.f));
-	SetPosition(XMFLOAT3(0.0f, 0.25f, -50.0f));//-30.0f
+	SetPosition(XMFLOAT3(0.0f, 0.25f, -30.0f));//-30.0f
 
 	if (pEmployeeModel) delete pEmployeeModel;
 }
@@ -97,12 +97,31 @@ void CEmployee::OnCameraUpdateCallback()
 
 void CEmployee::Move(DWORD dwDirection, float fDistance)
 {
-	if (!Vector3::IsZero(m_xmf3Velocity) && !m_OnInteraction)
+	
+	if (LOBYTE(dwDirection) && !m_OnInteraction) // 이동 중에 
 	{
 		m_pSkinnedAnimationController->SetTrackEnable(0, false); // 걷기
 		m_pSkinnedAnimationController->SetTrackEnable(1, true); // 달리기
+		m_pSkinnedAnimationController->SetTrackEnable(6, false);
+		m_pSkinnedAnimationController->SetTrackPosition(0, 0);
+		m_pSkinnedAnimationController->SetTrackPosition(6, 0);
 	}
-
+	else if (!LOBYTE(dwDirection) && !m_OnInteraction)
+	{
+		m_pSkinnedAnimationController->SetTrackEnable(0, true); // 아이들 상태
+		m_pSkinnedAnimationController->SetTrackEnable(1, false); // 달리기
+		m_pSkinnedAnimationController->SetTrackEnable(6, false);
+		m_pSkinnedAnimationController->SetTrackPosition(1, 0);
+		m_pSkinnedAnimationController->SetTrackPosition(6, 0);
+	}
+	else if (m_OnInteraction)
+	{
+		m_pSkinnedAnimationController->SetTrackEnable(0, false);
+		m_pSkinnedAnimationController->SetTrackEnable(1, false);
+		m_pSkinnedAnimationController->SetTrackEnable(6, true);
+		m_pSkinnedAnimationController->SetTrackPosition(0, 0);
+		m_pSkinnedAnimationController->SetTrackPosition(1, 0);
+	}
 	CPlayer::Move(dwDirection, fDistance);
 }
 
@@ -112,39 +131,12 @@ void CEmployee::Update(float fTimeElapsed, PLAYER_TYPE ptype)
 
 	if (GetAvailableSwitchIdx() != -1) m_bIsInSwitchArea = true;
 	else m_bIsInSwitchArea = false;
-		
-	if (m_OnInteraction) OnInteractive();
-	if (m_pSkinnedAnimationController && !m_OnInteraction)
-	{
-		//float fLength = sqrtf(m_xmf3Velocity.x * m_xmf3Velocity.x + m_xmf3Velocity.z * m_xmf3Velocity.z);
-		if (!Vector3::IsZero(m_xmf3Velocity))
-		{
-			m_pSkinnedAnimationController->SetTrackEnable(0, true); // 아이들 상태
-			m_pSkinnedAnimationController->SetTrackEnable(1, false); // 달리기
-			m_pSkinnedAnimationController->SetTrackPosition(0, 0.0f);
-		}
-	}
+	
 	if (ptype == PLAYER_TYPE::OWNER) m_xmf3Velocity = XMFLOAT3(0.0f, 0.0f, 0.0f);
 }
-void CEmployee::OnInteractive()
+void CEmployee::OnInteractionAnimation()
 {
-	if (m_OnInteraction == true && m_InteractionCountTime > 0)
-	{
-		m_pSkinnedAnimationController->SetTrackEnable(0, false);
-		m_pSkinnedAnimationController->SetTrackEnable(1, false);
-		m_pSkinnedAnimationController->SetTrackEnable(6, true);
-		m_pSkinnedAnimationController->SetTrackPosition(0, 0.0f);
 
-		m_InteractionCountTime -= 1;
-	}
-	else
-	{
-		m_pSkinnedAnimationController->SetTrackEnable(0, true);
-		m_pSkinnedAnimationController->SetTrackEnable(1, false);
-		m_pSkinnedAnimationController->SetTrackEnable(6, false);
-		m_OnInteraction = false;
-		m_InteractionCountTime = 45;
-	}
 }
 
 int32 CEmployee::GetAvailableSwitchIdx()
@@ -168,7 +160,7 @@ int32 CEmployee::GetAvailableSwitchIdx()
 void CEmployee::ProcessInput(DWORD& dwDirection)
 {
 
-	static UCHAR pKeyBuffer[256];
+	UCHAR pKeyBuffer[256];
 	// 방향키를 바이트로 처리한다.
 	if (::GetKeyboardState(pKeyBuffer))
 	{
@@ -190,9 +182,9 @@ void CEmployee::ProcessInput(DWORD& dwDirection)
 				{
 					if (!m_bIsPlayerOnSwitchInteration && !targetGenerator->m_bSwitchActive) // 플레이어가 상호작용 상태가 아니였다면 
 					{	
-						SetOnInteraction(true);
-						m_bIsPlayerOnSwitchInteration = true;
-						targetGenerator->InteractAnimation(true); // 애니메이션 재생을 시작한다.
+						SetInteractionAnimation(true); // 캐릭터 애니메이션 재생을 시작한다.
+						m_bIsPlayerOnSwitchInteration = true; // 플레이어가 상호작용 상태임을 기록한다.
+						targetGenerator->InteractAnimation(true); // 발전기 애니메이션 재생을 시작한다.
 						targetGenerator->SetAnimationCount(BUTTON_ANIM_FRAME);
 						
 						SC_EVENTPACKET packet;
@@ -203,9 +195,9 @@ void CEmployee::ProcessInput(DWORD& dwDirection)
 					}
 				}
 				targetGenerator->m_lock.unlock();
+				dwDirection = 0;
+				dwDirection |= DIR_BUTTON_F;
 			}
-			dwDirection = 0;
-			dwDirection |= DIR_BUTTON_F;
 		}
 		else // F키가 안눌린 상태일 때
 		{
@@ -213,10 +205,10 @@ void CEmployee::ProcessInput(DWORD& dwDirection)
 			{
 				CGenerator* targetGenerator = mainGame.m_pScene->m_ppSwitches[switchIdx];
 				targetGenerator->m_lock.lock();
+				SetInteractionAnimation(false);
 				// 그냥 평상시 상태일 때 F키가 안눌렀을 때와 F키가 눌러져있었는데 땐 상황인지 구별
 				if (m_bIsPlayerOnSwitchInteration && !targetGenerator->m_bSwitchActive) // 발전기가 다 활성화가 안되었는데 키를 땐 상황이라면
 				{
-				
 					// 스위치 도중 캔슬 이벤트 패킷을 보낸다 --> 발전기 게이지 초기화
 					targetGenerator->InteractAnimation(false); // 애니메이션 재생을 정지한다.
 					SC_EVENTPACKET packet;
@@ -226,6 +218,7 @@ void CEmployee::ProcessInput(DWORD& dwDirection)
 					m_bIsPlayerOnSwitchInteration = false;
 					clientCore._client->DoSend(&packet);
 				}
+
 				targetGenerator->m_lock.unlock();
 			}
 		}

@@ -24,6 +24,8 @@ public:
 public:
 	BoundingSphere m_playerBV;
 	int32 m_sid = -1;
+	int32 m_idx = -1;
+	bool m_hide = false;
 public:
 	PlayerInfo();
 	virtual ~PlayerInfo();

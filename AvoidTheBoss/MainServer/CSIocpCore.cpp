@@ -22,12 +22,13 @@ CSIocpCore::~CSIocpCore()
 
 void CSIocpCore::Disconnect(int32 sid)
 {
-	std::cout << "[" << _clients[sid]->_cid << "] Disconnected" << std::endl;
+	std::cout << "[" << _clients[sid]->_sid << "] Disconnected" << std::endl;
 	if(sid >= 0 && _clients[sid]->_myRm != -1) _rmgr->ExitRoom(sid, _clients[sid]->_myRm);
-	{
-		std::unique_lock<std::shared_mutex> disconnectLock(_lock);
 	
-		_cList.erase(_clients[sid]->_cid);
+	{
+		WRITE_SERVER_LOCK;
+		_cList.erase(_clients[sid]->_sid);
 		_clients.erase(sid);
+		std::cout << "Dead Lock Checking\n";
 	}
 }

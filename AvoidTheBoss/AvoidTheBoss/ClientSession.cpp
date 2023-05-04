@@ -3,6 +3,7 @@
 #include "SocketUtil.h"
 #include "GameFramework.h"
 #include "IocpEvent.h"
+#include "ClientPacketEvent.h"
 #include <string>
 
 CSession::CSession()
@@ -117,15 +118,17 @@ void CSession::ProcessPacket(char* packet)
 	case S_PACKET_TYPE::SKEY:
 	{
 		S2C_KEY* movePacket = reinterpret_cast<S2C_KEY*>(packet);
+		moveEvent* mev = new moveEvent();
+
 		CPlayer* player = mainGame.m_pScene->GetScenePlayer(movePacket->sid);
-		if (player != nullptr && _sid != movePacket->sid)
-		{
+		if (player == nullptr) break;
 
-			player->m_lock.lock();
-			player->Move(movePacket->key, PLAYER_VELOCITY);
-			player->m_lock.unlock();
-		}
-
+		mev->player = player;
+		mev->_dir.x = movePacket->x;
+		mev->_dir.y = 0;
+		mev->_dir.z = movePacket->z;
+		mev->_key = movePacket->key;
+		mainGame.m_pScene->AddEvent(static_cast<queueEvent*>(mev), 0);
 	}
 	break;
 
@@ -133,9 +136,9 @@ void CSession::ProcessPacket(char* packet)
 	{
 		S2C_ROTATE* rotatePacket = reinterpret_cast<S2C_ROTATE*>(packet);
 		CPlayer* player = mainGame.m_pScene->GetScenePlayer(rotatePacket->sid);
-		if (player != nullptr && _sid != rotatePacket->sid)
+		if (player != nullptr)
 		{
-			player->Rotate(0, rotatePacket->angle, 0);
+			//player->Rotate(0, rotatePacket->angle, 0);
 		}
 
 	}
@@ -146,9 +149,22 @@ void CSession::ProcessPacket(char* packet)
 		CPlayer* player = mainGame.m_pScene->GetScenePlayer(posPacket->sid);
 		mainGame.m_pScene->_curFrameIdx.store(posPacket->fidx);		
 		if (player == nullptr) break;
-		player->m_lock.lock();
-		player->MakePosition(XMFLOAT3(posPacket->x, player->GetPosition().y, posPacket->z));
-		player->m_lock.unlock();
+		
+		XMFLOAT3 newPos = XMFLOAT3(posPacket->x, player->GetPosition().y, posPacket->z);
+		posEvent* pe = new posEvent();
+		pe->player = player;
+		pe->_pos = newPos;
+	
+		mainGame.m_pScene->AddEvent(static_cast<queueEvent*>(pe), 0.f);
+		//XMFLOAT3 curPos = player->GetPosition();
+		/*XMFLOAT3 distance = Vector3::Subtract(curPos, newPos);
+		if (Vector3::Length(distance) > 0.2f)
+		{
+			std::cout << "Mass Offset Detected. Reseting Pos\n";
+			player->m_lock.lock();
+			player->MakePosition(XMFLOAT3(posPacket->x, player->GetPosition().y, posPacket->z));
+			player->m_lock.unlock();
+		}*/
 	}
 	break;
 	case S_PACKET_TYPE::SCHAT:
@@ -162,9 +178,15 @@ void CSession::ProcessPacket(char* packet)
 		{
 			if (gsp->sids[i] == _sid) mainGame.m_pScene->_playerIdx = i;
 			mainGame.m_pScene->_players[i]->SetPlayerSid(gsp->sids[i]);
+			// 각 플레이어 별로 세션 아이디 부여
 		}
-		for (int i = 0; i < PLAYERNUM; ++i) std::cout << gsp->sids[i] << " ";
-		std::cout << "\n";
+		// 각 플레이어 초기 위치 값 셋팅
+		mainGame.m_pScene->_players[0]->MakePosition(XMFLOAT3(0, 0.25, -20));
+		mainGame.m_pScene->_players[1]->MakePosition(XMFLOAT3(10, 0.25, -20));
+		mainGame.m_pScene->_players[2]->MakePosition(XMFLOAT3(15, 0.25, -20));
+		mainGame.m_pScene->_players[3]->MakePosition(XMFLOAT3(20, 0.25, -20));
+		// 자신의 클라이언트 Idx 값 출력
+
 		std::cout << "MYPLAYER IDX : " << mainGame.m_pScene->_playerIdx << "\n";
 		CPlayer* myPlayer = mainGame.m_pScene->_players[mainGame.m_pScene->_playerIdx];
 		std::wstring str = L"Client";
@@ -172,6 +194,7 @@ void CSession::ProcessPacket(char* packet)
 		::SetConsoleTitle(str.c_str());
 		mainGame.m_pScene->m_pCamera = myPlayer->GetCamera();
 		mainGame.m_pScene->m_cid = _cid;
+		mainGame.m_pScene->m_sid = _sid;
 		mainGame._curScene.store(SceneInfo::GAMEROOM);
 		mainGame.m_pScene->InitScene();
 	}
@@ -210,11 +233,11 @@ void CSession::ProcessPacket(char* packet)
 	case SC_PACKET_TYPE::GAMEEVENT:
 	{
 		SC_EVENTPACKET* ev = (SC_EVENTPACKET*)packet;
-		switch ((INTERACTION_TYPE)ev->eventId)
+		switch ((EVENT_TYPE)ev->eventId)
 		{
-		case INTERACTION_TYPE::SWITCH_ONE_START_EVENT:
-		case INTERACTION_TYPE::SWITCH_TWO_START_EVENT:
-		case INTERACTION_TYPE::SWITCH_THREE_START_EVENT:
+		case EVENT_TYPE::SWITCH_ONE_START_EVENT:
+		case EVENT_TYPE::SWITCH_TWO_START_EVENT:
+		case EVENT_TYPE::SWITCH_THREE_START_EVENT:
 		{
 			CGenerator* mSwitch = mainGame.m_pScene->m_ppSwitches[ev->eventId - 2];
 			mSwitch->m_lock.lock();
@@ -222,9 +245,9 @@ void CSession::ProcessPacket(char* packet)
 			mSwitch->m_lock.unlock();
 		}
 		break;
-		case INTERACTION_TYPE::SWITCH_ONE_END_EVENT:
-		case INTERACTION_TYPE::SWITCH_TWO_END_EVENT:
-		case INTERACTION_TYPE::SWITCH_THREE_END_EVENT:
+		case EVENT_TYPE::SWITCH_ONE_END_EVENT:
+		case EVENT_TYPE::SWITCH_TWO_END_EVENT:
+		case EVENT_TYPE::SWITCH_THREE_END_EVENT:
 		{
 			std::cout << "Switch Cancel\n";
 			CGenerator* mSwitch = mainGame.m_pScene->m_ppSwitches[ev->eventId - 5];
@@ -234,9 +257,9 @@ void CSession::ProcessPacket(char* packet)
 		}
 		break;
 		// 만약 스위치 활성화가 됐다는 패킷이 전송 되었을 때,
-		case INTERACTION_TYPE::SWITCH_ONE_ACTIVATE_EVENT:
-		case INTERACTION_TYPE::SWITCH_TWO_ACTIVATE_EVENT:
-		case INTERACTION_TYPE::SWITCH_THREE_ACTIVATE_EVENT:
+		case EVENT_TYPE::SWITCH_ONE_ACTIVATE_EVENT:
+		case EVENT_TYPE::SWITCH_TWO_ACTIVATE_EVENT:
+		case EVENT_TYPE::SWITCH_THREE_ACTIVATE_EVENT:
 		{
 			CGenerator* mSwitch = mainGame.m_pScene->m_ppSwitches[ev->eventId - 8];
 			mSwitch->m_lock.lock();
@@ -249,6 +272,15 @@ void CSession::ProcessPacket(char* packet)
 				std::cout << "Clear\n";
 				mainGame.m_pScene->m_bIsExitReady = true; // 탈출 조건 true
 			}
+		}
+		break;
+		case EVENT_TYPE::HIDE_PLAYER_ONE:
+		case EVENT_TYPE::HIDE_PLAYER_TWO:
+		case EVENT_TYPE::HIDE_PLAYER_THREE:
+		case EVENT_TYPE::HIDE_PLAYER_FOUR:
+		{
+			std::cout << "PLAYER_HIDE\n";
+			mainGame.m_pScene->_players[ev->eventId - (uint8)EVENT_TYPE::HIDE_PLAYER_ONE]->m_hide = true;
 		}
 		break;
 		default:

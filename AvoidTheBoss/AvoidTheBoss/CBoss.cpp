@@ -44,9 +44,9 @@ CBoss::CBoss(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandLis
 	//SetPlayerUpdatedContext();
 	//SetCameraUpdatedContext();
 
-	//SetScale(XMFLOAT3(1.f, 1.f, 1.f));
-	m_xmf3Position = XMFLOAT3(0.0f, 0.25f, -30.0f);
-	Rotate(0.0f, -90.0f, 0.0f);
+	SetScale(XMFLOAT3(1.f, 1.f, 1.f));
+	SetPosition(XMFLOAT3(0.0f, 0.25f, -30.0f));
+
 	CreateShaderVariables(pd3dDevice, pd3dCommandList);
 	if (pBossModel) delete pBossModel;
 }
@@ -106,56 +106,32 @@ void CBoss::PrepareAnimate()
 
 void CBoss::Move(DWORD dwDirection, float fDistance)
 {
-	if (dwDirection) // 캐릭터 이동량이 있을 때 (WASD 키 입력)
-	{
-		if (!m_OnInteraction) // 공격 키 미입력, 이동키 입력
-		{
-			m_pSkinnedAnimationController->SetTrackEnable(0, false);
-			m_pSkinnedAnimationController->SetTrackEnable(1, true);
-			m_pSkinnedAnimationController->SetTrackEnable(2, false);
-			m_pSkinnedAnimationController->SetTrackEnable(3, false);
-			m_pSkinnedAnimationController->SetTrackPosition(3, 0.0f);
-			m_pSkinnedAnimationController->SetTrackPosition(1, 0.0f);
-			m_pSkinnedAnimationController->SetTrackPosition(2, 0.0f);
-		}
-		else // 공격 키, 이동키 모두 입력
-		{
-			m_pSkinnedAnimationController->SetTrackEnable(0, false);
-			m_pSkinnedAnimationController->SetTrackEnable(1, false);
-			m_pSkinnedAnimationController->SetTrackEnable(2, false);
-			m_pSkinnedAnimationController->SetTrackEnable(3, true);
-			m_pSkinnedAnimationController->SetTrackPosition(0, 0.0f);
-			m_pSkinnedAnimationController->SetTrackPosition(1, 0.0f);
-			m_pSkinnedAnimationController->SetTrackPosition(2, 0.0f);
-		}
-	}
-
-	CPlayer::Move(dwDirection, fDistance);
-}
-
-void CBoss::Update(float fTimeElapsed, PLAYER_TYPE ptype)
-{
-	CPlayer::Update(fTimeElapsed, ptype);
-
-	if (m_OnInteraction)
-	{
-		OnInteractive();
-		m_pBullet->SetOnShoot(true);
-	}
-
-	if (m_pBullet)
-	{
-		if (!m_pBullet->GetOnShoot())
-		{
-			m_pBullet->SetPosition(GetPosition().x, 1.25f, GetPosition().z);
-			//m_pBullet->m_xmf4x4ToParent = XMMatrixMultiply(m_pBullet->m_xmf4x4ToParent,m_RightHands->m_xmf4x4World );
-		}
-		m_pBullet->Update(fTimeElapsed);
-	}
-
 	if (m_pSkinnedAnimationController)
 	{
-		if (Vector3::IsZero(m_xmf3Velocity))// 캐릭터의 이동량이 0일 때 (WASD 키 입력 X)
+		if (LOBYTE(dwDirection)) // 1. 캐릭터 이동량이 있을 때 (WASD 키 입력)
+		{
+			if (!m_OnInteraction) // 공격 키 미입력, 이동키 입력 --> 달리기
+			{
+				m_pSkinnedAnimationController->SetTrackEnable(0, false);
+				m_pSkinnedAnimationController->SetTrackEnable(1, true);
+				m_pSkinnedAnimationController->SetTrackEnable(2, false);
+				m_pSkinnedAnimationController->SetTrackEnable(3, false);
+				m_pSkinnedAnimationController->SetTrackPosition(3, 0.0f);
+				m_pSkinnedAnimationController->SetTrackPosition(1, 0.0f);
+				m_pSkinnedAnimationController->SetTrackPosition(2, 0.0f);
+			}
+			else // 공격 키, 이동키 모두 입력 --> 달리면서 쏘기
+			{
+				m_pSkinnedAnimationController->SetTrackEnable(0, false);
+				m_pSkinnedAnimationController->SetTrackEnable(1, false);
+				m_pSkinnedAnimationController->SetTrackEnable(2, false);
+				m_pSkinnedAnimationController->SetTrackEnable(3, true);
+				m_pSkinnedAnimationController->SetTrackPosition(0, 0.0f);
+				m_pSkinnedAnimationController->SetTrackPosition(1, 0.0f);
+				m_pSkinnedAnimationController->SetTrackPosition(2, 0.0f);
+			}
+		}
+		else if (LOBYTE(dwDirection) == 0) // 이동키 입력이 아닐 때
 		{
 			if (!m_OnInteraction) // 공격 키, 이동키 모두 미입력
 			{
@@ -179,10 +155,29 @@ void CBoss::Update(float fTimeElapsed, PLAYER_TYPE ptype)
 			}
 		}
 	}
-	if (ptype == PLAYER_TYPE::OWNER) m_xmf3Velocity = XMFLOAT3(0.0f, 0.0f, 0.0f);
+
+	CPlayer::Move(dwDirection, fDistance);
+   
 }
 
-void CBoss::OnInteractive()
+void CBoss::Update(float fTimeElapsed, PLAYER_TYPE ptype)
+{
+	CPlayer::Update(fTimeElapsed, ptype);
+	OnInteractionAnimation();
+	if (m_pBullet)
+	{
+		if (!m_pBullet->GetOnShoot())
+		{
+			m_pBullet->SetPosition(GetPosition().x, 1.25f, GetPosition().z);
+		}
+		m_pBullet->Update(fTimeElapsed);
+	}
+	if (ptype == PLAYER_TYPE::OWNER) m_xmf3Velocity = XMFLOAT3(0.0f, 0.0f, 0.0f);
+	
+
+}
+
+void CBoss::OnInteractionAnimation()
 {
 	if (m_OnInteraction)
 	{
@@ -212,7 +207,7 @@ void CBoss::ProcessInput(DWORD& dwDirection)
 		{
 			if (GetnInteractionCountTime() == BOSS_INTERACTION_TIME)
 			{
-				SetOnInteraction(true);
+				SetInteractionAnimation(true);
 			}
 		}
 

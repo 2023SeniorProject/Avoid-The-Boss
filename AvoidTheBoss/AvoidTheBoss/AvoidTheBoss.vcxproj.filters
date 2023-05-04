@@ -49,6 +49,15 @@
     <ClCompile Include="ClientSession.cpp">
       <Filter>ForClient\ClientSession</Filter>
     </ClCompile>
+    <ClCompile Include="CollisionDetector.cpp">
+      <Filter>Physics</Filter>
+    </ClCompile>
+    <ClCompile Include="ClientPacketEvent.cpp">
+      <Filter>PacketEvent</Filter>
+    </ClCompile>
+    <ClCompile Include="CJobQueue.cpp">
+      <Filter>JobQueue</Filter>
+    </ClCompile>
     <ClCompile Include="clientIocpCore.cpp">
       <Filter>ForClient\IocpCore</Filter>
     </ClCompile>
@@ -111,6 +120,15 @@
     </ClInclude>
     <ClInclude Include="clientIocpCore.h">
       <Filter>ForClient\IocpCore</Filter>
+    </ClInclude>
+    <ClInclude Include="CollisionDetector.h">
+      <Filter>Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="ClientPacketEvent.h">
+      <Filter>PacketEvent</Filter>
+    </ClInclude>
+    <ClInclude Include="CJobQueue.h">
+      <Filter>JobQueue</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -354,6 +372,15 @@
     </Filter>
     <Filter Include="ForClient\IocpCore">
       <UniqueIdentifier>{98cfeba8-062d-4d76-88ef-d41e0396c086}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Physics">
+      <UniqueIdentifier>{73cebed3-babc-4eca-937c-352c470779db}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="PacketEvent">
+      <UniqueIdentifier>{14fdf138-71b4-4f50-a9e8-eafec120a2c8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="JobQueue">
+      <UniqueIdentifier>{c1aa5372-2438-4231-acce-d36167578b94}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

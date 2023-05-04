@@ -9,10 +9,7 @@
 #include "Camera.h"
 extern std::vector<DirectX::BoundingBox> bv;
 
-#define DIR_FORWARD					0x01
-#define DIR_BACKWARD				0x02
-#define DIR_LEFT					0x04
-#define DIR_RIGHT					0x08
+
 #define DIR_BUTTON_F				0X0300
 
 class CShader;
@@ -333,7 +330,7 @@ public:
 
 public:
 	Layout							objLayer;
-	bool m_bIsExitReady = false;
+	bool							m_bIsExitReady = false;
 
 	char							m_pstrFrameName[64];
 

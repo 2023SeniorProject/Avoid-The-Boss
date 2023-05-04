@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "Scene.h"
 #include "GameFramework.h"
+#include "CJobQueue.h"
 #include "clientIocpCore.h"
 
 ID3D12DescriptorHeap* CGameScene::m_pd3dCbvSrvDescriptorHeap = NULL;
@@ -18,13 +19,12 @@ D3D12_GPU_DESCRIPTOR_HANDLE	CGameScene::m_d3dSrvGPUDescriptorNextHandle;
 
 CGameScene::CGameScene()
 {
-
+	_jobQueue = new Scheduler();
 }
 
 CGameScene::~CGameScene()
 {
-	//if (m_ppSwitch)
-	//	delete[] m_ppSwitch;
+
 }
 
 void CGameScene::OnProcessingMouseMessage(HWND hWnd, UINT nMessageID, WPARAM wParam, LPARAM lParam)
@@ -158,7 +158,6 @@ void CGameScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandLis
 	m_ppHierarchicalGameObjects[0]->SetPosition(-23.12724, 1.146619, 1.814123);//left ㅇ
 	m_ppHierarchicalGameObjects[0]->AddRef();
 	m_ppHierarchicalGameObjects[0]->objLayer = SWITCH;
-	m_ppHierarchicalGameObjects[0]->SetPosition(0, 1.25, -50);//left ㅇ
 	if (Button1) delete Button1;
 
 	CLoadedModelInfo* Button2 = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, "Model/Button2.bin", NULL, Layout::SWITCH);
@@ -246,10 +245,12 @@ void CGameScene::Update(HWND hWnd)
 {
 	_timer.Tick(0);
 	
-	// 방향키를 바이트로 처리한다.
+	{
+		std::unique_lock<std::shared_mutex> wl(_jobQueueLock);
+		_jobQueue->DoTasks();
+	}
 	DWORD dwDirection = 0;
 	_players[_playerIdx]->ProcessInput(dwDirection);
-	
 	UCHAR pKeyBuffer[256];
 	if(::GetKeyboardState(pKeyBuffer));
 
@@ -272,17 +273,18 @@ void CGameScene::Update(HWND hWnd)
 			if (pKeyBuffer[VK_LBUTTON] & 0xF0)
 			{
 				_players[_playerIdx]->Rotate(0.f, cxDelta, 0.0f);
-				C2S_ROTATE packet;
-				packet.size = sizeof(C2S_ROTATE);
-				packet.type = C_PACKET_TYPE::CROT;
-				packet.angle = cxDelta;
-				clientCore._client->DoSend(&packet);
+				if (LOBYTE(dwDirection) == 0)
+				{
+					C2S_ROTATE packet;
+					packet.size = sizeof(C2S_ROTATE);
+					packet.type = C_PACKET_TYPE::CROT;
+					packet.angle = cxDelta;
+					clientCore._client->DoSend(&packet);
+				}
 			}
 		}
-
-		if (LOBYTE(dwDirection)) _players[_playerIdx]->Move(LOBYTE(dwDirection), PLAYER_VELOCITY);
 	}
-
+	_players[_playerIdx]->Move(dwDirection, PLAYER_VELOCITY);
 	if (LOBYTE(m_lastKeyInput) != LOBYTE(dwDirection) || (LOBYTE(dwDirection) != 0 && (cxDelta != 0.0f))) // 이전과 방향(키입력이 다른 경우에만 무브 이벤트 패킷을 보낸다)
 	{
 
@@ -298,10 +300,10 @@ void CGameScene::Update(HWND hWnd)
 	m_lastKeyInput = dwDirection;
 	for (int k = 0; k < PLAYERNUM; ++k)
 	{
-		_players[k]->m_lock.lock();
+		//_players[k]->m_lock.lock();
 		if (k == _playerIdx) _players[k]->Update(_timer.GetTimeElapsed(), PLAYER_TYPE::OWNER);
 		else _players[k]->Update(_timer.GetTimeElapsed(), PLAYER_TYPE::OTHER_PLAYER);
-		_players[k]->m_lock.unlock();
+		//_players[k]->m_lock.unlock();
 	}
 
 	if (m_bIsExitReady) // 탈출 성공 시 , 해야할 일 처리
@@ -318,25 +320,12 @@ void CGameScene::Update(HWND hWnd)
 				}
 			}
 		}
-
-		/*for (int i = 0; i < m_nHierarchicalGameObjects; i++)
-		{
-
-			if (m_ppHierarchicalGameObjects[i])
-			{
-				if ((m_ppHierarchicalGameObjects[i]->objLayer == Layout::SIREN) || (m_ppHierarchicalGameObjects[i]->objLayer == Layout::DOOR))
-				{
-					
-					m_ppHierarchicalGameObjects[i]->m_bIsExitReady = true;
-				}
-			}
-		}*/
 	}
 
 
 	// 평균 프레임 레이트 출력
 	std::wstring str = L"[";
-	str.append(std::to_wstring(m_cid));
+	str.append(std::to_wstring(m_sid));
 	str.append(L"] (");
 	str.append(std::to_wstring(_players[_playerIdx]->GetPosition().x));
 	str.append(L" ");
@@ -347,8 +336,6 @@ void CGameScene::Update(HWND hWnd)
 }
 bool CGameScene::CollisionCheck()
 {
-	_players[_playerIdx]->m_playerBV.Center = _players[_playerIdx]->GetPosition();
-	_players[_playerIdx]->m_playerBV.Radius = 3.0f;
 	return false;
 }
 
@@ -736,6 +723,12 @@ void CGameScene::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCa
 
 	for (int i = 0; i < PLAYERNUM; ++i)
 	{
-		_players[i]->Render(pd3dCommandList, pCamera);
+		if(!_players[i]->m_hide) _players[i]->Render(pd3dCommandList, pCamera);
 	}
+}
+
+void CGameScene::AddEvent(queueEvent* ev, float after)
+{
+	std::unique_lock<std::shared_mutex> wl(_jobQueueLock);
+	_jobQueue->PushTask(ev, after);
 }

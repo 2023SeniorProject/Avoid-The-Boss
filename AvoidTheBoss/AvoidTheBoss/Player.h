@@ -53,6 +53,7 @@ public:
 	std::mutex m_lock; // 자신의 Lock
 	BoundingSphere m_playerBV; // BV = bounding volume
 	CHARACTER_TYPE m_nCharacterType;
+	bool m_hide = false;// 플레이어를 가릴 것이냐 그릴 것이냐
 public: 
 	CPlayer();
 	virtual ~CPlayer();
@@ -65,7 +66,6 @@ public:
 	{
 		m_xmf3Look = look;
 		m_xmf3Right = Vector3::CrossProduct(m_xmf3Up, m_xmf3Look, true);
-		m_xmf3Up = Vector3::CrossProduct(m_xmf3Look, m_xmf3Right, true);
 	}
 	void SetVelocity(const XMFLOAT3& xmf3Velocity) { m_xmf3Velocity = xmf3Velocity; }
 	void SetPlayerSid(const int16& sid) { m_sid = sid; }
@@ -125,7 +125,7 @@ protected:
 	bool m_OnInteraction = false;
 	int m_InteractionCountTime;
 public:
-	void SetOnInteraction(bool value) { m_OnInteraction = value; }
+	void SetInteractionAnimation(bool value) { m_OnInteraction = value; }
 	bool GetOnInteraction() { return m_OnInteraction; }
 
 	void SetnInteractionNum(int value) { nInteractionNum = value; }
@@ -134,7 +134,7 @@ public:
 	void SetnInteractionCountTime(int value) { m_InteractionCountTime = value; }
 	int GetnInteractionCountTime() { return m_InteractionCountTime; }
 
-	virtual void OnInteractive() {}
+	virtual void OnInteractionAnimation() {}
 };
 
 

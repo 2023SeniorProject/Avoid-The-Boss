@@ -23,16 +23,27 @@ Room::~Room()
 }
 void Room::UserOut(int32 sid)
 {
+	int idx = 0;
 	{
 		// cList Lock 쓰기 호출
+		GetMyPlayerFromRoom(sid).SetVelocity(XMFLOAT3(0, 0, 0));
+		idx = GetMyPlayerFromRoom(sid).m_idx;
+		GetMyPlayerFromRoom(sid).m_hide = true;
 		std::unique_lock<std::shared_mutex> wll(_listLock);
 		auto i = std::find(_cList.begin(), _cList.end(), sid); // 리스트에 있는지 탐색 후
 		if (i != _cList.end()) _cList.erase(i); // 리스트에서 제거
-		std::cout << "LEFT USER SID LIST[";
-		for (auto i : _cList) std::cout << i << ", ";
-		std::cout << " ]\n";
 	}
-
+		
+	std::cout << "LEFT USER SID LIST [";
+	for (auto i : _cList) std::cout << i << ", ";
+	std::cout << " ]\n";
+		
+	// 나간 플레이어는 숨기도록 한다.
+	SC_EVENTPACKET packet;
+	packet.size = sizeof(SC_EVENTPACKET);
+	packet.type = SC_PACKET_TYPE::GAMEEVENT;
+	packet.eventId = (uint8)EVENT_TYPE::HIDE_PLAYER_ONE + idx;
+	BroadCasting(&packet);
 	if (IsDestroyRoom())
 	{
 		/*_status = ROOM_STATUS::EMPTY;
@@ -41,11 +52,11 @@ void Room::UserOut(int32 sid)
 		packet.rmNum = _num;*/
 		// 업데이트 리스트를 보내준다. ==> 빈방이므로 더 이상 표시 X
 		{
-			READ_SERVER_LOCK;
-			for (auto i : ServerIocpCore._clients)
-			{
+			//READ_SERVER_LOCK;
+			//for (auto i : ServerIocpCore._clients)
+			//{
 				//i.second->DoSend(&packet);
-			}
+			//}
 		}
 		std::cout << "Destroy Room\n";
 	}
@@ -89,19 +100,22 @@ void Room::UserIn(int32 sid)
 			{
 				packet.sids[k] = i;
 				_players[k].m_sid = i;
+				_players[k].m_idx = k;
 				++k;
 			}
+			std::cout << "GAME START\n";
 			std::cout << "TOTAL USER SID LIST[";
-			for (auto i : _cList) std::cout << i << ", ";
-			std::cout << " ]\n";
-
-			std::cout << "PLAYERS SID ASSIGN LIST [ ";
-			for (int i = 0; i < 4; ++i) std::cout << _players[i].m_sid << ", ";
+			for (auto i : _cList) std::cout << i << " | ";
 			std::cout << " ]\n";
 			BroadCasting(&packet);
 			_switchs[0]._pos = XMFLOAT3(-23.12724, 1.146619, 1.814123);
 			_switchs[1]._pos = XMFLOAT3(23.08867, 1.083242, 3.155997);
 			_switchs[2]._pos = XMFLOAT3(0.6774719, 1.083242, -23.05909);
+
+			_players[0].SetPosition(XMFLOAT3(0,  0.25, -20));
+			_players[1].SetPosition(XMFLOAT3(10, 0.25, -20));
+			_players[2].SetPosition(XMFLOAT3(15, 0.25, -20));
+			_players[3].SetPosition(XMFLOAT3(20, 0.25, -20));
 			for (int i = 0; i < 3; ++i)
 			{
 				_switchs[i]._idx = i;
@@ -138,6 +152,7 @@ void Room::BroadCastingExcept(void* packet, int32 sid) // 방에 속하는 클라이언트
 			continue;
 		}
 	}
+	
 }
 
 // 방에 있는 유저에 대한 게임 로직 업데이트 진행 
@@ -149,7 +164,7 @@ void Room::Update()
 		std::unique_lock<std::shared_mutex> ql(_jobQueueLock); // Queue Lock 호출
 		_jobQueue->DoTasks();
 	}
-	for (int i = 0; i < PLAYERNUM; ++i) _players[i].Update(_timer.GetTimeElapsed());
+	for (int i = 0; i < PLAYERNUM; ++i) if(!_players[i].m_hide)_players[i].Update(_timer.GetTimeElapsed());
 	for (int i = 0; i < 3; ++i)
 	{
 		_switchs[i].UpdateGuage(_timer.GetTimeElapsed());
@@ -163,14 +178,18 @@ void Room::Update()
 			BroadCasting(&packet);
 			_switchs[i]._curGuage = 0.f;
 		}
-	}
-	if (_timer.IsTimeToAddHistory()) _history.AddHistory(_players);
-	if (_timer.IsAfterTick(30))
+	} // 스위치 관련 로직 처리
+
+	if (_timer.IsTimeToAddHistory()) _history.AddHistory(_players); // 1 (1/60초) 프레임마다 월드 상태를 기록한다.
+	if (_timer.IsAfterTick(45)) // 1/45초마다 정확한 위치값을 브로드캐스팅 한다.
 	{
 		
 		for (int i = 0; i < PLAYERNUM; ++i)
 		{
-			if (Vector3::IsZero(_players[i].GetVelocity())) continue;
+			if (Vector3::IsZero(_players[i].GetVelocity()) || _players[i].m_hide)
+			{
+				continue;
+			}
 			S2C_POS packet;
 			packet.sid = _players[i].m_sid;
 			packet.size = sizeof(S2C_POS);

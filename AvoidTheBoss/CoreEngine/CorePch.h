@@ -99,7 +99,7 @@ using Microsoft::WRL::ComPtr;
 //----클라이언트 영역 크기 및 후면 버퍼 크기
 #define FRAME_BUFFER_WIDTH  800
 #define FRAME_BUFFER_HEIGHT 600
-#define PLAYERNUM 4
+#define PLAYERNUM 1
 
 #define _WITH_CB_WORLD_MATRIX_DESCRIPTOR_TABLE
 //----전체 화면 모드로 시작

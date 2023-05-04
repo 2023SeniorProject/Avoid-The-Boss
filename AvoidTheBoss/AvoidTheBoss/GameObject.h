@@ -440,6 +440,8 @@ class CSiren : public CGameObject
 private:
 	CGameObject* m_ppSirenCap = NULL;
 	CGameObject* m_ppSirenBell = NULL;
+
+	float m_AnimationDegree = 360.0;
 public:
 	CSiren();
 	virtual ~CSiren();

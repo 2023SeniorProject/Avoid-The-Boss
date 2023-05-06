@@ -1283,7 +1283,8 @@ void CSiren::Animate(float fTimeElapsed)
 	if (m_bIsExitReady)
 	{
 		float delta = 100.0f;
-
+		if (m_AnimationDegree > 0.0f)
+		{
 			if (m_ppSirenBell)
 			{
 				XMMATRIX xmmtxRotate = DirectX::XMMatrixRotationZ(XMConvertToRadians(delta * fTimeElapsed));
@@ -1291,7 +1292,7 @@ void CSiren::Animate(float fTimeElapsed)
 			}
 			if (m_ppSirenCap)
 			{
-				float radius = 0.000471f/2.0f;
+				float radius = 0.000471f / 2.0f;
 				XMMATRIX xmmtxRotate = DirectX::XMMatrixRotationZ(XMConvertToRadians(delta * fTimeElapsed));
 				XMMATRIX xmmtxTranslate = DirectX::XMMatrixTranslation(radius * cos(XMConvertToRadians(delta * fTimeElapsed)), 0.0f, radius * sin(XMConvertToRadians(delta * fTimeElapsed)));
 				XMMATRIX xmf4x4Result = DirectX::XMMatrixMultiply(xmmtxTranslate, xmmtxRotate);
@@ -1299,7 +1300,12 @@ void CSiren::Animate(float fTimeElapsed)
 
 				//std::cout <<"m_ppSirenCap : " << m_ppSirenCap->GetPosition().x << " " << m_ppSirenCap->GetPosition().y << " " << m_ppSirenCap->GetPosition().z << std::endl;
 			}
-
+			m_AnimationDegree -= delta * fTimeElapsed;
+		}
+		else
+		{
+			m_AnimationDegree = 0.0f;
+		}
 		CGameObject::Animate(fTimeElapsed);
 	}
 }

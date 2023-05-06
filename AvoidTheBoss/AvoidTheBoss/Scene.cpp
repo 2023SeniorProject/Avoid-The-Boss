@@ -322,7 +322,6 @@ void CGameScene::Update(HWND hWnd)
 		}
 	}
 
-
 	// 평균 프레임 레이트 출력
 	std::wstring str = L"[";
 	str.append(std::to_wstring(m_sid));

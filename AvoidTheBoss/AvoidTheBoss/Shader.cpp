@@ -499,7 +499,7 @@ void CBulletObjectsShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12Graphics
 	m_nObjects = BULLET_NUMBER;
 	m_ppObjects = new CGameObject * [m_nObjects];
 
-	CGameObject* pBullet = CGameObject::LoadGeometryFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "Model/Sphere.bin", NULL, Layout::BULLET);
+	CGameObject* pBullet = CGameObject::LoadGeometryFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "Model/Laser.bin", NULL, Layout::BULLET);
 	for (int i = 0; i < m_nObjects; i++)
 	{
 		m_ppObjects[i] = new CBullet();
@@ -522,7 +522,8 @@ void CBulletObjectsShader::Render(ID3D12GraphicsCommandList* pd3dCommandList, CC
 			{
 				m_ppObjects[j]->Animate(m_fElapsedTime);
 				m_ppObjects[j]->UpdateTransform(NULL);
-				m_ppObjects[j]->Render(pd3dCommandList, pCamera);
+				if(((CBullet*)m_ppObjects[j])->GetOnShoot())
+					m_ppObjects[j]->Render(pd3dCommandList, pCamera);
 			}
 		}
 	}

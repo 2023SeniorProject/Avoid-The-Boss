@@ -6,6 +6,7 @@
 #include "CEmployee.h"
 #include "CBoss.h"
 #include "CGenerator.h" // 스위치 분리
+#include "ClientPacketEvent.h"
 
 #define MAX_LIGHTS			16 
 

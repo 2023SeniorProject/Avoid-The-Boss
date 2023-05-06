@@ -187,7 +187,7 @@ public:
 #endif
 
 	float 							m_fPosition = 0.0f;
-    int 							m_nType = ANIMATION_TYPE_LOOP; //Once, Loop, PingPong
+    int 							m_nType = ANIMATION_TYPE_ONCE; //Once, Loop, PingPong
 
 	int 							m_nCallbackKeys = 0;
 	CALLBACKKEY 					*m_pCallbackKeys = NULL;
@@ -433,7 +433,6 @@ public:
 };
 
 #define BUTTON_ANIM_FRAME 15*10
-
 
 class CSiren : public CGameObject
 {

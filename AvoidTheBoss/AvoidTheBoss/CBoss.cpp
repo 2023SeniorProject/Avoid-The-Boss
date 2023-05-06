@@ -157,7 +157,7 @@ void CBoss::Move(DWORD dwDirection, float fDistance)
 		}
 	}
 
-	CPlayer::Move(dwDirection, fDistance);
+	CPlayer::Move(dwDirection, BOSS_VELOCITY);
    
 }
 

@@ -331,7 +331,7 @@ void CGameScene::Update(HWND hWnd)
 	str.append(L" ");
 	str.append(std::to_wstring(_players[_playerIdx]->GetPosition().z));
 	str.append(L")-");
-	str.append(std::to_wstring((int32)(_curFrameIdx)));
+	str.append(std::to_wstring((int32)(_timer.GetFrameRate())));
 	::SetWindowText(hWnd, str.c_str());
 }
 bool CGameScene::CollisionCheck()

@@ -29,7 +29,10 @@ public:
 		// to do move Player in gameLogic
 		int16 roomNum = ServerIocpCore._clients[sid]->_myRm;
 		ServerIocpCore._rmgr->GetRoom(roomNum).GetMyPlayerFromRoom(sid).SetDirection(_dir);
-		ServerIocpCore._rmgr->GetRoom(roomNum).GetMyPlayerFromRoom(sid).Move(_key, PLAYER_VELOCITY);
+		
+		if(ServerIocpCore._rmgr->GetRoom(roomNum).GetMyPlayerFromRoom(sid).m_idx == 0) ServerIocpCore._rmgr->GetRoom(roomNum).GetMyPlayerFromRoom(sid).Move(_key, BOSS_VELOCITY);
+		else ServerIocpCore._rmgr->GetRoom(roomNum).GetMyPlayerFromRoom(sid).Move(_key, PLAYER_VELOCITY);
+
 		if (_key == 0)
 		{
 			S2C_POS packet;
@@ -126,6 +129,15 @@ public:
 				{
 					std::cout << ServerIocpCore._rmgr->GetRoom(roomNum)._players[i].m_idx << "Get Attacked\n";
 					ServerIocpCore._rmgr->GetRoom(roomNum)._players[i].m_hp -= 1;
+					if (ServerIocpCore._rmgr->GetRoom(roomNum)._players[i].m_hp == 0)
+					{
+						std::cout << ServerIocpCore._rmgr->GetRoom(roomNum)._players[i].m_idx << "Player DOWN\n";
+						SC_EVENTPACKET packet;
+						packet.type = SC_PACKET_TYPE::GAMEEVENT;
+						packet.size = sizeof(SC_EVENTPACKET);
+						packet.eventId = (uint8)EVENT_TYPE::DOWN_PLAYER_ONE + i;
+						ServerIocpCore._rmgr->GetRoom(roomNum).BroadCasting(&packet);
+					}
 				}
 
 			}

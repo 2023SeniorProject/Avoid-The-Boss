@@ -122,7 +122,7 @@ void CEmployee::Move(DWORD dwDirection, float fDistance)
 		m_pSkinnedAnimationController->SetTrackPosition(0, 0);
 		m_pSkinnedAnimationController->SetTrackPosition(1, 0);
 	}
-	CPlayer::Move(dwDirection, fDistance);
+	CPlayer::Move(dwDirection, PLAYER_VELOCITY);
 }
 
 void CEmployee::Update(float fTimeElapsed, PLAYER_TYPE ptype)

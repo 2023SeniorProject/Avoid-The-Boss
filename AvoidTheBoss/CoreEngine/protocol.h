@@ -16,6 +16,7 @@ enum class EVENT_TYPE : uint8
 {
 	ATTACK_EVENT = 0,
 	COOLTIME_EVENT = 1,
+	
 	// ========= 스위치 관련 상호작용 이벤트 =========
 	SWITCH_ONE_START_EVENT = 2,
 	SWITCH_TWO_START_EVENT = 3,
@@ -26,17 +27,24 @@ enum class EVENT_TYPE : uint8
 	SWITCH_ONE_ACTIVATE_EVENT = 8,
 	SWITCH_TWO_ACTIVATE_EVENT = 9,
 	SWITCH_THREE_ACTIVATE_EVENT = 10,
+
 	// ========  플레이어 숨기는 이벤트 ==============
 	HIDE_PLAYER_ONE = 11,
 	HIDE_PLAYER_TWO = 12,
 	HIDE_PLAYER_THREE = 13,
 	HIDE_PLAYER_FOUR = 14,
 
-	// ======= 플레이어 판정 이벤트 ===========
+	// ======= 플레이어 죽음 이벤트 =========== // 피격시 붉은 피격 이펙트 연출 or 피격 애니메이션 재생
 	ATTACKED_PLAYER_ONE = 15,
 	ATTACKED_PLAYER_TWO = 16,
 	ATTACKED_PLAYER_THREE = 17,
 	ATTACKED_PLAYER_FOUR = 18,
+
+	// ======= 플레이어 죽음 이벤트 ===========
+	DOWN_PLAYER_ONE = 19,
+	DOWN_PLAYER_TWO = 20,
+	DOWN_PLAYER_THREE = 21,
+	DOWN_PLAYER_FOUR = 22,
 };
 
 #pragma pack (push, 1)

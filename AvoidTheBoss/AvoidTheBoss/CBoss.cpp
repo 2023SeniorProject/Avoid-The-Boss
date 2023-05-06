@@ -178,7 +178,7 @@ void CBoss::Update(float fTimeElapsed, PLAYER_TYPE ptype)
 
 }
 
-void CBoss::OnInteractionAnimation()
+void CBoss::OnInteractionAnimation() // 상호작용 애니메이션 카운트
 {
 	if (m_OnInteraction)
 	{
@@ -214,7 +214,7 @@ void CBoss::ProcessInput(DWORD& dwDirection)
 				packet.eventId = (uint8)EVENT_TYPE::ATTACK_EVENT;
 				packet.type = SC_PACKET_TYPE::GAMEEVENT;
 				packet.size = sizeof(SC_EVENTPACKET);
-
+				clientCore._client->DoSend(&packet);
 			}
 		}
 

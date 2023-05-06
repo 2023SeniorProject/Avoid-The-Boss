@@ -89,8 +89,8 @@ public:
 		case EVENT_TYPE::SWITCH_ONE_END_EVENT: // 상호작용 도중에 끝낸 경우
 		case EVENT_TYPE::SWITCH_TWO_END_EVENT: // 상호작용 도중에 끝낸 경우
 		case EVENT_TYPE::SWITCH_THREE_END_EVENT: // 상호작용 도중에 끝낸 경우
-			if (!ServerIocpCore._rmgr->GetRoom(sid)._switchs[eventId - 5]._IsActive &&
-				ServerIocpCore._rmgr->GetRoom(sid)._switchs[eventId - 5]._IsOnInteraction) // 발전기 상호작용이 도중에 발생한 경우
+			if (!ServerIocpCore._rmgr->GetRoom(roomNum)._switchs[eventId - 5]._IsActive &&
+				ServerIocpCore._rmgr->GetRoom(roomNum)._switchs[eventId - 5]._IsOnInteraction) // 발전기 상호작용이 도중에 발생한 경우
 			{
 				std::cout << "switch[" << eventId - 5 << "] " << "Cancel \n";
 				// 상호작용 상태로 변경
@@ -107,21 +107,30 @@ public:
 		case EVENT_TYPE::ATTACK_EVENT:
 		{
 			// 공격 이벤트 검증
-			int32 myIdx = ServerIocpCore._rmgr->GetRoom(sid).GetMyPlayerFromRoom(sid).m_idx;
-			XMFLOAT3 BossPos = ServerIocpCore._rmgr->GetRoom(sid).GetMyPlayerFromRoom(sid).GetPosition();
-			XMFLOAT3 BossDir = ServerIocpCore._rmgr->GetRoom(sid).GetMyPlayerFromRoom(sid).m_xmf3Look;
-			float rayDist = 5.0f;
+			int32 myIdx = ServerIocpCore._rmgr->GetRoom(roomNum).GetMyPlayerFromRoom(sid).m_idx;
+			XMFLOAT3 BossPos = ServerIocpCore._rmgr->GetRoom(roomNum).GetMyPlayerFromRoom(sid).GetPosition();
+			XMFLOAT3 BossDir = ServerIocpCore._rmgr->GetRoom(roomNum).GetMyPlayerFromRoom(sid).m_xmf3Look;
+			//사장님 애니메이션 재생을 위한 이벤트 패킷
+			SC_EVENTPACKET packet;
+			packet.type = SC_PACKET_TYPE::GAMEEVENT;
+			packet.size = sizeof(SC_EVENTPACKET);
+			packet.eventId = (uint8)EVENT_TYPE::ATTACK_EVENT;
+			ServerIocpCore._rmgr->GetRoom(roomNum).BroadCastingExcept(&packet, sid);
+
+
+			float rayDist = 10.0f;
 			for (int i = 0; i < PLAYERNUM; ++i)
 			{
 				if (i == myIdx) continue;
-				if (ServerIocpCore._rmgr->GetRoom(sid)._players[i].m_playerBV.Intersects(XMLoadFloat3(&BossPos), XMLoadFloat3(&BossDir), rayDist))
+				if (ServerIocpCore._rmgr->GetRoom(roomNum)._players[i].m_playerBV.Intersects(XMLoadFloat3(&BossPos), XMLoadFloat3(&BossDir), rayDist))
 				{
-					std::cout << ServerIocpCore._rmgr->GetRoom(sid)._players[i].m_idx << "Get Attacked\n";
-					ServerIocpCore._rmgr->GetRoom(sid)._players[i].m_hp -= 1;
+					std::cout << ServerIocpCore._rmgr->GetRoom(roomNum)._players[i].m_idx << "Get Attacked\n";
+					ServerIocpCore._rmgr->GetRoom(roomNum)._players[i].m_hp -= 1;
 				}
 
 			}
 		}
+		break;
 		default:
 			std::cout << "UnKnown Game Event Please Check Your Packet Type\n";
 			break;

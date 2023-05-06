@@ -211,7 +211,7 @@ void CGameScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandLis
 
 	for (int i = 0; i < PLAYERNUM; ++i)
 	{
-		if (i != (int)CHARACTER_TYPE::BOSS)
+		if (i == (int)CHARACTER_TYPE::BOSS)
 		{
 			_players[i] = new CBoss(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature);
 			if (m_ppShaders[1])
@@ -221,7 +221,7 @@ void CGameScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandLis
 		}
 		else
 		{
-			_players[i] = new CEmployee(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, CHARACTER_TYPE::GOGGLE_EMP);
+			_players[i] = new CEmployee(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, (CHARACTER_TYPE)i);
 			for (int j = 0; j < nSwitch; j++)
 			{
 				if (m_ppHierarchicalGameObjects[j])

@@ -47,11 +47,11 @@ public:
 
 
 
-class SwitchInteractionEvent : public queueEvent
+class InteractionEvent : public queueEvent
 {
 public:
-	SwitchInteractionEvent() {};
-	virtual ~SwitchInteractionEvent() {};
+	InteractionEvent() {};
+	virtual ~InteractionEvent() {};
 	uint8 eventId = -1;
 public:
 	virtual void Task() 
@@ -59,6 +59,7 @@ public:
 		int16 roomNum = ServerIocpCore._clients[sid]->_myRm;
 		switch ((EVENT_TYPE)eventId)
 		{
+		//============= 스위치 관련 이벤트 ===================
 		case EVENT_TYPE::SWITCH_ONE_START_EVENT:
 		case EVENT_TYPE::SWITCH_TWO_START_EVENT:
 		case EVENT_TYPE::SWITCH_THREE_START_EVENT:
@@ -102,6 +103,25 @@ public:
 				ServerIocpCore._rmgr->GetRoom(sid).BroadCastingExcept(&packet,sid);
 			}
 			break;
+		// ============== 공격 관련 이벤트 ================
+		case EVENT_TYPE::ATTACK_EVENT:
+		{
+			// 공격 이벤트 검증
+			int32 myIdx = ServerIocpCore._rmgr->GetRoom(sid).GetMyPlayerFromRoom(sid).m_idx;
+			XMFLOAT3 BossPos = ServerIocpCore._rmgr->GetRoom(sid).GetMyPlayerFromRoom(sid).GetPosition();
+			XMFLOAT3 BossDir = ServerIocpCore._rmgr->GetRoom(sid).GetMyPlayerFromRoom(sid).m_xmf3Look;
+			float rayDist = 5.0f;
+			for (int i = 0; i < PLAYERNUM; ++i)
+			{
+				if (i == myIdx) continue;
+				if (ServerIocpCore._rmgr->GetRoom(sid)._players[i].m_playerBV.Intersects(XMLoadFloat3(&BossPos), XMLoadFloat3(&BossDir), rayDist))
+				{
+					std::cout << ServerIocpCore._rmgr->GetRoom(sid)._players[i].m_idx << "Get Attacked\n";
+					ServerIocpCore._rmgr->GetRoom(sid)._players[i].m_hp -= 1;
+				}
+
+			}
+		}
 		default:
 			std::cout << "UnKnown Game Event Please Check Your Packet Type\n";
 			break;

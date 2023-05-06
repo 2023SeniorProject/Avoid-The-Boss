@@ -133,6 +133,7 @@ public: // 씬에 있는 오브젝트 관련 변수
 	bool						m_bIsExitReady = false;
 public:
 	Scheduler* _jobQueue;
+	Scheduler* _DelayjobQueue;
 	std::shared_mutex _jobQueueLock;
 	Atomic<uint8> _curFrameIdx;
 	int32 m_cid = -1;

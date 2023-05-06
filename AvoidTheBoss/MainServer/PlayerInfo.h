@@ -26,6 +26,7 @@ public:
 	int32 m_sid = -1;
 	int32 m_idx = -1;
 	bool m_hide = false;
+	int32 m_hp = 5; // 05-06추가 플레이어 HP
 public:
 	PlayerInfo();
 	virtual ~PlayerInfo();

@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "CBoss.h"
 #include "CBullet.h"
+#include "clientIocpCore.h"
 
 
 CBoss::CBoss(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature)
@@ -208,6 +209,12 @@ void CBoss::ProcessInput(DWORD& dwDirection)
 			if (GetnInteractionCountTime() == BOSS_INTERACTION_TIME)
 			{
 				SetInteractionAnimation(true);
+				// 05-06 공격 시, 사장님 공격 이벤트 전송
+				SC_EVENTPACKET packet;
+				packet.eventId = (uint8)EVENT_TYPE::ATTACK_EVENT;
+				packet.type = SC_PACKET_TYPE::GAMEEVENT;
+				packet.size = sizeof(SC_EVENTPACKET);
+
 			}
 		}
 

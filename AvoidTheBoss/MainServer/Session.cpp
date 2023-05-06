@@ -195,7 +195,7 @@ void ServerSession::ProcessPacket(char* packet)
 		case SC_PACKET_TYPE::GAMEEVENT:
 		{
 			SC_EVENTPACKET* ep = reinterpret_cast<SC_EVENTPACKET*>(packet);
-			SwitchInteractionEvent* swev = new SwitchInteractionEvent();
+			InteractionEvent* swev = new InteractionEvent();
 			swev->eventId = ep->eventId;
 			std::cout << "EVENT ID : " << (int32)swev->eventId << "\n";
  			swev->sid = _sid;

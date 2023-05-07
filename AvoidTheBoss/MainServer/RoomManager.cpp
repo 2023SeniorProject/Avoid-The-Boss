@@ -26,9 +26,9 @@ void Room::UserOut(int32 sid)
 	int idx = 0;
 	{
 		// cList Lock 쓰기 호출
-		GetMyPlayerFromRoom(sid).SetVelocity(XMFLOAT3(0, 0, 0));
-		idx = GetMyPlayerFromRoom(sid).m_idx;
-		GetMyPlayerFromRoom(sid).m_hide = true;
+		GetMyPlayerFromRoom(sid).SetVelocity(XMFLOAT3(0, 0, 0)); // 속도 0
+		idx = GetMyPlayerFromRoom(sid).m_idx; /// 인덱스 가져오기
+		GetMyPlayerFromRoom(sid).m_hide = true; // 업데이트 false로 변경
 		std::unique_lock<std::shared_mutex> wll(_listLock);
 		auto i = std::find(_cList.begin(), _cList.end(), sid); // 리스트에 있는지 탐색 후
 		if (i != _cList.end()) _cList.erase(i); // 리스트에서 제거

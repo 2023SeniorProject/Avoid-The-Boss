@@ -156,8 +156,9 @@ void AcceptManager::ProcessAccept(AcceptEvent* acceptEvent)
 		{
 			std::cout << "LoginFail" << endl;
 			session->DoSendLoginPacket(false);
-			return;
+			delete session;
 		}
+		else session->DoSendLoginPacket(true);
 		std::cout << "client[" << session->_sid << "] " << "LoginSuccess" << endl;
 	}
 

@@ -17,6 +17,7 @@ public:
 	virtual void OnPlayerUpdateCallback();
 	virtual void OnCameraUpdateCallback();
 	
+	virtual void Rotate(float x, float y, float z);
 	virtual void PrepareAnimate();
 	virtual void Move(DWORD dwDirection, float fDistance);
 	virtual void Update(float fTimeElapsed, PLAYER_TYPE ptype);

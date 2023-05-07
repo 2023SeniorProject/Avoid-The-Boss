@@ -269,17 +269,26 @@ void CAnimationSet::SetPosition(float fElapsedPosition)
 {
 	switch (m_nType)
 	{
-		case ANIMATION_TYPE_LOOP:
+		//case ANIMATION_TYPE_LOOP:
+		//{
+		//	m_fPosition += fElapsedPosition;
+		//	if (m_fPosition >= m_fLength) m_fPosition = 0.0f;
+//		//	m_fPosition = fmod(fTrackPosition, m_pfKeyFrameTimes[m_nKeyFrames-1]); 
+//		//	// m_fPosition = fTrackPosition - int(fTrackPosition / m_pfKeyFrameTimes[m_nKeyFrames-1]) * m_pfKeyFrameTimes[m_nKeyFrames-1];
+//		//	m_fPosition = fmod(fTrackPosition, m_fLength); //if (m_fPosition < 0) m_fPosition += m_fLength;
+//		//	m_fPosition = fTrackPosition - int(fTrackPosition / m_fLength) * m_fLength;
+		//	break;
+		//}
+		case ANIMATION_TYPE_ONCE:
 		{
-			m_fPosition += fElapsedPosition;
-			if (m_fPosition >= m_fLength) m_fPosition = 0.0f;
-//			m_fPosition = fmod(fTrackPosition, m_pfKeyFrameTimes[m_nKeyFrames-1]); // m_fPosition = fTrackPosition - int(fTrackPosition / m_pfKeyFrameTimes[m_nKeyFrames-1]) * m_pfKeyFrameTimes[m_nKeyFrames-1];
-//			m_fPosition = fmod(fTrackPosition, m_fLength); //if (m_fPosition < 0) m_fPosition += m_fLength;
-//			m_fPosition = fTrackPosition - int(fTrackPosition / m_fLength) * m_fLength;
+			if (m_fPosition <= m_fLength)
+			{
+				m_fPosition += fElapsedPosition;
+			}
+			else
+				m_fPosition = 0.0f;
 			break;
 		}
-		case ANIMATION_TYPE_ONCE:
-			break;
 		case ANIMATION_TYPE_PINGPONG:
 			break;
 	}
@@ -538,6 +547,7 @@ void CLoadedModelInfo::PrepareSkinning()
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //
+
 CGameObject::CGameObject()
 {
 	m_xmf4x4ToParent = Matrix4x4::Identity();
@@ -657,7 +667,7 @@ void CGameObject::FindAndSetSkinnedMesh(CSkinnedMesh **ppSkinnedMeshes, int *pnS
 CGameObject *CGameObject::FindFrame(const char *pstrFrameName)
 {
 	CGameObject *pFrameObject = NULL;
-	if (!strncmp(m_pstrFrameName, pstrFrameName, strlen(pstrFrameName))) return(this);
+	if (strncmp(m_pstrFrameName, pstrFrameName, strlen(pstrFrameName))==0) return(this);
 
 	if (m_pSibling) if (pFrameObject = m_pSibling->FindFrame(pstrFrameName)) return(pFrameObject);
 	if (m_pChild) if (pFrameObject = m_pChild->FindFrame(pstrFrameName)) return(pFrameObject);

@@ -93,7 +93,7 @@ public:
 	void UpdateMove(const XMFLOAT3& velocity);
 
 	//플레이어를 회전하는 함수이다. 
-	void Rotate(float x, float y, float z);
+	virtual void Rotate(float x, float y, float z);
 
 	//플레이어의 위치와 회전 정보를 경과 시간에 따라 갱신하는 함수이다.
 	virtual void Update(float fTimeElapsed, PLAYER_TYPE ptype);
@@ -123,7 +123,7 @@ public: //04-29 추가함수
 protected:
 	int nInteractionNum = -1;
 	bool m_OnInteraction = false;
-	int m_InteractionCountTime;
+	int m_InteractionCountTime = -1;;
 public:
 	void SetInteractionAnimation(bool value) { m_OnInteraction = value; }
 	bool GetOnInteraction() { return m_OnInteraction; }

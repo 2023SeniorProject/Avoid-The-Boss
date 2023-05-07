@@ -3,7 +3,7 @@
 
 CGenerator::CGenerator()
 {
-	radius = 0.5f;
+	radius = 0.2f;
 	for (int i = 0; i < m_nPipe; i++)
 	{
 		m_nPipeStartIndexCount[i] = 0;
@@ -31,7 +31,7 @@ void CGenerator::OnPrepareAnimate()
 
 void CGenerator::Animate(float fTimeElapsed)
 {	
-	if (m_bSwitchAnimationOn)//m_bSwitchActive)
+	if (m_bSwitchAnimationOn)
 	{
 		float delta = 1.0f;
 		for (int i = 0; i < m_nPipe; i++) //1.8 ->1.7·Î ÀÌµ¿ 10.f
@@ -76,7 +76,7 @@ void CGenerator::Animate(float fTimeElapsed)
 		{
 			if(m_nButtonAnimationCount == 0)
 			{ 
-				//m_nButtonAnimationCount = BUTTON_ANIM_FRAME;
+				
 			}
 			else if (m_nButtonAnimationCount >0)
 			{
@@ -85,9 +85,7 @@ void CGenerator::Animate(float fTimeElapsed)
 				m_nButtonAnimationCount -= ButtonDelta * fTimeElapsed;
 			}
 		}
-		//MoveStrafe(1.0f * fTimeElapsed);
-		//MoveUp(1.0f * fTimeElapsed);
-		//MoveForward(1.0f * fTimeElapsed);
+		
 	}
 	CGameObject::Animate(fTimeElapsed);
 }

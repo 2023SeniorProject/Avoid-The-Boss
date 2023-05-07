@@ -107,7 +107,7 @@ using Microsoft::WRL::ComPtr;
 //1.0f = 1m 
 #define UNIT 1.0f // 1m = 1 unit
 
-#define PLAYERNUM 2 
+#define PLAYERNUM 1
 const float PLAYER_VELOCITY = UNIT * 3.f;
 const float BOSS_VELOCITY = UNIT * 2.f;
 

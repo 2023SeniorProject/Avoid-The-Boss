@@ -194,7 +194,10 @@ void CGameScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandLis
 	pBoundsMapShader->BuildObjects(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature,NULL,NULL);
 
 	m_ppSwitches = new CGenerator * [nSwitch];
-
+	for (int i = 0; i < 3; ++i)
+	{
+		m_ppSwitches[i] = ((CGenerator*)pGeneratorObjectsShader->m_ppObjects[i]);
+	}
 	for (int i = 0; i < PLAYERNUM; ++i)
 	{
 		if (i != (int)CHARACTER_TYPE::BOSS)
@@ -207,19 +210,14 @@ void CGameScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandLis
 		}
 		else
 		{
-			_players[i] = new CEmployee(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, (CHARACTER_TYPE)i);
-			for (int j = 0; j < nSwitch; j++)
-			{
-				if (((CGenerator*)pGeneratorObjectsShader->m_ppObjects[j])->GetButton())
-				{
-					m_ppSwitches[j] = ((CGenerator*)pGeneratorObjectsShader->m_ppObjects[j]);
-					if (m_ppSwitches[j])
-					{
-						((CEmployee*)_players[i])->m_pSwitches[j].position = m_ppSwitches[j]->GetButton()->GetPosition();
-						((CEmployee*)_players[i])->m_pSwitches[j].radius = m_ppSwitches[j]->GetRadius();
-					}
-				}
-			}
+			_players[i] = new CEmployee(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, (CHARACTER_TYPE)(i + 1));
+			((CEmployee*)_players[i])->m_pSwitches[0].position = XMFLOAT3(-23.12724, 1.146619, 1.814123);
+			((CEmployee*)_players[i])->m_pSwitches[0].radius = 0.2f;
+			((CEmployee*)_players[i])->m_pSwitches[1].position = XMFLOAT3(23.08867, 1.083242, 3.155997);
+			((CEmployee*)_players[i])->m_pSwitches[1].radius = 0.2f;
+			((CEmployee*)_players[i])->m_pSwitches[2].position = XMFLOAT3(0.6774719, 1.083242, -23.05909);
+			((CEmployee*)_players[i])->m_pSwitches[2].radius = 0.2f;
+					
 		}
 	}
 	m_pCamera = _players[0]->GetCamera();

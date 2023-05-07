@@ -107,7 +107,6 @@ void CBoss::Rotate(float x, float y, float z)
 
 void CBoss::PrepareAnimate()
 {
-	//m_RightHands = FindFrame("Bip001_R_Hand");
 }
 
 void CBoss::Move(DWORD dwDirection, float fDistance)
@@ -196,7 +195,7 @@ void CBoss::Move(DWORD dwDirection, float fDistance)
 	}
 
 	CPlayer::Move(dwDirection, BOSS_VELOCITY);
-   
+  
 }
 
 void CBoss::Update(float fTimeElapsed, PLAYER_TYPE ptype)

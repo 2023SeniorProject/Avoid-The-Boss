@@ -157,15 +157,7 @@ void CSession::ProcessPacket(char* packet)
 		pe->_pos = newPos;
 	
 		mainGame.m_pScene->AddEvent(static_cast<queueEvent*>(pe), 0.f);
-		//XMFLOAT3 curPos = player->GetPosition();
-		/*XMFLOAT3 distance = Vector3::Subtract(curPos, newPos);
-		if (Vector3::Length(distance) > 0.2f)
-		{
-			std::cout << "Mass Offset Detected. Reseting Pos\n";
-			player->m_lock.lock();
-			player->MakePosition(XMFLOAT3(posPacket->x, player->GetPosition().y, posPacket->z));
-			player->m_lock.unlock();
-		}*/
+		
 	}
 	break;
 	case S_PACKET_TYPE::SCHAT:

@@ -151,6 +151,7 @@ void CBoss::Move(DWORD dwDirection, float fDistance)
 
 					m_InteractionCountTime -= 1;
 				}
+				m_pBullet->SetOnShoot(true);
 			}
 		}
 		else if (LOBYTE(dwDirection) == 0) // 이동키 입력이 아닐 때
@@ -190,6 +191,7 @@ void CBoss::Move(DWORD dwDirection, float fDistance)
 
 					m_InteractionCountTime -= 1;
 				}
+				m_pBullet->SetOnShoot(true);
 			}
 		}
 	}
@@ -198,27 +200,87 @@ void CBoss::Move(DWORD dwDirection, float fDistance)
   
 }
 
+void CBoss::AttackAnimationOn()
+{
+	if (m_pSkinnedAnimationController && m_OnInteraction)
+	{
+		if (!Vector3::IsZero(m_xmf3Velocity))
+		{
+			if (m_InteractionCountTime == BOSS_INTERACTION_TIME)
+			{
+				m_pSkinnedAnimationController->SetTrackEnable(0, false);
+				m_pSkinnedAnimationController->SetTrackEnable(1, false);
+				m_pSkinnedAnimationController->SetTrackEnable(2, false);
+				m_pSkinnedAnimationController->SetTrackEnable(3, true);
+
+				m_pSkinnedAnimationController->SetTrackPosition(0, 0.0f);
+				m_pSkinnedAnimationController->SetTrackPosition(1, 0.0f);
+				m_pSkinnedAnimationController->SetTrackPosition(2, 0.0f);
+				m_pSkinnedAnimationController->SetTrackPosition(3, 0.0f);
+
+				m_InteractionCountTime -= 1;
+			}
+			else if (m_InteractionCountTime < BOSS_INTERACTION_TIME)
+			{
+				if (m_InteractionCountTime <= 0) 
+				{
+					m_OnInteraction = false;
+					m_pBullet->SetOnShoot(false);
+				}
+				m_InteractionCountTime -= 1;
+			}
+		}
+		else if(Vector3::IsZero(m_xmf3Velocity))
+		{
+			if (m_InteractionCountTime == BOSS_INTERACTION_TIME)
+			{
+				m_pSkinnedAnimationController->SetTrackEnable(0, false);
+				m_pSkinnedAnimationController->SetTrackEnable(1, false);
+				m_pSkinnedAnimationController->SetTrackEnable(2, true);
+				m_pSkinnedAnimationController->SetTrackEnable(3, false);
+
+				m_pSkinnedAnimationController->SetTrackPosition(0, 0.0f);
+				m_pSkinnedAnimationController->SetTrackPosition(1, 0.0f);
+				m_pSkinnedAnimationController->SetTrackPosition(2, 0.0f);
+				m_pSkinnedAnimationController->SetTrackPosition(3, 0.0f);
+
+				m_InteractionCountTime -= 1;
+			}
+			else if (m_InteractionCountTime < BOSS_INTERACTION_TIME)
+			{
+				if (m_InteractionCountTime <= 0)
+				{
+					m_OnInteraction = false;
+					m_pBullet->SetOnShoot(false);
+
+					m_pSkinnedAnimationController->SetTrackEnable(0, true);
+					m_pSkinnedAnimationController->SetTrackEnable(1, false);
+					m_pSkinnedAnimationController->SetTrackEnable(2, false);
+					m_pSkinnedAnimationController->SetTrackEnable(3, false);
+
+					m_pSkinnedAnimationController->SetTrackPosition(0, 0.0f);
+					m_pSkinnedAnimationController->SetTrackPosition(1, 0.0f);
+					m_pSkinnedAnimationController->SetTrackPosition(2, 0.0f);
+					m_pSkinnedAnimationController->SetTrackPosition(3, 0.0f);
+				}
+				m_InteractionCountTime -= 1;
+			}
+		}
+	}
+}
+
 void CBoss::Update(float fTimeElapsed, PLAYER_TYPE ptype)
 {
 	CPlayer::Update(fTimeElapsed, ptype);
 
-	OnInteractionAnimation();
-
-	if (m_OnInteraction)
-	{
-		m_pBullet->SetOnShoot(true);
-	}
+	
 	if (m_pBullet)
 	{
-		//if (!m_pBullet->GetOnShoot())
-		//{
-		// m_pBullet->SetBulletPosition(GetPosition());
-		//}
 		m_pBullet->SetBulletPosition(GetPosition());
-
 		m_pBullet->Update(fTimeElapsed);
 	}
 	if (ptype == PLAYER_TYPE::OWNER) m_xmf3Velocity = XMFLOAT3(0.0f, 0.0f, 0.0f);
+	else if(m_pBullet) AttackAnimationOn();
 	
 }
 

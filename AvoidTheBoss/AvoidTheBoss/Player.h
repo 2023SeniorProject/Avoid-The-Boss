@@ -25,6 +25,7 @@ static const char *g_pstrCharactorRefernece[5] =
 
 class CPlayer : public CGameObject
 {
+	friend class CSession;
 protected:
 	 
 	XMFLOAT3					m_xmf3Position = XMFLOAT3(0.0f, 0.0f, 0.0f);

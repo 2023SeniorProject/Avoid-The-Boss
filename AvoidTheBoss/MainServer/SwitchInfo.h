@@ -40,6 +40,6 @@ public:
 		_coolTime = 0.f;
 		_lock.unlock();
 	}
-	bool CanInteraction(int32 sid);
+	bool CanInteraction(int32 rm, int32 sid);
 	void UpdateGuage(float elapsedTime);
 };

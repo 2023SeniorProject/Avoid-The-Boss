@@ -4,6 +4,7 @@
 #include "GameFramework.h"
 #include "IocpEvent.h"
 #include "ClientPacketEvent.h"
+#include "CBullet.h"
 #include <string>
 
 CSession::CSession()
@@ -285,6 +286,9 @@ void CSession::ProcessPacket(char* packet)
 		break;
 		case EVENT_TYPE::ATTACK_EVENT:
 			mainGame.m_pScene->_players[0]->SetInteractionAnimation(true);
+			mainGame.m_pScene->_players[0]->m_InteractionCountTime = BOSS_INTERACTION_TIME;
+			((CBoss*)mainGame.m_pScene->_players[0])->m_pBullet->SetOnShoot(true);
+			((CBoss*)mainGame.m_pScene->_players[0])->AttackAnimationOn();
 		default:
 			break;
 		}

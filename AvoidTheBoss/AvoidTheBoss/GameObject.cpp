@@ -1314,7 +1314,7 @@ void CSiren::Animate(float fTimeElapsed)
 		}
 		else
 		{
-			m_AnimationDegree = 0.0f;
+			m_AnimationDegree = 180.f;
 		}
 		CGameObject::Animate(fTimeElapsed);
 	}

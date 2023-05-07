@@ -67,24 +67,24 @@ public:
 		case EVENT_TYPE::SWITCH_TWO_START_EVENT:
 		case EVENT_TYPE::SWITCH_THREE_START_EVENT:
 		{
-			if (!ServerIocpCore._rmgr->GetRoom(sid)._switchs[eventId - 2]._IsActive &&
-				!ServerIocpCore._rmgr->GetRoom(sid)._switchs[eventId - 2]._IsOnInteraction) // 발전기 상호작용이 가능할 경우
+			if (!ServerIocpCore._rmgr->GetRoom(roomNum)._switchs[eventId - 2]._IsActive &&
+				!ServerIocpCore._rmgr->GetRoom(roomNum)._switchs[eventId - 2]._IsOnInteraction) // 발전기 상호작용이 가능할 경우
 			{
 
 				// 검증 후 상호작용 상태로 변경
-				if (!ServerIocpCore._rmgr->GetRoom(sid)._switchs[eventId -2].CanInteraction(sid))
+				if (!ServerIocpCore._rmgr->GetRoom(roomNum)._switchs[eventId -2].CanInteraction(roomNum,sid))
 				{
 					std::cout << "Bug Detected\n";
 					break;
 				}
 				else
 				{
-					ServerIocpCore._rmgr->GetRoom(sid)._switchs[eventId - 2].SwitchInteractionOn(true);
+					ServerIocpCore._rmgr->GetRoom(roomNum)._switchs[eventId - 2].SwitchInteractionOn(true);
 					SC_EVENTPACKET packet;
 					packet.size = sizeof(SC_EVENTPACKET);
 					packet.type = SC_PACKET_TYPE::GAMEEVENT;
 					packet.eventId = eventId; // 0: 발전기 시작 // 발전기 종료 // 1: 발전기 완료 // 2: 사장님 공격 처리 // 3: 사장님 공격 쿨타임 
-					ServerIocpCore._rmgr->GetRoom(sid).BroadCastingExcept(&packet , sid);
+					ServerIocpCore._rmgr->GetRoom(roomNum).BroadCastingExcept(&packet , sid);
 				}
 			}
 		}
@@ -92,20 +92,22 @@ public:
 		case EVENT_TYPE::SWITCH_ONE_END_EVENT: // 상호작용 도중에 끝낸 경우
 		case EVENT_TYPE::SWITCH_TWO_END_EVENT: // 상호작용 도중에 끝낸 경우
 		case EVENT_TYPE::SWITCH_THREE_END_EVENT: // 상호작용 도중에 끝낸 경우
+		{
 			if (!ServerIocpCore._rmgr->GetRoom(roomNum)._switchs[eventId - 5]._IsActive &&
 				ServerIocpCore._rmgr->GetRoom(roomNum)._switchs[eventId - 5]._IsOnInteraction) // 발전기 상호작용이 도중에 발생한 경우
 			{
 				std::cout << "switch[" << eventId - 5 << "] " << "Cancel \n";
 				// 상호작용 상태로 변경
-				ServerIocpCore._rmgr->GetRoom(sid)._switchs[eventId - 5].SwitchInteractionOn(false);
-				ServerIocpCore._rmgr->GetRoom(sid)._switchs[ eventId - 5].ResetGuage(); // 발전기 게이지 초기화
+				ServerIocpCore._rmgr->GetRoom(roomNum)._switchs[eventId - 5].SwitchInteractionOn(false);
+				ServerIocpCore._rmgr->GetRoom(roomNum)._switchs[eventId - 5].ResetGuage(); // 발전기 게이지 초기화
 				SC_EVENTPACKET packet;
 				packet.size = sizeof(SC_EVENTPACKET);
 				packet.type = SC_PACKET_TYPE::GAMEEVENT;
 				packet.eventId = eventId; // 0: 발전기 시작 // 발전기 종료 // 1: 발전기 완료 // 2: 사장님 공격 처리 // 3: 사장님 공격 쿨타임 
-				ServerIocpCore._rmgr->GetRoom(sid).BroadCastingExcept(&packet,sid);
+				ServerIocpCore._rmgr->GetRoom(roomNum).BroadCastingExcept(&packet, sid);
 			}
-			break;
+		}
+		break;
 		// ============== 공격 관련 이벤트 ================
 		case EVENT_TYPE::ATTACK_EVENT:
 		{

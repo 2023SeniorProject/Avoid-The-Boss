@@ -2,8 +2,7 @@
 #include "GameObject.h"
 
 #define BUTTON_ANIM_FRAME 50
-#define GENERATOR_ANIM_FRAM 20
-#define PIPE_ANIMATION_SPEED 0.01f
+#define GENERATOR_ANIM_FRAM 50
 class CGenerator : public CGameObject
 {
 private:
@@ -11,8 +10,11 @@ private:
 	int m_nPipe = 3;
 	CGameObject** m_ppPipe = NULL;
 	CGameObject* m_pButton = NULL;
-	int m_nPipeStartIndexCount[3];
+	int m_fPipeDistanceCount[3];
 	bool m_nPipeStartAnimation[3];
+	bool m_bPipeMoveUp[3];
+	//bool m_bPipeMoveDown = false;
+
 public:
 	bool m_bSwitchActive = false; // --> 발전기가 활성화 되었는가
 	bool m_bSwitchAnimationOn = false; // 애니메이션 재생을 위한 변수

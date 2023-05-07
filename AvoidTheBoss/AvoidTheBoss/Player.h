@@ -78,7 +78,6 @@ public:
 	{
 		m_xmf3Position = xmf3Position;
 	}
-
 	const XMFLOAT3& GetVelocity() const { return(m_xmf3Velocity); }
 	float GetYaw() { return(m_fYaw); }
 	float GetPitch() { return(m_fPitch); }

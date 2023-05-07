@@ -111,6 +111,7 @@ void PlayerInfo::OnPlayerUpdateCallback()
 {
 	m_playerBV.Center = GetPosition();
 	BoxTree->CheckCollision(m_playerBV, m_xmf3Position);
+	std::cout << "Collison\n";
 }
 
 

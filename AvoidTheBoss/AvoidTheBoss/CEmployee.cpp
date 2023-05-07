@@ -139,6 +139,18 @@ void CEmployee::OnInteractionAnimation()
 
 }
 
+void CEmployee::SwitchAnimationForOtherClient()
+{
+	if (m_OnInteraction)
+	{
+		m_pSkinnedAnimationController->SetTrackEnable(0, false);
+		m_pSkinnedAnimationController->SetTrackEnable(1, false);
+		m_pSkinnedAnimationController->SetTrackEnable(6, true);
+		m_pSkinnedAnimationController->SetTrackPosition(0, 0);
+		m_pSkinnedAnimationController->SetTrackPosition(1, 0);
+	}
+}
+
 int32 CEmployee::GetAvailableSwitchIdx()
 {
 	for (int i = 0; i < 3; ++i)

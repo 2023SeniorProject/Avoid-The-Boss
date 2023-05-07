@@ -243,6 +243,8 @@ void CSession::ProcessPacket(char* packet)
 			CGenerator* mSwitch = mainGame.m_pScene->m_ppSwitches[ev->eventId - 2];
 			mSwitch->m_lock.lock();
 			mSwitch->m_bOtherPlayerInteractionOn = true;
+			mainGame.m_pScene->m_ppSwitches[ev->eventId - 2]->InteractAnimation(true); // 발전기 애니메이션 재생을 시작한다.
+			mainGame.m_pScene->m_ppSwitches[ev->eventId - 2]->SetAnimationCount(BUTTON_ANIM_FRAME);
 			mSwitch->m_lock.unlock();
 		}
 		break;
@@ -291,6 +293,29 @@ void CSession::ProcessPacket(char* packet)
 			((CBoss*)mainGame.m_pScene->_players[0])->AttackAnimationOn();
 		default:
 			break;
+		}
+	}
+	break;
+	case S_PACKET_TYPE::SWITCH_ANIM:
+	{
+		S2C_SWITCH_ANIM* sw = (S2C_SWITCH_ANIM*)packet;
+		uint8 idx = sw->idx;
+		CEmployee* myPlayer = (CEmployee*)mainGame.m_pScene->_players[idx];
+		if (myPlayer != nullptr)
+		{
+			myPlayer->SetInteractionAnimation(true);
+			myPlayer->SwitchAnimationForOtherClient();
+		}
+	}
+	break;
+	case S_PACKET_TYPE::SWITCH_ANIM_CANCEL:
+	{
+		S2C_SWITCH_ANIM* sw = (S2C_SWITCH_ANIM*)packet;
+		uint8 idx = sw->idx;
+		CPlayer* myPlayer = mainGame.m_pScene->_players[idx];
+		if (myPlayer != nullptr)
+		{
+			myPlayer->SetInteractionAnimation(false);
 		}
 	}
 	break;

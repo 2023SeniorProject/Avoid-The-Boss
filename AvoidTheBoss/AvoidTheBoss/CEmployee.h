@@ -18,6 +18,7 @@ public:
 	virtual void Move(DWORD dwDirection, float fDistance);
 	virtual void Update(float fTimeElapsed, PLAYER_TYPE ptype);
 	virtual void OnInteractionAnimation();
+	void SwitchAnimationForOtherClient();
 	virtual void ProcessInput(DWORD&);
 	bool IsPlayerCanSwitchInteraction() { return m_bIsInSwitchArea; }
 	int32 GetAvailableSwitchIdx();

@@ -6,7 +6,7 @@
 // 클라 -> 서버 패킷
 
 enum C_PACKET_TYPE : uint8 { ACQ_LOGIN = 101, ACQ_LOGOUT = 102, CCHAT = 103, CKEY = 104 ,CROT = 105, CMOVE = 106 };
-enum S_PACKET_TYPE : uint8 { LOGIN_OK = 201,  LOGIN_FAIL = 202 , SCHAT = 203, SKEY = 204, SROT = 205, SPOS = 206, GAME_START = 207};
+enum S_PACKET_TYPE : uint8 { LOGIN_OK = 201,  LOGIN_FAIL = 202 , SCHAT = 203, SKEY = 204, SROT = 205, SPOS = 206, GAME_START = 207, SWITCH_ANIM = 209,SWITCH_ANIM_CANCEL = 210};
 enum SC_PACKET_TYPE : uint8 { GAMEEVENT = 208};
 
 enum C_ROOM_PACKET_TYPE : uint8 { ACQ_MK_RM = 115, ACQ_ENTER_RM = 116, EXIT_CRM = 117 }; // 방 생성, 방 삭제, 입장 , 종료 
@@ -15,6 +15,7 @@ enum S_ROOM_PACKET_TYPE : uint8 { MK_RM_OK = 119, MK_RM_FAIL = 120, HIDE_RM = 12
 enum class EVENT_TYPE : uint8 
 {
 	ATTACK_EVENT = 0,
+	
 	COOLTIME_EVENT = 1,
 	
 	// ========= 스위치 관련 상호작용 이벤트 =========
@@ -45,6 +46,7 @@ enum class EVENT_TYPE : uint8
 	DOWN_PLAYER_TWO = 20,
 	DOWN_PLAYER_THREE = 21,
 	DOWN_PLAYER_FOUR = 22,
+	// ========= 플레이어 상호작용 애니메이션
 };
 
 #pragma pack (push, 1)
@@ -211,4 +213,12 @@ struct SC_EVENTPACKET
 	uint8 type;
 	uint8 eventId; // 0: 발전기 시작 / 1: 발전기 완료 // 2: 사장님 공격 처리 // 3: 사장님 공격 쿨타임 
 };
+
+struct S2C_SWITCH_ANIM
+{
+	uint8 size;
+	uint8 type;
+	uint8 idx;
+};
+
 #pragma pack (pop)

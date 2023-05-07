@@ -178,7 +178,7 @@ void Room::Update()
 			BroadCasting(&packet);
 			_switchs[i]._curGuage = 0.f;
 		}
-	} // 스위치 관련 로직 처리
+	} // 스위치 관련 로직 처리 // 스위치 업데이트
 
 	if (_timer.IsTimeToAddHistory()) _history.AddHistory(_players); // 1 (1/60초) 프레임마다 월드 상태를 기록한다.
 	if (_timer.IsAfterTick(45)) // 1/45초마다 정확한 위치값을 브로드캐스팅 한다.

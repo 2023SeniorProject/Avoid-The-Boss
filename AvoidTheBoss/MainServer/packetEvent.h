@@ -83,7 +83,14 @@ public:
 					SC_EVENTPACKET packet;
 					packet.size = sizeof(SC_EVENTPACKET);
 					packet.type = SC_PACKET_TYPE::GAMEEVENT;
-					packet.eventId = eventId; // 0: 발전기 시작 // 발전기 종료 // 1: 발전기 완료 // 2: 사장님 공격 처리 // 3: 사장님 공격 쿨타임 
+					packet.eventId = eventId; 
+
+					S2C_SWITCH_ANIM packet2;
+					packet2.size = sizeof(S2C_SWITCH_ANIM);
+					packet2.type = S_PACKET_TYPE::SWITCH_ANIM;
+					packet2.idx = ServerIocpCore._rmgr->GetRoom(roomNum).GetMyPlayerFromRoom(sid).m_idx;
+					
+					ServerIocpCore._rmgr->GetRoom(roomNum).BroadCastingExcept(&packet2, sid);
 					ServerIocpCore._rmgr->GetRoom(roomNum).BroadCastingExcept(&packet , sid);
 				}
 			}
@@ -103,7 +110,13 @@ public:
 				SC_EVENTPACKET packet;
 				packet.size = sizeof(SC_EVENTPACKET);
 				packet.type = SC_PACKET_TYPE::GAMEEVENT;
-				packet.eventId = eventId; // 0: 발전기 시작 // 발전기 종료 // 1: 발전기 완료 // 2: 사장님 공격 처리 // 3: 사장님 공격 쿨타임 
+				packet.eventId = eventId; // 0: 발전기 시작 // 발전기 종료 // 1: 발전기 완료 // 2: 사장님 공격 처리 // 3: 사장님 공격 쿨타임
+
+				S2C_SWITCH_ANIM packet2;
+				packet2.size = sizeof(S2C_SWITCH_ANIM);
+				packet2.type = S_PACKET_TYPE::SWITCH_ANIM_CANCEL;
+				packet2.idx = ServerIocpCore._rmgr->GetRoom(roomNum).GetMyPlayerFromRoom(sid).m_idx;
+				ServerIocpCore._rmgr->GetRoom(roomNum).BroadCastingExcept(&packet2, sid);
 				ServerIocpCore._rmgr->GetRoom(roomNum).BroadCastingExcept(&packet, sid);
 			}
 		}

@@ -146,7 +146,7 @@ void CBoss::Move(DWORD dwDirection, float fDistance)
 				}
 				else if (m_InteractionCountTime < BOSS_INTERACTION_TIME)
 				{
-					if(m_InteractionCountTime ==0)
+					if(m_InteractionCountTime <=0)
 						m_OnInteraction = false;
 
 					m_InteractionCountTime -= 1;
@@ -185,7 +185,7 @@ void CBoss::Move(DWORD dwDirection, float fDistance)
 				}
 				else if (m_InteractionCountTime < BOSS_INTERACTION_TIME)
 				{
-					if (m_InteractionCountTime == 0)
+					if (m_InteractionCountTime <= 0)
 						m_OnInteraction = false;
 
 					m_InteractionCountTime -= 1;
@@ -201,17 +201,20 @@ void CBoss::Move(DWORD dwDirection, float fDistance)
 void CBoss::Update(float fTimeElapsed, PLAYER_TYPE ptype)
 {
 	CPlayer::Update(fTimeElapsed, ptype);
+
 	OnInteractionAnimation();
+
 	if (m_OnInteraction)
 	{
 		m_pBullet->SetOnShoot(true);
 	}
 	if (m_pBullet)
 	{
-		if (!m_pBullet->GetOnShoot())
-		{
-		}
-		m_pBullet->SetBulletPosition(GetPosition());//SetBulletPosition(GetPosition());
+		//if (!m_pBullet->GetOnShoot())
+		//{
+		// m_pBullet->SetBulletPosition(GetPosition());
+		//}
+		m_pBullet->SetBulletPosition(GetPosition());
 
 		m_pBullet->Update(fTimeElapsed);
 	}
@@ -234,7 +237,7 @@ void CBoss::ProcessInput(DWORD& dwDirection)
 		if ((pKeyBuffer[0x44] & 0xF0) || (pKeyBuffer[0x64] & 0xF0)) dwDirection |= DIR_RIGHT;
 		if (pKeyBuffer[VK_SPACE] & 0xF0)
 		{
-			if (m_InteractionCountTime == -1 && m_OnInteraction==false)
+			if (m_InteractionCountTime <= 0 && m_OnInteraction==false)
 			{
 				m_OnInteraction = true;
 				m_InteractionCountTime = BOSS_INTERACTION_TIME;

@@ -3,13 +3,12 @@
 
 #define BUIIET_DISTANCE 2.5f
 #define BULLET_NUMBER 1
-
+#define BULLET_SPEED 0.5f
 class GameObject;
 
 class CBullet : public CGameObject
 {
 private:
-	float		m_fSpeed = 0.5f;
 	float		m_fDistance = 0.0f;
 	XMFLOAT3	m_xmf3Look = XMFLOAT3(0.0f, 0.0f, 1.0f);
 	XMFLOAT3	m_xmf3Right = XMFLOAT3(1.0f, 0.0f, 0.0f);

@@ -450,15 +450,20 @@ CMapObjectsShader::~CMapObjectsShader()
 
 void CMapObjectsShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, CLoadedModelInfo* pModel, void* pContext)
 {
-	m_nObjects = 1;
+	m_nObjects = 2;
 	m_ppObjects = new CGameObject * [m_nObjects];
 
-	CGameObject* pMap = CGameObject::LoadGeometryFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "Model/Industry_Map.bin", NULL,Layout::MAP);
+	CGameObject* pMap = CGameObject::LoadGeometryFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "Model/Industry_Map(6).bin", NULL,Layout::MAP);
 
 	m_ppObjects[0] = new CGameObject();
 	m_ppObjects[0]->SetChild(pMap);
-	pMap->AddRef();
 	m_ppObjects[0]->SetPosition(XMFLOAT3(0.0f, 0.0f, 0.0f));
+
+	CGameObject* pTile = CGameObject::LoadGeometryFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "Model/Industry_Field2(1).bin", NULL, Layout::MAP);
+
+	m_ppObjects[1] = new CGameObject();
+	m_ppObjects[1]->SetChild(pTile);
+	m_ppObjects[1]->SetPosition(XMFLOAT3(0.0f, 0.0f, 0.0f));
 
 	CreateShaderVariables(pd3dDevice, pd3dCommandList);
 }
@@ -499,7 +504,7 @@ void CBulletObjectsShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12Graphics
 	m_nObjects = BULLET_NUMBER;
 	m_ppObjects = new CGameObject * [m_nObjects];
 
-	CGameObject* pBullet = CGameObject::LoadGeometryFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "Model/Laser.bin", NULL, Layout::BULLET);
+	CGameObject* pBullet = CGameObject::LoadGeometryFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "Model/BigBullet.bin", NULL, Layout::BULLET);
 	for (int i = 0; i < m_nObjects; i++)
 	{
 		m_ppObjects[i] = new CBullet();
@@ -714,6 +719,45 @@ void CSirenObjectsShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsC
 	m_ppObjects[15]->OnPrepareAnimate();
 	m_ppObjects[15]->objLayer = Layout::SIREN;
 
+
+	CreateShaderVariables(pd3dDevice, pd3dCommandList);
+}
+
+CGeneratorObjectsShader::CGeneratorObjectsShader()
+{
+}
+
+CGeneratorObjectsShader::~CGeneratorObjectsShader()
+{
+}
+
+void CGeneratorObjectsShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, CLoadedModelInfo* pModel, void* pContext)
+{
+	m_nObjects = 3;
+	m_ppObjects = new CGameObject * [m_nObjects];
+
+	CGameObject* pGenerator = CGameObject::LoadGeometryFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "Model/Generator.bin", NULL, Layout::GENERATOR);
+
+	m_ppObjects[0] = new CGenerator();
+	m_ppObjects[0]->SetChild(pGenerator);
+	m_ppObjects[0]->SetPosition(XMFLOAT3(0.0f, 0.0f, -22.82));
+	m_ppObjects[0]->Rotate(0.0f, 0.0f, 0.0f);
+	m_ppObjects[0]->OnPrepareAnimate();
+	m_ppObjects[0]->objLayer = Layout::GENERATOR;
+
+	m_ppObjects[1] = new CGenerator();
+	m_ppObjects[1]->SetChild(pGenerator);
+	m_ppObjects[1]->SetPosition(XMFLOAT3(-22.884, 0.0f, 2.46665f));
+	m_ppObjects[1]->Rotate(0.0f, 90.0f, 0.0f);
+	m_ppObjects[1]->OnPrepareAnimate();
+	m_ppObjects[1]->objLayer = Layout::GENERATOR;
+
+	m_ppObjects[2] = new CGenerator();
+	m_ppObjects[2]->SetChild(pGenerator);
+	m_ppObjects[2]->SetPosition(XMFLOAT3(22.95006, 0.0f, 2.506552f));
+	m_ppObjects[2]->Rotate(0.0f, -90.0f, 0.0f);
+	m_ppObjects[2]->OnPrepareAnimate();
+	m_ppObjects[2]->objLayer = Layout::GENERATOR;
 
 	CreateShaderVariables(pd3dDevice, pd3dCommandList);
 }

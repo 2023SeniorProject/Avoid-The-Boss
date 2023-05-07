@@ -432,7 +432,6 @@ public:
 	virtual void Render(ID3D12GraphicsCommandList *pd3dCommandList, CCamera *pCamera = NULL);
 };
 
-#define BUTTON_ANIM_FRAME 15*10
 
 class CSiren : public CGameObject
 {

@@ -23,15 +23,15 @@ void CBullet::Update(float fTimeElapsed)
 			m_xmf3Velocity = XMFLOAT3(0.0f, 0.0f, 0.0f);
 		}
 		// 5.6 총알 발사 코드
-		/*XMFLOAT3 xmf3Shift = XMFLOAT3(0, 0, 0);
-		xmf3Shift = Vector3::Add(xmf3Shift, m_xmf3Look,
-			m_fSpeed);
-		m_xmf3Velocity = Vector3::Add(m_xmf3Velocity, xmf3Shift);
+		//XMFLOAT3 xmf3Shift = XMFLOAT3(0, 0, 0);
+		//xmf3Shift = Vector3::Add(xmf3Shift, m_xmf3Look,
+		//	BUIIET_DISTANCE);
+		//m_xmf3Velocity = Vector3::Add(m_xmf3Velocity, xmf3Shift);
+		//
+		//XMFLOAT3 xmf3Velocity = Vector3::ScalarProduct(m_xmf3Velocity, fTimeElapsed, false);
+		//SetPosition(Vector3::Add(GetPosition(), xmf3Velocity));
 		
-		XMFLOAT3 xmf3Velocity = Vector3::ScalarProduct(m_xmf3Velocity, fTimeElapsed, false);
-		SetPosition(Vector3::Add(GetPosition(), xmf3Velocity));*/
-		
-		m_fDistance += m_fSpeed;
+		m_fDistance += BULLET_SPEED;
 	}
 }
 

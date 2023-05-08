@@ -133,6 +133,10 @@ void CEmployee::Update(float fTimeElapsed, PLAYER_TYPE ptype)
 	else m_bIsInSwitchArea = false;
 	
 	if (ptype == PLAYER_TYPE::OWNER) m_xmf3Velocity = XMFLOAT3(0.0f, 0.0f, 0.0f);
+	else if (ptype == PLAYER_TYPE::OTHER_PLAYER)
+	{
+		if(!Vector3::IsZero(m_xmf3Velocity)) SetInteractionAnimation(false);
+	}
 }
 void CEmployee::OnInteractionAnimation()
 {

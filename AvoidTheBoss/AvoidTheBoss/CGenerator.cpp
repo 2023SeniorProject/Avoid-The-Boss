@@ -10,6 +10,19 @@ CGenerator::CGenerator()
 	}
 }
 
+void CGenerator::OnPrepareAnimate()
+{
+	m_ppPipe = new CGameObject * [m_nPipe];
+
+	if (m_ppPipe)
+	{
+		m_ppPipe[0] = FindFrame("Generator_Pipe1");
+		m_ppPipe[1] = FindFrame("Generator_Pipe2");
+		m_ppPipe[2] = FindFrame("Generator_Pipe3");
+	}
+	m_pButton = FindFrame("Button001"); //Button -> 통짜 이름
+}
+
 void CGenerator::Animate(float fTimeElapsed)
 {
 	if (m_bSwitchAnimationOn)

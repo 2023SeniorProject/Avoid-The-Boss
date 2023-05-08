@@ -24,7 +24,7 @@ public:
 	std::mutex m_lock;
 
 	CGenerator();
-	virtual ~CGenerator();
+	virtual ~CGenerator() {};
 
 	CGameObject* GetButton() { std::cout << "button pos" << m_pButton->GetPosition().x << m_pButton->GetPosition().y << m_pButton->GetPosition().z << std::endl; return m_pButton; }
 

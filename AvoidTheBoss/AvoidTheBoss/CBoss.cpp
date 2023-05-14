@@ -13,11 +13,12 @@ CBoss::CBoss(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandLis
 	CLoadedModelInfo* pBossModel = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, g_pstrCharactorRefernece[(int)m_nCharacterType], NULL, Layout::PLAYER);
 	SetChild(pBossModel->m_pModelRootObject, true);
 
-	m_pSkinnedAnimationController = new CAnimationController(pd3dDevice, pd3dCommandList, 4, pBossModel);
+	m_pSkinnedAnimationController = new CAnimationController(pd3dDevice, pd3dCommandList, 5, pBossModel);
 	m_pSkinnedAnimationController->SetTrackAnimationSet(0, 0);//Idle
 	m_pSkinnedAnimationController->SetTrackAnimationSet(1, 1);//Run
 	m_pSkinnedAnimationController->SetTrackAnimationSet(2, 2);//Shoot
-	m_pSkinnedAnimationController->SetTrackAnimationSet(3, 3);//RunningShoot
+	m_pSkinnedAnimationController->SetTrackAnimationSet(4, 3);//RunningShoot
+	m_pSkinnedAnimationController->SetTrackAnimationSet(3, 4);//RunningShoot
 
 	//m_pSkinnedAnimationController->SetTrackSpeed(3, 0.83f);
 	m_pSkinnedAnimationController->SetTrackSpeed(2, 0.5f);
@@ -26,6 +27,8 @@ CBoss::CBoss(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandLis
 	m_pSkinnedAnimationController->SetTrackEnable(1, false);
 	m_pSkinnedAnimationController->SetTrackEnable(2, false);
 	m_pSkinnedAnimationController->SetTrackEnable(3, false);
+	m_pSkinnedAnimationController->SetTrackEnable(4, false);
+
 
 	//	m_pSkinnedAnimationController->SetCallbackKeys(1, 2);
 	//#ifdef _WITH_SOUND_RESOURCE

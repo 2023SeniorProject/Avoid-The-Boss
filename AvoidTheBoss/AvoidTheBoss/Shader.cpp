@@ -177,7 +177,7 @@ D3D12_BLEND_DESC CShader::CreateBlendState()
 	return(d3dBlendDesc);
 }
 
-void CShader::CreateShader(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList, ID3D12RootSignature *pd3dGraphicsRootSignature)
+void CShader::CreateShader(ID3D12Device5 *pd3dDevice, ID3D12GraphicsCommandList4   *pd3dCommandList, ID3D12RootSignature *pd3dGraphicsRootSignature)
 {
 	::ZeroMemory(&m_d3dPipelineStateDesc, sizeof(D3D12_GRAPHICS_PIPELINE_STATE_DESC));
 	m_d3dPipelineStateDesc.pRootSignature = pd3dGraphicsRootSignature;
@@ -203,12 +203,12 @@ void CShader::CreateShader(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *
 	if (m_d3dPipelineStateDesc.InputLayout.pInputElementDescs) delete[] m_d3dPipelineStateDesc.InputLayout.pInputElementDescs;
 }
 
-void CShader::OnPrepareRender(ID3D12GraphicsCommandList *pd3dCommandList, int nPipelineState)
+void CShader::OnPrepareRender(ID3D12GraphicsCommandList4   *pd3dCommandList, int nPipelineState)
 {
 	if (m_pd3dPipelineState) pd3dCommandList->SetPipelineState(m_pd3dPipelineState);
 }
 
-void CShader::Render(ID3D12GraphicsCommandList *pd3dCommandList, CCamera *pCamera)
+void CShader::Render(ID3D12GraphicsCommandList4   *pd3dCommandList, CCamera *pCamera)
 {
 	OnPrepareRender(pd3dCommandList);
 }
@@ -352,7 +352,7 @@ CStandardObjectsShader::~CStandardObjectsShader()
 {
 }
 
-void CStandardObjectsShader::BuildObjects(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList, ID3D12RootSignature *pd3dGraphicsRootSignature, CLoadedModelInfo *pModel, void *pContext)
+void CStandardObjectsShader::BuildObjects(ID3D12Device5 *pd3dDevice, ID3D12GraphicsCommandList4   *pd3dCommandList, ID3D12RootSignature *pd3dGraphicsRootSignature, CLoadedModelInfo *pModel, void *pContext)
 {
 }
 
@@ -375,7 +375,9 @@ void CStandardObjectsShader::ReleaseUploadBuffers()
 	for (int j = 0; j < m_nObjects; j++) if (m_ppObjects[j]) m_ppObjects[j]->ReleaseUploadBuffers();
 }
 
-void CStandardObjectsShader::Render(ID3D12GraphicsCommandList *pd3dCommandList, CCamera *pCamera)
+void CStandardObjectsShader::Render(
+	
+	ID3D12GraphicsCommandList4*pd3dCommandList, CCamera *pCamera)
 {
 	CStandardShader::Render(pd3dCommandList, pCamera);
 
@@ -401,7 +403,7 @@ CSkinnedAnimationObjectsShader::~CSkinnedAnimationObjectsShader()
 {
 }
 
-void CSkinnedAnimationObjectsShader::BuildObjects(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList, ID3D12RootSignature *pd3dGraphicsRootSignature, CLoadedModelInfo *pModel, void *pContext)
+void CSkinnedAnimationObjectsShader::BuildObjects(ID3D12Device5 *pd3dDevice, ID3D12GraphicsCommandList4 *pd3dCommandList, ID3D12RootSignature *pd3dGraphicsRootSignature, CLoadedModelInfo *pModel, void *pContext)
 {
 }
 
@@ -424,7 +426,7 @@ void CSkinnedAnimationObjectsShader::ReleaseUploadBuffers()
 	for (int j = 0; j < m_nObjects; j++) if (m_ppObjects[j]) m_ppObjects[j]->ReleaseUploadBuffers();
 }
 
-void CSkinnedAnimationObjectsShader::Render(ID3D12GraphicsCommandList *pd3dCommandList, CCamera *pCamera)
+void CSkinnedAnimationObjectsShader::Render(ID3D12GraphicsCommandList4      *pd3dCommandList, CCamera *pCamera)
 {
 	CSkinnedAnimationStandardShader::Render(pd3dCommandList, pCamera);
 
@@ -448,7 +450,7 @@ CMapObjectsShader::~CMapObjectsShader()
 {
 }
 
-void CMapObjectsShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, CLoadedModelInfo* pModel, void* pContext)
+void CMapObjectsShader::BuildObjects(ID3D12Device5 * pd3dDevice,ID3D12GraphicsCommandList4     * pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, CLoadedModelInfo* pModel, void* pContext)
 {
 	m_nObjects = 2;
 	m_ppObjects = new CGameObject * [m_nObjects];
@@ -476,7 +478,7 @@ CBoundsObjectsShader::~CBoundsObjectsShader()
 {
 }
 
-void CBoundsObjectsShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, CLoadedModelInfo* pModel, void* pContext)
+void CBoundsObjectsShader::BuildObjects(ID3D12Device5* pd3dDevice,ID3D12GraphicsCommandList4     * pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, CLoadedModelInfo* pModel, void* pContext)
 {
 	m_nObjects = 1;
 	m_ppObjects = new CGameObject * [m_nObjects];
@@ -499,7 +501,7 @@ CBulletObjectsShader::~CBulletObjectsShader()
 {
 }
 
-void CBulletObjectsShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, CLoadedModelInfo* pModel, void* pContext)
+void CBulletObjectsShader::BuildObjects(ID3D12Device5* pd3dDevice,ID3D12GraphicsCommandList4     * pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, CLoadedModelInfo* pModel, void* pContext)
 {
 	m_nObjects = BULLET_NUMBER;
 	m_ppObjects = new CGameObject * [m_nObjects];
@@ -516,7 +518,7 @@ void CBulletObjectsShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12Graphics
 	CreateShaderVariables(pd3dDevice, pd3dCommandList);
 }
 
-void CBulletObjectsShader::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera)
+void CBulletObjectsShader::Render(ID3D12GraphicsCommandList4  * pd3dCommandList, CCamera* pCamera)
 {
 	CStandardShader::Render(pd3dCommandList, pCamera);
 	for (int j = 0; j < m_nObjects; j++)
@@ -542,7 +544,7 @@ CDoorObjectsShader::~CDoorObjectsShader()
 {
 }
 
-void CDoorObjectsShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, CLoadedModelInfo* pModel, void* pContext)
+void CDoorObjectsShader::BuildObjects(ID3D12Device5* pd3dDevice, ID3D12GraphicsCommandList4  * pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, CLoadedModelInfo* pModel, void* pContext)
 {
 	m_nObjects = 5;
 	m_ppObjects = new CGameObject * [m_nObjects];
@@ -596,7 +598,7 @@ CSirenObjectsShader::~CSirenObjectsShader()
 {
 }
 
-void CSirenObjectsShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, CLoadedModelInfo* pModel, void* pContext)
+void CSirenObjectsShader::BuildObjects(ID3D12Device5* pd3dDevice, ID3D12GraphicsCommandList4  * pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, CLoadedModelInfo* pModel, void* pContext)
 {
 	m_nObjects = 16;
 	m_ppObjects = new CGameObject * [m_nObjects];
@@ -731,7 +733,7 @@ CGeneratorObjectsShader::~CGeneratorObjectsShader()
 {
 }
 
-void CGeneratorObjectsShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, CLoadedModelInfo* pModel, void* pContext)
+void CGeneratorObjectsShader::BuildObjects(ID3D12Device5* pd3dDevice, ID3D12GraphicsCommandList4  * pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, CLoadedModelInfo* pModel, void* pContext)
 {
 	m_nObjects = 3;
 	m_ppObjects = new CGameObject * [m_nObjects];

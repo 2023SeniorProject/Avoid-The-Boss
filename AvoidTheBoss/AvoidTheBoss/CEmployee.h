@@ -7,7 +7,9 @@ public:
 private:
 	bool m_bIsInSwitchArea = false;
 public:
-	CEmployee(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, CHARACTER_TYPE nType);
+	CEmployee(ID3D12Device5* pd3dDevice, 
+		ID3D12GraphicsCommandList4
+		* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, CHARACTER_TYPE nType);
 	virtual ~CEmployee();
 
 	virtual CCamera* ChangeCamera(DWORD nNewCameraMode, float fTimeElapsed);

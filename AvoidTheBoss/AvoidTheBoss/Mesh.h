@@ -29,7 +29,7 @@ class CGameObject;
 class CMesh
 {
 public:
-	CMesh(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList);
+	CMesh(ID3D12Device5 *pd3dDevice,	ID3D12GraphicsCommandList4* pd3dCommandList);
 	virtual ~CMesh();
 
 private:
@@ -72,28 +72,28 @@ protected:
 public:
 	UINT GetType() { return(m_nType); }
 
-	virtual void CreateShaderVariables(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList) { }
-	virtual void UpdateShaderVariables(ID3D12GraphicsCommandList *pd3dCommandList) { }
+	virtual void CreateShaderVariables(ID3D12Device5 *pd3dDevice, ID3D12GraphicsCommandList4* pd3dCommandList) { }
+	virtual void UpdateShaderVariables(ID3D12GraphicsCommandList4  *pd3dCommandList) { }
 	virtual void ReleaseShaderVariables() { }
 
 	virtual void ReleaseUploadBuffers();
 
-	virtual void OnPreRender(ID3D12GraphicsCommandList *pd3dCommandList, void *pContext);
-	virtual void Render(ID3D12GraphicsCommandList *pd3dCommandList, int nSubSet);
-	virtual void OnPostRender(ID3D12GraphicsCommandList *pd3dCommandList, void *pContext);
+	virtual void OnPreRender(ID3D12GraphicsCommandList4  *pd3dCommandList, void *pContext);
+	virtual void Render(ID3D12GraphicsCommandList4  *pd3dCommandList, int nSubSet);
+	virtual void OnPostRender(ID3D12GraphicsCommandList4  *pd3dCommandList, void *pContext);
 };
 
 class CSkyBoxMesh : public CMesh
 {
 public:
-	CSkyBoxMesh(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList, float fWidth = 20.0f, float fHeight = 20.0f, float fDepth = 20.0f);
+	CSkyBoxMesh(ID3D12Device5 *pd3dDevice, ID3D12GraphicsCommandList4  *pd3dCommandList, float fWidth = 20.0f, float fHeight = 20.0f, float fDepth = 20.0f);
 	virtual ~CSkyBoxMesh();
 };
 
 class CStandardMesh : public CMesh
 {
 public:
-	CStandardMesh(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList);
+	CStandardMesh(ID3D12Device5 *pd3dDevice, ID3D12GraphicsCommandList4  *pd3dCommandList);
 	virtual ~CStandardMesh();
 
 protected:
@@ -126,11 +126,11 @@ protected:
 	D3D12_VERTEX_BUFFER_VIEW		m_d3dBiTangentBufferView;
 
 public:
-	void LoadMeshFromFile(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList, FILE *pInFile, CGameObject* pGameobject, Layout objType);
+	void LoadMeshFromFile(ID3D12Device5 *pd3dDevice, ID3D12GraphicsCommandList4  *pd3dCommandList, FILE *pInFile, CGameObject* pGameobject, Layout objType);
 
 	virtual void ReleaseUploadBuffers();
 
-	virtual void OnPreRender(ID3D12GraphicsCommandList *pd3dCommandList, void *pContext);
+	virtual void OnPreRender(ID3D12GraphicsCommandList4  *pd3dCommandList, void *pContext);
 };
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -140,7 +140,7 @@ public:
 class CSkinnedMesh : public CStandardMesh
 {
 public:
-	CSkinnedMesh(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList);
+	CSkinnedMesh(ID3D12Device5 *pd3dDevice, ID3D12GraphicsCommandList4  *pd3dCommandList);
 	virtual ~CSkinnedMesh();
 
 protected:
@@ -173,13 +173,13 @@ public:
 
 public:
 	void PrepareSkinning(CGameObject *pModelRootObject);
-	void LoadSkinInfoFromFile(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList, FILE *pInFile);
+	void LoadSkinInfoFromFile(ID3D12Device5 *pd3dDevice, ID3D12GraphicsCommandList4  *pd3dCommandList, FILE *pInFile);
 
-	virtual void CreateShaderVariables(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList);
-	virtual void UpdateShaderVariables(ID3D12GraphicsCommandList *pd3dCommandList);
+	virtual void CreateShaderVariables(ID3D12Device5 *pd3dDevice, ID3D12GraphicsCommandList4  *pd3dCommandList);
+	virtual void UpdateShaderVariables(ID3D12GraphicsCommandList4  *pd3dCommandList);
 	virtual void ReleaseShaderVariables();
 
 	virtual void ReleaseUploadBuffers();
 
-	virtual void OnPreRender(ID3D12GraphicsCommandList *pd3dCommandList, void *pContext);
+	virtual void OnPreRender(ID3D12GraphicsCommandList4  *pd3dCommandList, void *pContext);
 };

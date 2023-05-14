@@ -2,7 +2,10 @@
 #include "GameObject.h"
 #include "CBullet.h"
 
-//CBullet::CBullet(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature)
+//CBullet::CBullet(ID3D12Device5* pd3dDevice, 
+// 
+// 
+// * pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature)
 //{
 //	CLoadedModelInfo* pBulletModel = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "Model/Bullet.bin", NULL, Layout::BULLET);
 //	SetChild(pBulletModel->m_pModelRootObject, true);

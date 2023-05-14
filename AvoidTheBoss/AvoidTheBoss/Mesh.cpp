@@ -7,7 +7,7 @@
 #include "GameObject.h"
 
 
-CMesh::CMesh(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList)
+CMesh::CMesh(ID3D12Device5 *pd3dDevice, ID3D12GraphicsCommandList4*pd3dCommandList)
 {
 }
 
@@ -48,12 +48,12 @@ void CMesh::ReleaseUploadBuffers()
 	}
 }
 
-void CMesh::OnPreRender(ID3D12GraphicsCommandList *pd3dCommandList, void *pContext)
+void CMesh::OnPreRender(ID3D12GraphicsCommandList4  *pd3dCommandList, void *pContext)
 {
 	pd3dCommandList->IASetVertexBuffers(m_nSlot, 1, &m_d3dPositionBufferView);
 }
 
-void CMesh::Render(ID3D12GraphicsCommandList *pd3dCommandList, int nSubSet)
+void CMesh::Render(ID3D12GraphicsCommandList4  *pd3dCommandList, int nSubSet)
 {
 	UpdateShaderVariables(pd3dCommandList);
 
@@ -72,13 +72,13 @@ void CMesh::Render(ID3D12GraphicsCommandList *pd3dCommandList, int nSubSet)
 	}
 }
 
-void CMesh::OnPostRender(ID3D12GraphicsCommandList *pd3dCommandList, void *pContext)
+void CMesh::OnPostRender(ID3D12GraphicsCommandList4  *pd3dCommandList, void *pContext)
 {
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //
-CSkyBoxMesh::CSkyBoxMesh(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList, float fWidth, float fHeight, float fDepth) : CMesh(pd3dDevice, pd3dCommandList)
+CSkyBoxMesh::CSkyBoxMesh(ID3D12Device5 *pd3dDevice, ID3D12GraphicsCommandList4  *pd3dCommandList, float fWidth, float fHeight, float fDepth) : CMesh(pd3dDevice, pd3dCommandList)
 {
 	m_nVertices = 36;
 	m_d3dPrimitiveTopology = D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST;
@@ -142,7 +142,7 @@ CSkyBoxMesh::~CSkyBoxMesh()
 
 /////////////////////////////////////////////////////////////////////////////////////////////////
 //
-CStandardMesh::CStandardMesh(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList) : CMesh(pd3dDevice, pd3dCommandList)
+CStandardMesh::CStandardMesh(ID3D12Device5 *pd3dDevice, ID3D12GraphicsCommandList4  *pd3dCommandList) : CMesh(pd3dDevice, pd3dCommandList)
 {
 }
 
@@ -178,7 +178,7 @@ void CStandardMesh::ReleaseUploadBuffers()
 	m_pd3dBiTangentUploadBuffer = NULL;
 }
 
-void CStandardMesh::LoadMeshFromFile(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList, FILE *pInFile,CGameObject* pGameobject,Layout objType)
+void CStandardMesh::LoadMeshFromFile(ID3D12Device5 *pd3dDevice, ID3D12GraphicsCommandList4  *pd3dCommandList, FILE *pInFile,CGameObject* pGameobject,Layout objType)
 {
 	char pstrToken[64] = { '\0' };
 	int nPositions = 0, nColors = 0, nNormals = 0, nTangents = 0, nBiTangents = 0, nTextureCoords = 0, nIndices = 0, nSubMeshes = 0, nSubIndices = 0;
@@ -348,7 +348,7 @@ void CStandardMesh::LoadMeshFromFile(ID3D12Device *pd3dDevice, ID3D12GraphicsCom
 	}
 }
 
-void CStandardMesh::OnPreRender(ID3D12GraphicsCommandList *pd3dCommandList, void *pContext)
+void CStandardMesh::OnPreRender(ID3D12GraphicsCommandList4  *pd3dCommandList, void *pContext)
 {
 	D3D12_VERTEX_BUFFER_VIEW pVertexBufferViews[5] = { m_d3dPositionBufferView, m_d3dTextureCoord0BufferView, m_d3dNormalBufferView, m_d3dTangentBufferView, m_d3dBiTangentBufferView };
 	pd3dCommandList->IASetVertexBuffers(m_nSlot, 5, pVertexBufferViews);
@@ -356,7 +356,7 @@ void CStandardMesh::OnPreRender(ID3D12GraphicsCommandList *pd3dCommandList, void
 
 /////////////////////////////////////////////////////////////////////////////////////////////////
 //
-CSkinnedMesh::CSkinnedMesh(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList) : CStandardMesh(pd3dDevice, pd3dCommandList)
+CSkinnedMesh::CSkinnedMesh(ID3D12Device5 *pd3dDevice, ID3D12GraphicsCommandList4  *pd3dCommandList) : CStandardMesh(pd3dDevice, pd3dCommandList)
 {
 }
 
@@ -377,11 +377,11 @@ CSkinnedMesh::~CSkinnedMesh()
 	ReleaseShaderVariables();
 }
 
-void CSkinnedMesh::CreateShaderVariables(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList)
+void CSkinnedMesh::CreateShaderVariables(ID3D12Device5 *pd3dDevice, ID3D12GraphicsCommandList4  *pd3dCommandList)
 {
 }
 
-void CSkinnedMesh::UpdateShaderVariables(ID3D12GraphicsCommandList *pd3dCommandList)
+void CSkinnedMesh::UpdateShaderVariables(ID3D12GraphicsCommandList4  *pd3dCommandList)
 {
 	if (m_pd3dcbBindPoseBoneOffsets)
 	{
@@ -424,7 +424,7 @@ void CSkinnedMesh::PrepareSkinning(CGameObject *pModelRootObject)
 	}
 }
 
-void CSkinnedMesh::LoadSkinInfoFromFile(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList, FILE *pInFile)
+void CSkinnedMesh::LoadSkinInfoFromFile(ID3D12Device5 *pd3dDevice, ID3D12GraphicsCommandList4  *pd3dCommandList, FILE *pInFile)
 {
 	char pstrToken[64] = { '\0' };
 	UINT nReads = 0;
@@ -516,7 +516,7 @@ void CSkinnedMesh::LoadSkinInfoFromFile(ID3D12Device *pd3dDevice, ID3D12Graphics
 	}
 }
 
-void CSkinnedMesh::OnPreRender(ID3D12GraphicsCommandList *pd3dCommandList, void *pContext)
+void CSkinnedMesh::OnPreRender(ID3D12GraphicsCommandList4  *pd3dCommandList, void *pContext)
 {
 	D3D12_VERTEX_BUFFER_VIEW pVertexBufferViews[7] = { m_d3dPositionBufferView, m_d3dTextureCoord0BufferView, m_d3dNormalBufferView, m_d3dTangentBufferView, m_d3dBiTangentBufferView, m_d3dBoneIndexBufferView, m_d3dBoneWeightBufferView };
 	pd3dCommandList->IASetVertexBuffers(m_nSlot, 7, pVertexBufferViews);

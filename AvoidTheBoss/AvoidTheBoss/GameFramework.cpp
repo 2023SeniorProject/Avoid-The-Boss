@@ -219,13 +219,13 @@ void CGameFramework::CreateDirect3DDevice()
 		DXGI_ADAPTER_DESC1 dxgiAdapterDesc;
 		pd3dAdapter->GetDesc1(&dxgiAdapterDesc);
 		if (dxgiAdapterDesc.Flags & DXGI_ADAPTER_FLAG_SOFTWARE) continue;
-		if (SUCCEEDED(D3D12CreateDevice(pd3dAdapter, D3D_FEATURE_LEVEL_12_0, _uuidof(ID3D12Device), (void**)&m_pd3dDevice))) break;
+		if (SUCCEEDED(D3D12CreateDevice(pd3dAdapter, D3D_FEATURE_LEVEL_12_0, _uuidof(ID3D12Device5), (void**)&m_pd3dDevice))) break;
 	}
 
 	if (!pd3dAdapter)
 	{
 		m_pdxgiFactory->EnumWarpAdapter(_uuidof(IDXGIFactory4), (void**)&pd3dAdapter);
-		hResult = D3D12CreateDevice(pd3dAdapter, D3D_FEATURE_LEVEL_12_0, _uuidof(ID3D12Device), (void**)&m_pd3dDevice);
+		hResult = D3D12CreateDevice(pd3dAdapter, D3D_FEATURE_LEVEL_12_0, _uuidof(ID3D12Device5), (void**)&m_pd3dDevice);
 	}
 
 	D3D12_FEATURE_DATA_MULTISAMPLE_QUALITY_LEVELS d3dMsaaQualityLevels;
@@ -265,7 +265,7 @@ void CGameFramework::CreateCommandQueueAndList()
 	//직접(Direct) 명령 할당자를 생성한다.
 
 	hResult = m_pd3dDevice->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT,
-		m_pd3dCommandAllocator, NULL, __uuidof(ID3D12GraphicsCommandList), (void
+		m_pd3dCommandAllocator, NULL, __uuidof(ID3D12GraphicsCommandList4), (void
 			**)&m_pd3dCommandList);
 	//직접(Direct) 명령 리스트를 생성한다.
 

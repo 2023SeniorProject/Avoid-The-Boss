@@ -18,7 +18,7 @@ private:
 	bool		m_OnShoot = false;
 public:
 	CBullet() {};
-	//CBullet(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature);
+	//CBullet(ID3D12Device5* pd3dDevice, ID3D12GraphicsCommandList4* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature);
 	virtual ~CBullet();
 
 	virtual void Update(float fTimeElapsed);

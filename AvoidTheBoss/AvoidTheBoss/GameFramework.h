@@ -22,8 +22,8 @@ private:
 	IDXGIFactory4*				m_pdxgiFactory = NULL;
 	//DXGI 팩토리 인터페이스에 대한 포인터이다. 
 	IDXGISwapChain3*			m_pdxgiSwapChain = NULL;
-	//스왑 체인 인터페이스에 대한 포인터이다. 주로 디스플레이를 제어하기 위하여 필요하다. 
-	ID3D12Device*				m_pd3dDevice = NULL;
+	//스왑 체인 인터페이스에 대한 포인터이다. 주로 디스플레이를 제어하기 위하여 필요하다.		
+	ID3D12Device5*				m_pd3dDevice = NULL;								//5.14 광선추적 Device5로 버전 변경
 	//Direct3D 디바이스 인터페이스에 대한 포인터이다. 주로 리소스를 생성하기 위하여 필요하다.
 
 	bool						m_bMsaa4xEnable = false;
@@ -47,7 +47,7 @@ private:
 
 	ID3D12CommandQueue*			m_pd3dCommandQueue;
 	ID3D12CommandAllocator*		m_pd3dCommandAllocator;
-	ID3D12GraphicsCommandList*	m_pd3dCommandList;
+	ID3D12GraphicsCommandList4*	m_pd3dCommandList;		//5.14 광선추적 버전 4로 변경
 	//명령 큐, 명령 할당자, 명령 리스트 인터페이스 포인터이다.
 
 #if defined(_DEBUG)

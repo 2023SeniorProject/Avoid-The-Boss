@@ -142,7 +142,7 @@ void CPlayer::OnPlayerUpdateCallback()
 	
 }
 
-void CPlayer::CreateShaderVariables(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList)
+void CPlayer::CreateShaderVariables(ID3D12Device5* pd3dDevice, ID3D12GraphicsCommandList4* pd3dCommandList)
 {
 	if (m_pCamera) m_pCamera->CreateShaderVariables(pd3dDevice, pd3dCommandList);
 
@@ -153,7 +153,8 @@ void CPlayer::ReleaseShaderVariables()
 	if (m_pCamera) m_pCamera->ReleaseShaderVariables();
 }
 
-void CPlayer::UpdateShaderVariables(ID3D12GraphicsCommandList* pd3dCommandList)
+void CPlayer::UpdateShaderVariables(
+	ID3D12GraphicsCommandList4* pd3dCommandList)
 {
 }
 
@@ -194,7 +195,7 @@ void CPlayer::OnPrepareRender()
 	m_xmf4x4ToParent = Matrix4x4::Multiply(XMMatrixScaling(m_xmf3Scale.x, m_xmf3Scale.y, m_xmf3Scale.z), m_xmf4x4ToParent);
 }
 
-void CPlayer::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera)
+void CPlayer::Render(ID3D12GraphicsCommandList4 * pd3dCommandList, CCamera* pCamera)
 {
 	DWORD nCameraMode = (pCamera) ? pCamera->GetMode() : 0x03;
 

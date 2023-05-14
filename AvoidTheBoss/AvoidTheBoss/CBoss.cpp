@@ -3,7 +3,9 @@
 #include "CBullet.h"
 
 
-CBoss::CBoss(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature)
+CBoss::CBoss(ID3D12Device5* pd3dDevice, 
+	
+	ID3D12GraphicsCommandList4  * pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature)
 {
 	m_type = 0;
 	m_pCamera = ChangeCamera(THIRD_PERSON_CAMERA, 0.0f);

@@ -76,10 +76,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
                ::DispatchMessage(&msg);
            }
        }
-       else
-       {
-          mainGame.FrameAdvance(); // 처리할 윈도우 메세지가 큐에 없을 때 게임프로그램이 CPU사용
-       }
+        mainGame.FrameAdvance(); // 처리할 윈도우 메세지가 큐에 없을 때 게임프로그램이 CPU사용
    }
  
   

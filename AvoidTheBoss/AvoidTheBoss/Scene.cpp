@@ -1,6 +1,11 @@
 #include "pch.h"
 #include "Scene.h"
 #include "GameFramework.h"
+<<<<<<< Updated upstream
+=======
+#include "CJobQueue.h"
+#include "InputManager.h"
+>>>>>>> Stashed changes
 #include "clientIocpCore.h"
 
 ID3D12DescriptorHeap* CGameScene::m_pd3dCbvSrvDescriptorHeap = NULL;
@@ -182,7 +187,21 @@ void CGameScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandLis
 	m_pCamera = _players[0]->GetCamera();
 }
 
+<<<<<<< Updated upstream
 void CGameScene::ProcessInput(HWND hWnd)
+=======
+void CGameScene::ProcessInput(HWND& hWnd)
+{
+	if (::GetActiveWindow() != hWnd) return;
+	_players[_playerIdx]->ProcessInput(m_lastKeyInput);
+	if (InputManager::GetKeyStatus(KEY_TYPE::F) == (uint8)KEY_STATUS::KEY_PRESS) // 상호작용 키를 처음 누른 경우 한정 패킷 보내기
+	{
+	}
+	
+}
+
+void CGameScene::Update(HWND hWnd)
+>>>>>>> Stashed changes
 {
 	_timer.Tick(0);
 	static UCHAR pKeyBuffer[256];
@@ -204,6 +223,13 @@ void CGameScene::ProcessInput(HWND hWnd)
 		if (pKeyBuffer[0x44] & 0xF0) dwDirection |= DIR_RIGHT;
 		else if (pKeyBuffer[0x64] & 0xF0) dwDirection |= DIR_RIGHT;
 	}
+<<<<<<< Updated upstream
+=======
+	DWORD dwDirection = 0;
+	
+	UCHAR pKeyBuffer[256];
+	if(::GetKeyboardState(pKeyBuffer));
+>>>>>>> Stashed changes
 
 	float cxDelta = 0.0f, cyDelta = 0.0f;
 	POINT ptCursorPos;
@@ -282,6 +308,7 @@ void CGameScene::ProcessInput(HWND hWnd)
 	::SetWindowText(hWnd, str.c_str());
 }
 
+<<<<<<< Updated upstream
 
 bool CGameScene::CollisionCheck()
 {
@@ -289,6 +316,8 @@ bool CGameScene::CollisionCheck()
 	_players[_playerIdx]->m_playerBV.Radius = 3.0f;
 	return false;
 }
+=======
+>>>>>>> Stashed changes
 
 
 
@@ -551,6 +580,11 @@ void CGameScene::ReleaseUploadBuffers()
 	for (int i = 0; i < m_nHierarchicalGameObjects; i++) m_ppHierarchicalGameObjects[i]->ReleaseUploadBuffers();
 }
 
+<<<<<<< Updated upstream
+=======
+
+
+>>>>>>> Stashed changes
 void CGameScene::CreateCbvSrvDescriptorHeaps(ID3D12Device* pd3dDevice, int nConstantBufferViews, int nShaderResourceViews)
 {
 	D3D12_DESCRIPTOR_HEAP_DESC d3dDescriptorHeapDesc;

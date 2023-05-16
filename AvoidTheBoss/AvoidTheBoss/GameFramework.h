@@ -8,6 +8,11 @@
 class CGameFramework
 {
 	friend class CSession;
+<<<<<<< Updated upstream
+=======
+	friend class CEmployee;
+	friend class CGameScene;
+>>>>>>> Stashed changes
 private:
 	HINSTANCE m_hInstance;
 	HWND m_hWnd;
@@ -94,13 +99,15 @@ public:
 
 	//프레임워크의 핵심(사용자 입력, 애니메이션, 렌더링)을 구성하는 함수이다. 
 	void ProcessInput();
+	void UpdateObject();
 	void AnimateObjects();
 	void FrameAdvance();
 
 	bool CollisionCheck();
 
 	void WaitForGpuComplete();
-	//CPU와 GPU를 동기화하는 함수이다. 
+	//CPU와 GPU를 동기화하는 함수이다.
+	void Render();
 	void MoveToNextFrame();
 
 	void OnProcessingMouseMessage(HWND hWnd, UINT nMessageID, WPARAM wParam, LPARAM

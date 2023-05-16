@@ -37,6 +37,39 @@
     <ClCompile Include="SceneInterface.cpp">
       <Filter>SceneInterface</Filter>
     </ClCompile>
+<<<<<<< Updated upstream
+=======
+    <ClCompile Include="CBullet.cpp">
+      <Filter>GameObject</Filter>
+    </ClCompile>
+    <ClCompile Include="CBoss.cpp">
+      <Filter>Player\BOSS</Filter>
+    </ClCompile>
+    <ClCompile Include="CEmployee.cpp">
+      <Filter>Player\EMPLOYEE</Filter>
+    </ClCompile>
+    <ClCompile Include="CGenerator.cpp">
+      <Filter>GameObject</Filter>
+    </ClCompile>
+    <ClCompile Include="ClientSession.cpp">
+      <Filter>ForClient\ClientSession</Filter>
+    </ClCompile>
+    <ClCompile Include="CollisionDetector.cpp">
+      <Filter>Physics</Filter>
+    </ClCompile>
+    <ClCompile Include="ClientPacketEvent.cpp">
+      <Filter>PacketEvent</Filter>
+    </ClCompile>
+    <ClCompile Include="CJobQueue.cpp">
+      <Filter>JobQueue</Filter>
+    </ClCompile>
+    <ClCompile Include="clientIocpCore.cpp">
+      <Filter>ForClient\IocpCore</Filter>
+    </ClCompile>
+    <ClCompile Include="InputManager.cpp">
+      <Filter>Mananger</Filter>
+    </ClCompile>
+>>>>>>> Stashed changes
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameObject.h">
@@ -82,6 +115,39 @@
     <ClInclude Include="Scene.h">
       <Filter>GameScene</Filter>
     </ClInclude>
+<<<<<<< Updated upstream
+=======
+    <ClInclude Include="CBullet.h">
+      <Filter>GameObject</Filter>
+    </ClInclude>
+    <ClInclude Include="CBoss.h">
+      <Filter>Player\BOSS</Filter>
+    </ClInclude>
+    <ClInclude Include="CEmployee.h">
+      <Filter>Player\EMPLOYEE</Filter>
+    </ClInclude>
+    <ClInclude Include="CGenerator.h">
+      <Filter>GameObject</Filter>
+    </ClInclude>
+    <ClInclude Include="ClientSession.h">
+      <Filter>ForClient\ClientSession</Filter>
+    </ClInclude>
+    <ClInclude Include="clientIocpCore.h">
+      <Filter>ForClient\IocpCore</Filter>
+    </ClInclude>
+    <ClInclude Include="CollisionDetector.h">
+      <Filter>Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="ClientPacketEvent.h">
+      <Filter>PacketEvent</Filter>
+    </ClInclude>
+    <ClInclude Include="CJobQueue.h">
+      <Filter>JobQueue</Filter>
+    </ClInclude>
+    <ClInclude Include="InputManager.h">
+      <Filter>Mananger</Filter>
+    </ClInclude>
+>>>>>>> Stashed changes
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AvoidTheBoss.cpp">
@@ -313,6 +379,36 @@
     <Filter Include="Textures">
       <UniqueIdentifier>{f34dc00f-c3c5-46e0-9b02-019005ed489b}</UniqueIdentifier>
     </Filter>
+<<<<<<< Updated upstream
+=======
+    <Filter Include="Player\BOSS">
+      <UniqueIdentifier>{d57d9bdd-9df7-4d6d-9795-3ef2c8ed98b5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Player\EMPLOYEE">
+      <UniqueIdentifier>{c925e172-b1e8-4fa0-8725-2a71f2dee802}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ForClient">
+      <UniqueIdentifier>{eef5b8c8-2750-4883-b424-1f76a001346d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ForClient\ClientSession">
+      <UniqueIdentifier>{b14711bd-5e60-4f7a-aa97-db4ecafd7931}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ForClient\IocpCore">
+      <UniqueIdentifier>{98cfeba8-062d-4d76-88ef-d41e0396c086}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Physics">
+      <UniqueIdentifier>{73cebed3-babc-4eca-937c-352c470779db}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="PacketEvent">
+      <UniqueIdentifier>{14fdf138-71b4-4f50-a9e8-eafec120a2c8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="JobQueue">
+      <UniqueIdentifier>{c1aa5372-2438-4231-acce-d36167578b94}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Mananger">
+      <UniqueIdentifier>{f06f0dab-99ab-423e-b1d6-855d105af5a6}</UniqueIdentifier>
+    </Filter>
+>>>>>>> Stashed changes
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Shaders.hlsl">

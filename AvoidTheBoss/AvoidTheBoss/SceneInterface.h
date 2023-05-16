@@ -1,5 +1,8 @@
 #pragma once
 enum SceneInfo : int8 { LOGIN = 77,LOBBY = 78,ROOM = 79,GAMEROOM = 80};
+
+class CCamera;
+
 class SceneInterface
 {
 	friend class ClientIocpCore;
@@ -20,6 +23,12 @@ public:
 		return;
 	};
 
+<<<<<<< Updated upstream
 	virtual void ProcessInput(HWND hWnd) {}
+=======
+	virtual void ProcessInput(HWND& hWnd) {}
+	virtual void Update(HWND hWnd) {}
+	virtual void Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera) {}
+>>>>>>> Stashed changes
 };
 

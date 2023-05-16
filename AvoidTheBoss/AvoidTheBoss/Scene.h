@@ -59,6 +59,7 @@ public:
 	ID3D12RootSignature* CreateGraphicsRootSignature(ID3D12Device* pd3dDevice);
 	ID3D12RootSignature* GetGraphicsRootSignature() { return(m_pd3dGraphicsRootSignature); }
 
+<<<<<<< Updated upstream
 	virtual void ProcessInput(HWND hWnd);
 	void AnimateObjects();
 	void Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera);
@@ -67,12 +68,36 @@ public:
 	void ReleaseUploadBuffers();
 
 	CPlayer* GetScenePlayer(const int16 sid) 
+=======
+	
+	
+	
+	void AnimateObjects();
+	
+	void ReleaseUploadBuffers();
+	void ChangeMyPlayerCamera() 
+	{
+		_players[_playerIdx]->OnChangeCamera(FIRST_PERSON_CAMERA, 0.f);
+		m_pCamera = _players[_playerIdx]->GetCamera();
+		m_pd3dcbLights->Map(0, NULL, (void**)&m_pcbMappedLights);
+	}
+public : // SceneInterface 상속 함수
+	virtual void ProcessInput(HWND& hWnd);
+	virtual void Update(HWND hWnd);
+	virtual void Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera);
+public: // 오승담 작성 함수
+	CPlayer* GetScenePlayer(const int32 sid) 
+>>>>>>> Stashed changes
 	{ 
 		for (int i = 0; i < PLAYERNUM; ++i)
 		{
 			if (_players[i]->m_sid == sid) return _players[i];
 		}
 	}
+<<<<<<< Updated upstream
+=======
+	void AddEvent(queueEvent*, float);
+>>>>>>> Stashed changes
 public:
 	Timer _timer;
 //protected:
@@ -105,6 +130,27 @@ public:
 	ID3D12Resource*						m_pd3dcbLights = NULL;
 	LIGHTS*								m_pcbMappedLights = NULL;
 
+<<<<<<< Updated upstream
+=======
+// ========== 서버 처리를 위해 사용하는 변수들 ==============
+public: // 씬에 있는 오브젝트 관련 변수
+	CPlayer*					_players[4];
+	int16						_playerIdx = 0;
+	int16						m_lastKeyInput = 0;
+	int							nSwitch = 3;
+	CGenerator**				m_ppSwitches = NULL;
+	Atomic<int32>				m_ActiveSwitchCnt = 0; // 활성화 된 스위치 카운트;
+
+	bool						m_bIsExitReady = false;
+public:
+	Scheduler* _jobQueue;
+	Scheduler* _DelayjobQueue;
+	std::shared_mutex _jobQueueLock;
+	Atomic<uint8> _curFrameIdx;
+	int32 m_cid = -1;
+	int32 m_sid = -1;
+// ========================================================
+>>>>>>> Stashed changes
 protected:
 	ID3D12RootSignature* m_pd3dGraphicsRootSignature = NULL;
 

@@ -164,16 +164,38 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="AcceptManager.cpp" />
+    <ClCompile Include="CollisionDetector.cpp" />
+    <ClCompile Include="CSIocpCore.cpp" />
+    <ClCompile Include="JobQueue.cpp" />
     <ClCompile Include="newMain.cpp" />
+    <ClCompile Include="OBDC_MGR.cpp" />
+    <ClCompile Include="packetEvent.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="PlayerInfo.cpp" />
+    <ClCompile Include="RoomManager.cpp" />
+    <ClCompile Include="Session.cpp" />
+    <ClCompile Include="SwitchInfo.cpp" />
+    <ClCompile Include="WorldRewinder.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="AcceptManager.h" />
+    <ClInclude Include="CollisionDetector.h" />
+    <ClInclude Include="CSIocpCore.h" />
+    <ClInclude Include="JobQueue.h" />
+    <ClInclude Include="OBDC_MGR.h" />
+    <ClInclude Include="packetEvent.h" />
     <ClInclude Include="pch.h" />
+    <ClInclude Include="PlayerInfo.h" />
+    <ClInclude Include="RoomManager.h" />
+    <ClInclude Include="Session.h" />
+    <ClInclude Include="SwitchInfo.h" />
+    <ClInclude Include="WorldRewinder.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

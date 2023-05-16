@@ -1,8 +1,12 @@
 #pragma once
-#include "WorldRewinder.h"
+#include "CTimer.h"
 #include "SceneInterface.h"
 #include "Shader.h"
 #include "Player.h"
+#include "CEmployee.h"
+#include "CBoss.h"
+#include "CGenerator.h" // 스위치 분리
+#include "ClientPacketEvent.h"
 
 #define MAX_LIGHTS			16 
 
@@ -10,6 +14,7 @@
 #define SPOT_LIGHT			2
 #define DIRECTIONAL_LIGHT	3
 
+class Scheduler;
 struct LIGHT
 {
 	XMFLOAT4				m_xmf4Ambient;
@@ -34,10 +39,10 @@ struct LIGHTS
 	int						m_nLights;
 };
 
-
 class CGameScene : public SceneInterface
 {
 	friend class CSession;
+	friend class queueEvent;
 public:
 	CGameScene();
 	~CGameScene();
@@ -59,7 +64,6 @@ public:
 	ID3D12RootSignature* CreateGraphicsRootSignature(ID3D12Device* pd3dDevice);
 	ID3D12RootSignature* GetGraphicsRootSignature() { return(m_pd3dGraphicsRootSignature); }
 
-<<<<<<< Updated upstream
 	virtual void ProcessInput(HWND hWnd);
 	void AnimateObjects();
 	void Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera);
@@ -87,17 +91,17 @@ public : // SceneInterface 상속 함수
 	virtual void Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera);
 public: // 오승담 작성 함수
 	CPlayer* GetScenePlayer(const int32 sid) 
->>>>>>> Stashed changes
 	{ 
 		for (int i = 0; i < PLAYERNUM; ++i)
 		{
-			if (_players[i]->m_sid == sid) return _players[i];
+			if (_players[i]->m_sid == sid)
+			{
+				return _players[i];
+			}
 		}
+		return nullptr;
 	}
-<<<<<<< Updated upstream
-=======
 	void AddEvent(queueEvent*, float);
->>>>>>> Stashed changes
 public:
 	Timer _timer;
 //protected:
@@ -106,9 +110,7 @@ public:
 	CCamera*					m_pCamera;
 	WCHAR						txtFrameBuf[20];
 
-	CPlayer*					_players[4];
-	int16						_playerIdx = 0;
-	DWORD						m_lastKeyInput = 0;
+	
 	//마지막으로 마우스 버튼을 클릭할 때의 마우스 커서의 위치이다. 
 	POINT								m_ptOldCursorPos;
 
@@ -130,8 +132,7 @@ public:
 	ID3D12Resource*						m_pd3dcbLights = NULL;
 	LIGHTS*								m_pcbMappedLights = NULL;
 
-<<<<<<< Updated upstream
-=======
+
 // ========== 서버 처리를 위해 사용하는 변수들 ==============
 public: // 씬에 있는 오브젝트 관련 변수
 	CPlayer*					_players[4];
@@ -150,7 +151,6 @@ public:
 	int32 m_cid = -1;
 	int32 m_sid = -1;
 // ========================================================
->>>>>>> Stashed changes
 protected:
 	ID3D12RootSignature* m_pd3dGraphicsRootSignature = NULL;
 

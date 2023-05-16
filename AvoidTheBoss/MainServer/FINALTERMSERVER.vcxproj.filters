@@ -8,6 +8,42 @@
       <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
       <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
     </Filter>
+    <Filter Include="ForServer">
+      <UniqueIdentifier>{ae288b8b-0bfb-40d8-aaa2-c41329d40850}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ForServer\Accept">
+      <UniqueIdentifier>{571f9e35-be61-4df7-a744-3f2e9e089e0b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ForServer\DB">
+      <UniqueIdentifier>{fda55b05-b07b-49fd-9448-0bd346aba1bf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ForServer\CSIocpCore">
+      <UniqueIdentifier>{5a7b5346-37bd-40f6-91be-0d9c5ff67905}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ForServer\Physics">
+      <UniqueIdentifier>{a99ab83b-c87b-4dfe-b27b-7419a8878e9e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ForServer\PlayerInfo">
+      <UniqueIdentifier>{5103721e-5783-48ba-9224-66369ec9516b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ForServer\RoomSystem">
+      <UniqueIdentifier>{d794e8df-51ff-407b-a411-f4a2613d18fb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ForServer\Session">
+      <UniqueIdentifier>{af034ded-75b3-4c7c-8250-1be1c0832c26}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ForServer\SwitchInfo">
+      <UniqueIdentifier>{d44fa11d-04cf-4b2f-81cc-337dde2fc631}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ForServer\WorldRewinder">
+      <UniqueIdentifier>{2d88c4d3-aef4-43b4-90f7-c1ff8c7acdb5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ForServer\PacketEvent">
+      <UniqueIdentifier>{f1928cac-86ce-496e-82ba-48698125696d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ForServer\JobQueue">
+      <UniqueIdentifier>{fea46be6-8a5c-4e26-b4a5-ce621bf41dc5}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
@@ -16,10 +52,76 @@
     <ClCompile Include="newMain.cpp">
       <Filter>Main</Filter>
     </ClCompile>
+    <ClCompile Include="AcceptManager.cpp">
+      <Filter>ForServer\Accept</Filter>
+    </ClCompile>
+    <ClCompile Include="OBDC_MGR.cpp">
+      <Filter>ForServer\DB</Filter>
+    </ClCompile>
+    <ClCompile Include="CSIocpCore.cpp">
+      <Filter>ForServer\CSIocpCore</Filter>
+    </ClCompile>
+    <ClCompile Include="CollisionDetector.cpp">
+      <Filter>ForServer\Physics</Filter>
+    </ClCompile>
+    <ClCompile Include="PlayerInfo.cpp">
+      <Filter>ForServer\PlayerInfo</Filter>
+    </ClCompile>
+    <ClCompile Include="RoomManager.cpp">
+      <Filter>ForServer\RoomSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="Session.cpp">
+      <Filter>ForServer\Session</Filter>
+    </ClCompile>
+    <ClCompile Include="SwitchInfo.cpp">
+      <Filter>ForServer\SwitchInfo</Filter>
+    </ClCompile>
+    <ClCompile Include="WorldRewinder.cpp">
+      <Filter>ForServer\WorldRewinder</Filter>
+    </ClCompile>
+    <ClCompile Include="packetEvent.cpp">
+      <Filter>ForServer\PacketEvent</Filter>
+    </ClCompile>
+    <ClCompile Include="JobQueue.cpp">
+      <Filter>ForServer\JobQueue</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h">
       <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="AcceptManager.h">
+      <Filter>ForServer\Accept</Filter>
+    </ClInclude>
+    <ClInclude Include="OBDC_MGR.h">
+      <Filter>ForServer\DB</Filter>
+    </ClInclude>
+    <ClInclude Include="CSIocpCore.h">
+      <Filter>ForServer\CSIocpCore</Filter>
+    </ClInclude>
+    <ClInclude Include="CollisionDetector.h">
+      <Filter>ForServer\Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayerInfo.h">
+      <Filter>ForServer\PlayerInfo</Filter>
+    </ClInclude>
+    <ClInclude Include="RoomManager.h">
+      <Filter>ForServer\RoomSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="Session.h">
+      <Filter>ForServer\Session</Filter>
+    </ClInclude>
+    <ClInclude Include="SwitchInfo.h">
+      <Filter>ForServer\SwitchInfo</Filter>
+    </ClInclude>
+    <ClInclude Include="WorldRewinder.h">
+      <Filter>ForServer\WorldRewinder</Filter>
+    </ClInclude>
+    <ClInclude Include="packetEvent.h">
+      <Filter>ForServer\PacketEvent</Filter>
+    </ClInclude>
+    <ClInclude Include="JobQueue.h">
+      <Filter>ForServer\JobQueue</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

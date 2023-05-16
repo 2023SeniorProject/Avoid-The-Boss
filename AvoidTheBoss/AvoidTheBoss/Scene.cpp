@@ -1,11 +1,9 @@
 #include "pch.h"
 #include "Scene.h"
 #include "GameFramework.h"
-<<<<<<< Updated upstream
-=======
 #include "CJobQueue.h"
 #include "InputManager.h"
->>>>>>> Stashed changes
+
 #include "clientIocpCore.h"
 
 ID3D12DescriptorHeap* CGameScene::m_pd3dCbvSrvDescriptorHeap = NULL;
@@ -23,11 +21,12 @@ D3D12_GPU_DESCRIPTOR_HANDLE	CGameScene::m_d3dSrvGPUDescriptorNextHandle;
 
 CGameScene::CGameScene()
 {
-
+	_jobQueue = new Scheduler();
 }
 
 CGameScene::~CGameScene()
 {
+
 }
 
 void CGameScene::OnProcessingMouseMessage(HWND hWnd, UINT nMessageID, WPARAM wParam, LPARAM lParam)
@@ -95,6 +94,7 @@ void CGameScene::BuildDefaultLightsAndMaterials()
 	m_pLights[0].m_xmf4Specular = XMFLOAT4(0.5f, 0.5f, 0.5f, 0.0f);
 	m_pLights[0].m_xmf3Position = XMFLOAT3(230.0f, 330.0f, 480.0f);
 	m_pLights[0].m_xmf3Attenuation = XMFLOAT3(1.0f, 0.001f, 0.0001f);
+
 	m_pLights[1].m_bEnable = false;
 	m_pLights[1].m_nType = SPOT_LIGHT;
 	m_pLights[1].m_fRange = 500.0f;
@@ -107,12 +107,22 @@ void CGameScene::BuildDefaultLightsAndMaterials()
 	m_pLights[1].m_fFalloff = 8.0f;
 	m_pLights[1].m_fPhi = (float)cos(XMConvertToRadians(40.0f));
 	m_pLights[1].m_fTheta = (float)cos(XMConvertToRadians(20.0f));
+
+
+	//m_pLights[2].m_bEnable = true;
+	//m_pLights[2].m_nType = DIRECTIONAL_LIGHT;
+	//m_pLights[2].m_xmf4Ambient = XMFLOAT4(0.3f, 0.3f, 0.3f, 1.0f);
+	//m_pLights[2].m_xmf4Diffuse = XMFLOAT4(0.3f, 0.3f, 0.3f, 1.0f);
+	//m_pLights[2].m_xmf4Specular = XMFLOAT4(0.4f, 0.4f, 0.4f, 0.0f);
+	//m_pLights[2].m_xmf3Direction = XMFLOAT3(1.0f, -1.0f, 0.0f);
+
 	m_pLights[2].m_bEnable = true;
 	m_pLights[2].m_nType = DIRECTIONAL_LIGHT;
 	m_pLights[2].m_xmf4Ambient = XMFLOAT4(0.3f, 0.3f, 0.3f, 1.0f);
 	m_pLights[2].m_xmf4Diffuse = XMFLOAT4(0.3f, 0.3f, 0.3f, 1.0f);
 	m_pLights[2].m_xmf4Specular = XMFLOAT4(0.4f, 0.4f, 0.4f, 0.0f);
-	m_pLights[2].m_xmf3Direction = XMFLOAT3(1.0f, -1.0f, 0.0f);
+	m_pLights[2].m_xmf3Direction = XMFLOAT3(0.0f, -1.0f, -1.0f);
+
 	m_pLights[3].m_bEnable = false;
 	m_pLights[3].m_nType = SPOT_LIGHT;
 	m_pLights[3].m_fRange = 600.0f;
@@ -125,6 +135,7 @@ void CGameScene::BuildDefaultLightsAndMaterials()
 	m_pLights[3].m_fFalloff = 8.0f;
 	m_pLights[3].m_fPhi = (float)cos(XMConvertToRadians(90.0f));
 	m_pLights[3].m_fTheta = (float)cos(XMConvertToRadians(30.0f));
+
 	m_pLights[4].m_bEnable = false;
 	m_pLights[4].m_nType = POINT_LIGHT;
 	m_pLights[4].m_fRange = 200.0f;
@@ -137,12 +148,10 @@ void CGameScene::BuildDefaultLightsAndMaterials()
 
 void CGameScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList)
 {
-	BoxTree = new OcTree(XMFLOAT3(0, 0, 0), 60);
-	BoxTree->BuildTree();
 	//그래픽 루트 시그너쳐를 생성한다. 
 	m_pd3dGraphicsRootSignature = CreateGraphicsRootSignature(pd3dDevice);
 
-	CreateCbvSrvDescriptorHeaps(pd3dDevice, 0, 52+1+1+12+3+12+3 + 56);//Albedomap 52 / player 1 / skybox 1 / box subTexture 3 * 4/ tile subTexture 3 * 1/ woodPallet 3 * 4 / pillar2 3 * 1 / BoundsMap 56
+	CreateCbvSrvDescriptorHeaps(pd3dDevice, 0, 52+1+1+12+3+12+3 + 89 + 5 + 5*4 + 6*17 + 2*50+ 3*2 + 14 + 1);//Albedomap 52 / player 1 / skybox 1 / box subTexture 3 * 4/ tile subTexture 3 * 1/ woodPallet 3 * 4 / pillar2 3 * 1 / BoundsMap 89 / 스위치 2 + 3 / 문 / 사이렌 6 / 총알 100 / 사이드 문 3*2 / 14
 
 	CMaterial::PrepareShaders(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature);
 
@@ -154,42 +163,71 @@ void CGameScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandLis
 	XMFLOAT3 xmf3Scale(8.0f, 2.0f, 8.0f);
 	XMFLOAT4 xmf4Color(0.0f, 0.3f, 0.0f, 0.0f);
 
-	m_nShaders = 1;
+	m_nShaders = 5;
 	m_ppShaders = new CShader * [m_nShaders];
 
-	//CMapObjectsShader* pMapShader = new CMapObjectsShader();
-	//pMapShader->CreateShader(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature);
-	//pMapShader->BuildObjects(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, NULL, NULL);
-	//m_ppShaders[0] = pMapShader;
+	CMapObjectsShader* pMapShader = new CMapObjectsShader();
+	pMapShader->CreateShader(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature);
+	pMapShader->BuildObjects(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature,NULL,NULL);
+	m_ppShaders[0] = pMapShader;
+
+	CBulletObjectsShader* pBulletObjectShader = new CBulletObjectsShader();
+	pBulletObjectShader->CreateShader(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature);
+	pBulletObjectShader->BuildObjects(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, NULL, NULL);
+	m_ppShaders[1] = pBulletObjectShader;
+
+	CDoorObjectsShader* pDoorObjectShader = new CDoorObjectsShader();
+	pDoorObjectShader->CreateShader(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature);
+	pDoorObjectShader->BuildObjects(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, NULL, NULL);
+	m_ppShaders[2] = pDoorObjectShader;
+
+	CSirenObjectsShader* pSirenObjectShader = new CSirenObjectsShader();
+	pSirenObjectShader->CreateShader(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature);
+	pSirenObjectShader->BuildObjects(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, NULL, NULL);
+	m_ppShaders[3] = pSirenObjectShader;
+
+	CGeneratorObjectsShader* pGeneratorObjectsShader = new CGeneratorObjectsShader();
+	pGeneratorObjectsShader->CreateShader(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature);
+	pGeneratorObjectsShader->BuildObjects(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, NULL, NULL);
+	m_ppShaders[4] = pGeneratorObjectsShader;
 
 	CBoundsObjectsShader* pBoundsMapShader = new CBoundsObjectsShader();
 	pBoundsMapShader->CreateShader(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature);
-	pBoundsMapShader->BuildObjects(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, NULL, NULL);
-	m_ppShaders[0] = pBoundsMapShader;
+	pBoundsMapShader->BuildObjects(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature,NULL,NULL);
 
-
-	//CGameObject* pBVObject = new CGameObject();
-	//CLoadedModelInfo* pBVMap = CMapObject::LoadMeshFromFile(pd3dDevice, pd3dCommandList, //m_pd3dGraphicsRootSignature, "Map_Bounding_Box_4.bin", pBVObject);
-	//
-	//pBVObject->SetChild(pBVMap, true);
-	//pBVObject->SetPosition(0.0f, 0.f, 0.0f);
-	//pBVObject->SetScale(1.0f, 1.0f, 1.0f);
-	//pBVObject->Rotate(0.0f, 0.0f, 0.0f);
-	//m_ppGameObjects[0] = pBVObject;
-
-	CreateShaderVariables(pd3dDevice, pd3dCommandList);
-
-
+	m_ppSwitches = new CGenerator * [nSwitch];
+	for (int i = 0; i < 3; ++i)
+	{
+		m_ppSwitches[i] = ((CGenerator*)pGeneratorObjectsShader->m_ppObjects[i]);
+	}
 	for (int i = 0; i < PLAYERNUM; ++i)
 	{
-		_players[i] = new CWorker(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature);
+		if (i == (int)CHARACTER_TYPE::BOSS)
+		{
+			_players[i] = new CBoss(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature);
+			if (m_ppShaders[1])
+			{
+				((CBoss*)_players[i])->m_pBullet = (CBullet*)pBulletObjectShader->m_ppObjects[0];
+			}
+		}
+		else
+		{
+			_players[i] = new CEmployee(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, (CHARACTER_TYPE)(i));
+			((CEmployee*)_players[i])->m_pSwitches[0].position = XMFLOAT3(-23.12724, 1.146619, 1.814123);
+			((CEmployee*)_players[i])->m_pSwitches[0].radius = 0.2f;
+			((CEmployee*)_players[i])->m_pSwitches[1].position = XMFLOAT3(23.08867, 1.083242, 3.155997);
+			((CEmployee*)_players[i])->m_pSwitches[1].radius = 0.2f;
+			((CEmployee*)_players[i])->m_pSwitches[2].position = XMFLOAT3(0.6774719, 1.083242, -23.05909);
+			((CEmployee*)_players[i])->m_pSwitches[2].radius = 0.2f;
+					
+		}
 	}
 	m_pCamera = _players[0]->GetCamera();
+
+	CreateShaderVariables(pd3dDevice, pd3dCommandList);
 }
 
-<<<<<<< Updated upstream
-void CGameScene::ProcessInput(HWND hWnd)
-=======
+
 void CGameScene::ProcessInput(HWND& hWnd)
 {
 	if (::GetActiveWindow() != hWnd) return;
@@ -204,24 +242,10 @@ void CGameScene::Update(HWND hWnd)
 >>>>>>> Stashed changes
 {
 	_timer.Tick(0);
-	static UCHAR pKeyBuffer[256];
-	// 방향키를 바이트로 처리한다.
-
-
-	uint8 dwDirection = 0;
-	if (::GetKeyboardState(pKeyBuffer))
+	
 	{
-		if (pKeyBuffer[0x57] & 0xF0) dwDirection |= DIR_FORWARD;
-		else if (pKeyBuffer[0x77] & 0xF0) dwDirection |= DIR_FORWARD;
-
-		if (pKeyBuffer[0x53] & 0xF0) dwDirection |= DIR_BACKWARD;
-		else if (pKeyBuffer[0x73] & 0xF0) dwDirection |= DIR_BACKWARD;
-
-		if (pKeyBuffer[0x61] & 0xF0) dwDirection |= DIR_LEFT;
-		else if (pKeyBuffer[0x41] & 0xF0) dwDirection |= DIR_LEFT;
-
-		if (pKeyBuffer[0x44] & 0xF0) dwDirection |= DIR_RIGHT;
-		else if (pKeyBuffer[0x64] & 0xF0) dwDirection |= DIR_RIGHT;
+		std::unique_lock<std::shared_mutex> wl(_jobQueueLock);
+		_jobQueue->DoTasks();
 	}
 <<<<<<< Updated upstream
 =======
@@ -231,34 +255,26 @@ void CGameScene::Update(HWND hWnd)
 	if(::GetKeyboardState(pKeyBuffer));
 >>>>>>> Stashed changes
 
+	// 마우스 처리는 동일하게 진행되므로 그냥 남겨놨습니다.
 	float cxDelta = 0.0f, cyDelta = 0.0f;
 	POINT ptCursorPos;
 	if (::GetCapture() == hWnd)
 	{
-		//마우스 커서를 화면에서 없앤다(보이지 않게 한다).
 		::SetCursor(NULL);
-		//현재 마우스 커서의 위치를 가져온다. 
 		::GetCursorPos(&ptCursorPos);
-		//마우스 버튼이 눌린 상태에서 마우스가 움직인 양을 구한다. 
 		cxDelta = (float)(ptCursorPos.x - m_ptOldCursorPos.x) / 3.0f;
 		cyDelta = (float)(ptCursorPos.y - m_ptOldCursorPos.y) / 3.0f;
-		//마우스 커서의 위치를 마우스가 눌려졌던 위치로 설정한다. 
 		::SetCursorPos(m_ptOldCursorPos.x, m_ptOldCursorPos.y);
 	}
 
+	if ((dwDirection != 0) || (cxDelta != 0.0f) || (cyDelta != 0.0f))
 	{
-		//std::lock_guard<std::mutex> lg(_players[_playerIdx]->m_lock);
-		if ((dwDirection != 0) || (cxDelta != 0.0f) || (cyDelta != 0.0f))
+		if (cxDelta || cyDelta)
 		{
-			if (cxDelta || cyDelta)
+			if (pKeyBuffer[VK_LBUTTON] & 0xF0)
 			{
-
-				/*cxDelta는 y-축의 회전을 나타내고 cyDelta는 x-축의 회전을 나타낸다. 오른쪽 마우스 버튼이 눌려진 경우
-				cxDelta는 z-축의 회전을 나타낸다.*/
-				if (pKeyBuffer[VK_RBUTTON] & 0xF0) _players[_playerIdx]->Rotate(cyDelta, 0.0f, -cxDelta);
-				else if (pKeyBuffer[VK_LBUTTON] & 0xF0) _players[_playerIdx]->Rotate(cyDelta, cxDelta, 0.0f);
-
-				if (pKeyBuffer[VK_LBUTTON] & 0xF0)
+				_players[_playerIdx]->Rotate(0.f, cxDelta, 0.0f);
+				if (LOBYTE(dwDirection) == 0)
 				{
 					C2S_ROTATE packet;
 					packet.size = sizeof(C2S_ROTATE);
@@ -267,59 +283,57 @@ void CGameScene::Update(HWND hWnd)
 					clientCore._client->DoSend(&packet);
 				}
 			}
-
-			/*플레이어를 dwDirection 방향으로 이동한다(실제로는 속도 벡터를 변경한다). 이동 거리는 시간에 비례하도록 한다. 플레이어의 이동 속력은 (1.3UNIT/초)로 가정한다.*/
-			if (dwDirection) _players[_playerIdx]->Move(dwDirection, PLAYER_VELOCITY);
 		}
 	}
-
-	if (m_lastKeyInput != dwDirection || ( dwDirection != 0 && ((cxDelta != 0.0f) || (cyDelta != 0.0f)))) // 이전과 방향(키입력이 다른 경우에만 무브 이벤트 패킷을 보낸다)
+	_players[_playerIdx]->Move(dwDirection, PLAYER_VELOCITY);
+	if (LOBYTE(m_lastKeyInput) != LOBYTE(dwDirection) || (LOBYTE(dwDirection) != 0 && (cxDelta != 0.0f))) // 이전과 방향(키입력이 다른 경우에만 무브 이벤트 패킷을 보낸다)
 	{
+
 		C2S_KEY packet; // 키 입력 + 방향 정보를 보낸다.
 		packet.size = sizeof(C2S_KEY);
 		packet.type = C_PACKET_TYPE::CKEY;
-		packet.key = dwDirection;
-		packet.dir =_players[_playerIdx]->GetLook();
+		packet.key = LOBYTE(dwDirection);
+		packet.x = _players[_playerIdx]->GetLook().x;
+		packet.z = _players[_playerIdx]->GetLook().z;
 		clientCore._client->DoSend(&packet);
 	}
-	m_lastKeyInput = dwDirection;
-	
 
-	//카메라를 갱신한다. 중력과 마찰력의 영향을 속도 벡터에 적용한다.
+	m_lastKeyInput = dwDirection;
 	for (int k = 0; k < PLAYERNUM; ++k)
-	{	
-		_players[k]->m_lock.lock();
-		if (k == _playerIdx) _players[k]->Update(_timer.GetTimeElapsed(),PLAYER_TYPE::OWNER);
-		else _players[k]->Update(_timer.GetTimeElapsed(),PLAYER_TYPE::OTHER_PLAYER);
-		_players[k]->m_lock.unlock();
+	{
+		//_players[k]->m_lock.lock();
+		if (k == _playerIdx) _players[k]->Update(_timer.GetTimeElapsed(), PLAYER_TYPE::OWNER);
+		else _players[k]->Update(_timer.GetTimeElapsed(), PLAYER_TYPE::OTHER_PLAYER);
+		//_players[k]->m_lock.unlock();
+	}
+
+	if (m_bIsExitReady) // 탈출 성공 시 , 해야할 일 처리
+	{
+		for (int i = 0; i < m_nShaders; i++)
+		{
+			CStandardObjectsShader* pShaderObjects = (CStandardObjectsShader*)m_ppShaders[i];
+			for (int i = 0; i < pShaderObjects->m_nObjects; i++)
+			{
+				if (pShaderObjects->m_ppObjects[i])
+				{
+					if ((pShaderObjects->m_ppObjects[i]->objLayer == Layout::SIREN) || (pShaderObjects->m_ppObjects[i]->objLayer == Layout::DOOR))
+						pShaderObjects->m_ppObjects[i]->m_bIsExitReady = true;
+				}
+			}
+		}
 	}
 
 	// 평균 프레임 레이트 출력
-	std::wstring str = L"";
-	str.append(L" (");
-	str += std::to_wstring(_players[_playerIdx]->GetLook().x);
+	std::wstring str = L"[";
+	str.append(std::to_wstring(m_sid));
+	str.append(L"] (");
+	str.append(std::to_wstring(_players[_playerIdx]->GetPosition().x));
 	str.append(L" ");
-	str.append(std::to_wstring(_players[_playerIdx]->GetLook().z));
-	str.append(L") (");
-	str += std::to_wstring(_players[_playerIdx]->GetLook().x);
-	str.append(L" ");
-	str.append(std::to_wstring(_players[_playerIdx]->GetLook().z));
-	str.append(L")");
+	str.append(std::to_wstring(_players[_playerIdx]->GetPosition().z));
+	str.append(L")-");
+	str.append(std::to_wstring((int32)(_timer.GetFrameRate())));
 	::SetWindowText(hWnd, str.c_str());
 }
-
-<<<<<<< Updated upstream
-
-bool CGameScene::CollisionCheck()
-{
-	_players[_playerIdx]->m_playerBV.Center = _players[_playerIdx]->GetPosition();
-	_players[_playerIdx]->m_playerBV.Radius = 3.0f;
-	return false;
-}
-=======
->>>>>>> Stashed changes
-
-
 
 void CGameScene::ReleaseObjects()
 {
@@ -360,7 +374,7 @@ ID3D12RootSignature* CGameScene::CreateGraphicsRootSignature(ID3D12Device* pd3dD
 {
 	ID3D12RootSignature* pd3dGraphicsRootSignature = NULL;
 
-	D3D12_DESCRIPTOR_RANGE pd3dDescriptorRanges[10];
+	D3D12_DESCRIPTOR_RANGE pd3dDescriptorRanges[8];
 
 	pd3dDescriptorRanges[0].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
 	pd3dDescriptorRanges[0].NumDescriptors = 1;
@@ -410,19 +424,8 @@ ID3D12RootSignature* CGameScene::CreateGraphicsRootSignature(ID3D12Device* pd3dD
 	pd3dDescriptorRanges[7].RegisterSpace = 0;
 	pd3dDescriptorRanges[7].OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;
 
-	pd3dDescriptorRanges[8].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
-	pd3dDescriptorRanges[8].NumDescriptors = 1;
-	pd3dDescriptorRanges[8].BaseShaderRegister = 1; //t1: gtxtTerrainBaseTexture
-	pd3dDescriptorRanges[8].RegisterSpace = 0;
-	pd3dDescriptorRanges[8].OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;
 
-	pd3dDescriptorRanges[9].RangeType = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
-	pd3dDescriptorRanges[9].NumDescriptors = 1;
-	pd3dDescriptorRanges[9].BaseShaderRegister = 2; //t2: gtxtTerrainDetailTexture
-	pd3dDescriptorRanges[9].RegisterSpace = 0;
-	pd3dDescriptorRanges[9].OffsetInDescriptorsFromTableStart = D3D12_DESCRIPTOR_RANGE_OFFSET_APPEND;
-
-	D3D12_ROOT_PARAMETER pd3dRootParameters[15];
+	D3D12_ROOT_PARAMETER pd3dRootParameters[13];
 
 	pd3dRootParameters[0].ParameterType = D3D12_ROOT_PARAMETER_TYPE_CBV;
 	pd3dRootParameters[0].Descriptor.ShaderRegister = 1; //Camera
@@ -489,16 +492,6 @@ ID3D12RootSignature* CGameScene::CreateGraphicsRootSignature(ID3D12Device* pd3dD
 	pd3dRootParameters[12].Descriptor.ShaderRegister = 8; //Skinned Bone Transforms
 	pd3dRootParameters[12].Descriptor.RegisterSpace = 0;
 	pd3dRootParameters[12].ShaderVisibility = D3D12_SHADER_VISIBILITY_VERTEX;
-
-	pd3dRootParameters[13].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;
-	pd3dRootParameters[13].DescriptorTable.NumDescriptorRanges = 1;
-	pd3dRootParameters[13].DescriptorTable.pDescriptorRanges = &(pd3dDescriptorRanges[8]);
-	pd3dRootParameters[13].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;
-
-	pd3dRootParameters[14].ParameterType = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;
-	pd3dRootParameters[14].DescriptorTable.NumDescriptorRanges = 1;
-	pd3dRootParameters[14].DescriptorTable.pDescriptorRanges = &(pd3dDescriptorRanges[9]);
-	pd3dRootParameters[14].ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;
 
 	D3D12_STATIC_SAMPLER_DESC pd3dSamplerDescs[2];
 
@@ -580,11 +573,7 @@ void CGameScene::ReleaseUploadBuffers()
 	for (int i = 0; i < m_nHierarchicalGameObjects; i++) m_ppHierarchicalGameObjects[i]->ReleaseUploadBuffers();
 }
 
-<<<<<<< Updated upstream
-=======
 
-
->>>>>>> Stashed changes
 void CGameScene::CreateCbvSrvDescriptorHeaps(ID3D12Device* pd3dDevice, int nConstantBufferViews, int nShaderResourceViews)
 {
 	D3D12_DESCRIPTOR_HEAP_DESC d3dDescriptorHeapDesc;
@@ -681,8 +670,8 @@ D3D12_GPU_DESCRIPTOR_HANDLE CGameScene::CreateShaderResourceViews(ID3D12Device* 
 
 void CGameScene::AnimateObjects()
 { 
-	for (int i = 0; i < m_nGameObjects; i++) if (m_ppGameObjects[i]) m_ppGameObjects[i]->Animate(_timer.GetTimeElapsed());//>>>>
-	for (int i = 0; i < m_nShaders; i++) if (m_ppShaders[i]) m_ppShaders[i]->AnimateObjects(_timer.GetTimeElapsed());//<<<<
+	for (int i = 0; i < m_nGameObjects; i++) if (m_ppGameObjects[i]) m_ppGameObjects[i]->Animate(_timer.GetTimeElapsed());
+	for (int i = 0; i < m_nShaders; i++) if (m_ppShaders[i]) m_ppShaders[i]->AnimateObjects(_timer.GetTimeElapsed());
 
 	for (int i = 0; i < PLAYERNUM; i++)
 	{
@@ -722,6 +711,15 @@ void CGameScene::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCa
 			m_ppHierarchicalGameObjects[i]->Render(pd3dCommandList, pCamera);
 		}
 	}
-	for (int i = 0; i < PLAYERNUM; ++i) _players[i]->Render(pd3dCommandList, pCamera);
 
+	for (int i = 0; i < PLAYERNUM; ++i)
+	{
+		if(!_players[i]->m_hide) _players[i]->Render(pd3dCommandList, pCamera);
+	}
+}
+
+void CGameScene::AddEvent(queueEvent* ev, float after)
+{
+	std::unique_lock<std::shared_mutex> wl(_jobQueueLock);
+	_jobQueue->PushTask(ev, after);
 }

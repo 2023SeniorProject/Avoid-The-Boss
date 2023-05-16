@@ -1,15 +1,14 @@
 #include "pch.h"
 #include "Shader.h"
 #include "Player.h"
-//#include "CollisionDetector.h"
+#include "CBullet.h"
+
 
 CPlayer::CPlayer()
 {
 	m_type = 0;
 	m_pCamera = NULL;
-	m_playerBV.Center = GetPosition();
-	m_playerBV.Radius = 0.1f;
-	m_xmf3Position = XMFLOAT3(0.0f, 1.25f, 0.0f);
+	m_xmf3Position = XMFLOAT3(0.0f, 0.25f, 0.0f);
 
 	m_xmf3Right = XMFLOAT3(1.0f, 0.0f, 0.0f);
 	m_xmf3Up = XMFLOAT3(0.0f, 1.0f, 0.0f);
@@ -34,10 +33,6 @@ CPlayer::~CPlayer()
 	if (m_pCamera) delete m_pCamera;
 }
 
-
-
-
-
 /*플레이어의 위치를 변경하는 함수이다. 플레이어의 위치는 기본적으로 사용자가 플레이어를 이동하기 위한 키보드를
 누를 때 변경된다. 플레이어의 이동 방향(dwDirection)에 따라 플레이어를 fDistance 만큼 이동한다.*/
 
@@ -45,7 +40,7 @@ void CPlayer::Move(int16 dwDirection, float fDistance)
 {
 
 	XMFLOAT3 xmf3Shift = XMFLOAT3(0, 0, 0);
-	if (dwDirection)
+	if (LOBYTE(dwDirection))
 	{	
 		//화살표 키 ‘↑’를 누르면 로컬 z-축 방향으로 이동(전진)한다. ‘↓’를 누르면 반대 방향으로 이동한다. 
 <<<<<<< Updated upstream
@@ -65,7 +60,9 @@ void CPlayer::Move(int16 dwDirection, float fDistance)
 		if (LOBYTE(dwDirection) & KEY_LEFT) xmf3Shift = Vector3::Add(xmf3Shift, m_xmf3Right, -fDistance);
 >>>>>>> Stashed changes
 		//플레이어를 현재 위치 벡터에서 xmf3Shift 벡터만큼 이동한다
+		m_xmf3Velocity = XMFLOAT3(0, 0, 0);
 		SetVelocity(xmf3Shift);
+		
 	}
 }
 
@@ -91,8 +88,6 @@ void CPlayer::Update(float fTimeElapsed, PLAYER_TYPE ptype)
 
 
 	DWORD nCameraMode = m_pCamera->GetMode();
-<<<<<<< Updated upstream
-
 	//플레이어의 위치가 변경되었으므로 3인칭 카메라를 갱신한다. 
 	if (nCameraMode == THIRD_PERSON_CAMERA) m_pCamera->Update(m_xmf3Position,
 		fTimeElapsed);
@@ -102,7 +97,7 @@ void CPlayer::Update(float fTimeElapsed, PLAYER_TYPE ptype)
 
 	//카메라가 3인칭 카메라이면 카메라가 변경된 플레이어 위치를 바라보도록 한다. 
 	if (nCameraMode == THIRD_PERSON_CAMERA) m_pCamera->SetLookAt(m_xmf3Position);
-
+	else m_pCamera->SetPosition(m_xmf3Position);
 	//카메라의 카메라 변환 행렬을 다시 생성한다. 
 =======
 	if (m_pCamera) m_pCamera->Move(vel);
@@ -111,25 +106,7 @@ void CPlayer::Update(float fTimeElapsed, PLAYER_TYPE ptype)
 	else m_pCamera->SetPosition(m_xmf3Position);
 >>>>>>> Stashed changes
 	m_pCamera->RegenerateViewMatrix();
-	//m_xmf3Velocity = XMFLOAT3(0.0f, 0.0f, 0.0f);
-}
-
-void CPlayer::OnInteractive()
-{
-	if (m_OnInteraction == true && m_InteractionCountTime > 0)
-	{
-		m_pSkinnedAnimationController->SetTrackEnable(0, false);
-		m_pSkinnedAnimationController->SetTrackEnable(1, false);
-		m_pSkinnedAnimationController->SetTrackEnable(3, true);
-
-		m_InteractionCountTime -= 1;
-	}
-	else
-	{
-		m_pSkinnedAnimationController->SetTrackEnable(3, false);
-		m_OnInteraction = false;
-		m_InteractionCountTime = INTERACTION_TIME;
-	}
+	
 }
 
 //플레이어를 로컬 x-축, y-축, z-축을 중심으로 회전한다.
@@ -182,11 +159,6 @@ void CPlayer::Rotate(float x, float y, float z)
 }
 
 
-void CPlayer::ProcesesInput()
-{
-
-}
-
 void CPlayer::CreateShaderVariables(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList)
 {
 	if (m_pCamera) m_pCamera->CreateShaderVariables(pd3dDevice, pd3dCommandList);
@@ -204,7 +176,8 @@ void CPlayer::UpdateShaderVariables(ID3D12GraphicsCommandList* pd3dCommandList)
 
 CCamera* CPlayer::OnChangeCamera(DWORD nNewCameraMode, DWORD nCurrentCameraMode)
 {
-	//새로운 카메라의 모드에 따라 카메라를 새로 생성한다. 
+	//새로운 카메라의 모드에 따라 카메라를 새로 생성한다.
+
 	CCamera* pNewCamera = NULL;
 	switch (nNewCameraMode)
 	{
@@ -222,8 +195,9 @@ CCamera* CPlayer::OnChangeCamera(DWORD nNewCameraMode, DWORD nCurrentCameraMode)
 		//현재 카메라를 사용하는 플레이어 객체를 설정한다. 
 		pNewCamera->SetPlayer(this);
 	}
-	if (m_pCamera) delete m_pCamera;
-
+	//if (m_pCamera) delete m_pCamera;
+	m_pCamera = pNewCamera;
+	
 	return(pNewCamera);
 }
 
@@ -243,64 +217,11 @@ void CPlayer::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamer
 <<<<<<< Updated upstream
 
 	//카메라 모드가 3인칭이면 플레이어 객체를 렌더링한다. 
-	if (nCameraMode == THIRD_PERSON_CAMERA)
-	{
-		CGameObject::Render(pd3dCommandList, pCamera);
-	}
+	
+	CGameObject::Render(pd3dCommandList, pCamera);
+	
 }
 
-CWorker::CWorker(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature)
-{
-	m_type = 0;
-	m_pCamera = ChangeCamera(THIRD_PERSON_CAMERA, 0.0f);
-
-	CLoadedModelInfo* pBossModel = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "Model/Boss_Run.bin", NULL);
-	SetChild(pBossModel->m_pModelRootObject, true);
-
-	m_pSkinnedAnimationController = new CAnimationController(pd3dDevice, pd3dCommandList, 4, pBossModel);
-	m_pSkinnedAnimationController->SetTrackAnimationSet(2, 0);//Idle
-	m_pSkinnedAnimationController->SetTrackAnimationSet(0, 1);//Shoot
-	m_pSkinnedAnimationController->SetTrackAnimationSet(3, 2);//RunningShoot
-	m_pSkinnedAnimationController->SetTrackAnimationSet(1, 3);//Run
-
-	m_pSkinnedAnimationController->SetTrackEnable(0, true);
-	m_pSkinnedAnimationController->SetTrackEnable(1, false);
-	m_pSkinnedAnimationController->SetTrackEnable(2, false);
-	m_pSkinnedAnimationController->SetTrackEnable(3, false);
-
-	//	m_pSkinnedAnimationController->SetCallbackKeys(1, 2);
-	//#ifdef _WITH_SOUND_RESOURCE
-	//	m_pSkinnedAnimationController->SetCallbackKey(0, 0.1f, _T("Footstep01"));
-	//	m_pSkinnedAnimationController->SetCallbackKey(1, 0.5f, _T("Footstep02"));
-	//	m_pSkinnedAnimationController->SetCallbackKey(2, 0.9f, _T("Footstep03"));
-	//#else
-	//	m_pSkinnedAnimationController->SetCallbackKey(1, 0, 0.001f, _T("Sound/Footstep01.wav"));
-	//	m_pSkinnedAnimationController->SetCallbackKey(1, 1, 0.125f, _T("Sound/Footstep02.wav"));
-	//	m_pSkinnedAnimationController->SetCallbackKey(1, 2, 0.39f, _T("Sound/Footstep03.wav"));
-	//#endif
-		//CAnimationCallbackHandler *pAnimationCallbackHandler = new CSoundCallbackHandler();
-		//m_pSkinnedAnimationController->SetAnimationCallbackHandler(1, pAnimationCallbackHandler);
-
-	CreateShaderVariables(pd3dDevice, pd3dCommandList);
-
-	//SetPlayerUpdatedContext();
-	//SetCameraUpdatedContext();
-
-	SetScale(XMFLOAT3(1.f, 1.f, 1.f));
-	SetPosition(XMFLOAT3(0.0f, 1.3f, 0.0f));
-
-	if (pBossModel) delete pBossModel;
-}
-
-CWorker::~CWorker()
-{
-}
-
-CCamera* CWorker::ChangeCamera(DWORD nNewCameraMode, float fTimeElapsed)
-{
-	DWORD nCurrentCameraMode = (m_pCamera) ? m_pCamera->GetMode() : 0x00;
-	if (nCurrentCameraMode == nNewCameraMode)
-		return(m_pCamera);
 
 	float MaxDepthofMap = 5000.0f;//sqrt(2) * 50 * UNIT + 2 * UNIT;
 	switch (nNewCameraMode)
@@ -383,6 +304,5 @@ void CSoundCallbackHandler::HandleCallback(void* pCallbackData, float fTrackPosi
 	PlaySound(pWavName, NULL, SND_FILENAME | SND_ASYNC);
 #endif
 }
-
 
 

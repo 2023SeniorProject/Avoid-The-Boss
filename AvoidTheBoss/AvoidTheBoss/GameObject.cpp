@@ -5,7 +5,7 @@
 #include "pch.h"
 #include "GameObject.h"
 #include "Shader.h"
-#include "CollisionDetector.h"
+
 #include "Scene.h"
 
 std::vector<BoundingBox> bv;
@@ -269,17 +269,26 @@ void CAnimationSet::SetPosition(float fElapsedPosition)
 {
 	switch (m_nType)
 	{
-		case ANIMATION_TYPE_LOOP:
+		//case ANIMATION_TYPE_LOOP:
+		//{
+		//	m_fPosition += fElapsedPosition;
+		//	if (m_fPosition >= m_fLength) m_fPosition = 0.0f;
+//		//	m_fPosition = fmod(fTrackPosition, m_pfKeyFrameTimes[m_nKeyFrames-1]); 
+//		//	// m_fPosition = fTrackPosition - int(fTrackPosition / m_pfKeyFrameTimes[m_nKeyFrames-1]) * m_pfKeyFrameTimes[m_nKeyFrames-1];
+//		//	m_fPosition = fmod(fTrackPosition, m_fLength); //if (m_fPosition < 0) m_fPosition += m_fLength;
+//		//	m_fPosition = fTrackPosition - int(fTrackPosition / m_fLength) * m_fLength;
+		//	break;
+		//}
+		case ANIMATION_TYPE_ONCE:
 		{
-			m_fPosition += fElapsedPosition;
-			if (m_fPosition >= m_fLength) m_fPosition = 0.0f;
-//			m_fPosition = fmod(fTrackPosition, m_pfKeyFrameTimes[m_nKeyFrames-1]); // m_fPosition = fTrackPosition - int(fTrackPosition / m_pfKeyFrameTimes[m_nKeyFrames-1]) * m_pfKeyFrameTimes[m_nKeyFrames-1];
-//			m_fPosition = fmod(fTrackPosition, m_fLength); //if (m_fPosition < 0) m_fPosition += m_fLength;
-//			m_fPosition = fTrackPosition - int(fTrackPosition / m_fLength) * m_fLength;
+			if (m_fPosition <= m_fLength)
+			{
+				m_fPosition += fElapsedPosition;
+			}
+			else
+				m_fPosition = 0.0f;
 			break;
 		}
-		case ANIMATION_TYPE_ONCE:
-			break;
 		case ANIMATION_TYPE_PINGPONG:
 			break;
 	}
@@ -457,6 +466,12 @@ void CAnimationController::SetTrackEnable(int nAnimationTrack, bool bEnable)
 	if (m_pAnimationTracks) m_pAnimationTracks[nAnimationTrack].SetEnable(bEnable);
 }
 
+bool CAnimationController::GetTrackEnable(int nAnimationTrack)
+{
+	if (m_pAnimationTracks) 
+		return m_pAnimationTracks[nAnimationTrack].GetEnable();
+}
+
 void CAnimationController::SetTrackPosition(int nAnimationTrack, float fPosition)
 {
 	if (m_pAnimationTracks) m_pAnimationTracks[nAnimationTrack].SetPosition(fPosition);
@@ -487,7 +502,8 @@ void CAnimationController::AdvanceTime(float fTimeElapsed, CGameObject *pRootGam
 	if (m_pAnimationTracks)
 	{
 //		for (int k = 0; k < m_nAnimationTracks; k++) m_pAnimationTracks[k].m_fPosition += (fTimeElapsed * m_pAnimationTracks[k].m_fSpeed);
-		for (int k = 0; k < m_nAnimationTracks; k++) m_pAnimationSets->m_pAnimationSets[m_pAnimationTracks[k].m_nAnimationSet]->SetPosition(fTimeElapsed * m_pAnimationTracks[k].m_fSpeed);
+		for (int k = 0; k < m_nAnimationTracks; k++) 
+			m_pAnimationSets->m_pAnimationSets[m_pAnimationTracks[k].m_nAnimationSet]->SetPosition(fTimeElapsed * m_pAnimationTracks[k].m_fSpeed);
 
 		for (int j = 0; j < m_pAnimationSets->m_nAnimatedBoneFrames; j++)
 		{
@@ -531,6 +547,7 @@ void CLoadedModelInfo::PrepareSkinning()
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //
+
 CGameObject::CGameObject()
 {
 	m_xmf4x4ToParent = Matrix4x4::Identity();
@@ -647,10 +664,10 @@ void CGameObject::FindAndSetSkinnedMesh(CSkinnedMesh **ppSkinnedMeshes, int *pnS
 	if (m_pChild) m_pChild->FindAndSetSkinnedMesh(ppSkinnedMeshes, pnSkinnedMesh);
 }
 
-CGameObject *CGameObject::FindFrame(char *pstrFrameName)
+CGameObject *CGameObject::FindFrame(const char *pstrFrameName)
 {
 	CGameObject *pFrameObject = NULL;
-	if (!strncmp(m_pstrFrameName, pstrFrameName, strlen(pstrFrameName))) return(this);
+	if (strncmp(m_pstrFrameName, pstrFrameName, strlen(pstrFrameName))==0) return(this);
 
 	if (m_pSibling) if (pFrameObject = m_pSibling->FindFrame(pstrFrameName)) return(pFrameObject);
 	if (m_pChild) if (pFrameObject = m_pChild->FindFrame(pstrFrameName)) return(pFrameObject);
@@ -771,7 +788,7 @@ void CGameObject::SetScale(float x, float y, float z)
 	UpdateTransform(NULL);
 }
 
-XMFLOAT3 CGameObject::GetPosition()
+const XMFLOAT3 CGameObject::GetPosition()
 {
 	return(XMFLOAT3(m_xmf4x4World._41, m_xmf4x4World._42, m_xmf4x4World._43));
 }
@@ -971,7 +988,7 @@ void CGameObject::LoadMaterialsFromFile(ID3D12Device *pd3dDevice, ID3D12Graphics
 	}
 }
 
-CGameObject *CGameObject::LoadFrameHierarchyFromFile(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList, ID3D12RootSignature *pd3dGraphicsRootSignature, CGameObject *pParent, FILE *pInFile, CShader *pShader, int *pnSkinnedMeshes)
+CGameObject *CGameObject::LoadFrameHierarchyFromFile(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList, ID3D12RootSignature *pd3dGraphicsRootSignature, CGameObject *pParent, FILE *pInFile, CShader *pShader, int *pnSkinnedMeshes,Layout objType)
 {
 	char pstrToken[64] = { '\0' };
 	UINT nReads = 0;
@@ -979,7 +996,7 @@ CGameObject *CGameObject::LoadFrameHierarchyFromFile(ID3D12Device *pd3dDevice, I
 	int nFrame = 0, nTextures = 0;
 
 	CGameObject *pGameObject = new CGameObject();
-
+	pGameObject->objLayer = objType;
 	for ( ; ; )
 	{
 		::ReadStringFromFile(pInFile, pstrToken);
@@ -1006,7 +1023,7 @@ CGameObject *CGameObject::LoadFrameHierarchyFromFile(ID3D12Device *pd3dDevice, I
 		else if (!strcmp(pstrToken, "<Mesh>:"))
 		{
 			CStandardMesh *pMesh = new CStandardMesh(pd3dDevice, pd3dCommandList);
-			pMesh->LoadMeshFromFile(pd3dDevice, pd3dCommandList, pInFile,pGameObject);
+			pMesh->LoadMeshFromFile(pd3dDevice, pd3dCommandList, pInFile,pGameObject,objType);
 			pGameObject->SetMesh(pMesh);
 		}
 		else if (!strcmp(pstrToken, "<SkinningInfo>:"))
@@ -1018,7 +1035,7 @@ CGameObject *CGameObject::LoadFrameHierarchyFromFile(ID3D12Device *pd3dDevice, I
 			pSkinnedMesh->CreateShaderVariables(pd3dDevice, pd3dCommandList);
 
 			::ReadStringFromFile(pInFile, pstrToken); //<Mesh>:
-			if (!strcmp(pstrToken, "<Mesh>:")) pSkinnedMesh->LoadMeshFromFile(pd3dDevice, pd3dCommandList, pInFile, pGameObject);
+			if (!strcmp(pstrToken, "<Mesh>:")) pSkinnedMesh->LoadMeshFromFile(pd3dDevice, pd3dCommandList, pInFile, pGameObject,objType);
 
 			pGameObject->SetMesh(pSkinnedMesh);
 		}
@@ -1033,7 +1050,7 @@ CGameObject *CGameObject::LoadFrameHierarchyFromFile(ID3D12Device *pd3dDevice, I
 			{
 				for (int i = 0; i < nChilds; i++)
 				{
-					CGameObject *pChild = CGameObject::LoadFrameHierarchyFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, pGameObject, pInFile, pShader, pnSkinnedMeshes);
+					CGameObject *pChild = CGameObject::LoadFrameHierarchyFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, pGameObject, pInFile, pShader, pnSkinnedMeshes,objType);
 					if (pChild) pGameObject->SetChild(pChild);
 #ifdef _WITH_DEBUG_FRAME_HIERARCHY
 					TCHAR pstrDebug[256] = { 0 };
@@ -1132,7 +1149,7 @@ void CGameObject::LoadAnimationFromFile(FILE *pInFile, CLoadedModelInfo *pLoaded
 	}
 }
 
-CLoadedModelInfo *CGameObject::LoadGeometryAndAnimationFromFile(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList, ID3D12RootSignature *pd3dGraphicsRootSignature, const char *pstrFileName, CShader *pShader)
+CLoadedModelInfo *CGameObject::LoadGeometryAndAnimationFromFile(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList, ID3D12RootSignature *pd3dGraphicsRootSignature, const char *pstrFileName, CShader *pShader, Layout objType)
 {
 	FILE *pInFile = NULL;
 	::fopen_s(&pInFile, pstrFileName, "rb");
@@ -1148,7 +1165,7 @@ CLoadedModelInfo *CGameObject::LoadGeometryAndAnimationFromFile(ID3D12Device *pd
 		{
 			if (!strcmp(pstrToken, "<Hierarchy>:"))
 			{
-				pLoadedModel->m_pModelRootObject = CGameObject::LoadFrameHierarchyFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, NULL, pInFile, pShader, &pLoadedModel->m_nSkinnedMeshes);
+				pLoadedModel->m_pModelRootObject = CGameObject::LoadFrameHierarchyFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, NULL, pInFile, pShader, &pLoadedModel->m_nSkinnedMeshes,objType);
 				::ReadStringFromFile(pInFile, pstrToken); //"</Hierarchy>"
 			}
 			else if (!strcmp(pstrToken, "<Animation>:"))
@@ -1178,13 +1195,13 @@ CLoadedModelInfo *CGameObject::LoadGeometryAndAnimationFromFile(ID3D12Device *pd
 	return(pLoadedModel);
 }
 
-CGameObject* CGameObject::LoadGeometryFromFile(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, const char* pstrFileName, CShader* pShader)
+CGameObject* CGameObject::LoadGeometryFromFile(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, const char* pstrFileName, CShader* pShader, Layout objType)
 {
 	FILE* pInFile = NULL;
 	::fopen_s(&pInFile, pstrFileName, "rb");
 	::rewind(pInFile);
 
-	CGameObject* pGameObject = CGameObject::LoadFrameHierarchyFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, NULL, pInFile, pShader,NULL);
+	CGameObject* pGameObject = CGameObject::LoadFrameHierarchyFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, NULL, pInFile, pShader, NULL,objType);
 
 #ifdef _WITH_DEBUG_FRAME_HIERARCHY
 	TCHAR pstrDebug[256] = { 0 };
@@ -1231,28 +1248,158 @@ void CSkyBox::Render(ID3D12GraphicsCommandList *pd3dCommandList, CCamera *pCamer
 	CGameObject::Render(pd3dCommandList, pCamera);
 }
 
-CBossObject::CBossObject(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, CLoadedModelInfo* pModel, int nAnimationTracks)
-{
-	CLoadedModelInfo* pEagleModel = pModel;
-	if (!pEagleModel) pEagleModel = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "Model/Boss_Runing_Shoot.bin", NULL);
 
-	SetChild(pEagleModel->m_pModelRootObject, true);
-	m_pSkinnedAnimationController = new CAnimationController(pd3dDevice, pd3dCommandList, nAnimationTracks, pEagleModel);
-}
-
-CBossObject::~CBossObject()
+CSiren::CSiren()
 {
 }
 
-CIndustryMap::CIndustryMap(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature)
-{
-	m_type = 1;
-}
-
-CIndustryMap::~CIndustryMap()
+CSiren::~CSiren()
 {
 }
 
-void CIndustryMap::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera)
+
+void CSiren::OnPrepareAnimate()
+{
+	m_ppSirenBell = FindFrame("Siren_Bell");
+	m_ppSirenCap = FindFrame("Siren_Cap");
+}
+
+void CSiren::Animate(float fTimeElapsed)
+{
+	if (m_bIsExitReady)
+	{
+		float delta = 100.0f;
+		if (m_AnimationDegree > 0.0f)
+		{
+			if (m_ppSirenBell)
+			{
+				XMMATRIX xmmtxRotate = DirectX::XMMatrixRotationZ(XMConvertToRadians(delta * fTimeElapsed));
+				m_ppSirenBell->m_xmf4x4ToParent = Matrix4x4::Multiply(xmmtxRotate, m_ppSirenBell->m_xmf4x4ToParent);
+			}
+			if (m_ppSirenCap)
+			{
+				float radius = 0.000471f / 2.0f;
+				XMMATRIX xmmtxRotate = DirectX::XMMatrixRotationZ(XMConvertToRadians(delta * fTimeElapsed));
+				XMMATRIX xmmtxTranslate = DirectX::XMMatrixTranslation(radius * cos(XMConvertToRadians(delta * fTimeElapsed)), 0.0f, radius * sin(XMConvertToRadians(delta * fTimeElapsed)));
+				XMMATRIX xmf4x4Result = DirectX::XMMatrixMultiply(xmmtxTranslate, xmmtxRotate);
+				m_ppSirenCap->m_xmf4x4ToParent = Matrix4x4::Multiply(xmf4x4Result, m_ppSirenCap->m_xmf4x4ToParent);
+
+				//std::cout <<"m_ppSirenCap : " << m_ppSirenCap->GetPosition().x << " " << m_ppSirenCap->GetPosition().y << " " << m_ppSirenCap->GetPosition().z << std::endl;
+			}
+			m_AnimationDegree -= delta * fTimeElapsed;
+		}
+		else
+		{
+			m_AnimationDegree = 180.f;
+		}
+		CGameObject::Animate(fTimeElapsed);
+	}
+}
+
+CFrontDoor::CFrontDoor()
 {
 }
+
+CFrontDoor::~CFrontDoor()
+{
+}
+
+void CFrontDoor::OnPrepareAnimate()
+{
+	m_pLeftDoorFrame = FindFrame("Hanger_Door_Left");
+	m_pRightDoorFrame = FindFrame("Hanger_Door_Right");
+}
+void CFrontDoor::Animate(float fTimeElapsed)
+{
+	if (m_bIsExitReady)
+	{
+		float delta = 1.0f;
+	
+		if (m_AnimationDistance > 0.0f)
+		{
+			if (m_pLeftDoorFrame)
+			{
+				XMMATRIX xmmtxTranslate = DirectX::XMMatrixTranslation(delta * fTimeElapsed, 0.0f, 0.0f);
+				m_pLeftDoorFrame->m_xmf4x4ToParent = Matrix4x4::Multiply(xmmtxTranslate, m_pLeftDoorFrame->m_xmf4x4ToParent);
+				std::cout <<"FrontDoor : " << GetPosition().x << " " << GetPosition().y << " " << GetPosition().z << std::endl;
+			}
+			if (m_pRightDoorFrame)
+			{
+				XMMATRIX xmmtxTranslate = DirectX::XMMatrixTranslation(-delta * fTimeElapsed, 0.0f, 0.0f);
+				m_pRightDoorFrame->m_xmf4x4ToParent = Matrix4x4::Multiply(xmmtxTranslate, m_pRightDoorFrame->m_xmf4x4ToParent);
+
+			}
+			m_AnimationDistance -= delta * fTimeElapsed;
+			std::cout << " CFrontDoor " << m_AnimationDistance << std::endl;
+		}
+		else
+		{
+			m_AnimationDistance = 0.0f;
+		}
+		CGameObject::Animate(fTimeElapsed);
+	}
+}
+
+CEmergencyDoor::CEmergencyDoor()
+{
+}
+
+CEmergencyDoor::~CEmergencyDoor()
+{
+}
+void CEmergencyDoor::Animate(float fTimeElapsed)
+{
+	if (m_bIsExitReady)
+	{
+		float delta = 10.0f;
+	
+		if (m_AnimationDegree > 0.0f)
+		{
+			XMMATRIX xmmtxRotate = XMMatrixRotationY(XMConvertToRadians(-delta *fTimeElapsed));
+			m_xmf4x4ToParent = Matrix4x4::Multiply(xmmtxRotate, m_xmf4x4ToParent);
+			m_AnimationDegree -= delta * fTimeElapsed;
+
+			std::cout << " EmergencyDoor " << m_AnimationDegree << std::endl;
+			//std::cout << "EmergencyDoor : " << GetPosition().x << " " << GetPosition().y << " " << GetPosition().z << std::endl;
+		}
+		else 
+		{
+			m_AnimationDegree = 0.0f;
+		}
+		CGameObject::Animate(fTimeElapsed);
+	}
+}
+
+CShutterDoor::CShutterDoor()
+{
+}
+
+CShutterDoor::~CShutterDoor()
+{
+}
+
+void CShutterDoor::OnPrepareAnimate()
+{
+	m_pShutter = FindFrame("Sutter_Open");
+}
+
+void CShutterDoor::Animate(float fTimeElapsed)
+{
+	if (m_bIsExitReady)
+	{
+		float delta = 0.1f;
+	
+		if (m_AnimationDistance > 0.0f)
+		{
+			if (m_pShutter)
+			{
+				XMMATRIX xmmtxTranslate = DirectX::XMMatrixTranslation(0.0f, 0.0f, delta * fTimeElapsed);
+				m_pShutter->m_xmf4x4ToParent = Matrix4x4::Multiply(xmmtxTranslate, m_pShutter->m_xmf4x4ToParent);
+				m_AnimationDistance -= delta * fTimeElapsed;
+	 			std::cout <<"ShutterDoor : " << m_AnimationDistance << std::endl;
+			}
+		}
+		CGameObject::Animate(fTimeElapsed);
+	}
+}
+

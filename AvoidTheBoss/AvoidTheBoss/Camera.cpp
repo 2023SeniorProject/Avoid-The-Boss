@@ -79,7 +79,7 @@ void CCamera::UpdateShaderVariables(ID3D12GraphicsCommandList* pd3dCommandList)
 	::memcpy(&m_pcbMappedCamera->m_xmf4x4View, &xmf4x4View, sizeof(XMFLOAT4X4));
 
 	XMFLOAT4X4 xmf4x4Projection;
-	XMStoreFloat4x4(&xmf4x4Projection, XMMatrixTranspose(XMLoadFloat4x4(&m_xmf4x4Projection)));
+	XMStoreFloat4x4(&xmf4x4Projection, XMMatrixTranspose(XMLoadFloat4x4(&m_xmf4x4Projection))); // 터지는 부분
 	::memcpy(&m_pcbMappedCamera->m_xmf4x4Projection, &xmf4x4Projection, sizeof(XMFLOAT4X4));
 
 	::memcpy(&m_pcbMappedCamera->m_xmf3Position, &m_xmf3Position, sizeof(XMFLOAT3));
@@ -157,9 +157,15 @@ void CCamera::SetViewportsAndScissorRects(ID3D12GraphicsCommandList* pd3dCommand
 }
 
 
+
 CFirstPersonCamera::CFirstPersonCamera(CCamera* pCamera)
 {
 	m_nMode = FIRST_PERSON_CAMERA;
+}
+
+void CFirstPersonCamera::Update(XMFLOAT3& xmf3LookAt, float fTimeElapsed)
+{
+	
 }
 
 void CFirstPersonCamera::Rotate(float x, float y, float z)
@@ -212,10 +218,19 @@ void CFirstPersonCamera::Rotate(float x, float y, float z)
 	}
 }
 
+void CFirstPersonCamera::RayCasting(BoundingSphere& targetBox)
+{
+	XMFLOAT3 rayOrigin = m_xmf3Position;
+	XMFLOAT3 rayDir = m_xmf3Look;
+	float rayDisatance = 5.0f;
+	std::cout << m_xmf3Look.x << " " << m_xmf3Look.z << "\n";
+	if(targetBox.Intersects(XMLoadFloat3(&rayOrigin), XMLoadFloat3(&rayDir),rayDisatance)) std::cout << "RayCasting\n";
+
+}
+
 CThirdPersonCamera::CThirdPersonCamera(CCamera* pCamera)
 {
 	m_nMode = THIRD_PERSON_CAMERA;
-
 }
 
 void CThirdPersonCamera::Update(XMFLOAT3& xmf3LookAt, float fTimeElapsed)

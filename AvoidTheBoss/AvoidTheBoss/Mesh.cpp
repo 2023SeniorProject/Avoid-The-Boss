@@ -5,7 +5,7 @@
 #include "pch.h"
 #include "Mesh.h"
 #include "GameObject.h"
-#include "CollisionDetector.h"
+
 
 CMesh::CMesh(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList)
 {
@@ -178,7 +178,7 @@ void CStandardMesh::ReleaseUploadBuffers()
 	m_pd3dBiTangentUploadBuffer = NULL;
 }
 
-void CStandardMesh::LoadMeshFromFile(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList, FILE *pInFile,CGameObject* pGameobject)
+void CStandardMesh::LoadMeshFromFile(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList, FILE *pInFile,CGameObject* pGameobject,Layout objType)
 {
 	char pstrToken[64] = { '\0' };
 	int nPositions = 0, nColors = 0, nNormals = 0, nTangents = 0, nBiTangents = 0, nTextureCoords = 0, nIndices = 0, nSubMeshes = 0, nSubIndices = 0;
@@ -195,11 +195,11 @@ void CStandardMesh::LoadMeshFromFile(ID3D12Device *pd3dDevice, ID3D12GraphicsCom
 			nReads = (UINT)::fread(&m_xmf3AABBCenter, sizeof(XMFLOAT3), 1, pInFile);
 			nReads = (UINT)::fread(&m_xmf3AABBExtents, sizeof(XMFLOAT3), 1, pInFile);
 
-		
-			pGameobject->m_pAABB.Center = m_xmf3AABBCenter;
-			pGameobject->m_pAABB.Extents = m_xmf3AABBExtents;
-			BoxTree->AddBoundingBox(pGameobject->m_pAABB);
-			
+			if (objType == Layout::BOUDS)
+			{
+				pGameobject->m_pAABB.Center = m_xmf3AABBCenter;
+				pGameobject->m_pAABB.Extents = m_xmf3AABBExtents;
+			}
 		}
 		else if (!strcmp(pstrToken, "<Positions>:"))
 		{

@@ -65,9 +65,7 @@ void USER_DB_MANAGER::RetrieveResult()
             if (retcode == SQL_ERROR || retcode == SQL_SUCCESS_WITH_INFO)
                 show_error(hstmt, SQL_HANDLE_STMT, retcode);
             if (retcode == SQL_SUCCESS || retcode == SQL_SUCCESS_WITH_INFO)
-            {
-                wprintf(L"id:%3d %4d\n", user_cid);
-                
+            {   
                 break;
             }
             else

@@ -28,7 +28,7 @@ public:
 	float					_accumulateElapsedTime = 0.f; // 한 프레임 만큼 처리 됐는지 확인하는 용도
 public:
 	float					_accumulateFPSLockTime = 0.f; // 월드 프레임 증감을 위한 누적 시간.
-
+	float					_accumulateTimeForHistory = 0.f;
 public:
 	Timer();
 	virtual ~Timer();
@@ -50,6 +50,14 @@ public:
 		}
 		else return false; 
 	}
-
+	bool IsTimeToAddHistory()
+	{
+		if (_accumulateTimeForHistory >= 16)
+		{
+			_accumulateTimeForHistory;
+			return true;
+		}
+		else return false;
+	}
 };
 

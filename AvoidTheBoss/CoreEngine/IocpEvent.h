@@ -3,7 +3,6 @@
 
 class ServerSession;
 
-
 //==========================
 //        IOCP EVENT TYPE
 // =========================

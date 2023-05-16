@@ -9,12 +9,8 @@
 #include "Camera.h"
 extern std::vector<DirectX::BoundingBox> bv;
 
-#define DIR_FORWARD					0x01
-#define DIR_BACKWARD				0x02
-#define DIR_LEFT					0x04
-#define DIR_RIGHT					0x08
-#define DIR_UP						0x10
-#define DIR_DOWN					0x20
+
+#define DIR_BUTTON_F				0X0300
 
 class CShader;
 class CStandardShader;
@@ -26,6 +22,7 @@ class CStandardShader;
 #define RESOURCE_TEXTURE2DARRAY		0x03
 #define RESOURCE_TEXTURE_CUBE		0x04
 #define RESOURCE_BUFFER				0x05
+
 
 struct SRVROOTARGUMENTINFO
 {
@@ -190,7 +187,7 @@ public:
 #endif
 
 	float 							m_fPosition = 0.0f;
-    int 							m_nType = ANIMATION_TYPE_LOOP; //Once, Loop, PingPong
+    int 							m_nType = ANIMATION_TYPE_ONCE; //Once, Loop, PingPong
 
 	int 							m_nCallbackKeys = 0;
 	CALLBACKKEY 					*m_pCallbackKeys = NULL;
@@ -253,6 +250,7 @@ public:
 	void SetAnimationSet(int nAnimationSet) { m_nAnimationSet = nAnimationSet; }
 
 	void SetEnable(bool bEnable) { m_bEnable = bEnable; }
+	BOOL GetEnable() { return m_bEnable; }
 	void SetSpeed(float fSpeed) { m_fSpeed = fSpeed; }
 	void SetWeight(float fWeight) { m_fWeight = fWeight; }
 	void SetPosition(float fPosition) { m_fPosition = fPosition; }
@@ -301,6 +299,8 @@ public:
 	void SetTrackAnimationSet(int nAnimationTrack, int nAnimationSet);
 
 	void SetTrackEnable(int nAnimationTrack, bool bEnable);
+	bool GetTrackEnable(int nAnimationTrack);
+
 	void SetTrackPosition(int nAnimationTrack, float fPosition);
 	void SetTrackSpeed(int nAnimationTrack, float fSpeed);
 	void SetTrackWeight(int nAnimationTrack, float fWeight);
@@ -329,6 +329,9 @@ public:
     virtual ~CGameObject();
 
 public:
+	Layout							objLayer;
+	bool							m_bIsExitReady = false;
+
 	char							m_pstrFrameName[64];
 
 	CMesh							*m_pMesh = NULL;
@@ -357,6 +360,7 @@ public:
 
 	virtual void OnPrepareAnimate() { }
 	virtual void Animate(float fTimeElapsed);
+	virtual void Update(float fTimeElapsed){ }
 
 	virtual void OnPrepareRender() { }
 	virtual void Render(ID3D12GraphicsCommandList *pd3dCommandList, CCamera *pCamera=NULL);
@@ -370,7 +374,7 @@ public:
 
 	virtual void ReleaseUploadBuffers();
 
-	XMFLOAT3 GetPosition();
+	const XMFLOAT3 GetPosition();
 	XMFLOAT3 GetLook();
 	XMFLOAT3 GetUp();
 	XMFLOAT3 GetRight();
@@ -387,7 +391,7 @@ public:
 
 	CGameObject *GetParent() { return(m_pParent); }
 	void UpdateTransform(XMFLOAT4X4 *pxmf4x4Parent=NULL);
-	CGameObject *FindFrame(char *pstrFrameName);
+	CGameObject *FindFrame(const char *pstrFrameName);
 
 	CTexture *FindReplicatedTexture(_TCHAR *pstrTextureName);
 
@@ -405,11 +409,11 @@ public:
 	void LoadMaterialsFromFile(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList, CGameObject *pParent, FILE *pInFile, CShader *pShader);
 
 	static void LoadAnimationFromFile(FILE *pInFile, CLoadedModelInfo *pLoadedModel);
-	static CGameObject *LoadFrameHierarchyFromFile(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList, ID3D12RootSignature *pd3dGraphicsRootSignature, CGameObject *pParent, FILE *pInFile, CShader *pShader, int *pnSkinnedMeshes);
+	static CGameObject *LoadFrameHierarchyFromFile(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList, ID3D12RootSignature *pd3dGraphicsRootSignature, CGameObject *pParent, FILE *pInFile, CShader *pShader, int *pnSkinnedMeshes, Layout objType);
 
-	static CLoadedModelInfo *LoadGeometryAndAnimationFromFile(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList, ID3D12RootSignature *pd3dGraphicsRootSignature, const char *pstrFileName, CShader *pShader);
+	static CLoadedModelInfo *LoadGeometryAndAnimationFromFile(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList, ID3D12RootSignature *pd3dGraphicsRootSignature, const char *pstrFileName, CShader *pShader, Layout objType);
 
-	static CGameObject* LoadGeometryFromFile(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, const char* pstrFileName, CShader* pShader);
+	static CGameObject* LoadGeometryFromFile(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, const char* pstrFileName, CShader* pShader, Layout objType);
 
 	static void PrintFrameInfo(CGameObject *pGameObject, CGameObject *pParent);
 };
@@ -426,20 +430,58 @@ public:
 	virtual void Render(ID3D12GraphicsCommandList *pd3dCommandList, CCamera *pCamera = NULL);
 };
 
-class CIndustryMap : public CGameObject
-{
-public:
-	CIndustryMap(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature);
-	virtual ~CIndustryMap();
 
-	virtual void Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera = NULL);
+class CSiren : public CGameObject
+{
+private:
+	CGameObject* m_ppSirenCap = NULL;
+	CGameObject* m_ppSirenBell = NULL;
+
+	float m_AnimationDegree = 360.0;
+public:
+	CSiren();
+	virtual ~CSiren();
+
+	virtual void OnPrepareAnimate();
+	virtual void Animate(float fTimeElapsed);
 };
 
-class CBossObject : public CGameObject
+#define DOOR_ANIMATION_TIME 5.0f
+
+class CFrontDoor : public CGameObject
 {
+private:
+	float m_AnimationDistance = DOOR_ANIMATION_TIME;
+	CGameObject* m_pLeftDoorFrame = NULL;
+	CGameObject* m_pRightDoorFrame = NULL;
 public:
-	CBossObject(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, CLoadedModelInfo* pModel, int nAnimationTracks);
-	virtual ~CBossObject();
+	CFrontDoor();
+	virtual ~CFrontDoor();
+
+	virtual void OnPrepareAnimate();
+	virtual void Animate(float fTimeElapsed);
 };
 
+class CEmergencyDoor : public CGameObject
+{
+private:
+	float m_AnimationDegree = 180.0f;
+public:
+	CEmergencyDoor();
+	virtual ~CEmergencyDoor();
 
+	virtual void Animate(float fTimeElapsed);
+};
+
+class CShutterDoor : public CGameObject
+{
+private:
+	float m_AnimationDistance = 1.5f;//1.9f;
+	CGameObject* m_pShutter = NULL;
+public:
+	CShutterDoor();
+	virtual ~CShutterDoor();
+
+	virtual void OnPrepareAnimate();
+	virtual void Animate(float fTimeElapsed);
+};

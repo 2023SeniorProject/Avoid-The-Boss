@@ -1,15 +1,31 @@
 #pragma once
 #include "GameObject.h"
-#include "PlayerInfo.h"
 
 enum class PLAYER_TYPE
 {
 	OWNER,OTHER_PLAYER,NONE
 };
 
-#define INTERACTION_TIME 60
+enum class CHARACTER_TYPE: int32
+{
+	BOSS = 0, YELLOW_EMP = 1, MASK_EMP, CAP_EMP, GOGGLE_EMP, COUNT
+};
+
+static const char *g_pstrCharactorRefernece[5] =
+{
+	"Model/Boss_Idle.bin",
+	"Model/Character1_Idle.bin",
+	"Model/Character2_Idle.bin",
+	"Model/Character3_Idle.bin",
+	"Model/Character4_Idle.bin"
+};
+
+#define BOSS_INTERACTION_TIME 60 //25프레임 (기존 65)
+#define EMPLOYEE_INTERACTION_TIME 40 //20프레임
+
 class CPlayer : public CGameObject
 {
+	friend class CSession;
 protected:
 	 
 	XMFLOAT3					m_xmf3Position = XMFLOAT3(0.0f, 0.0f, 0.0f);
@@ -17,7 +33,6 @@ protected:
 	XMFLOAT3					m_xmf3Up = XMFLOAT3(0.0f, 1.0f, 0.0f);
 	XMFLOAT3					m_xmf3Look = XMFLOAT3(0.0f, 0.0f, 1.0f);
 	XMFLOAT3					m_xmf3Scale = XMFLOAT3(1.0f, 1.0f, 1.0f);
-
 	
 	float m_fPitch;
 	float m_fYaw;
@@ -35,16 +50,13 @@ public:
 	int16 m_sid = -1; // 자신으 Session Id
 	std::mutex m_lock; // 자신의 Lock
 	BoundingSphere m_playerBV; // BV = bounding volume
-	XMFLOAT3					m_predictPos = XMFLOAT3(0, 0, 0);
-	bool m_OnInteraction = false;
-	int m_InteractionCountTime = INTERACTION_TIME;
-
+	CHARACTER_TYPE m_nCharacterType;
+	bool m_hide = false;// 플레이어를 가릴 것이냐 그릴 것이냐
 public: 
 	CPlayer();
 	virtual ~CPlayer();
 	
 	XMFLOAT3 GetPosition() const { return(m_xmf3Position); }
-	XMFLOAT3& GetPredictPos() { return(m_predictPos); }
 	XMFLOAT3 GetLookVector() { return(m_xmf3Look); }
 	XMFLOAT3 GetUpVector() { return(m_xmf3Up); }
 	XMFLOAT3 GetRightVector() { return(m_xmf3Right); }
@@ -52,7 +64,6 @@ public:
 	{
 		m_xmf3Look = look;
 		m_xmf3Right = Vector3::CrossProduct(m_xmf3Up, m_xmf3Look, true);
-		m_xmf3Up = Vector3::CrossProduct(m_xmf3Look, m_xmf3Right, true);
 	}
 	void SetVelocity(const XMFLOAT3& xmf3Velocity) { m_xmf3Velocity = xmf3Velocity; }
 	void SetPlayerSid(const int16& sid) { m_sid = sid; }
@@ -60,13 +71,11 @@ public:
 	{
 		MakePosition(xmf3Position);
 	}
-	void SetPredicPos(const XMFLOAT3& pred) { m_predictPos = pred; }
 	void SetScale(const XMFLOAT3& xmf3Scale) { m_xmf3Scale = xmf3Scale; }
 	void MakePosition(const XMFLOAT3& xmf3Position)
 	{
 		m_xmf3Position = xmf3Position;
 	}
-
 
 	const XMFLOAT3& GetVelocity() const { return(m_xmf3Velocity); }
 	float GetYaw() { return(m_fYaw); }
@@ -82,16 +91,8 @@ public:
 	void SetSpeed(const XMFLOAT3& xmf3Shift);
 	void UpdateMove(const XMFLOAT3& velocity);
 
-	void ProcesesInput();
-	 
-	void SetOnInteraction(bool value) 
-	{
-		m_OnInteraction = value; 
-	}
-	void OnInteractive();
-
 	//플레이어를 회전하는 함수이다. 
-	void Rotate(float x, float y, float z);
+	virtual void Rotate(float x, float y, float z);
 
 	//플레이어의 위치와 회전 정보를 경과 시간에 따라 갱신하는 함수이다.
 	virtual void Update(float fTimeElapsed, PLAYER_TYPE ptype);
@@ -150,19 +151,11 @@ public:
 };
 
 
-class CWorker : public CPlayer
+
+struct SwitchInformation
 {
-public:
-
-	CWorker(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature);
-	virtual ~CWorker();
-public:
-	virtual CCamera* ChangeCamera(DWORD nNewCameraMode, float fTimeElapsed);
-	virtual void OnPlayerUpdateCallback();
-	virtual void OnCameraUpdateCallback();
-	virtual void Move(DWORD dwDirection, float fDistance);
-	virtual void Update(float fTimeElapsed, PLAYER_TYPE ptype);
-
+	XMFLOAT3 position;
+	float radius; //raderArea
 };
 
 

@@ -88,6 +88,13 @@ CCamera* CEmployee::ChangeCamera(DWORD nNewCameraMode, float fTimeElapsed)
 	return(m_pCamera);
 }
 
+void CEmployee::OnPlayerUpdateCallback()
+{
+}
+
+void CEmployee::OnCameraUpdateCallback()
+{
+}
 
 void CEmployee::Move(DWORD dwDirection, float fDistance)
 {
@@ -122,6 +129,7 @@ void CEmployee::Move(DWORD dwDirection, float fDistance)
 void CEmployee::Update(float fTimeElapsed, PLAYER_TYPE ptype)
 {
 	CPlayer::Update(fTimeElapsed, ptype);
+
 	if (GetAvailableSwitchIdx() != -1) m_bIsInSwitchArea = true;
 	else m_bIsInSwitchArea = false;
 	
@@ -173,29 +181,32 @@ void CEmployee::ProcessInput(const int16& inputKey)
 	{
 		int32 switchIdx = GetAvailableSwitchIdx(); // 몇 번 스위치 영역에 있는지 파악한다.
 
-		if (switchIdx != -1)
-		{
-			CGenerator* targetGenerator = mainGame.m_pScene->m_ppSwitches[switchIdx];
-			targetGenerator->m_lock.lock(); // 다른 플레이어가 활성화 했을 경우를 생각해서
-			if (IsPlayerCanSwitchInteraction() && !targetGenerator->m_bOtherPlayerInteractionOn)
-				// 다른 플레이어가 상호작용 상태가 아닐 때 && 플레이어가 스위치 위치에 있다면
+			if (switchIdx != -1)
 			{
-				if (!m_bIsPlayerOnSwitchInteration && !targetGenerator->m_bSwitchActive) // 플레이어가 상호작용 상태가 아니였다면
+				CGenerator* targetGenerator = mainGame.m_pScene->m_ppSwitches[switchIdx];
+				targetGenerator->m_lock.lock(); // 다른 플레이어가 활성화 했을 경우를 생각해서
+				if (IsPlayerCanSwitchInteraction() && !targetGenerator->m_bOtherPlayerInteractionOn)
+					// 다른 플레이어가 상호작용 상태가 아닐 때 && 플레이어가 스위치 위치에 있다면
 				{
-					SetInteractionAnimation(true); // 캐릭터 애니메이션 재생을 시작한다.
-					m_bIsPlayerOnSwitchInteration = true; // 플레이어가 상호작용 상태임을 기록한다.
-					targetGenerator->InteractAnimation(true); // 발전기 애니메이션 재생을 시작한다.
-					targetGenerator->SetAnimationCount(BUTTON_ANIM_FRAME);
-
-					SC_EVENTPACKET packet;
-					packet.eventId = switchIdx + 2;
-					packet.size = sizeof(SC_EVENTPACKET);
-					packet.type = SC_PACKET_TYPE::GAMEEVENT;
-					clientCore._client->DoSend(&packet);
+					if (!m_bIsPlayerOnSwitchInteration && !targetGenerator->m_bSwitchActive) // 플레이어가 상호작용 상태가 아니였다면 
+					{	
+						SetInteractionAnimation(true); // 캐릭터 애니메이션 재생을 시작한다.
+						m_bIsPlayerOnSwitchInteration = true; // 플레이어가 상호작용 상태임을 기록한다.
+						targetGenerator->InteractAnimation(true); // 발전기 애니메이션 재생을 시작한다.
+						targetGenerator->SetAnimationCount(BUTTON_ANIM_FRAME);
+						
+						SC_EVENTPACKET packet;
+						packet.eventId = switchIdx + 2;
+						packet.size = sizeof(SC_EVENTPACKET);
+						packet.type = SC_PACKET_TYPE::GAMEEVENT;
+						clientCore._client->DoSend(&packet);
+					}
 				}
+				targetGenerator->m_lock.unlock();
+				dwDirection = 0;
+				dwDirection |= DIR_BUTTON_F;
 			}
 		}
-	}
 	//UCHAR pKeyBuffer[256];
 	// 방향키를 바이트로 처리한다.
 	//if (::GetKeyboardState(pKeyBuffer))

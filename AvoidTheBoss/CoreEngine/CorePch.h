@@ -4,7 +4,7 @@
 #include "CoreGlobal.h"
 #include "CoreMacro.h"
 #include "CoreTLS.h"
-#include "RWLock.h"
+//#include "RWLock.h"
 
 
 #include <vector>
@@ -82,8 +82,7 @@ using namespace DirectX;
 using namespace DirectX::PackedVector;
 
 #include "protocol.h"
-#include "CollisionDetector.h"
-#define PLAYERNUM 1
+
 
 
 bool XMVerifyCPUSupport(); // 응용프로그램에서 SIMD 기능(벡터 연산 명령집합 확장 기능 / 벡터의 병렬 연산 ) 제공여부 확인 
@@ -108,8 +107,9 @@ using Microsoft::WRL::ComPtr;
 //1.0f = 1m 
 #define UNIT 1.0f // 1m = 1 unit
 
-
-const float PLAYER_VELOCITY = UNIT * 1.2f;
+#define PLAYERNUM 4
+const float PLAYER_VELOCITY = UNIT * 3.f;
+const float BOSS_VELOCITY = UNIT * 2.f;
 
 extern UINT	gnCbvSrvDescriptorIncrementSize;
 extern UINT	gnRtvDescriptorIncrementSize;
@@ -137,6 +137,13 @@ inline void Swap(float* pfS, float* pfT) { float fTemp = *pfS; *pfS = *pfT; *pfT
 #define ANIMATION_TYPE_PINGPONG			2
 
 #define ANIMATION_CALLBACK_EPSILON		0.0165f
+
+
+enum Layout
+{
+	PLAYER, MAP, BOUDS, BULLET, SWITCH,  SIREN, DOOR, GENERATOR ,SOUND
+};
+
 
 //3차원 벡터의 연산
 namespace Vector3
@@ -393,7 +400,6 @@ namespace Plane
 	}
 }
 
-<<<<<<< Updated upstream
 #define DIR_FORWARD	 0x01
 #define DIR_BACKWARD 0x02
 #define DIR_LEFT	 0x04

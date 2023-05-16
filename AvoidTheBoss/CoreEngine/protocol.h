@@ -6,12 +6,48 @@
 // 클라 -> 서버 패킷
 
 enum C_PACKET_TYPE : uint8 { ACQ_LOGIN = 101, ACQ_LOGOUT = 102, CCHAT = 103, CKEY = 104 ,CROT = 105, CMOVE = 106 };
-enum S_PACKET_TYPE : uint8 { LOGIN_OK = 201,  LOGIN_FAIL = 202 , SCHAT = 203, SKEY = 204, SROT = 205, SPOS = 206, GAME_START = 207};
+enum S_PACKET_TYPE : uint8 { LOGIN_OK = 201,  LOGIN_FAIL = 202 , SCHAT = 203, SKEY = 204, SROT = 205, SPOS = 206, GAME_START = 207, SWITCH_ANIM = 209,SWITCH_ANIM_CANCEL = 210};
+enum SC_PACKET_TYPE : uint8 { GAMEEVENT = 208};
 
 enum C_ROOM_PACKET_TYPE : uint8 { ACQ_MK_RM = 115, ACQ_ENTER_RM = 116, EXIT_CRM = 117 }; // 방 생성, 방 삭제, 입장 , 종료 
 enum S_ROOM_PACKET_TYPE : uint8 { MK_RM_OK = 119, MK_RM_FAIL = 120, HIDE_RM = 121, REP_ENTER_RM = 122, REP_EXIT_RM = 123 }; // 방 생성, 방 삭제, 입장 , 종료 
 
+enum class EVENT_TYPE : uint8 
+{
+	ATTACK_EVENT = 0,
+	
+	COOLTIME_EVENT = 1,
+	
+	// ========= 스위치 관련 상호작용 이벤트 =========
+	SWITCH_ONE_START_EVENT = 2,
+	SWITCH_TWO_START_EVENT = 3,
+	SWITCH_THREE_START_EVENT = 4,
+	SWITCH_ONE_END_EVENT = 5,
+	SWITCH_TWO_END_EVENT = 6,
+	SWITCH_THREE_END_EVENT = 7,
+	SWITCH_ONE_ACTIVATE_EVENT = 8,
+	SWITCH_TWO_ACTIVATE_EVENT = 9,
+	SWITCH_THREE_ACTIVATE_EVENT = 10,
 
+	// ========  플레이어 숨기는 이벤트 ==============
+	HIDE_PLAYER_ONE = 11,
+	HIDE_PLAYER_TWO = 12,
+	HIDE_PLAYER_THREE = 13,
+	HIDE_PLAYER_FOUR = 14,
+
+	// ======= 플레이어 죽음 이벤트 =========== // 피격시 붉은 피격 이펙트 연출 or 피격 애니메이션 재생
+	ATTACKED_PLAYER_ONE = 15,
+	ATTACKED_PLAYER_TWO = 16,
+	ATTACKED_PLAYER_THREE = 17,
+	ATTACKED_PLAYER_FOUR = 18,
+
+	// ======= 플레이어 죽음 이벤트 ===========
+	DOWN_PLAYER_ONE = 19,
+	DOWN_PLAYER_TWO = 20,
+	DOWN_PLAYER_THREE = 21,
+	DOWN_PLAYER_FOUR = 22,
+	// ========= 플레이어 상호작용 애니메이션
+};
 
 #pragma pack (push, 1)
 
@@ -66,7 +102,7 @@ struct C2S_KEY
 	uint8 size;
 	uint8 type;
 	uint8 key; // 입력 키
-	DirectX::XMFLOAT3 dir; // 플레이어 방향
+	float x,z; // 플레이어 방향 // 키 입력의 변화가 있을 때만 전송
 };
 
 
@@ -74,14 +110,14 @@ struct C2S_ROTATE
 {
 	uint8 size;
 	uint8 type;
-	float angle;
-};
+	int32 angle;
+}; // 마우스 회전 시 , 매 프레임마다 전송
 
 struct C2S_ATTACK
 {
 	uint8 size;
 	uint8 type;
-	int16 cid;
+	int16 cid; // 타겟
 	int8 wf; // 발생 시점 월드 프레임
 };
 
@@ -115,6 +151,7 @@ struct S2C_KEY
 	uint8 type;
 	int16 sid;
 	uint8 key;
+	float x, z;
 };
 
 struct S2C_POS
@@ -122,7 +159,9 @@ struct S2C_POS
 	uint8 size;
 	uint8 type;
 	int16 sid;
-	DirectX::XMFLOAT3 predicPos;
+	uint8 fidx;
+	float x;
+	float z;
 };
 
 struct S2C_ROTATE
@@ -130,7 +169,7 @@ struct S2C_ROTATE
 	uint8 size;
 	uint8 type;
 	int16 sid;
-	float angle;
+	int32 angle;
 };
 
 struct S2C_ROOM_CREATE
@@ -165,6 +204,21 @@ struct S2C_HIDE_ROOM
 	uint8 size;
 	uint8 type;
 	int32 rmNum;
+};
+
+// 클라 / 서버 공용
+struct SC_EVENTPACKET
+{
+	uint8 size;
+	uint8 type;
+	uint8 eventId; // 0: 발전기 시작 / 1: 발전기 완료 // 2: 사장님 공격 처리 // 3: 사장님 공격 쿨타임 
+};
+
+struct S2C_SWITCH_ANIM
+{
+	uint8 size;
+	uint8 type;
+	uint8 idx;
 };
 
 #pragma pack (pop)

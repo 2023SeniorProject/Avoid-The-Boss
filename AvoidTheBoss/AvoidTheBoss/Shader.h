@@ -42,7 +42,7 @@ public:
 	virtual void UpdateShaderVariable(ID3D12GraphicsCommandList4  *pd3dCommandList, XMFLOAT4X4 *pxmf4x4World) { }
 
 	virtual void OnPrepareRender(ID3D12GraphicsCommandList4  *pd3dCommandList, int nPipelineState=0);
-	virtual void Render(ID3D12GraphicsCommandList4  *pd3dCommandList, CCamera *pCamera);
+	virtual void Render(ID3D12GraphicsCommandList4  *pd3dCommandList, CCamera *pCamera, bool bRaster);
 
 	virtual void ReleaseUploadBuffers() { }
 
@@ -105,7 +105,7 @@ public:
 
 	virtual void ReleaseUploadBuffers();
 
-	virtual void Render(ID3D12GraphicsCommandList4  *pd3dCommandList, CCamera *pCamera);
+	virtual void Render(ID3D12GraphicsCommandList4  *pd3dCommandList, CCamera *pCamera,bool bRaster);
 
 	CGameObject						**m_ppObjects = 0;
 	int								m_nObjects = 0;
@@ -136,7 +136,7 @@ public:
 	virtual ~CBulletObjectsShader();
 
 	virtual void BuildObjects(ID3D12Device5* pd3dDevice, ID3D12GraphicsCommandList4 * pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, CLoadedModelInfo* pModel, void* pContext = NULL);
-	virtual void Render(ID3D12GraphicsCommandList4 * pd3dCommandList, CCamera* pCamera);
+	virtual void Render(ID3D12GraphicsCommandList4 * pd3dCommandList, CCamera* pCamera, bool bRaster);
 };
 
 class CDoorObjectsShader : public CStandardObjectsShader
@@ -192,7 +192,7 @@ public:
 
 	virtual void ReleaseUploadBuffers();
 
-	virtual void Render(ID3D12GraphicsCommandList4  *pd3dCommandList, CCamera *pCamera);
+	virtual void Render(ID3D12GraphicsCommandList4  *pd3dCommandList, CCamera *pCamera,bool bRaster);
 
 protected:
 	CGameObject						**m_ppObjects = 0;

@@ -70,7 +70,7 @@ public:
 
 	virtual void Update(HWND hWnd);
 	void AnimateObjects();
-	void Render(ID3D12GraphicsCommandList4  * pd3dCommandList, CCamera* pCamera);
+	void Render(ID3D12GraphicsCommandList4  * pd3dCommandList, CCamera* pCamera, bool bRaster);
 	bool CollisionCheck();
 	//void InteractionUpdate(DWORD dwDirection);
 	void ReleaseUploadBuffers();

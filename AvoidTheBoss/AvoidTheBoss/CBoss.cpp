@@ -248,6 +248,7 @@ void CBoss::ProcessInput(DWORD& dwDirection)
 				m_InteractionCountTime = BOSS_INTERACTION_TIME;
 			}
 		}
+
 	}
 }
 

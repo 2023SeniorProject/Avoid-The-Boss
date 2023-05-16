@@ -678,7 +678,7 @@ void CGameScene::AnimateObjects()
 	}
 }
 
-void CGameScene::Render(ID3D12GraphicsCommandList4  * pd3dCommandList, CCamera* pCamera)
+void CGameScene::Render(ID3D12GraphicsCommandList4  * pd3dCommandList, CCamera* pCamera,bool bRaster)
 {
 	if (m_pd3dGraphicsRootSignature) pd3dCommandList->SetGraphicsRootSignature(m_pd3dGraphicsRootSignature);
 	if (m_pd3dCbvSrvDescriptorHeap) pd3dCommandList->SetDescriptorHeaps(1, &m_pd3dCbvSrvDescriptorHeap);
@@ -691,10 +691,10 @@ void CGameScene::Render(ID3D12GraphicsCommandList4  * pd3dCommandList, CCamera* 
 	D3D12_GPU_VIRTUAL_ADDRESS d3dcbLightsGpuVirtualAddress = m_pd3dcbLights->GetGPUVirtualAddress();
 	pd3dCommandList->SetGraphicsRootConstantBufferView(2, d3dcbLightsGpuVirtualAddress); //Lights
 
-	if (m_pSkyBox) m_pSkyBox->Render(pd3dCommandList, pCamera);
+	if (m_pSkyBox) m_pSkyBox->Render(pd3dCommandList, pCamera,bRaster);
 
-	for (int i = 0; i < m_nGameObjects; i++) if (m_ppGameObjects[i]) m_ppGameObjects[i]->Render(pd3dCommandList, pCamera);
-	for (int i = 0; i < m_nShaders; i++) if (m_ppShaders[i]) m_ppShaders[i]->Render(pd3dCommandList, pCamera);
+	for (int i = 0; i < m_nGameObjects; i++) if (m_ppGameObjects[i]) m_ppGameObjects[i]->Render(pd3dCommandList, pCamera,bRaster);
+	for (int i = 0; i < m_nShaders; i++) if (m_ppShaders[i]) m_ppShaders[i]->Render(pd3dCommandList, pCamera,bRaster);
 
 	for (int i = 0; i < m_nHierarchicalGameObjects; i++)
 	{
@@ -702,13 +702,13 @@ void CGameScene::Render(ID3D12GraphicsCommandList4  * pd3dCommandList, CCamera* 
 		{
 			m_ppHierarchicalGameObjects[i]->Animate(m_fElapsedTime);
 			if (!m_ppHierarchicalGameObjects[i]->m_pSkinnedAnimationController) m_ppHierarchicalGameObjects[i]->UpdateTransform(NULL);
-			m_ppHierarchicalGameObjects[i]->Render(pd3dCommandList, pCamera);
+			m_ppHierarchicalGameObjects[i]->Render(pd3dCommandList, pCamera, bRaster);
 		}
 	}
 
 	for (int i = 0; i < PLAYERNUM; ++i)
 	{
-		if(!_players[i]->m_hide) _players[i]->Render(pd3dCommandList, pCamera);
+		if(!_players[i]->m_hide) _players[i]->Render(pd3dCommandList, pCamera,bRaster);
 	}
 }
 

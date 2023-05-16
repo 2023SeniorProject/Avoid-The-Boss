@@ -590,6 +590,7 @@ void CGameObject::AddRef()
 
 void CGameObject::Release() 
 { 
+
 	if (m_pChild) m_pChild->Release();
 	if (m_pSibling) m_pSibling->Release();
 
@@ -703,10 +704,8 @@ void CGameObject::Animate(float fTimeElapsed)
 	if (m_pChild) m_pChild->Animate(fTimeElapsed);
 }
 
-void CGameObject::Render(
-	
-	
-	ID3D12GraphicsCommandList4   *pd3dCommandList, CCamera *pCamera)
+
+void CGameObject::Render(ID3D12GraphicsCommandList4* pd3dCommandList, CCamera* pCamera, bool bRaster)
 {
 	if (m_pSkinnedAnimationController) m_pSkinnedAnimationController->UpdateShaderVariables(pd3dCommandList);
 
@@ -720,17 +719,17 @@ void CGameObject::Render(
 			{
 				if (m_ppMaterials[i])
 				{
-					if (m_ppMaterials[i]->m_pShader) m_ppMaterials[i]->m_pShader->Render(pd3dCommandList, pCamera);
+					if (m_ppMaterials[i]->m_pShader) m_ppMaterials[i]->m_pShader->Render(pd3dCommandList, pCamera, bRaster);
 					m_ppMaterials[i]->UpdateShaderVariable(pd3dCommandList);
 				}
 
-				m_pMesh->Render(pd3dCommandList, i);
+				m_pMesh->Render(pd3dCommandList, i, bRaster);
 			}
 		}
 	}
 
-	if (m_pSibling) m_pSibling->Render(pd3dCommandList, pCamera);
-	if (m_pChild) m_pChild->Render(pd3dCommandList, pCamera);
+	if (m_pSibling) m_pSibling->Render(pd3dCommandList, pCamera, bRaster);
+	if (m_pChild) m_pChild->Render(pd3dCommandList, pCamera, bRaster);
 }
 
 void CGameObject::CreateShaderVariables(ID3D12Device5 *pd3dDevice, 
@@ -1272,11 +1271,11 @@ CSkyBox::~CSkyBox()
 {
 }
 
-void CSkyBox::Render(ID3D12GraphicsCommandList4   *pd3dCommandList, CCamera *pCamera)
+void CSkyBox::Render(ID3D12GraphicsCommandList4   *pd3dCommandList, CCamera *pCamera, bool bRaster)
 {
 	XMFLOAT3 xmf3CameraPos = pCamera->GetPosition();
 
-	CGameObject::Render(pd3dCommandList, pCamera);
+	CGameObject::Render(pd3dCommandList, pCamera, bRaster);
 }
 
 

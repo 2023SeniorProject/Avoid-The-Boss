@@ -208,7 +208,7 @@ void CShader::OnPrepareRender(ID3D12GraphicsCommandList4   *pd3dCommandList, int
 	if (m_pd3dPipelineState) pd3dCommandList->SetPipelineState(m_pd3dPipelineState);
 }
 
-void CShader::Render(ID3D12GraphicsCommandList4   *pd3dCommandList, CCamera *pCamera)
+void CShader::Render(ID3D12GraphicsCommandList4   *pd3dCommandList, CCamera *pCamera, bool bRaster)
 {
 	OnPrepareRender(pd3dCommandList);
 }
@@ -375,11 +375,9 @@ void CStandardObjectsShader::ReleaseUploadBuffers()
 	for (int j = 0; j < m_nObjects; j++) if (m_ppObjects[j]) m_ppObjects[j]->ReleaseUploadBuffers();
 }
 
-void CStandardObjectsShader::Render(
-	
-	ID3D12GraphicsCommandList4*pd3dCommandList, CCamera *pCamera)
+void CStandardObjectsShader::Render(ID3D12GraphicsCommandList4*pd3dCommandList, CCamera *pCamera,bool bRaster)
 {
-	CStandardShader::Render(pd3dCommandList, pCamera);
+	CStandardShader::Render(pd3dCommandList, pCamera,bRaster);
 
 	for (int j = 0; j < m_nObjects; j++)
 	{
@@ -387,7 +385,7 @@ void CStandardObjectsShader::Render(
 		{
 			m_ppObjects[j]->Animate(m_fElapsedTime);
 			m_ppObjects[j]->UpdateTransform(NULL);
-			m_ppObjects[j]->Render(pd3dCommandList, pCamera);
+			m_ppObjects[j]->Render(pd3dCommandList, pCamera, bRaster);
 		}
 	}
 }
@@ -426,16 +424,16 @@ void CSkinnedAnimationObjectsShader::ReleaseUploadBuffers()
 	for (int j = 0; j < m_nObjects; j++) if (m_ppObjects[j]) m_ppObjects[j]->ReleaseUploadBuffers();
 }
 
-void CSkinnedAnimationObjectsShader::Render(ID3D12GraphicsCommandList4      *pd3dCommandList, CCamera *pCamera)
+void CSkinnedAnimationObjectsShader::Render(ID3D12GraphicsCommandList4*pd3dCommandList, CCamera *pCamera, bool bRaster)
 {
-	CSkinnedAnimationStandardShader::Render(pd3dCommandList, pCamera);
+	CSkinnedAnimationStandardShader::Render(pd3dCommandList, pCamera, bRaster);
 
 	for (int j = 0; j < m_nObjects; j++)
 	{
 		if (m_ppObjects[j])
 		{
 			m_ppObjects[j]->Animate(m_fElapsedTime);
-			m_ppObjects[j]->Render(pd3dCommandList, pCamera);
+			m_ppObjects[j]->Render(pd3dCommandList, pCamera, bRaster);
 		}
 	}
 }
@@ -518,9 +516,9 @@ void CBulletObjectsShader::BuildObjects(ID3D12Device5* pd3dDevice,ID3D12Graphics
 	CreateShaderVariables(pd3dDevice, pd3dCommandList);
 }
 
-void CBulletObjectsShader::Render(ID3D12GraphicsCommandList4  * pd3dCommandList, CCamera* pCamera)
+void CBulletObjectsShader::Render(ID3D12GraphicsCommandList4  * pd3dCommandList, CCamera* pCamera,bool bRaster)
 {
-	CStandardShader::Render(pd3dCommandList, pCamera);
+	CStandardShader::Render(pd3dCommandList, pCamera, bRaster);
 	for (int j = 0; j < m_nObjects; j++)
 	{
 		if (m_ppObjects[j])
@@ -530,7 +528,7 @@ void CBulletObjectsShader::Render(ID3D12GraphicsCommandList4  * pd3dCommandList,
 				m_ppObjects[j]->Animate(m_fElapsedTime);
 				m_ppObjects[j]->UpdateTransform(NULL);
 				if(((CBullet*)m_ppObjects[j])->GetOnShoot())
-					m_ppObjects[j]->Render(pd3dCommandList, pCamera);
+					m_ppObjects[j]->Render(pd3dCommandList, pCamera, bRaster);
 			}
 		}
 	}
@@ -561,7 +559,7 @@ void CDoorObjectsShader::BuildObjects(ID3D12Device5* pd3dDevice, ID3D12GraphicsC
 
 	m_ppObjects[1] = new CEmergencyDoor();
 	m_ppObjects[1]->SetChild(pEmergencyDoor);
-	m_ppObjects[1]->SetPosition(XMFLOAT3(-25.60735, 0.01800204, -22.68291f));
+	m_ppObjects[1]->SetPosition(XMFLOAT3(-25.60735f, 0.01800204f, -22.68291f));
 	m_ppObjects[1]->Rotate(0.0f, 90.0f, 0.0f);
 	m_ppObjects[1]->OnPrepareAnimate();
 	m_ppObjects[1]->objLayer = Layout::DOOR;
@@ -607,7 +605,7 @@ void CSirenObjectsShader::BuildObjects(ID3D12Device5* pd3dDevice, ID3D12Graphics
 
 	m_ppObjects[0] = new CSiren();
 	m_ppObjects[0]->SetChild(pSiren);
-	m_ppObjects[0]->SetPosition(XMFLOAT3(23.60255, 3.744244, 19.36822));
+	m_ppObjects[0]->SetPosition(XMFLOAT3(23.60255f, 3.744244f, 19.36822f));
 	m_ppObjects[0]->Rotate(-0.0f, -0.0f, 90.0f);
 	m_ppObjects[0]->OnPrepareAnimate();
 	m_ppObjects[0]->objLayer = Layout::SIREN;
@@ -615,7 +613,7 @@ void CSirenObjectsShader::BuildObjects(ID3D12Device5* pd3dDevice, ID3D12Graphics
 
 	m_ppObjects[1] = new CSiren();
 	m_ppObjects[1]->SetChild(pSiren);
-	m_ppObjects[1]->SetPosition(XMFLOAT3(23.60255, 3.744244, 4.83103));
+	m_ppObjects[1]->SetPosition(XMFLOAT3(23.60255f, 3.744244f, 4.83103f));
 	m_ppObjects[1]->Rotate(-0.0f, -0.0f, 90.0f);
 	m_ppObjects[1]->OnPrepareAnimate();
 	m_ppObjects[1]->objLayer = Layout::SIREN;
@@ -623,7 +621,7 @@ void CSirenObjectsShader::BuildObjects(ID3D12Device5* pd3dDevice, ID3D12Graphics
 
 	m_ppObjects[2] = new CSiren();
 	m_ppObjects[2]->SetChild(pSiren);
-	m_ppObjects[2]->SetPosition(XMFLOAT3(23.60255, 3.744244,-0.008120117));
+	m_ppObjects[2]->SetPosition(XMFLOAT3(23.60255f, 3.744244f,-0.008120117f));
 	m_ppObjects[2]->Rotate(-0.0f, -0.0f, 90.0f);
 	m_ppObjects[2]->OnPrepareAnimate();
 	m_ppObjects[2]->objLayer = Layout::SIREN;
@@ -631,7 +629,7 @@ void CSirenObjectsShader::BuildObjects(ID3D12Device5* pd3dDevice, ID3D12Graphics
 
 	m_ppObjects[3] = new CSiren();
 	m_ppObjects[3]->SetChild(pSiren);
-	m_ppObjects[3]->SetPosition(XMFLOAT3(23.60255, 3.744244, -14.57508));
+	m_ppObjects[3]->SetPosition(XMFLOAT3(23.60255f, 3.744244f, -14.57508f));
 	m_ppObjects[3]->Rotate(0.0f, -0.0f, 90.0f);
 	m_ppObjects[3]->OnPrepareAnimate();
 	m_ppObjects[3]->objLayer = Layout::SIREN;
@@ -639,70 +637,70 @@ void CSirenObjectsShader::BuildObjects(ID3D12Device5* pd3dDevice, ID3D12Graphics
 
 	m_ppObjects[4] = new CSiren();
 	m_ppObjects[4]->SetChild(pSiren);
-	m_ppObjects[4]->SetPosition(XMFLOAT3(-23.6237, 3.744244, 19.47554));
+	m_ppObjects[4]->SetPosition(XMFLOAT3(-23.6237f, 3.744244f, 19.47554f));
 	m_ppObjects[4]->Rotate(0.0f, 0.0f, -90.0f);
 	m_ppObjects[4]->OnPrepareAnimate();
 	m_ppObjects[1]->objLayer = Layout::SIREN;
 
 	m_ppObjects[5] = new CSiren();
 	m_ppObjects[5]->SetChild(pSiren);
-	m_ppObjects[5]->SetPosition(XMFLOAT3(-23.6237, 3.744244, 4.938357));
+	m_ppObjects[5]->SetPosition(XMFLOAT3(-23.6237f, 3.744244f, 4.938357f));
 	m_ppObjects[5]->Rotate(0.0f, 0.0f, -90.0f);;
 	m_ppObjects[5]->OnPrepareAnimate();
 	m_ppObjects[5]->objLayer = Layout::SIREN;
 
 	m_ppObjects[6] = new CSiren();
 	m_ppObjects[6]->SetChild(pSiren);
-	m_ppObjects[6]->SetPosition(XMFLOAT3(-23.6237, 3.744244, 0.09920654));
+	m_ppObjects[6]->SetPosition(XMFLOAT3(-23.6237f, 3.744244f, 0.09920654f));
 	m_ppObjects[6]->Rotate(0.0f, 0.0f, -90.0f);
 	m_ppObjects[6]->OnPrepareAnimate();
 	m_ppObjects[6]->objLayer = Layout::SIREN;
 
 	m_ppObjects[7] = new CSiren();
 	m_ppObjects[7]->SetChild(pSiren);
-	m_ppObjects[7]->SetPosition(XMFLOAT3(-23.6237, 3.744244, -14.46775));
+	m_ppObjects[7]->SetPosition(XMFLOAT3(-23.6237f, 3.744244f, -14.46775f));
 	m_ppObjects[7]->Rotate(0.0f, 0.0f, -90.0f);
 	m_ppObjects[7]->OnPrepareAnimate();
 	m_ppObjects[7]->objLayer = Layout::SIREN;
 
 	m_ppObjects[8] = new CSiren();
 	m_ppObjects[8]->SetChild(pSiren);
-	m_ppObjects[8]->SetPosition(XMFLOAT3(-19.46681, 3.744244, -23.56555));
+	m_ppObjects[8]->SetPosition(XMFLOAT3(-19.46681f, 3.744244f, -23.56555f));
 	m_ppObjects[8]->Rotate(90.0f, 0.0f, 0.0f);
 	m_ppObjects[8]->OnPrepareAnimate();
 	m_ppObjects[8]->objLayer = Layout::SIREN;
 
 	m_ppObjects[9] = new CSiren();
 	m_ppObjects[9]->SetChild(pSiren);
-	m_ppObjects[9]->SetPosition(XMFLOAT3(-4.909707, 3.744244, -23.56555));
+	m_ppObjects[9]->SetPosition(XMFLOAT3(-4.909707f, 3.744244f, -23.56555f));
 	m_ppObjects[9]->Rotate(90.0f, 0.0f, 0.0f);
 	m_ppObjects[9]->OnPrepareAnimate();
 	m_ppObjects[9]->objLayer = Layout::SIREN;
 
 	m_ppObjects[10] = new CSiren();
 	m_ppObjects[10]->SetChild(pSiren);
-	m_ppObjects[10]->SetPosition(XMFLOAT3(4.786877, 3.744244, -23.56555));
+	m_ppObjects[10]->SetPosition(XMFLOAT3(4.786877f, 3.744244f, -23.56555f));
 	m_ppObjects[10]->Rotate(90.0f, 0.0f, 0.0f);
 	m_ppObjects[10]->OnPrepareAnimate();
 	m_ppObjects[10]->objLayer = Layout::SIREN;
 
 	m_ppObjects[11] = new CSiren();
 	m_ppObjects[11]->SetChild(pSiren);
-	m_ppObjects[11]->SetPosition(XMFLOAT3(19.33877, 3.744244, -23.56555));
+	m_ppObjects[11]->SetPosition(XMFLOAT3(19.33877f, 3.744244f, -23.56555f));
 	m_ppObjects[11]->Rotate(90.0f, 0.0f, 0.0f);
 	m_ppObjects[11]->OnPrepareAnimate();
 	m_ppObjects[11]->objLayer = Layout::SIREN;
 
 	m_ppObjects[12] = new CSiren();
 	m_ppObjects[12]->SetChild(pSiren);
-	m_ppObjects[12]->SetPosition(XMFLOAT3(4.893795, 3.744244, 23.64812));
+	m_ppObjects[12]->SetPosition(XMFLOAT3(4.893795f, 3.744244f, 23.64812f));
 	m_ppObjects[12]->Rotate(-90.0f, 0.0f, 0.0f);
 	m_ppObjects[12]->OnPrepareAnimate();
 	m_ppObjects[12]->objLayer = Layout::SIREN;
 
 	m_ppObjects[13] = new CSiren();
 	m_ppObjects[13]->SetChild(pSiren);
-	m_ppObjects[13]->SetPosition(XMFLOAT3(19.45037, 3.744244, 23.64812));
+	m_ppObjects[13]->SetPosition(XMFLOAT3(19.45037f, 3.744244f, 23.64812f));
 	m_ppObjects[13]->Rotate(-90.0f, -0.0f, 0.0f);
 	m_ppObjects[13]->OnPrepareAnimate();
 	m_ppObjects[13]->objLayer = Layout::SIREN;
@@ -716,7 +714,7 @@ void CSirenObjectsShader::BuildObjects(ID3D12Device5* pd3dDevice, ID3D12Graphics
 
 	m_ppObjects[15] = new CSiren();
 	m_ppObjects[15]->SetChild(pSiren);
-	m_ppObjects[15]->SetPosition(XMFLOAT3(-19.35391, 3.744244, 23.64812));
+	m_ppObjects[15]->SetPosition(XMFLOAT3(-19.35391f, 3.744244f, 23.64812f));
 	m_ppObjects[15]->Rotate(-90.0f, 0.0f, 0.0f);
 	m_ppObjects[15]->OnPrepareAnimate();
 	m_ppObjects[15]->objLayer = Layout::SIREN;
@@ -742,21 +740,21 @@ void CGeneratorObjectsShader::BuildObjects(ID3D12Device5* pd3dDevice, ID3D12Grap
 
 	m_ppObjects[0] = new CGenerator();
 	m_ppObjects[0]->SetChild(pGenerator);
-	m_ppObjects[0]->SetPosition(XMFLOAT3(0.0f, 0.0f, -22.82));
+	m_ppObjects[0]->SetPosition(XMFLOAT3(0.0f, 0.0f, -22.82f));
 	m_ppObjects[0]->Rotate(0.0f, 0.0f, 0.0f);
 	m_ppObjects[0]->OnPrepareAnimate();
 	m_ppObjects[0]->objLayer = Layout::GENERATOR;
 
 	m_ppObjects[1] = new CGenerator();
 	m_ppObjects[1]->SetChild(pGenerator);
-	m_ppObjects[1]->SetPosition(XMFLOAT3(-22.884, 0.0f, 2.46665f));
+	m_ppObjects[1]->SetPosition(XMFLOAT3(-22.884f, 0.0f, 2.46665f));
 	m_ppObjects[1]->Rotate(0.0f, 90.0f, 0.0f);
 	m_ppObjects[1]->OnPrepareAnimate();
 	m_ppObjects[1]->objLayer = Layout::GENERATOR;
 
 	m_ppObjects[2] = new CGenerator();
 	m_ppObjects[2]->SetChild(pGenerator);
-	m_ppObjects[2]->SetPosition(XMFLOAT3(22.95006, 0.0f, 2.506552f));
+	m_ppObjects[2]->SetPosition(XMFLOAT3(22.95006f, 0.0f, 2.506552f));
 	m_ppObjects[2]->Rotate(0.0f, -90.0f, 0.0f);
 	m_ppObjects[2]->OnPrepareAnimate();
 	m_ppObjects[2]->objLayer = Layout::GENERATOR;

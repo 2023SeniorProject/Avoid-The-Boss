@@ -360,10 +360,10 @@ public:
 
 	virtual void OnPrepareAnimate() { }
 	virtual void Animate(float fTimeElapsed);
-	virtual void Update(float fTimeElapsed){ }
+	virtual void Update(float fTimeElapsed) { }
 
 	virtual void OnPrepareRender() { }
-	virtual void Render(ID3D12GraphicsCommandList4  *pd3dCommandList, CCamera *pCamera=NULL);
+	virtual void Render(ID3D12GraphicsCommandList4 *pd3dCommandList, CCamera* pCamera, bool bRaster);
 
 	virtual void CreateShaderVariables(ID3D12Device5 *pd3dDevice, ID3D12GraphicsCommandList4  *pd3dCommandList);
 	virtual void UpdateShaderVariables(ID3D12GraphicsCommandList4  *pd3dCommandList);
@@ -430,9 +430,7 @@ public:
 		ID3D12GraphicsCommandList4   *pd3dCommandList, ID3D12RootSignature *pd3dGraphicsRootSignature);
 	virtual ~CSkyBox();
 
-	virtual void Render(
-		
-		ID3D12GraphicsCommandList4    *pd3dCommandList, CCamera *pCamera = NULL);
+	virtual void Render(ID3D12GraphicsCommandList4    *pd3dCommandList, CCamera *pCamera, bool bRaster);
 };
 
 

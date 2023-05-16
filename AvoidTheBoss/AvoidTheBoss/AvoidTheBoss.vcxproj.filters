@@ -61,6 +61,12 @@
     <ClCompile Include="clientIocpCore.cpp">
       <Filter>ForClient\IocpCore</Filter>
     </ClCompile>
+    <ClCompile Include="DXRHelpers\nv_helpers_dx12\BottomLevelASGenerator.cpp" />
+    <ClCompile Include="DXRHelpers\nv_helpers_dx12\RaytracingPipelineGenerator.cpp" />
+    <ClCompile Include="DXRHelpers\nv_helpers_dx12\RootSignatureGenerator.cpp" />
+    <ClCompile Include="DXRHelpers\nv_helpers_dx12\ShaderBindingTableGenerator.cpp" />
+    <ClCompile Include="DXRHelpers\nv_helpers_dx12\TopLevelASGenerator.cpp" />
+    <ClCompile Include="DXSampleHelper.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameObject.h">
@@ -130,6 +136,13 @@
     <ClInclude Include="CJobQueue.h">
       <Filter>JobQueue</Filter>
     </ClInclude>
+    <ClInclude Include="DXRHelpers\nv_helpers_dx12\BottomLevelASGenerator.h" />
+    <ClInclude Include="DXRHelpers\nv_helpers_dx12\RaytracingPipelineGenerator.h" />
+    <ClInclude Include="DXRHelpers\nv_helpers_dx12\RootSignatureGenerator.h" />
+    <ClInclude Include="DXRHelpers\nv_helpers_dx12\ShaderBindingTableGenerator.h" />
+    <ClInclude Include="DXRHelpers\nv_helpers_dx12\TopLevelASGenerator.h" />
+    <ClInclude Include="DXRHelper.h" />
+    <ClInclude Include="DXSampleHelper.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AvoidTheBoss.cpp">
@@ -167,36 +180,6 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <Image Include="Metal01.dds">
-      <Filter>Resource</Filter>
-    </Image>
-    <Image Include="Lava(Emissive).dds">
-      <Filter>Resource</Filter>
-    </Image>
-    <Image Include="Lava(Diffuse).dds">
-      <Filter>Resource</Filter>
-    </Image>
-    <Image Include="Floor.dds">
-      <Filter>Resource</Filter>
-    </Image>
-    <Image Include="Rock01.dds">
-      <Filter>Resource</Filter>
-    </Image>
-    <Image Include="plane.dds">
-      <Filter>Resource</Filter>
-    </Image>
-    <Image Include="Metal02.dds">
-      <Filter>Resource</Filter>
-    </Image>
-    <Image Include="Stone01.dds">
-      <Filter>Resource</Filter>
-    </Image>
-    <Image Include="Stone.dds">
-      <Filter>Resource</Filter>
-    </Image>
-    <Image Include="small.ico">
-      <Filter>Resource</Filter>
-    </Image>
     <Image Include="AvoidTheBoss.ico">
       <Filter>Resource</Filter>
     </Image>

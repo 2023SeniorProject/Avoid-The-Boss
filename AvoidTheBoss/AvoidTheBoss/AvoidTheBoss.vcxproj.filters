@@ -61,9 +61,6 @@
     <ClCompile Include="clientIocpCore.cpp">
       <Filter>ForClient\IocpCore</Filter>
     </ClCompile>
-    <ClCompile Include="InputManager.cpp">
-      <Filter>InputManager</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameObject.h">
@@ -132,9 +129,6 @@
     </ClInclude>
     <ClInclude Include="CJobQueue.h">
       <Filter>JobQueue</Filter>
-    </ClInclude>
-    <ClInclude Include="InputManager.h">
-      <Filter>InputManager</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -387,9 +381,6 @@
     </Filter>
     <Filter Include="JobQueue">
       <UniqueIdentifier>{c1aa5372-2438-4231-acce-d36167578b94}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="InputManager">
-      <UniqueIdentifier>{a11b81a8-14cf-4562-ac6c-15e3bdb8cc64}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

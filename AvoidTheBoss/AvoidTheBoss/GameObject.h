@@ -401,6 +401,7 @@ public:
 
 public:
 	CAnimationController 			*m_pSkinnedAnimationController = NULL;
+	CAnimationController* m_pSkinnedAnimationController1 = NULL;
 
 	CSkinnedMesh *FindSkinnedMesh(char *pstrSkinnedMeshName);
 	void FindAndSetSkinnedMesh(CSkinnedMesh **ppSkinnedMeshes, int *pnSkinnedMesh);

@@ -21,7 +21,6 @@ public:
 	virtual void PrepareAnimate();
 	virtual void Move(DWORD dwDirection, float fDistance);
 	virtual void Update(float fTimeElapsed, PLAYER_TYPE ptype);
-	virtual void OnInteractionAnimation();
 
 	virtual void ProcessInput(DWORD&); // 04-29 Ãß°¡
 };

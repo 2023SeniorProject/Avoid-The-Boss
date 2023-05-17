@@ -578,6 +578,8 @@ CGameObject::~CGameObject()
 	if (m_ppMaterials) delete[] m_ppMaterials;
 
 	if (m_pSkinnedAnimationController) delete m_pSkinnedAnimationController;
+	if (m_pSkinnedAnimationController1) delete m_pSkinnedAnimationController1;
+
 }
 
 void CGameObject::AddRef() 
@@ -686,11 +688,15 @@ void CGameObject::UpdateTransform(XMFLOAT4X4 *pxmf4x4Parent)
 void CGameObject::SetTrackAnimationSet(int nAnimationTrack, int nAnimationSet)
 {
 	if (m_pSkinnedAnimationController) m_pSkinnedAnimationController->SetTrackAnimationSet(nAnimationTrack, nAnimationSet);
+	if (m_pSkinnedAnimationController1) m_pSkinnedAnimationController1->SetTrackAnimationSet(nAnimationTrack, nAnimationSet);
+
 }
 
 void CGameObject::SetTrackAnimationPosition(int nAnimationTrack, float fPosition)
 {
 	if (m_pSkinnedAnimationController) m_pSkinnedAnimationController->SetTrackPosition(nAnimationTrack, fPosition);
+	if (m_pSkinnedAnimationController1) m_pSkinnedAnimationController1->SetTrackPosition(nAnimationTrack, fPosition);
+
 }
 
 void CGameObject::Animate(float fTimeElapsed)
@@ -698,6 +704,7 @@ void CGameObject::Animate(float fTimeElapsed)
 	OnPrepareRender();
 
 	if (m_pSkinnedAnimationController) m_pSkinnedAnimationController->AdvanceTime(fTimeElapsed, this);
+	if (m_pSkinnedAnimationController1) m_pSkinnedAnimationController1->AdvanceTime(fTimeElapsed, this);
 
 	if (m_pSibling) m_pSibling->Animate(fTimeElapsed);
 	if (m_pChild) m_pChild->Animate(fTimeElapsed);
@@ -706,6 +713,7 @@ void CGameObject::Animate(float fTimeElapsed)
 void CGameObject::Render(ID3D12GraphicsCommandList *pd3dCommandList, CCamera *pCamera)
 {
 	if (m_pSkinnedAnimationController) m_pSkinnedAnimationController->UpdateShaderVariables(pd3dCommandList);
+	if (m_pSkinnedAnimationController1) m_pSkinnedAnimationController1->UpdateShaderVariables(pd3dCommandList);
 
 	if (m_pMesh)
 	{

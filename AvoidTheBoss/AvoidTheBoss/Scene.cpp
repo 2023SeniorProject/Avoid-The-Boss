@@ -239,7 +239,7 @@ void CGameScene::ProcessInput(HWND& hWnd)
 }
 
 void CGameScene::Update(HWND hWnd)
->>>>>>> Stashed changes
+
 {
 	_timer.Tick(0);
 	
@@ -247,13 +247,12 @@ void CGameScene::Update(HWND hWnd)
 		std::unique_lock<std::shared_mutex> wl(_jobQueueLock);
 		_jobQueue->DoTasks();
 	}
-<<<<<<< Updated upstream
-=======
+
 	DWORD dwDirection = 0;
 	
 	UCHAR pKeyBuffer[256];
 	if(::GetKeyboardState(pKeyBuffer));
->>>>>>> Stashed changes
+
 
 	// 마우스 처리는 동일하게 진행되므로 그냥 남겨놨습니다.
 	float cxDelta = 0.0f, cyDelta = 0.0f;

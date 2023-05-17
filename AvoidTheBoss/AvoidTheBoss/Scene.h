@@ -64,20 +64,8 @@ public:
 	ID3D12RootSignature* CreateGraphicsRootSignature(ID3D12Device* pd3dDevice);
 	ID3D12RootSignature* GetGraphicsRootSignature() { return(m_pd3dGraphicsRootSignature); }
 
-	virtual void ProcessInput(HWND hWnd);
-	void AnimateObjects();
-	void Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera);
-	bool CollisionCheck();
 
-	void ReleaseUploadBuffers();
-
-	CPlayer* GetScenePlayer(const int16 sid) 
-=======
-	
-	
-	
 	void AnimateObjects();
-	
 	void ReleaseUploadBuffers();
 	void ChangeMyPlayerCamera() 
 	{

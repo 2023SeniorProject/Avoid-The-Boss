@@ -85,28 +85,10 @@ public:
 	void SetCamera(CCamera* pCamera) { m_pCamera = pCamera; }
 	CCamera* GetCamera() { return(m_pCamera); }
 
-<<<<<<< Updated upstream
-	//플레이어를 이동하는 함수이다. 
-	virtual void Move(DWORD dwDirection, float fDistance);
-	void SetSpeed(const XMFLOAT3& xmf3Shift);
-	void UpdateMove(const XMFLOAT3& velocity);
-
 	//플레이어를 회전하는 함수이다. 
 	virtual void Rotate(float x, float y, float z);
 
-	//플레이어의 위치와 회전 정보를 경과 시간에 따라 갱신하는 함수이다.
-	virtual void Update(float fTimeElapsed, PLAYER_TYPE ptype);
 
-	virtual void OnPlayerUpdateCallback();
-	void SetPlayerUpdatedContext(LPVOID pContext) { m_pPlayerUpdatedContext = pContext; }
-
-	virtual void OnCameraUpdateCallback() { }
-	void SetCameraUpdatedContext(LPVOID pContext) { m_pCameraUpdatedContext = pContext; }
-=======
-	//플레이어를 회전하는 함수이다. 
-	virtual void Rotate(float x, float y, float z);
-	
->>>>>>> Stashed changes
 
 	virtual void CreateShaderVariables(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList
 		* pd3dCommandList);
@@ -120,9 +102,8 @@ public:
 	//플레이어의 위치와 회전축으로부터 월드 변환 행렬을 생성하는 함수이다. 
 	virtual void OnPrepareRender();
 	//플레이어의 카메라가 3인칭 카메라일 때 플레이어(메쉬)를 렌더링한다. 
-<<<<<<< Updated upstream
-	virtual void Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera =NULL);
-=======
+
+	
 	
 
 public: //04-29 추가함수 
@@ -145,9 +126,8 @@ public:
 	
 	void SetnInteractionCountTime(int value) { m_InteractionCountTime = value; }
 	int GetnInteractionCountTime() { return m_InteractionCountTime; }
-
 	virtual void OnInteractionAnimation() {}
->>>>>>> Stashed changes
+
 };
 
 

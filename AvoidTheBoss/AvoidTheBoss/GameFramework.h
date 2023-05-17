@@ -11,11 +11,8 @@ class CGameFramework
 	friend class moveEvnet;
 	friend class posEvent;
 	friend class CSession;
-<<<<<<< Updated upstream
-=======
 	friend class CEmployee;
 	friend class CGameScene;
->>>>>>> Stashed changes
 private:
 	HINSTANCE m_hInstance;
 	HWND m_hWnd;

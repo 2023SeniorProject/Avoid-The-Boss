@@ -23,12 +23,10 @@ public:
 		return;
 	};
 
-<<<<<<< Updated upstream
-	virtual void ProcessInput(HWND hWnd) {}
-=======
+
 	virtual void ProcessInput(HWND& hWnd) {}
 	virtual void Update(HWND hWnd) {}
 	virtual void Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera) {}
->>>>>>> Stashed changes
+
 };
 

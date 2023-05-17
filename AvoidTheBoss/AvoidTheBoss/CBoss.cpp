@@ -90,14 +90,7 @@ CCamera* CBoss::ChangeCamera(DWORD nNewCameraMode, float fTimeElapsed)
 	return(m_pCamera);
 }
 
-void CBoss::OnPlayerUpdateCallback()
-{
 
-}
-
-void CBoss::OnCameraUpdateCallback()
-{
-}
 
 void CBoss::Rotate(float x, float y, float z)
 {

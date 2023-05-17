@@ -171,11 +171,8 @@
     <ClInclude Include="clientIocpCore.h" />
     <ClInclude Include="GameFramework.h" />
     <ClInclude Include="GameObject.h" />
-<<<<<<< Updated upstream
-=======
     <ClInclude Include="CJobQueue.h" />
     <ClInclude Include="InputManager.h" />
->>>>>>> Stashed changes
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="Player.h" />

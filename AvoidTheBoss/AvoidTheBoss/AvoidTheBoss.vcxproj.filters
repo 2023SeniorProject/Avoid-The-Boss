@@ -34,8 +34,6 @@
     <ClCompile Include="SceneInterface.cpp">
       <Filter>SceneInterface</Filter>
     </ClCompile>
-<<<<<<< Updated upstream
-=======
     <ClCompile Include="CBullet.cpp">
       <Filter>GameObject</Filter>
     </ClCompile>
@@ -60,13 +58,12 @@
     <ClCompile Include="CJobQueue.cpp">
       <Filter>JobQueue</Filter>
     </ClCompile>
-    <ClCompile Include="clientIocpCore.cpp">
-      <Filter>ForClient\IocpCore</Filter>
-    </ClCompile>
     <ClCompile Include="InputManager.cpp">
       <Filter>Mananger</Filter>
     </ClCompile>
->>>>>>> Stashed changes
+    <ClCompile Include="clientIocpCore.cpp">
+      <Filter>ForClient\IocpCore</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameObject.h">
@@ -139,7 +136,6 @@
     <ClInclude Include="InputManager.h">
       <Filter>Mananger</Filter>
     </ClInclude>
->>>>>>> Stashed changes
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AvoidTheBoss.cpp">
@@ -170,7 +166,7 @@
       <Filter>AvoidTheBoss</Filter>
     </ClCompile>
     <ClCompile Include="clientIocpCore.cpp">
-      <Filter>ClientIocpCore</Filter>
+      <Filter>ForClient/IocpCore</Filter>
     </ClCompile>
     <ClCompile Include="SceneInterface.cpp">
       <Filter>SceneInterface</Filter>

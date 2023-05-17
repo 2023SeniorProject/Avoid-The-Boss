@@ -42,23 +42,12 @@ void CPlayer::Move(int16 dwDirection, float fDistance)
 	XMFLOAT3 xmf3Shift = XMFLOAT3(0, 0, 0);
 	if (LOBYTE(dwDirection))
 	{	
-		//화살표 키 ‘↑’를 누르면 로컬 z-축 방향으로 이동(전진)한다. ‘↓’를 누르면 반대 방향으로 이동한다. 
-<<<<<<< Updated upstream
-		if (dwDirection & DIR_FORWARD) 
-			if (dwDirection & DIR_FORWARD) xmf3Shift = Vector3::Add(xmf3Shift, m_xmf3Look, fDistance);
-		if (dwDirection & DIR_BACKWARD) xmf3Shift = Vector3::Add(xmf3Shift, m_xmf3Look, -fDistance);
-		if (dwDirection & DIR_RIGHT) xmf3Shift = Vector3::Add(xmf3Shift, m_xmf3Right, fDistance);
-		if (dwDirection & DIR_LEFT) xmf3Shift = Vector3::Add(xmf3Shift, m_xmf3Right, -fDistance);
-		if (dwDirection & DIR_UP) xmf3Shift = Vector3::Add(xmf3Shift, m_xmf3Up, fDistance);
-		if (dwDirection & DIR_DOWN) xmf3Shift = Vector3::Add(xmf3Shift, m_xmf3Up, -fDistance);
-		m_predictPos = Vector3::Add(m_xmf3Position, xmf3Shift, (1.f / 30.f)); // 30 ms 뒤의 위치를 계산
-=======
-		
+	
 		if (LOBYTE(dwDirection) & KEY_FORWARD) xmf3Shift = Vector3::Add(xmf3Shift, m_xmf3Look, fDistance);
 		if (LOBYTE(dwDirection) & KEY_BACKWARD) xmf3Shift = Vector3::Add(xmf3Shift, m_xmf3Look, -fDistance);
 		if (LOBYTE(dwDirection) & KEY_RIGHT) xmf3Shift = Vector3::Add(xmf3Shift, m_xmf3Right, fDistance);
 		if (LOBYTE(dwDirection) & KEY_LEFT) xmf3Shift = Vector3::Add(xmf3Shift, m_xmf3Right, -fDistance);
->>>>>>> Stashed changes
+
 		//플레이어를 현재 위치 벡터에서 xmf3Shift 벡터만큼 이동한다
 		m_xmf3Velocity = XMFLOAT3(0, 0, 0);
 		SetVelocity(xmf3Shift);
@@ -68,43 +57,17 @@ void CPlayer::Move(int16 dwDirection, float fDistance)
 
 void CPlayer::Update(float fTimeElapsed, PLAYER_TYPE ptype)
 {
-<<<<<<< Updated upstream
 
-	//플레이어를 속도 벡터 만큼 실제로 이동한다(카메라를 이동할 것이다).
-	XMFLOAT3 xmf3Velocity = Vector3::ScalarProduct(m_xmf3Velocity, fTimeElapsed, false); // 1/60 초 변경 속도를
-	UpdateMove(xmf3Velocity);
-=======
 	XMFLOAT3 vel = Vector3::ScalarProduct(m_xmf3Velocity, fTimeElapsed, false);
 	m_xmf3Position = Vector3::Add(m_xmf3Position, vel);
->>>>>>> Stashed changes
 	m_playerBV.Center = GetPosition();
-	/*플레이어의 위치가 변경될 때 추가로 수행할 작업을 수행한다. 플레이어의 새로운 위치가 유효한 위치가 아닐 수도
-	있고 또는 플레이어의 충돌 검사 등을 수행할 필요가 있다. 이러한 상황에서 플레이어의 위치를 유효한 위치로 다시
-	변경할 수 있다.*/
-	
-	if (m_OnInteraction) OnInteractive();
-
-	if (BoxTree->CheckCollision(m_playerBV)) MakePosition(m_playerBV.Center);
 
 
 	DWORD nCameraMode = m_pCamera->GetMode();
-	//플레이어의 위치가 변경되었으므로 3인칭 카메라를 갱신한다. 
-	if (nCameraMode == THIRD_PERSON_CAMERA) m_pCamera->Update(m_xmf3Position,
-		fTimeElapsed);
-
-	//카메라의 위치가 변경될 때 추가로 수행할 작업을 수행한다. 
-	if (m_pCameraUpdatedContext) OnCameraUpdateCallback();
-
-	//카메라가 3인칭 카메라이면 카메라가 변경된 플레이어 위치를 바라보도록 한다. 
-	if (nCameraMode == THIRD_PERSON_CAMERA) m_pCamera->SetLookAt(m_xmf3Position);
-	else m_pCamera->SetPosition(m_xmf3Position);
-	//카메라의 카메라 변환 행렬을 다시 생성한다. 
-=======
 	if (m_pCamera) m_pCamera->Move(vel);
 	m_pCamera->Update(m_xmf3Position,fTimeElapsed);
 	if (nCameraMode == THIRD_PERSON_CAMERA) m_pCamera->SetLookAt(m_xmf3Position);
 	else m_pCamera->SetPosition(m_xmf3Position);
->>>>>>> Stashed changes
 	m_pCamera->RegenerateViewMatrix();
 	
 }
@@ -214,7 +177,7 @@ void CPlayer::OnPrepareRender()
 void CPlayer::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera)
 {
 	DWORD nCameraMode = (pCamera) ? pCamera->GetMode() : 0x03;
-<<<<<<< Updated upstream
+
 
 	//카메라 모드가 3인칭이면 플레이어 객체를 렌더링한다. 
 	
@@ -222,71 +185,6 @@ void CPlayer::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamer
 	
 }
 
-
-	float MaxDepthofMap = 5000.0f;//sqrt(2) * 50 * UNIT + 2 * UNIT;
-	switch (nNewCameraMode)
-	{
-	case FIRST_PERSON_CAMERA:
-		m_pCamera = OnChangeCamera(FIRST_PERSON_CAMERA, nCurrentCameraMode);
-		m_pCamera->SetTimeLag(0.0f);
-		m_pCamera->SetOffset(XMFLOAT3(0.0f, 1.4f, 0.0f));
-		m_pCamera->GenerateProjectionMatrix(1.01f, MaxDepthofMap, ASPECT_RATIO, 60.0f); //5000.f
-		m_pCamera->SetViewport(0, 0, FRAME_BUFFER_WIDTH, FRAME_BUFFER_HEIGHT, 0.0f, 1.0f);
-		m_pCamera->SetScissorRect(0, 0, FRAME_BUFFER_WIDTH, FRAME_BUFFER_HEIGHT);
-		break;
-	case THIRD_PERSON_CAMERA:
-		m_pCamera = OnChangeCamera(THIRD_PERSON_CAMERA, nCurrentCameraMode);
-		m_pCamera->SetTimeLag(0.0f);
-		m_pCamera->SetOffset(XMFLOAT3(0.0f, 1.7f * UNIT, -5 * UNIT));
-		m_pCamera->GenerateProjectionMatrix(1.01f, MaxDepthofMap, ASPECT_RATIO, 60.0f);
-		m_pCamera->SetViewport(0, 0, FRAME_BUFFER_WIDTH, FRAME_BUFFER_HEIGHT, 0.0f, 1.0f);
-		m_pCamera->SetScissorRect(0, 0, FRAME_BUFFER_WIDTH, FRAME_BUFFER_HEIGHT);
-		break;
-	default:
-		break;
-	}
-	m_pCamera->SetPosition(Vector3::Add(m_xmf3Position, m_pCamera->GetOffset()));
-	return(m_pCamera);
-}
-
-void CWorker::OnPlayerUpdateCallback()
-{
-=======
-	CGameObject::Render(pd3dCommandList, pCamera);
->>>>>>> Stashed changes
-	
-}
-
-void CWorker::OnCameraUpdateCallback()
-{
-}
-
-void CWorker::Move(DWORD dwDirection, float fDistance)
-{
-	if (dwDirection)
-	{
-		m_pSkinnedAnimationController->SetTrackEnable(0, false);
-		m_pSkinnedAnimationController->SetTrackEnable(1, true);
-	}
-	CPlayer::Move(dwDirection, fDistance);
-}
-
-void CWorker::Update(float fTimeElapsed, PLAYER_TYPE ptype)
-{
-	CPlayer::Update(fTimeElapsed, ptype);
-	if (m_pSkinnedAnimationController)
-	{
-		float fLength = sqrtf(m_xmf3Velocity.x * m_xmf3Velocity.x + m_xmf3Velocity.z * m_xmf3Velocity.z);
-		if (::IsZero(fLength))
-		{
-			m_pSkinnedAnimationController->SetTrackEnable(0, true);
-			m_pSkinnedAnimationController->SetTrackEnable(1, false);
-			m_pSkinnedAnimationController->SetTrackPosition(0, 0.0f);
-		}
-	}
-	if(ptype == PLAYER_TYPE::OWNER) m_xmf3Velocity = XMFLOAT3(0.0f, 0.0f, 0.0f);
-
-}
 
 #define _WITH_DEBUG_CALLBACK_DATA
 

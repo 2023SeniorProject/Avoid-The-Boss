@@ -49,6 +49,7 @@ public:
 	virtual void BuildObjects(ID3D12Device5 *pd3dDevice, ID3D12GraphicsCommandList4  *pd3dCommandList, ID3D12RootSignature *pd3dGraphicsRootSignature, CLoadedModelInfo *pModel, void *pContext = NULL) { }
 	virtual void AnimateObjects(float fTimeElapsed) { }
 	virtual void ReleaseObjects() { }
+	ID3D12PipelineState* GetPipelineState() { return m_pd3dPipelineState; }
 
 protected:
 	ID3DBlob							*m_pd3dVertexShaderBlob = NULL;

@@ -29,7 +29,7 @@ class CGameObject;
 class CMesh
 {
 public:
-	CMesh(ID3D12Device5 *pd3dDevice,	ID3D12GraphicsCommandList4* pd3dCommandList);
+	CMesh(ID3D12Device5 *pd3dDevice,ID3D12GraphicsCommandList4* pd3dCommandList);
 	virtual ~CMesh();
 
 private:
@@ -81,6 +81,8 @@ public:
 	virtual void OnPreRender(ID3D12GraphicsCommandList4  *pd3dCommandList, void *pContext);
 	virtual void Render(ID3D12GraphicsCommandList4  *pd3dCommandList, int nSubSet, bool bRaster);
 	virtual void OnPostRender(ID3D12GraphicsCommandList4  *pd3dCommandList, void *pContext);
+
+	ID3D12Resource* GetPositionBuffer() { return m_pd3dPositionBuffer; }
 };
 
 class CSkyBoxMesh : public CMesh

@@ -464,6 +464,7 @@ void CGameFramework::FrameAdvance() // 여기서 업데이트랑 렌더링 동시에 진행하는 
 	//	"LapProject ("으로 초기화되었으므로 (m_pszFrameRate+12)에서부터 프레임 레이트를 문자열로 출력
 	//	하여 “ FPS)” 문자열과 합친다.
 
+
 	MoveToNextFrame();
 	
 }

@@ -50,6 +50,8 @@ void Timer::Tick(float fLockFPS)
 {
 	if (fLockFPS != 0.0f) _fTimeElapsedAvg = (int)((1.f / fLockFPS) * 1000.f); // 60 FPS 기준 16값이 나온다.
 	
+
+
 	if (_bStopped)
 	{
 		_fTimeElapsedAvg = 0.0f;
@@ -88,17 +90,17 @@ void Timer::Tick(float fLockFPS)
 	//누적된 프레임 처리 시간의 평균을 구하여 프레임 처리 시간을 구한다. 
 	if (fLockFPS == 0.f) // 고정 fps 아니면 평균 출력
 	{
-		_fTimeElapsedAvg = 0.0f;
+		//_fTimeElapsedAvg = 0.0f;
 		for (ULONG i = 0; i < _nSampleCount; i++) _fTimeElapsedAvg += _SampleFrameTime[i];
 		if (_nSampleCount > 0)
 		{
 			(_fTimeElapsedAvg) /= _nSampleCount;
-
 		}
 	}
+	GetFrameRate();
 }
 
-unsigned long  Timer::GetFrameRate(LPTSTR lpszString, int nCharacters)
+unsigned long Timer::GetFrameRate(LPTSTR lpszString, int nCharacters)
 {
 	//현재 프레임 레이트를 문자열로 변환하여 lpszString 버퍼에 쓰고 “ FPS”와 결합한다. 
 	if (lpszString)
@@ -106,6 +108,7 @@ unsigned long  Timer::GetFrameRate(LPTSTR lpszString, int nCharacters)
 		_itow_s(_curFrameRate, lpszString, nCharacters, 10);
 		wcscat_s(lpszString, nCharacters, _T(" FPS)"));
 	}
+	std::cout << "FPS:" << _curFrameRate << std::endl;
 	return(_curFrameRate);
 }
 

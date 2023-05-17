@@ -13,13 +13,12 @@ CBoss::CBoss(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandLis
 	//CLoadedModelInfo* pBossModel = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, g_pstrCharactorRefernece[(int)m_nCharacterType], NULL, Layout::PLAYER);
 	//SetChild(pBossModel->m_pModelRootObject, true);
 
-	CLoadedModelInfo* pBossUpperModel = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "Model/Boss_Shooting_Run_UpperBody(1).bin", NULL, Layout::PLAYER);
+	CLoadedModelInfo* pBossUpperModel = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "Model/Boss_Shooting_Run_UpperBody_Test.bin", NULL, Layout::PLAYER);
 	SetChild(pBossUpperModel->m_pModelRootObject, true);
 	
-	CLoadedModelInfo* pBossLowerModel = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "Model/Boss_Shooting_Run_LowerBody(1).bin", NULL, Layout::PLAYER);
+	CLoadedModelInfo* pBossLowerModel = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "Model/Boss_Shooting_Run_LowerBody_Test.bin", NULL, Layout::PLAYER);
 	SetChild(pBossLowerModel->m_pModelRootObject, true);
 		
-
 	m_pSkinnedAnimationController = new CAnimationController(pd3dDevice, pd3dCommandList, 1, pBossUpperModel);
 	m_pSkinnedAnimationController1 = new CAnimationController(pd3dDevice, pd3dCommandList, 1, pBossLowerModel);
 	m_pSkinnedAnimationController->SetTrackAnimationSet(0, 0);//Idle

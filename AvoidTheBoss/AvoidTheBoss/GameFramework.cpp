@@ -364,6 +364,11 @@ void CGameFramework::ReleaseObjects()
 
 void CGameFramework::ProcessInput()
 {
+	m_pScene->ProcessInput(m_hWnd);
+}
+
+void CGameFramework::UpdateObject()
+{
 	m_pScene->Update(m_hWnd);
 }
 
@@ -377,9 +382,58 @@ void CGameFramework::FrameAdvance() // 여기서 업데이트랑 렌더링 동시에 진행하는 
 	//타이머의 시간이 갱신되도록 하고 프레임 레이트를 계산한다. 
 	if (_curScene.load() != SceneInfo::GAMEROOM) return;
 	
+	//1 인풋 처리
 	ProcessInput();
+	//2 업데이트 처리
+	UpdateObject();
+	//3 애니메이트 처리
 	AnimateObjects();
+	//4 렌더링 처리
+	Render();
+	WaitForGpuComplete();
+	//GPU가 모든 명령 리스트를 실행할 때 까지 기다린다.
 
+#ifdef _WITH_PRESENT_PARAMETERS
+	DXGI_PRESENT_PARAMETERS dxgiPresentParameters;
+	dxgiPresentParameters.DirtyRectsCount = 0;
+	dxgiPresentParameters.pDirtyRects = NULL;
+	dxgiPresentParameters.pScrollRect = NULL;
+	dxgiPresentParameters.pScrollOffset = NULL;
+	m_pdxgiSwapChain->Present1(1, 0, &dxgiPresentParameters);
+	/*스왑체인을 프리젠트한다. 프리젠트를 하면 현재 렌더 타겟(후면버퍼)의 내용이 전면버퍼로 옮겨지고 렌더 타겟 인
+	덱스가 바뀔 것이다.*/
+#else
+#ifdef _WITH_SYNCH_SWAPCHAIN
+	m_pdxgiSwapChain->Present(1, 0);
+#else
+	m_pdxgiSwapChain->Present(0, 0);
+	#endif
+	#endif
+	//	/*현재의 프레임 레이트를 문자열로 가져와서 주 윈도우의 타이틀로 출력한다. m_pszBuffer 문자열이
+	//	"LapProject ("으로 초기화되었으므로 (m_pszFrameRate+12)에서부터 프레임 레이트를 문자열로 출력
+	//	하여 “ FPS)” 문자열과 합친다.
+
+	MoveToNextFrame();
+	
+}
+
+void CGameFramework::WaitForGpuComplete()
+{
+	//CPU 펜스의 값을 증가한다. 
+	const UINT64 nFenceValue = ++m_nFenceValues[m_nSwapChainBufferIndex];
+	HRESULT hResult = m_pd3dCommandQueue->Signal(m_pd3dFence, nFenceValue);
+
+	//GPU가 펜스의 값을 설정하는 명령을 명령 큐에 추가한다. 
+	if (m_pd3dFence->GetCompletedValue() < nFenceValue)
+	{
+		//펜스의 현재 값이 설정한 값보다 작으면 펜스의 현재 값이 설정한 값이 될 때까지 기다린다.
+		hResult = m_pd3dFence->SetEventOnCompletion(nFenceValue, m_hFenceEvent);
+		::WaitForSingleObject(m_hFenceEvent, INFINITE);
+	}
+}
+
+void CGameFramework::Render()
+{
 	HRESULT hResult = m_pd3dCommandAllocator->Reset();
 	hResult = m_pd3dCommandList->Reset(m_pd3dCommandAllocator, NULL);
 	//명령 할당자와 명령 리스트를 리셋한다.
@@ -440,47 +494,6 @@ void CGameFramework::FrameAdvance() // 여기서 업데이트랑 렌더링 동시에 진행하는 
 	ID3D12CommandList* ppd3dCommandLists[] = { m_pd3dCommandList };
 	m_pd3dCommandQueue->ExecuteCommandLists(1/*_countof(ppd3dCommandLists)*/,
 		ppd3dCommandLists);	//명령 리스트를 명령 큐에 추가하여 실행한다.
-
-	WaitForGpuComplete();
-	//GPU가 모든 명령 리스트를 실행할 때 까지 기다린다.
-
-#ifdef _WITH_PRESENT_PARAMETERS
-	DXGI_PRESENT_PARAMETERS dxgiPresentParameters;
-	dxgiPresentParameters.DirtyRectsCount = 0;
-	dxgiPresentParameters.pDirtyRects = NULL;
-	dxgiPresentParameters.pScrollRect = NULL;
-	dxgiPresentParameters.pScrollOffset = NULL;
-	m_pdxgiSwapChain->Present1(1, 0, &dxgiPresentParameters);
-	/*스왑체인을 프리젠트한다. 프리젠트를 하면 현재 렌더 타겟(후면버퍼)의 내용이 전면버퍼로 옮겨지고 렌더 타겟 인
-	덱스가 바뀔 것이다.*/
-#else
-#ifdef _WITH_SYNCH_SWAPCHAIN
-	m_pdxgiSwapChain->Present(1, 0);
-#else
-	m_pdxgiSwapChain->Present(0, 0);
-	#endif
-	#endif
-	//	/*현재의 프레임 레이트를 문자열로 가져와서 주 윈도우의 타이틀로 출력한다. m_pszBuffer 문자열이
-	//	"LapProject ("으로 초기화되었으므로 (m_pszFrameRate+12)에서부터 프레임 레이트를 문자열로 출력
-	//	하여 “ FPS)” 문자열과 합친다.
-
-	MoveToNextFrame();
-	
-}
-
-void CGameFramework::WaitForGpuComplete()
-{
-	//CPU 펜스의 값을 증가한다. 
-	const UINT64 nFenceValue = ++m_nFenceValues[m_nSwapChainBufferIndex];
-	HRESULT hResult = m_pd3dCommandQueue->Signal(m_pd3dFence, nFenceValue);
-
-	//GPU가 펜스의 값을 설정하는 명령을 명령 큐에 추가한다. 
-	if (m_pd3dFence->GetCompletedValue() < nFenceValue)
-	{
-		//펜스의 현재 값이 설정한 값보다 작으면 펜스의 현재 값이 설정한 값이 될 때까지 기다린다.
-		hResult = m_pd3dFence->SetEventOnCompletion(nFenceValue, m_hFenceEvent);
-		::WaitForSingleObject(m_hFenceEvent, INFINITE);
-	}
 }
 
 void CGameFramework::MoveToNextFrame()

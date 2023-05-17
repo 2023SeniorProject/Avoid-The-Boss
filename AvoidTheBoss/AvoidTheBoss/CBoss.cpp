@@ -90,14 +90,7 @@ CCamera* CBoss::ChangeCamera(DWORD nNewCameraMode, float fTimeElapsed)
 	return(m_pCamera);
 }
 
-void CBoss::OnPlayerUpdateCallback()
-{
 
-}
-
-void CBoss::OnCameraUpdateCallback()
-{
-}
 
 void CBoss::Rotate(float x, float y, float z)
 {
@@ -291,12 +284,13 @@ void CBoss::OnInteractionAnimation() // 상호작용 애니메이션 카운트
 void CBoss::ProcessInput(DWORD& dwDirection)
 {
 	static UCHAR pKeyBuffer[256];
+	
 	if (::GetKeyboardState(pKeyBuffer))
 	{
-		if ((pKeyBuffer[0x57] & 0xF0) || (pKeyBuffer[0x77] & 0xF0)) dwDirection |= DIR_FORWARD;
-		if ((pKeyBuffer[0x53] & 0xF0) || (pKeyBuffer[0x73] & 0xF0)) dwDirection |= DIR_BACKWARD;
-		if ((pKeyBuffer[0x61] & 0xF0) || (pKeyBuffer[0x41] & 0xF0)) dwDirection |= DIR_LEFT;
-		if ((pKeyBuffer[0x44] & 0xF0) || (pKeyBuffer[0x64] & 0xF0)) dwDirection |= DIR_RIGHT;
+		if ((pKeyBuffer[0x57] & 0xF0) || (pKeyBuffer[0x77] & 0xF0)) dwDirection |= KEY_FORWARD;
+		if ((pKeyBuffer[0x53] & 0xF0) || (pKeyBuffer[0x73] & 0xF0)) dwDirection |= KEY_BACKWARD;
+		if ((pKeyBuffer[0x61] & 0xF0) || (pKeyBuffer[0x41] & 0xF0)) dwDirection |= KEY_LEFT;
+		if ((pKeyBuffer[0x44] & 0xF0) || (pKeyBuffer[0x64] & 0xF0)) dwDirection |= KEY_RIGHT;
 		if (pKeyBuffer[VK_SPACE] & 0xF0)
 		{
 			if (m_InteractionCountTime <= 0 && m_OnInteraction==false)

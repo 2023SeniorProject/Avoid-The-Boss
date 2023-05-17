@@ -3,7 +3,6 @@
 #include "GameFramework.h"
 #include "CJobQueue.h"
 #include "InputManager.h"
-
 #include "clientIocpCore.h"
 
 ID3D12DescriptorHeap* CGameScene::m_pd3dCbvSrvDescriptorHeap = NULL;
@@ -227,7 +226,6 @@ void CGameScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandLis
 	CreateShaderVariables(pd3dDevice, pd3dCommandList);
 }
 
-
 void CGameScene::ProcessInput(HWND& hWnd)
 {
 	if (::GetActiveWindow() != hWnd) return;
@@ -333,6 +331,7 @@ void CGameScene::Update(HWND hWnd)
 	str.append(std::to_wstring((int32)(_timer.GetFrameRate())));
 	::SetWindowText(hWnd, str.c_str());
 }
+
 
 void CGameScene::ReleaseObjects()
 {
@@ -571,6 +570,7 @@ void CGameScene::ReleaseUploadBuffers()
 	for (int i = 0; i < m_nGameObjects; i++) if (m_ppGameObjects[i]) m_ppGameObjects[i]->ReleaseUploadBuffers();
 	for (int i = 0; i < m_nHierarchicalGameObjects; i++) m_ppHierarchicalGameObjects[i]->ReleaseUploadBuffers();
 }
+
 
 
 void CGameScene::CreateCbvSrvDescriptorHeaps(ID3D12Device* pd3dDevice, int nConstantBufferViews, int nShaderResourceViews)

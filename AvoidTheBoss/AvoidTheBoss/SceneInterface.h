@@ -23,10 +23,8 @@ public:
 		return;
 	};
 
-
 	virtual void ProcessInput(HWND& hWnd) {}
 	virtual void Update(HWND hWnd) {}
 	virtual void Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera) {}
-
 };
 

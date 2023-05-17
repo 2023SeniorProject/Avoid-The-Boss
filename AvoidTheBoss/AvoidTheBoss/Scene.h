@@ -64,8 +64,11 @@ public:
 	ID3D12RootSignature* CreateGraphicsRootSignature(ID3D12Device* pd3dDevice);
 	ID3D12RootSignature* GetGraphicsRootSignature() { return(m_pd3dGraphicsRootSignature); }
 
-
+	
+	
+	
 	void AnimateObjects();
+	
 	void ReleaseUploadBuffers();
 	void ChangeMyPlayerCamera() 
 	{

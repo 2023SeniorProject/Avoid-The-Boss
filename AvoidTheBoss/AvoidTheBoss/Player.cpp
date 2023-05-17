@@ -42,12 +42,12 @@ void CPlayer::Move(int16 dwDirection, float fDistance)
 	XMFLOAT3 xmf3Shift = XMFLOAT3(0, 0, 0);
 	if (LOBYTE(dwDirection))
 	{	
-	
+		//화살표 키 ‘↑’를 누르면 로컬 z-축 방향으로 이동(전진)한다. ‘↓’를 누르면 반대 방향으로 이동한다. 
+		
 		if (LOBYTE(dwDirection) & KEY_FORWARD) xmf3Shift = Vector3::Add(xmf3Shift, m_xmf3Look, fDistance);
 		if (LOBYTE(dwDirection) & KEY_BACKWARD) xmf3Shift = Vector3::Add(xmf3Shift, m_xmf3Look, -fDistance);
 		if (LOBYTE(dwDirection) & KEY_RIGHT) xmf3Shift = Vector3::Add(xmf3Shift, m_xmf3Right, fDistance);
 		if (LOBYTE(dwDirection) & KEY_LEFT) xmf3Shift = Vector3::Add(xmf3Shift, m_xmf3Right, -fDistance);
-
 		//플레이어를 현재 위치 벡터에서 xmf3Shift 벡터만큼 이동한다
 		m_xmf3Velocity = XMFLOAT3(0, 0, 0);
 		SetVelocity(xmf3Shift);
@@ -57,7 +57,6 @@ void CPlayer::Move(int16 dwDirection, float fDistance)
 
 void CPlayer::Update(float fTimeElapsed, PLAYER_TYPE ptype)
 {
-
 	XMFLOAT3 vel = Vector3::ScalarProduct(m_xmf3Velocity, fTimeElapsed, false);
 	m_xmf3Position = Vector3::Add(m_xmf3Position, vel);
 	m_playerBV.Center = GetPosition();
@@ -177,10 +176,6 @@ void CPlayer::OnPrepareRender()
 void CPlayer::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera)
 {
 	DWORD nCameraMode = (pCamera) ? pCamera->GetMode() : 0x03;
-
-
-	//카메라 모드가 3인칭이면 플레이어 객체를 렌더링한다. 
-	
 	CGameObject::Render(pd3dCommandList, pCamera);
 	
 }

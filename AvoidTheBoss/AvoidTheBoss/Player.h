@@ -87,8 +87,7 @@ public:
 
 	//플레이어를 회전하는 함수이다. 
 	virtual void Rotate(float x, float y, float z);
-
-
+	
 
 	virtual void CreateShaderVariables(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList
 		* pd3dCommandList);
@@ -102,8 +101,6 @@ public:
 	//플레이어의 위치와 회전축으로부터 월드 변환 행렬을 생성하는 함수이다. 
 	virtual void OnPrepareRender();
 	//플레이어의 카메라가 3인칭 카메라일 때 플레이어(메쉬)를 렌더링한다. 
-
-	
 	
 
 public: //04-29 추가함수 

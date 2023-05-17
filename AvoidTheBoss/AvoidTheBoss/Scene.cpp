@@ -2,6 +2,7 @@
 #include "Scene.h"
 #include "GameFramework.h"
 #include "CJobQueue.h"
+#include "InputManager.h"
 #include "clientIocpCore.h"
 
 ID3D12DescriptorHeap* CGameScene::m_pd3dCbvSrvDescriptorHeap = NULL;
@@ -225,6 +226,16 @@ void CGameScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandLis
 	CreateShaderVariables(pd3dDevice, pd3dCommandList);
 }
 
+void CGameScene::ProcessInput(HWND& hWnd)
+{
+	if (::GetActiveWindow() != hWnd) return;
+	_players[_playerIdx]->ProcessInput(m_lastKeyInput);
+	if (InputManager::GetKeyStatus(KEY_TYPE::F) == (uint8)KEY_STATUS::KEY_PRESS) // 상호작용 키를 처음 누른 경우 한정 패킷 보내기
+	{
+	}
+	
+}
+
 void CGameScene::Update(HWND hWnd)
 {
 	_timer.Tick(0);
@@ -234,7 +245,7 @@ void CGameScene::Update(HWND hWnd)
 		_jobQueue->DoTasks();
 	}
 	DWORD dwDirection = 0;
-	_players[_playerIdx]->ProcessInput(dwDirection);
+	
 	UCHAR pKeyBuffer[256];
 	if(::GetKeyboardState(pKeyBuffer));
 
@@ -317,10 +328,7 @@ void CGameScene::Update(HWND hWnd)
 	str.append(std::to_wstring((int32)(_timer.GetFrameRate())));
 	::SetWindowText(hWnd, str.c_str());
 }
-bool CGameScene::CollisionCheck()
-{
-	return false;
-}
+
 
 void CGameScene::ReleaseObjects()
 {
@@ -560,11 +568,7 @@ void CGameScene::ReleaseUploadBuffers()
 	for (int i = 0; i < m_nHierarchicalGameObjects; i++) m_ppHierarchicalGameObjects[i]->ReleaseUploadBuffers();
 }
 
-bool CGameScene::OnExitReadyCount()
-{
-	
-	return false;
-}
+
 
 void CGameScene::CreateCbvSrvDescriptorHeaps(ID3D12Device* pd3dDevice, int nConstantBufferViews, int nShaderResourceViews)
 {

@@ -64,21 +64,23 @@ public:
 	ID3D12RootSignature* CreateGraphicsRootSignature(ID3D12Device* pd3dDevice);
 	ID3D12RootSignature* GetGraphicsRootSignature() { return(m_pd3dGraphicsRootSignature); }
 
-	virtual void Update(HWND hWnd);
+	
+	
+	
 	void AnimateObjects();
-	void Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera);
-	bool CollisionCheck();
-	//void InteractionUpdate(DWORD dwDirection);
+	
 	void ReleaseUploadBuffers();
-
-	bool OnExitReadyCount();
-
 	void ChangeMyPlayerCamera() 
 	{
 		_players[_playerIdx]->OnChangeCamera(FIRST_PERSON_CAMERA, 0.f);
 		m_pCamera = _players[_playerIdx]->GetCamera();
 		m_pd3dcbLights->Map(0, NULL, (void**)&m_pcbMappedLights);
 	}
+public : // SceneInterface 상속 함수
+	virtual void ProcessInput(HWND& hWnd);
+	virtual void Update(HWND hWnd);
+	virtual void Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera);
+public: // 오승담 작성 함수
 	CPlayer* GetScenePlayer(const int32 sid) 
 	{ 
 		for (int i = 0; i < PLAYERNUM; ++i)
@@ -90,7 +92,6 @@ public:
 		}
 		return nullptr;
 	}
-
 	void AddEvent(queueEvent*, float);
 public:
 	Timer _timer;
@@ -126,7 +127,7 @@ public:
 public: // 씬에 있는 오브젝트 관련 변수
 	CPlayer*					_players[4];
 	int16						_playerIdx = 0;
-	uint8						m_lastKeyInput = 0;
+	int16						m_lastKeyInput = 0;
 	int							nSwitch = 3;
 	CGenerator**				m_ppSwitches = NULL;
 	Atomic<int32>				m_ActiveSwitchCnt = 0; // 활성화 된 스위치 카운트;

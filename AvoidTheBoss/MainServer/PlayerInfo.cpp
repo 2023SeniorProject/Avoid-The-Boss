@@ -34,7 +34,6 @@ void PlayerInfo::SetDirection(const XMFLOAT3 look)
 {
 	m_xmf3Look = look;
 	m_xmf3Right = Vector3::CrossProduct(m_xmf3Up, m_xmf3Look, true);
-	//PrintRightVec();
 }
 
 void PlayerInfo::Move(uint8 dwDirection, float fDistance)
@@ -42,10 +41,10 @@ void PlayerInfo::Move(uint8 dwDirection, float fDistance)
 	XMFLOAT3 xmf3Shift = XMFLOAT3(0, 0, 0);
 	if (dwDirection)
 	{	
-		if (dwDirection & DIR_FORWARD)  xmf3Shift = Vector3::Add(xmf3Shift, m_xmf3Look,fDistance);
-		if (dwDirection & DIR_BACKWARD) xmf3Shift = Vector3::Add(xmf3Shift, m_xmf3Look, -fDistance);
-		if (dwDirection & DIR_RIGHT)    xmf3Shift = Vector3::Add(xmf3Shift, m_xmf3Right,fDistance);
-		if (dwDirection & DIR_LEFT)     xmf3Shift = Vector3::Add(xmf3Shift, m_xmf3Right,-fDistance);
+		if (dwDirection &KEY_FORWARD)  xmf3Shift = Vector3::Add(xmf3Shift, m_xmf3Look,fDistance);
+		if (dwDirection &KEY_BACKWARD) xmf3Shift = Vector3::Add(xmf3Shift, m_xmf3Look, -fDistance);
+		if (dwDirection &KEY_RIGHT)    xmf3Shift = Vector3::Add(xmf3Shift, m_xmf3Right,fDistance);
+		if (dwDirection &KEY_LEFT)     xmf3Shift = Vector3::Add(xmf3Shift, m_xmf3Right,-fDistance);
 		//플레이어를 현재 위치 벡터에서 xmf3Shift 벡터만큼 이동한다. 
 		m_xmf3Velocity = XMFLOAT3(0, 0, 0);
 		SetVelocity(xmf3Shift);
@@ -104,10 +103,10 @@ void PlayerInfo::Update(float fTimeElapsed)
 	XMFLOAT3 xmf3Velocity = Vector3::ScalarProduct(m_xmf3Velocity, fTimeElapsed, false);
 	UpdateMove(xmf3Velocity);
 	//std::cout << m_xmf3Position.x << " " << m_xmf3Position.y << "\n";
-	OnPlayerUpdateCallback();
+	LateUpdate();
 }
 
-void PlayerInfo::OnPlayerUpdateCallback()
+void PlayerInfo::LateUpdate()
 {
 	m_playerBV.Center = GetPosition();
 	BoxTree->CheckCollision(m_playerBV, m_xmf3Position);

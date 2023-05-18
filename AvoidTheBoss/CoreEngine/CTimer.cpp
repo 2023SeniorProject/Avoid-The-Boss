@@ -64,14 +64,17 @@ void Timer::Tick(float fLockFPS)
 	// 평균 프레임을 샘플링 하기 위한 코드
 	if (fabsf(_fTimeElapsed - _fTimeElapsedAvg) < 1000.f) // 오차가 0.1초 미만이라면 샘플링을 허용해준다.
 	{
-		::memmove(&_SampleFrameTime[1], _SampleFrameTime, (static_cast<unsigned long long>(MAX_SAMPLE_COUNT) - 1) * sizeof(float));
+		::memmove(&_SampleFrameTime[1], _SampleFrameTime, ((MAX_SAMPLE_COUNT) - 1) * sizeof(float));
 		_SampleFrameTime[0] = _fTimeElapsed;
+		
 		if (_nSampleCount < MAX_SAMPLE_COUNT) _nSampleCount++;
+		
 	}
 
 	_accumulateElapsedTime += _fTimeElapsed;
 	_accumulateFPSLockTime += _fTimeElapsed;
 	_accumulateTimeForHistory += _fTimeElapsed;
+
 	if (fLockFPS != 0.0f && (_fTimeElapsed > _fTimeElapsedAvg))
 	{
 		_nFramePerSec++;
@@ -95,17 +98,13 @@ void Timer::Tick(float fLockFPS)
 			(_fTimeElapsedAvg) /= _nSampleCount;
 
 		}
+		_curFrameRate = _fTimeElapsedAvg;
 	}
 }
 
 unsigned long  Timer::GetFrameRate(LPTSTR lpszString, int nCharacters)
 {
 	//현재 프레임 레이트를 문자열로 변환하여 lpszString 버퍼에 쓰고 “ FPS”와 결합한다. 
-	if (lpszString)
-	{
-		_itow_s(_curFrameRate, lpszString, nCharacters, 10);
-		wcscat_s(lpszString, nCharacters, _T(" FPS)"));
-	}
 	return(_curFrameRate);
 }
 

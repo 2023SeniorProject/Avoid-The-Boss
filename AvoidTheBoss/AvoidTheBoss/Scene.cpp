@@ -298,10 +298,8 @@ void CGameScene::Update(HWND hWnd)
 	m_lastKeyInput = dwDirection;
 	for (int k = 0; k < PLAYERNUM; ++k)
 	{
-		//_players[k]->m_lock.lock();
 		if (k == _playerIdx) _players[k]->Update(_timer.GetTimeElapsed(), PLAYER_TYPE::OWNER);
 		else _players[k]->Update(_timer.GetTimeElapsed(), PLAYER_TYPE::OTHER_PLAYER);
-		//_players[k]->m_lock.unlock();
 	}
 
 	if (m_bIsExitReady) // 탈출 성공 시 , 해야할 일 처리
@@ -327,8 +325,8 @@ void CGameScene::Update(HWND hWnd)
 	str.append(std::to_wstring(_players[_playerIdx]->GetPosition().x));
 	str.append(L" ");
 	str.append(std::to_wstring(_players[_playerIdx]->GetPosition().z));
-	str.append(L")-");
-	str.append(std::to_wstring((int32)(_timer.GetFrameRate())));
+	str.append(L")- FPS: ");
+	str.append(std::to_wstring(_timer.GetFrameRate()));
 	::SetWindowText(hWnd, str.c_str());
 }
 

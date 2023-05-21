@@ -287,7 +287,7 @@ void CBoss::ProcessInput(const int16& dwDirection)
 	Move(dwDirection, BOSS_VELOCITY);
 
 	// 2. 공격 키를 눌렀을 경우 처리 
-	if (HIBYTE(dwDirection) & KEY_SPACE)
+	if (dwDirection & KEY_SPACE)
 	{
 		if (m_InteractionCountTime <= 0 && m_OnInteraction == false)
 		{

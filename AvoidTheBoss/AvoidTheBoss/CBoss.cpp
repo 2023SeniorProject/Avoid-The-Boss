@@ -281,30 +281,20 @@ void CBoss::OnInteractionAnimation() // 상호작용 애니메이션 카운트
 {
 }
 
-void CBoss::ProcessInput(DWORD& dwDirection)
+void CBoss::ProcessInput(const int16& dwDirection)
 {
-	static UCHAR pKeyBuffer[256];
 	
-	if (::GetKeyboardState(pKeyBuffer))
+	if (m_InteractionCountTime <= 0 && m_OnInteraction==false)
 	{
-		if ((pKeyBuffer[0x57] & 0xF0) || (pKeyBuffer[0x77] & 0xF0)) dwDirection |= KEY_FORWARD;
-		if ((pKeyBuffer[0x53] & 0xF0) || (pKeyBuffer[0x73] & 0xF0)) dwDirection |= KEY_BACKWARD;
-		if ((pKeyBuffer[0x61] & 0xF0) || (pKeyBuffer[0x41] & 0xF0)) dwDirection |= KEY_LEFT;
-		if ((pKeyBuffer[0x44] & 0xF0) || (pKeyBuffer[0x64] & 0xF0)) dwDirection |= KEY_RIGHT;
-		if (pKeyBuffer[VK_SPACE] & 0xF0)
-		{
-			if (m_InteractionCountTime <= 0 && m_OnInteraction==false)
-			{
-				SetInteractionAnimation(true);
-				m_InteractionCountTime = BOSS_INTERACTION_TIME;
-				// 05-06 공격 시, 사장님 공격 이벤트 전송
-				SC_EVENTPACKET packet;
-				packet.eventId = (uint8)EVENT_TYPE::ATTACK_EVENT;
-				packet.type = SC_PACKET_TYPE::GAMEEVENT;
-				packet.size = sizeof(SC_EVENTPACKET);
-				clientCore._client->DoSend(&packet);
-			}
-		}
+		SetInteractionAnimation(true);
+		m_InteractionCountTime = BOSS_INTERACTION_TIME;
+		// 05-06 공격 시, 사장님 공격 이벤트 전송
+		SC_EVENTPACKET packet;
+		packet.eventId = (uint8)EVENT_TYPE::ATTACK_EVENT;
+		packet.type = SC_PACKET_TYPE::GAMEEVENT;
+		packet.size = sizeof(SC_EVENTPACKET);
+		clientCore._client->DoSend(&packet);
 	}
+	
 }
 

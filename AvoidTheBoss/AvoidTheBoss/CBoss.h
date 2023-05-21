@@ -22,5 +22,5 @@ public:
 	virtual void Update(float fTimeElapsed, PLAYER_TYPE ptype);
 	virtual void OnInteractionAnimation();
 
-	virtual void ProcessInput(DWORD&); // 04-29 추가
+	virtual void ProcessInput(const int16&); // 04-29 추가
 };

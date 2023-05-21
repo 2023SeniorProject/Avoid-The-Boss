@@ -242,12 +242,12 @@ void CGameScene::ProcessInput(HWND& hWnd)
 	if (InputManager::GetInstance().GetKeyBuffer(KEY_TYPE::A) > 0) keyInput |= KEY_LEFT;
 	if (InputManager::GetInstance().GetKeyBuffer(KEY_TYPE::S) > 0) keyInput |= KEY_BACKWARD;	
 	if (InputManager::GetInstance().GetKeyBuffer(KEY_TYPE::D) > 0) keyInput |= KEY_RIGHT;
-	
+	if (InputManager::GetInstance().GetKeyBuffer(KEY_TYPE::F) > 0) keyInput |= KEY_F;
+	if (InputManager::GetInstance().GetKeyBuffer(KEY_TYPE::SPACE) > 0) keyInput |= KEY_SPACE;
+
 	// ============= 마우스 버튼 관련 처리 ================
 	float cxDelta = 0.0f, cyDelta = 0.0f;
-	
-	std::cout << (int32)LOBYTE(keyInput) << "\n";
-	if (InputManager::GetKeyBuffer(KEY_TYPE::MLBUTTON) != (uint8)KEY_STATUS::KEY_NONE)
+	if (InputManager::GetInstance().GetKeyBuffer(KEY_TYPE::MLBUTTON) > 0 )
 	{
 		
 		POINT ptCursorPos;
@@ -261,10 +261,11 @@ void CGameScene::ProcessInput(HWND& hWnd)
 		}
 		_players[_playerIdx]->Rotate(0.f, cxDelta, 0.0f);
 	}
-	_players[_playerIdx]->Move(keyInput, PLAYER_VELOCITY);
+	_players[_playerIdx]->ProcessInput(keyInput); // 입력된 키를 기반으로 인풋 처리 진행
 	
 
-	// 키입력에 변화가 있거나
+	// 패킷 송신 파트
+	// 키입력에 변화가 있거나 키 입력 중 회전을 수행하는 경우에만.. 이동 관련 패킷을 전송한다.
 	if (m_lastKeyInput != keyInput || (keyInput && cxDelta != 0))
 	{
 

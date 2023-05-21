@@ -102,7 +102,7 @@ void CBoss::PrepareAnimate()
 {
 }
 
-void CBoss::Move(DWORD dwDirection, float fDistance)
+void CBoss::Move(const int16& dwDirection, float fDistance)
 {
 	if (m_pSkinnedAnimationController)
 	{
@@ -283,18 +283,23 @@ void CBoss::OnInteractionAnimation() // 상호작용 애니메이션 카운트
 
 void CBoss::ProcessInput(const int16& dwDirection)
 {
-	
-	if (m_InteractionCountTime <= 0 && m_OnInteraction==false)
+	// 1. Set Move Speed
+	Move(dwDirection, BOSS_VELOCITY);
+
+	// 2. 공격 키를 눌렀을 경우 처리 
+	if (HIBYTE(dwDirection) & KEY_SPACE)
 	{
-		SetInteractionAnimation(true);
-		m_InteractionCountTime = BOSS_INTERACTION_TIME;
-		// 05-06 공격 시, 사장님 공격 이벤트 전송
-		SC_EVENTPACKET packet;
-		packet.eventId = (uint8)EVENT_TYPE::ATTACK_EVENT;
-		packet.type = SC_PACKET_TYPE::GAMEEVENT;
-		packet.size = sizeof(SC_EVENTPACKET);
-		clientCore._client->DoSend(&packet);
+		if (m_InteractionCountTime <= 0 && m_OnInteraction == false)
+		{
+			SetInteractionAnimation(true);
+			m_InteractionCountTime = BOSS_INTERACTION_TIME;
+			// 05-06 공격 시, 사장님 공격 이벤트 전송
+			SC_EVENTPACKET packet;
+			packet.eventId = (uint8)EVENT_TYPE::ATTACK_EVENT;
+			packet.type = SC_PACKET_TYPE::GAMEEVENT;
+			packet.size = sizeof(SC_EVENTPACKET);
+			clientCore._client->DoSend(&packet);
+		}
 	}
-	
 }
 

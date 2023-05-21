@@ -17,7 +17,7 @@ public:
 	virtual CCamera* ChangeCamera(DWORD nNewCameraMode, float fTimeElapsed);
 	virtual void Rotate(float x, float y, float z);
 	virtual void PrepareAnimate();
-	virtual void Move(DWORD dwDirection, float fDistance);
+	virtual void Move(const int16& dwDirection, float fDistance);
 	void AttackAnimationOn();
 	virtual void Update(float fTimeElapsed, PLAYER_TYPE ptype);
 	virtual void OnInteractionAnimation();

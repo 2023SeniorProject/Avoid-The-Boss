@@ -1,0 +1,57 @@
+#pragma once
+
+enum class KEY_TYPE
+{
+	UP = VK_UP,
+	DOWN = VK_DOWN,
+	LEFT = VK_LEFT,
+	RIGHT = VK_RIGHT,
+	SPACE = VK_SPACE,
+	MLBUTTON = VK_LBUTTON,
+	W = 0x57,
+	A = 0x41,
+	S = 0x53,
+	D = 0x44,
+	F = 0x45
+};
+
+enum class KEY_STATUS
+{
+	KEY_NONE = -1, // 애초에 누른 적이 없는 경우
+	KEY_UP = 0, // 키를 눌렀다 땠을 경우
+	KEY_PRESS = 1, // 처음 누른 것
+	KEY_DOWN = 2,  // 이미 눌려있는 것
+	
+	
+};
+
+// 키 입력 처리하기 위한 것 싱글톤 패턴으로 생성한다.
+class InputManager
+{
+private:
+	static InputManager* instance;
+	static int8 m_keyBuffer[256];
+private:
+	InputManager() 
+	{ 
+		for (int i = 0; i < 256; ++i) m_keyBuffer[i] = (int8)KEY_STATUS::KEY_NONE;
+	}
+	InputManager(const InputManager& ref) {}
+	InputManager& operator=(const InputManager& ref) {}
+	~InputManager() {}
+	static void Update(const KEY_TYPE key);
+	static void SetKeyPress(const KEY_TYPE key);
+	static void SetKeyUp(const KEY_TYPE key);
+public:	
+static InputManager& GetInstance() 
+{
+	if (instance == nullptr) instance = new InputManager();
+	return *instance;
+}
+public:
+
+	static void InputStatusUpdate();
+	static void MouseInputStatusUpdate();
+	static int8 GetKeyBuffer(const KEY_TYPE key) { return m_keyBuffer[(int32)key]; }
+};
+

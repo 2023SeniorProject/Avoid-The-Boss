@@ -4,6 +4,7 @@
 #include "GameFramework.h"
 #include "IocpEvent.h"
 #include "ClientPacketEvent.h"
+#include "CBullet.h"
 #include <string>
 
 CSession::CSession()
@@ -156,15 +157,7 @@ void CSession::ProcessPacket(char* packet)
 		pe->_pos = newPos;
 	
 		mainGame.m_pScene->AddEvent(static_cast<queueEvent*>(pe), 0.f);
-		//XMFLOAT3 curPos = player->GetPosition();
-		/*XMFLOAT3 distance = Vector3::Subtract(curPos, newPos);
-		if (Vector3::Length(distance) > 0.2f)
-		{
-			std::cout << "Mass Offset Detected. Reseting Pos\n";
-			player->m_lock.lock();
-			player->MakePosition(XMFLOAT3(posPacket->x, player->GetPosition().y, posPacket->z));
-			player->m_lock.unlock();
-		}*/
+		
 	}
 	break;
 	case S_PACKET_TYPE::SCHAT:
@@ -180,14 +173,15 @@ void CSession::ProcessPacket(char* packet)
 			mainGame.m_pScene->_players[i]->SetPlayerSid(gsp->sids[i]);
 			// 각 플레이어 별로 세션 아이디 부여
 		}
-		// 각 플레이어 초기 위치 값 셋팅
+		// ================= 플레이어 초기 위치 초기화 ==================
 		mainGame.m_pScene->_players[0]->MakePosition(XMFLOAT3(0, 0.25, -20));
-		//mainGame.m_pScene->_players[1]->MakePosition(XMFLOAT3(10, 0.25, -20));
-		//mainGame.m_pScene->_players[2]->MakePosition(XMFLOAT3(15, 0.25, -20));
-		//mainGame.m_pScene->_players[3]->MakePosition(XMFLOAT3(20, 0.25, -20));
-		// 자신의 클라이언트 Idx 값 출력
-
+		if (mainGame.m_pScene->_players[1] != nullptr) mainGame.m_pScene->_players[1]->MakePosition(XMFLOAT3(10, 0.25, -20));
+		if(mainGame.m_pScene->_players[2] != nullptr) mainGame.m_pScene->_players[2]->MakePosition(XMFLOAT3(15, 0.25, -20));
+		if (mainGame.m_pScene->_players[3] != nullptr) mainGame.m_pScene->_players[3]->MakePosition(XMFLOAT3(20, 0.25, -20));
+		// ================= 자신의 클라이언트 IDX 확인 =================
 		std::cout << "MYPLAYER IDX : " << mainGame.m_pScene->_playerIdx << "\n";
+		
+		// ================= 카메라 셋팅 ================================
 		CPlayer* myPlayer = mainGame.m_pScene->_players[mainGame.m_pScene->_playerIdx];
 		std::wstring str = L"Client";
 		str.append(std::to_wstring(mainGame.m_pScene->_playerIdx));
@@ -199,12 +193,12 @@ void CSession::ProcessPacket(char* packet)
 		mainGame.m_pScene->InitScene();
 	}
 	break;
+	// ================ 로그인 관련 처리 ================
 	case S_PACKET_TYPE::LOGIN_OK:
 	{
 		S2C_LOGIN_OK* lo = (S2C_LOGIN_OK*)packet;
 		_cid = lo->cid;
 		_sid = lo->sid;
-
 	}
 	break;
 	case S_PACKET_TYPE::LOGIN_FAIL:
@@ -214,7 +208,7 @@ void CSession::ProcessPacket(char* packet)
 		::SendMessage(mainGame.m_hWnd, WM_QUIT, 0, 0);
 	}
 	break;
-	// ===== 방 관련 패킷 ============
+	// ============= 방 관련 패킷 ============
 	case S_ROOM_PACKET_TYPE::REP_ENTER_RM:
 	{
 		S2C_ROOM_ENTER* re = (S2C_ROOM_ENTER*)packet;
@@ -235,6 +229,7 @@ void CSession::ProcessPacket(char* packet)
 		SC_EVENTPACKET* ev = (SC_EVENTPACKET*)packet;
 		switch ((EVENT_TYPE)ev->eventId)
 		{
+			// ================ 스위치 상호작용 관련 이벤트 ================
 		case EVENT_TYPE::SWITCH_ONE_START_EVENT:
 		case EVENT_TYPE::SWITCH_TWO_START_EVENT:
 		case EVENT_TYPE::SWITCH_THREE_START_EVENT:
@@ -242,6 +237,8 @@ void CSession::ProcessPacket(char* packet)
 			CGenerator* mSwitch = mainGame.m_pScene->m_ppSwitches[ev->eventId - 2];
 			mSwitch->m_lock.lock();
 			mSwitch->m_bOtherPlayerInteractionOn = true;
+			mainGame.m_pScene->m_ppSwitches[ev->eventId - 2]->InteractAnimation(true); // 발전기 애니메이션 재생을 시작한다.
+			mainGame.m_pScene->m_ppSwitches[ev->eventId - 2]->SetAnimationCount(BUTTON_ANIM_FRAME);
 			mSwitch->m_lock.unlock();
 		}
 		break;
@@ -274,6 +271,7 @@ void CSession::ProcessPacket(char* packet)
 			}
 		}
 		break;
+		// ========= 플레이어 접속 종료 처리 ==============
 		case EVENT_TYPE::HIDE_PLAYER_ONE:
 		case EVENT_TYPE::HIDE_PLAYER_TWO:
 		case EVENT_TYPE::HIDE_PLAYER_THREE:
@@ -283,8 +281,39 @@ void CSession::ProcessPacket(char* packet)
 			mainGame.m_pScene->_players[ev->eventId - (uint8)EVENT_TYPE::HIDE_PLAYER_ONE]->m_hide = true;
 		}
 		break;
+		// =========== 플레이어 공격관련 상호작용 ====================
+		case EVENT_TYPE::ATTACK_EVENT:
+			mainGame.m_pScene->_players[0]->SetInteractionAnimation(true);
+			mainGame.m_pScene->_players[0]->m_InteractionCountTime = BOSS_INTERACTION_TIME;
+			((CBoss*)mainGame.m_pScene->_players[0])->m_pBullet->SetOnShoot(true);
+			((CBoss*)mainGame.m_pScene->_players[0])->AttackAnimationOn();
+			break;
 		default:
 			break;
+		}
+	}
+	break;
+	// ================= 플레이어 스위치 애니메이션 관련 패킷 ==================
+	case S_PACKET_TYPE::SWITCH_ANIM:
+	{
+		S2C_SWITCH_ANIM* sw = (S2C_SWITCH_ANIM*)packet;
+		uint8 idx = sw->idx;
+		CEmployee* myPlayer = (CEmployee*)mainGame.m_pScene->_players[idx];
+		if (myPlayer != nullptr)
+		{
+			myPlayer->SetInteractionAnimation(true);
+			myPlayer->SwitchAnimationForOtherClient();
+		}
+	}
+	break;
+	case S_PACKET_TYPE::SWITCH_ANIM_CANCEL:
+	{
+		S2C_SWITCH_ANIM* sw = (S2C_SWITCH_ANIM*)packet;
+		uint8 idx = sw->idx;
+		CPlayer* myPlayer = mainGame.m_pScene->_players[idx];
+		if (myPlayer != nullptr)
+		{
+			myPlayer->SetInteractionAnimation(false);
 		}
 	}
 	break;

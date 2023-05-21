@@ -156,8 +156,9 @@ void AcceptManager::ProcessAccept(AcceptEvent* acceptEvent)
 		{
 			std::cout << "LoginFail" << endl;
 			session->DoSendLoginPacket(false);
-			return;
+			delete session;
 		}
+		else session->DoSendLoginPacket(true);
 		std::cout << "client[" << session->_sid << "] " << "LoginSuccess" << endl;
 	}
 
@@ -177,7 +178,7 @@ void AcceptManager::ProcessAccept(AcceptEvent* acceptEvent)
 		ServerIocpCore._cList.insert(sid);                 // 세션 id 추가
 		ServerIocpCore._clients.try_emplace(sid, session); // 세션 추가 후
 		if (ServerIocpCore._clients[sid]->_cid == 0) ServerIocpCore._rmgr->CreateRoom(sid);
-		else if(ServerIocpCore._clients[sid]->_cid != -1) ServerIocpCore._rmgr->EnterRoom(sid,0);
+		else if(ServerIocpCore._clients[sid]->_cid != 0 &&ServerIocpCore._clients[sid]->_cid != -1) ServerIocpCore._rmgr->EnterRoom(sid,0);
 	}
 	
 	session->_status = USER_STATUS::LOBBY;

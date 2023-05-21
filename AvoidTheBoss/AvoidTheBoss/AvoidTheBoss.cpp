@@ -44,7 +44,10 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
    std::wcin.getline(loginPacket.name, 10);
    std::cout << "PW: ";
    std::wcin.getline(loginPacket.pw, 10);
-   clientCore.InitConnect("127.0.0.1");
+   std::cout << "IP Address: ";
+   char ipaddress[20];
+   std::cin.getline(ipaddress, 20);
+   clientCore.InitConnect(ipaddress);
    clientCore.DoConnect(&loginPacket);
    
    // 전역 문자열을 초기화합니다.
@@ -84,12 +87,10 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
            {
                ::TranslateMessage(&msg);
                ::DispatchMessage(&msg);
+               
            }
        }
-       else
-       {
-          mainGame.FrameAdvance(); // 처리할 윈도우 메세지가 큐에 없을 때 게임프로그램이 CPU사용
-       }
+       mainGame.FrameAdvance(); // 처리할 윈도우 메세지가 큐에 없을 때 게임프로그램이 CPU사용
    }
  
   

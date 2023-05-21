@@ -58,6 +58,9 @@
     <ClCompile Include="CJobQueue.cpp">
       <Filter>JobQueue</Filter>
     </ClCompile>
+    <ClCompile Include="InputManager.cpp">
+      <Filter>Mananger</Filter>
+    </ClCompile>
     <ClCompile Include="clientIocpCore.cpp">
       <Filter>ForClient\IocpCore</Filter>
     </ClCompile>
@@ -130,6 +133,9 @@
     <ClInclude Include="CJobQueue.h">
       <Filter>JobQueue</Filter>
     </ClInclude>
+    <ClInclude Include="InputManager.h">
+      <Filter>Mananger</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AvoidTheBoss.cpp">
@@ -160,7 +166,7 @@
       <Filter>AvoidTheBoss</Filter>
     </ClCompile>
     <ClCompile Include="clientIocpCore.cpp">
-      <Filter>ClientIocpCore</Filter>
+      <Filter>ForClient/IocpCore</Filter>
     </ClCompile>
     <ClCompile Include="SceneInterface.cpp">
       <Filter>SceneInterface</Filter>
@@ -381,6 +387,9 @@
     </Filter>
     <Filter Include="JobQueue">
       <UniqueIdentifier>{c1aa5372-2438-4231-acce-d36167578b94}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Mananger">
+      <UniqueIdentifier>{f06f0dab-99ab-423e-b1d6-855d105af5a6}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

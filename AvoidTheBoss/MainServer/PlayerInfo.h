@@ -26,6 +26,7 @@ public:
 	int32 m_sid = -1;
 	int32 m_idx = -1;
 	bool m_hide = false;
+	int32 m_hp = 5; // 05-06추가 플레이어 HP
 public:
 	PlayerInfo();
 	virtual ~PlayerInfo();
@@ -62,5 +63,5 @@ public:
 	
 	//플레이어의 위치와 회전 정보를 경과 시간에 따라 갱신하는 함수이다.
 	void Update(float fTimeElapsed);
-	void OnPlayerUpdateCallback();
+	void LateUpdate();
 };

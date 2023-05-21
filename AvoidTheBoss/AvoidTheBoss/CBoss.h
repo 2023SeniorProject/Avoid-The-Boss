@@ -4,6 +4,7 @@ class CBullet;
 
 class CBoss : public CPlayer
 {
+	friend class CSession;
 private:
 	CGameObject* m_RightHands = NULL;
 public:
@@ -14,13 +15,11 @@ public:
 	virtual ~CBoss();
 
 	virtual CCamera* ChangeCamera(DWORD nNewCameraMode, float fTimeElapsed);
-	virtual void OnPlayerUpdateCallback();
-	virtual void OnCameraUpdateCallback();
-	
 	virtual void Rotate(float x, float y, float z);
 	virtual void PrepareAnimate();
-	virtual void Move(DWORD dwDirection, float fDistance);
+	virtual void Move(const int16& dwDirection, float fDistance);
+	void AttackAnimationOn();
 	virtual void Update(float fTimeElapsed, PLAYER_TYPE ptype);
 
-	virtual void ProcessInput(DWORD&); // 04-29 추가
+	virtual void ProcessInput(const int16&); // 04-29 추가
 };

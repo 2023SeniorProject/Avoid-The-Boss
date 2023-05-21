@@ -2,6 +2,8 @@
 #include "CEmployee.h"
 #include "clientIocpCore.h"
 #include "GameFramework.h"
+#include "InputManager.h"
+
 #include "Player.h"
 
 
@@ -24,8 +26,6 @@ CEmployee::CEmployee(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCo
 	m_pSkinnedAnimationController->SetTrackAnimationSet(4, 4);//walk
 	m_pSkinnedAnimationController->SetTrackAnimationSet(5, 5);//awake
 	m_pSkinnedAnimationController->SetTrackAnimationSet(6, 6);//button
-	//m_pSkinnedAnimationController->SetTrackAnimationSet(7, 7);//button
-
 
 	m_pSkinnedAnimationController->SetTrackEnable(0, true);
 	m_pSkinnedAnimationController->SetTrackEnable(1, false);
@@ -87,13 +87,6 @@ CCamera* CEmployee::ChangeCamera(DWORD nNewCameraMode, float fTimeElapsed)
 	return(m_pCamera);
 }
 
-void CEmployee::OnPlayerUpdateCallback()
-{
-}
-
-void CEmployee::OnCameraUpdateCallback()
-{
-}
 
 void CEmployee::Move(DWORD dwDirection, float fDistance)
 {
@@ -122,21 +115,36 @@ void CEmployee::Move(DWORD dwDirection, float fDistance)
 		m_pSkinnedAnimationController->SetTrackPosition(0, 0);
 		m_pSkinnedAnimationController->SetTrackPosition(1, 0);
 	}
-	CPlayer::Move(dwDirection, fDistance);
+	CPlayer::Move(dwDirection, PLAYER_VELOCITY);
 }
 
 void CEmployee::Update(float fTimeElapsed, PLAYER_TYPE ptype)
 {
 	CPlayer::Update(fTimeElapsed, ptype);
-
 	if (GetAvailableSwitchIdx() != -1) m_bIsInSwitchArea = true;
 	else m_bIsInSwitchArea = false;
 	
 	if (ptype == PLAYER_TYPE::OWNER) m_xmf3Velocity = XMFLOAT3(0.0f, 0.0f, 0.0f);
+	else if (ptype == PLAYER_TYPE::OTHER_PLAYER)
+	{
+		if(!Vector3::IsZero(m_xmf3Velocity)) SetInteractionAnimation(false);
+	}
 }
 void CEmployee::OnInteractionAnimation()
 {
 
+}
+
+void CEmployee::SwitchAnimationForOtherClient()
+{
+	if (m_OnInteraction)
+	{
+		m_pSkinnedAnimationController->SetTrackEnable(0, false);
+		m_pSkinnedAnimationController->SetTrackEnable(1, false);
+		m_pSkinnedAnimationController->SetTrackEnable(6, true);
+		m_pSkinnedAnimationController->SetTrackPosition(0, 0);
+		m_pSkinnedAnimationController->SetTrackPosition(1, 0);
+	}
 }
 
 int32 CEmployee::GetAvailableSwitchIdx()
@@ -157,69 +165,64 @@ int32 CEmployee::GetAvailableSwitchIdx()
 
 
 // 04-29 직원 키입력 처리 추가
-void CEmployee::ProcessInput(DWORD& dwDirection)
+void CEmployee::ProcessInput(const int16& inputKey)
 {
-
-	UCHAR pKeyBuffer[256];
-	// 방향키를 바이트로 처리한다.
-	if (::GetKeyboardState(pKeyBuffer))
+	Move(inputKey, PLAYER_VELOCITY);
+	
+	if (IsPlayerCanSwitchInteraction()) //  플레이어가 스위치 영역에 있는 경우
 	{
-		if ((pKeyBuffer[0x57] & 0xF0) || (pKeyBuffer[0x77] & 0xF0)) dwDirection |= DIR_FORWARD;
-		if ((pKeyBuffer[0x53] & 0xF0) || (pKeyBuffer[0x73] & 0xF0)) dwDirection |= DIR_BACKWARD;
-		if ((pKeyBuffer[0x61] & 0xF0) || (pKeyBuffer[0x41] & 0xF0)) dwDirection |= DIR_LEFT;
-		if ((pKeyBuffer[0x44] & 0xF0) || (pKeyBuffer[0x64] & 0xF0)) dwDirection |= DIR_RIGHT;
+		int32 switchIdx = GetAvailableSwitchIdx(); // 어느 스위치 영역인지 확인한다.
+		CGenerator* targetGenerator = nullptr;
+		if (switchIdx != -1) targetGenerator = mainGame.m_pScene->m_ppSwitches[switchIdx]; // 2. 활성화 가능한 스위치가 주변에 있다면
+		else return;
 
-		int32 switchIdx = GetAvailableSwitchIdx(); // 몇 번 스위치 영역에 있는지 파악한다.
-		if ((pKeyBuffer[0x46] & 0xF0) || (pKeyBuffer[0x66] & 0xF0)) // F키가 눌렸을 경우
+		if (HIBYTE(inputKey) & KEY_F) // 1. 상호작용 키가 눌려있을 때 
 		{
+			// 1-1. 타겟 스위치 정보를 가져온다
+			targetGenerator->m_lock.lock();
+			if (!targetGenerator->m_bOtherPlayerInteractionOn) // 다른 플레이어가 상호작용 상태가 아니라면
+			{
+				if (InputManager::GetInstance().GetKeyBuffer(KEY_TYPE::F) == (int8)KEY_STATUS::KEY_PRESS &&
+					!targetGenerator->m_bSwitchActive) // 플레이어가 상호작용 상태가 아니였다면
+				{
+					// ====== 플레이어 처리 ==============
+					SetInteractionAnimation(true); // 캐릭터 애니메이션 재생을 활성화 한다.
+					
 
-			if (switchIdx != -1)
-			{
-				CGenerator* targetGenerator = mainGame.m_pScene->m_ppSwitches[switchIdx];
-				targetGenerator->m_lock.lock(); // 다른 플레이어가 활성화 했을 경우를 생각해서
-				if (IsPlayerCanSwitchInteraction() && !targetGenerator->m_bOtherPlayerInteractionOn)
-					// 다른 플레이어가 상호작용 상태가 아닐 때 && 플레이어가 스위치 위치에 있다면
-				{
-					if (!m_bIsPlayerOnSwitchInteration && !targetGenerator->m_bSwitchActive) // 플레이어가 상호작용 상태가 아니였다면 
-					{	
-						SetInteractionAnimation(true); // 캐릭터 애니메이션 재생을 시작한다.
-						m_bIsPlayerOnSwitchInteration = true; // 플레이어가 상호작용 상태임을 기록한다.
-						targetGenerator->InteractAnimation(true); // 발전기 애니메이션 재생을 시작한다.
-						targetGenerator->SetAnimationCount(BUTTON_ANIM_FRAME);
-						
-						SC_EVENTPACKET packet;
-						packet.eventId = switchIdx + 2;
-						packet.size = sizeof(SC_EVENTPACKET);
-						packet.type = SC_PACKET_TYPE::GAMEEVENT;
-						clientCore._client->DoSend(&packet);
-					}
-				}
-				targetGenerator->m_lock.unlock();
-				dwDirection = 0;
-				dwDirection |= DIR_BUTTON_F;
-			}
-		}
-		else // F키가 안눌린 상태일 때
-		{
-			if (switchIdx != -1 && IsPlayerCanSwitchInteraction()) // 발전기 주변 영역에 위치할 경우
-			{
-				CGenerator* targetGenerator = mainGame.m_pScene->m_ppSwitches[switchIdx];
-				targetGenerator->m_lock.lock();
-				SetInteractionAnimation(false);
-				// 그냥 평상시 상태일 때 F키가 안눌렀을 때와 F키가 눌러져있었는데 땐 상황인지 구별
-				if (m_bIsPlayerOnSwitchInteration && !targetGenerator->m_bSwitchActive) // 발전기가 다 활성화가 안되었는데 키를 땐 상황이라면
-				{
-					// 스위치 도중 캔슬 이벤트 패킷을 보낸다 --> 발전기 게이지 초기화
-					targetGenerator->InteractAnimation(false); // 애니메이션 재생을 정지한다.
+					// ========== 발전기 처리 ===============
+					targetGenerator->InteractAnimation(true); // 발전기 애니메이션 재생을 시작한다.
+					targetGenerator->SetAnimationCount(BUTTON_ANIM_FRAME);
+
+					// ==========  패킷 송신 처리 ==================
+					// 키가 한번 입력 됐을 때만 호출하는 것
 					SC_EVENTPACKET packet;
-					packet.eventId = switchIdx + 5;
+					packet.eventId = switchIdx + (int32)EVENT_TYPE::SWITCH_ONE_START_EVENT;
 					packet.size = sizeof(SC_EVENTPACKET);
 					packet.type = SC_PACKET_TYPE::GAMEEVENT;
-					m_bIsPlayerOnSwitchInteration = false;
 					clientCore._client->DoSend(&packet);
+					
 				}
+			}
+		}
+		else // 상호작용 키가 눌러있지 않은 경우
+		{
+				// 키가 누르다 때졌을 때만 처리해야하는 처리들
+			if (InputManager::GetInstance().GetKeyBuffer(KEY_TYPE::F) == (int8)KEY_STATUS::KEY_UP)
+			{
+				// ======== 플레이어 처리 ===============
+				SetInteractionAnimation(false);
 
+				// =======  발전기 처리 =================
+				targetGenerator->m_lock.lock();
+				targetGenerator->InteractAnimation(false); // 애니메이션 재생을 정지한다.
 				targetGenerator->m_lock.unlock();
+				
+				//========= 패킷 송신 처리 ==============
+				SC_EVENTPACKET packet;
+				packet.eventId = switchIdx + (int32)EVENT_TYPE::SWITCH_ONE_END_EVENT;;
+				packet.size = sizeof(SC_EVENTPACKET);
+				packet.type = SC_PACKET_TYPE::GAMEEVENT;
+				clientCore._client->DoSend(&packet);
 			}
 		}
 	}

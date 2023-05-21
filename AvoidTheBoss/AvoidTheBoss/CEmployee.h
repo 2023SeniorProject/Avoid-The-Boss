@@ -11,14 +11,14 @@ public:
 	virtual ~CEmployee();
 
 	virtual CCamera* ChangeCamera(DWORD nNewCameraMode, float fTimeElapsed);
-	virtual void OnPlayerUpdateCallback();
-	virtual void OnCameraUpdateCallback();
+	
 
 	//virtual void Rotate(float x, float y, float z);
 	virtual void Move(DWORD dwDirection, float fDistance);
 	virtual void Update(float fTimeElapsed, PLAYER_TYPE ptype);
 	virtual void OnInteractionAnimation();
-	virtual void ProcessInput(DWORD&);
+	void SwitchAnimationForOtherClient();
+	virtual void ProcessInput(const int16&);
 	bool IsPlayerCanSwitchInteraction() { return m_bIsInSwitchArea; }
 	int32 GetAvailableSwitchIdx();
 

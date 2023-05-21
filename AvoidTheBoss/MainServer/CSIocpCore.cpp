@@ -11,7 +11,7 @@ CSIocpCore::CSIocpCore()
 	_rmgr->Init();
 	BoxTree = new OcTree(XMFLOAT3(0, 0, 0), 60);
 	BoxTree->BuildTree();
-	BoxTree->ReadBoundingBoxInfoFromFile("bounding_boxes.txt");
+	BoxTree->ReadBoundingBoxInfoFromFile("bounding_boxes2.txt");
 }
 
 CSIocpCore::~CSIocpCore()

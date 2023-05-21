@@ -26,9 +26,9 @@ void Room::UserOut(int32 sid)
 	int idx = 0;
 	{
 		// cList Lock 쓰기 호출
-		GetMyPlayerFromRoom(sid).SetVelocity(XMFLOAT3(0, 0, 0));
-		idx = GetMyPlayerFromRoom(sid).m_idx;
-		GetMyPlayerFromRoom(sid).m_hide = true;
+		GetMyPlayerFromRoom(sid).SetVelocity(XMFLOAT3(0, 0, 0)); // 속도 0
+		idx = GetMyPlayerFromRoom(sid).m_idx; /// 인덱스 가져오기
+		GetMyPlayerFromRoom(sid).m_hide = true; // 업데이트 false로 변경
 		std::unique_lock<std::shared_mutex> wll(_listLock);
 		auto i = std::find(_cList.begin(), _cList.end(), sid); // 리스트에 있는지 탐색 후
 		if (i != _cList.end()) _cList.erase(i); // 리스트에서 제거
@@ -178,7 +178,7 @@ void Room::Update()
 			BroadCasting(&packet);
 			_switchs[i]._curGuage = 0.f;
 		}
-	} // 스위치 관련 로직 처리
+	} // 스위치 관련 로직 처리 // 스위치 업데이트
 
 	if (_timer.IsTimeToAddHistory()) _history.AddHistory(_players); // 1 (1/60초) 프레임마다 월드 상태를 기록한다.
 	if (_timer.IsAfterTick(45)) // 1/45초마다 정확한 위치값을 브로드캐스팅 한다.
@@ -186,10 +186,8 @@ void Room::Update()
 		
 		for (int i = 0; i < PLAYERNUM; ++i)
 		{
-			if (Vector3::IsZero(_players[i].GetVelocity()) || _players[i].m_hide)
-			{
-				continue;
-			}
+			if (Vector3::IsZero(_players[i].GetVelocity()) || _players[i].m_hide) continue;
+	
 			S2C_POS packet;
 			packet.sid = _players[i].m_sid;
 			packet.size = sizeof(S2C_POS);

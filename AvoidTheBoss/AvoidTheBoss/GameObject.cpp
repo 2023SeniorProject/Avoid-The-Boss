@@ -816,30 +816,6 @@ XMFLOAT3 CGameObject::GetRight()
 	return(Vector3::Normalize(XMFLOAT3(m_xmf4x4World._11, m_xmf4x4World._12, m_xmf4x4World._13)));
 }
 
-void CGameObject::MoveStrafe(float fDistance)
-{
-	XMFLOAT3 xmf3Position = GetPosition();
-	XMFLOAT3 xmf3Right = GetRight();
-	xmf3Position = Vector3::Add(xmf3Position, xmf3Right, fDistance);
-	CGameObject::SetPosition(xmf3Position);
-}
-
-void CGameObject::MoveUp(float fDistance)
-{
-	XMFLOAT3 xmf3Position = GetPosition();
-	XMFLOAT3 xmf3Up = GetUp();
-	xmf3Position = Vector3::Add(xmf3Position, xmf3Up, fDistance);
-	CGameObject::SetPosition(xmf3Position);
-}
-
-void CGameObject::MoveForward(float fDistance)
-{
-	XMFLOAT3 xmf3Position = GetPosition();
-	XMFLOAT3 xmf3Look = GetLook();
-	xmf3Position = Vector3::Add(xmf3Position, xmf3Look, fDistance);
-	CGameObject::SetPosition(xmf3Position);
-}
-
 void CGameObject::Rotate(float fPitch, float fYaw, float fRoll)
 {
 	XMMATRIX mtxRotate = XMMatrixRotationRollPitchYaw(XMConvertToRadians(fPitch), XMConvertToRadians(fYaw), XMConvertToRadians(fRoll));
@@ -1322,7 +1298,7 @@ void CSiren::Animate(float fTimeElapsed)
 		}
 		else
 		{
-			m_AnimationDegree = 0.0f;
+			m_AnimationDegree = 180.f;
 		}
 		CGameObject::Animate(fTimeElapsed);
 	}

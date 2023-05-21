@@ -523,12 +523,11 @@ void CBulletObjectsShader::Render(ID3D12GraphicsCommandList* pd3dCommandList, CC
 	{
 		if (m_ppObjects[j])
 		{
-			if (m_ppObjects[j] /* && ((CBullet*)m_ppObjects[j])->GetOnShoot()*/)
+			if (m_ppObjects[j])
 			{
 				m_ppObjects[j]->Animate(m_fElapsedTime);
 				m_ppObjects[j]->UpdateTransform(NULL);
-				if(((CBullet*)m_ppObjects[j])->GetOnShoot())
-					m_ppObjects[j]->Render(pd3dCommandList, pCamera);
+				if(((CBullet*)m_ppObjects[j])->GetOnShoot()) m_ppObjects[j]->Render(pd3dCommandList, pCamera);
 			}
 		}
 	}

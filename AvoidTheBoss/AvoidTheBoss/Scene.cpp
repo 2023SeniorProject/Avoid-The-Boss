@@ -2,6 +2,7 @@
 #include "Scene.h"
 #include "GameFramework.h"
 #include "CJobQueue.h"
+#include "InputManager.h"
 #include "clientIocpCore.h"
 
 ID3D12DescriptorHeap* CGameScene::m_pd3dCbvSrvDescriptorHeap = NULL;
@@ -49,6 +50,7 @@ void CGameScene::OnProcessingMouseMessage(HWND hWnd, UINT nMessageID, WPARAM wPa
 	}
 }
 
+// 특수키 처리를 위한 것
 void CGameScene::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPARAM wParam, LPARAM lParam)
 {
 	switch (nMessageID)
@@ -194,7 +196,10 @@ void CGameScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandLis
 	pBoundsMapShader->BuildObjects(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature,NULL,NULL);
 
 	m_ppSwitches = new CGenerator * [nSwitch];
-
+	for (int i = 0; i < 3; ++i)
+	{
+		m_ppSwitches[i] = ((CGenerator*)pGeneratorObjectsShader->m_ppObjects[i]);
+	}
 	for (int i = 0; i < PLAYERNUM; ++i)
 	{
 		if (i == (int)CHARACTER_TYPE::BOSS)
@@ -207,19 +212,14 @@ void CGameScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandLis
 		}
 		else
 		{
-			_players[i] = new CEmployee(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, CHARACTER_TYPE::GOGGLE_EMP);
-			for (int j = 0; j < nSwitch; j++)
-			{
-				if (((CGenerator*)pGeneratorObjectsShader->m_ppObjects[j])->GetButton())
-				{
-					m_ppSwitches[j] = ((CGenerator*)pGeneratorObjectsShader->m_ppObjects[j]);
-					if (m_ppSwitches[j])
-					{
-						((CEmployee*)_players[i])->m_pSwitches[j].position = m_ppSwitches[j]->GetButton()->GetPosition();
-						((CEmployee*)_players[i])->m_pSwitches[j].radius = m_ppSwitches[j]->GetRadius();
-					}
-				}
-			}
+			_players[i] = new CEmployee(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, (CHARACTER_TYPE)(i));
+			((CEmployee*)_players[i])->m_pSwitches[0].position = XMFLOAT3(-23.12724, 1.146619, 1.814123);
+			((CEmployee*)_players[i])->m_pSwitches[0].radius = 0.2f;
+			((CEmployee*)_players[i])->m_pSwitches[1].position = XMFLOAT3(23.08867, 1.083242, 3.155997);
+			((CEmployee*)_players[i])->m_pSwitches[1].radius = 0.2f;
+			((CEmployee*)_players[i])->m_pSwitches[2].position = XMFLOAT3(0.6774719, 1.083242, -23.05909);
+			((CEmployee*)_players[i])->m_pSwitches[2].radius = 0.2f;
+					
 		}
 	}
 	m_pCamera = _players[0]->GetCamera();
@@ -227,7 +227,64 @@ void CGameScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandLis
 	CreateShaderVariables(pd3dDevice, pd3dCommandList);
 }
 
+void CGameScene::ProcessInput(HWND& hWnd)
+{
+	if (::GetActiveWindow() != hWnd)
+	{
+		std::cout << "Not Active Window\n";
+		return;
+	}
+	int16 keyInput = 0;
+	InputManager::GetInstance().InputStatusUpdate();
+	InputManager::GetInstance().MouseInputStatusUpdate();
+	//=============== 상호작용 관련 처리 ===============
+	if (InputManager::GetInstance().GetKeyBuffer(KEY_TYPE::W) > 0) keyInput |= KEY_FORWARD;
+	if (InputManager::GetInstance().GetKeyBuffer(KEY_TYPE::A) > 0) keyInput |= KEY_LEFT;
+	if (InputManager::GetInstance().GetKeyBuffer(KEY_TYPE::S) > 0) keyInput |= KEY_BACKWARD;	
+	if (InputManager::GetInstance().GetKeyBuffer(KEY_TYPE::D) > 0) keyInput |= KEY_RIGHT;
+	if (InputManager::GetInstance().GetKeyBuffer(KEY_TYPE::F) > 0) keyInput |= KEY_F;
+	if (InputManager::GetInstance().GetKeyBuffer(KEY_TYPE::SPACE) > 0) keyInput |= KEY_SPACE;
+
+	// ============= 마우스 버튼 관련 처리 ================
+	float cxDelta = 0.0f, cyDelta = 0.0f;
+	if (InputManager::GetInstance().GetKeyBuffer(KEY_TYPE::MLBUTTON) > 0 )
+	{
+		
+		POINT ptCursorPos;
+		if (::GetCapture() == hWnd)
+		{
+			::SetCursor(NULL);
+			::GetCursorPos(&ptCursorPos);
+			cxDelta = (float)(ptCursorPos.x - m_ptOldCursorPos.x) / 3.0f;
+			cyDelta = (float)(ptCursorPos.y - m_ptOldCursorPos.y) / 3.0f;
+			::SetCursorPos(m_ptOldCursorPos.x, m_ptOldCursorPos.y);
+		}
+		if(cxDelta != 0) _players[_playerIdx]->Rotate(0.f, cxDelta, 0.0f);
+	}
+
+
+	//============  플레이어에게 최종 키입력 처리 ============
+	_players[_playerIdx]->ProcessInput(keyInput); // 입력된 키를 기반으로 인풋 처리 진행
+	
+
+	// ============ 패킷 송신 파트 ===================
+	// 이동 키 입력에 변화가 있거나 키 입력 중 회전을 수행하는 경우에만.. 이동 관련 패킷을 전송한다.
+	if (LOBYTE(m_lastKeyInput) != LOBYTE(keyInput) || (LOBYTE(keyInput) && cxDelta != 0))
+	{
+
+		C2S_KEY packet; // 키 입력 + 방향 정보를 보낸다.
+		packet.size = sizeof(C2S_KEY);
+		packet.type = C_PACKET_TYPE::CKEY;
+		packet.key = LOBYTE(keyInput);
+		packet.x = _players[_playerIdx]->GetLook().x;
+		packet.z = _players[_playerIdx]->GetLook().z;
+		clientCore._client->DoSend(&packet);
+	}
+	m_lastKeyInput = keyInput;
+}
+
 void CGameScene::Update(HWND hWnd)
+
 {
 	_timer.Tick(0);
 	
@@ -235,61 +292,11 @@ void CGameScene::Update(HWND hWnd)
 		std::unique_lock<std::shared_mutex> wl(_jobQueueLock);
 		_jobQueue->DoTasks();
 	}
-	DWORD dwDirection = 0;
-	_players[_playerIdx]->ProcessInput(dwDirection);
-	UCHAR pKeyBuffer[256];
-	if(::GetKeyboardState(pKeyBuffer));
 
-	// 마우스 처리는 동일하게 진행되므로 그냥 남겨놨습니다.
-	float cxDelta = 0.0f, cyDelta = 0.0f;
-	POINT ptCursorPos;
-	if (::GetCapture() == hWnd)
-	{
-		::SetCursor(NULL);
-		::GetCursorPos(&ptCursorPos);
-		cxDelta = (float)(ptCursorPos.x - m_ptOldCursorPos.x) / 3.0f;
-		cyDelta = (float)(ptCursorPos.y - m_ptOldCursorPos.y) / 3.0f;
-		::SetCursorPos(m_ptOldCursorPos.x, m_ptOldCursorPos.y);
-	}
-
-	if ((dwDirection != 0) || (cxDelta != 0.0f) || (cyDelta != 0.0f))
-	{
-		if (cxDelta || cyDelta)
-		{
-			if (pKeyBuffer[VK_LBUTTON] & 0xF0)
-			{
-				_players[_playerIdx]->Rotate(0.f, cxDelta, 0.0f);
-				if (LOBYTE(dwDirection) == 0)
-				{
-					C2S_ROTATE packet;
-					packet.size = sizeof(C2S_ROTATE);
-					packet.type = C_PACKET_TYPE::CROT;
-					packet.angle = cxDelta;
-					clientCore._client->DoSend(&packet);
-				}
-			}
-		}
-	}
-	_players[_playerIdx]->Move(dwDirection, PLAYER_VELOCITY);
-	if (LOBYTE(m_lastKeyInput) != LOBYTE(dwDirection) || (LOBYTE(dwDirection) != 0 && (cxDelta != 0.0f))) // 이전과 방향(키입력이 다른 경우에만 무브 이벤트 패킷을 보낸다)
-	{
-
-		C2S_KEY packet; // 키 입력 + 방향 정보를 보낸다.
-		packet.size = sizeof(C2S_KEY);
-		packet.type = C_PACKET_TYPE::CKEY;
-		packet.key = LOBYTE(dwDirection);
-		packet.x = _players[_playerIdx]->GetLook().x;
-		packet.z = _players[_playerIdx]->GetLook().z;
-		clientCore._client->DoSend(&packet);
-	}
-
-	m_lastKeyInput = dwDirection;
 	for (int k = 0; k < PLAYERNUM; ++k)
 	{
-		//_players[k]->m_lock.lock();
 		if (k == _playerIdx) _players[k]->Update(_timer.GetTimeElapsed(), PLAYER_TYPE::OWNER);
 		else _players[k]->Update(_timer.GetTimeElapsed(), PLAYER_TYPE::OTHER_PLAYER);
-		//_players[k]->m_lock.unlock();
 	}
 
 	if (m_bIsExitReady) // 탈출 성공 시 , 해야할 일 처리
@@ -315,14 +322,11 @@ void CGameScene::Update(HWND hWnd)
 	str.append(std::to_wstring(_players[_playerIdx]->GetPosition().x));
 	str.append(L" ");
 	str.append(std::to_wstring(_players[_playerIdx]->GetPosition().z));
-	str.append(L")-");
-	str.append(std::to_wstring((int32)(_curFrameIdx)));
+	str.append(L")- FPS: ");
+	if(_timer.GetFrameRate()) str.append(std::to_wstring(1000.f / _timer.GetFrameRate()));
 	::SetWindowText(hWnd, str.c_str());
 }
-bool CGameScene::CollisionCheck()
-{
-	return false;
-}
+
 
 void CGameScene::ReleaseObjects()
 {
@@ -562,11 +566,7 @@ void CGameScene::ReleaseUploadBuffers()
 	for (int i = 0; i < m_nHierarchicalGameObjects; i++) m_ppHierarchicalGameObjects[i]->ReleaseUploadBuffers();
 }
 
-bool CGameScene::OnExitReadyCount()
-{
-	
-	return false;
-}
+
 
 void CGameScene::CreateCbvSrvDescriptorHeaps(ID3D12Device* pd3dDevice, int nConstantBufferViews, int nShaderResourceViews)
 {

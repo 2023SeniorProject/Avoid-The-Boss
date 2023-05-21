@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "CBoss.h"
 #include "CBullet.h"
+#include "clientIocpCore.h"
 
 
 CBoss::CBoss(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature)
@@ -108,14 +109,7 @@ CCamera* CBoss::ChangeCamera(DWORD nNewCameraMode, float fTimeElapsed)
 	return(m_pCamera);
 }
 
-void CBoss::OnPlayerUpdateCallback()
-{
 
-}
-
-void CBoss::OnCameraUpdateCallback()
-{
-}
 
 void CBoss::Rotate(float x, float y, float z)
 {
@@ -125,10 +119,9 @@ void CBoss::Rotate(float x, float y, float z)
 
 void CBoss::PrepareAnimate()
 {
-	//m_RightHands = FindFrame("Bip001_R_Hand");
 }
 
-void CBoss::Move(DWORD dwDirection, float fDistance)
+void CBoss::Move(const int16& dwDirection, float fDistance)
 {
 	//if (m_pSkinnedAnimationController)
 	//{
@@ -221,42 +214,39 @@ void CBoss::Update(float fTimeElapsed, PLAYER_TYPE ptype)
 {
 	CPlayer::Update(fTimeElapsed, ptype);
 
-	OnInteractionAnimation();
-
-	if (m_OnInteraction)
-	{
-		m_pBullet->SetOnShoot(true);
-	}
+	
 	if (m_pBullet)
 	{
-		//if (!m_pBullet->GetOnShoot())
-		//{
-		// m_pBullet->SetBulletPosition(GetPosition());
-		//}
 		m_pBullet->SetBulletPosition(GetPosition());
-
 		m_pBullet->Update(fTimeElapsed);
 	}
 	if (ptype == PLAYER_TYPE::OWNER) m_xmf3Velocity = XMFLOAT3(0.0f, 0.0f, 0.0f);
+	else if(m_pBullet) AttackAnimationOn();
 	
 }
 
-void CBoss::ProcessInput(DWORD& dwDirection)
+void CBoss::OnInteractionAnimation() // 상호작용 애니메이션 카운트
 {
-	static UCHAR pKeyBuffer[256];
-	if (::GetKeyboardState(pKeyBuffer))
+}
+
+void CBoss::ProcessInput(const int16& dwDirection)
+{
+	// 1. Set Move Speed
+	Move(dwDirection, BOSS_VELOCITY);
+
+	// 2. 공격 키를 눌렀을 경우 처리 
+	if (dwDirection & KEY_SPACE)
 	{
-		if ((pKeyBuffer[0x57] & 0xF0) || (pKeyBuffer[0x77] & 0xF0)) dwDirection |= DIR_FORWARD;
-		if ((pKeyBuffer[0x53] & 0xF0) || (pKeyBuffer[0x73] & 0xF0)) dwDirection |= DIR_BACKWARD;
-		if ((pKeyBuffer[0x61] & 0xF0) || (pKeyBuffer[0x41] & 0xF0)) dwDirection |= DIR_LEFT;
-		if ((pKeyBuffer[0x44] & 0xF0) || (pKeyBuffer[0x64] & 0xF0)) dwDirection |= DIR_RIGHT;
-		if (pKeyBuffer[VK_SPACE] & 0xF0)
+		if (m_InteractionCountTime <= 0 && m_OnInteraction == false)
 		{
-			if (m_InteractionCountTime <= 0 && m_OnInteraction==false)
-			{
-				m_OnInteraction = true;
-				m_InteractionCountTime = BOSS_INTERACTION_TIME;
-			}
+			SetInteractionAnimation(true);
+			m_InteractionCountTime = BOSS_INTERACTION_TIME;
+			// 05-06 공격 시, 사장님 공격 이벤트 전송
+			SC_EVENTPACKET packet;
+			packet.eventId = (uint8)EVENT_TYPE::ATTACK_EVENT;
+			packet.type = SC_PACKET_TYPE::GAMEEVENT;
+			packet.size = sizeof(SC_EVENTPACKET);
+			clientCore._client->DoSend(&packet);
 		}
 	}
 }

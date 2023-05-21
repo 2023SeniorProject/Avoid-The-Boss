@@ -10,10 +10,6 @@ CGenerator::CGenerator()
 	}
 }
 
-CGenerator::~CGenerator()
-{
-}
-
 void CGenerator::OnPrepareAnimate()
 {
 	m_ppPipe = new CGameObject * [m_nPipe];
@@ -28,17 +24,17 @@ void CGenerator::OnPrepareAnimate()
 }
 
 void CGenerator::Animate(float fTimeElapsed)
-{	
+{
 	if (m_bSwitchAnimationOn)
 	{
 		float delta = 0.3f;
-		for (int i = 0; i < m_nPipe; i++) //1.8 ->1.7�� �̵� 10.f
+		for (int i = 0; i < m_nPipe; i++) //1.8 ->1.7    ̵  10.f
 		{
 			if (m_nGeneratorAnimationCount == GENERATOR_ANIM_FRAM)
 			{
 				m_nPipeStartAnimation[0] = true;
 			}
-			if (m_nGeneratorAnimationCount <= GENERATOR_ANIM_FRAM-4)
+			if (m_nGeneratorAnimationCount <= GENERATOR_ANIM_FRAM - 4)
 			{
 				m_nPipeStartAnimation[1] = true;
 			}
@@ -68,17 +64,17 @@ void CGenerator::Animate(float fTimeElapsed)
 		}
 		m_nGeneratorAnimationCount -= delta * fTimeElapsed;
 	}
-	
-	if(m_bSwitchAnimationOn)
-	{	
+
+	if (m_bSwitchAnimationOn)
+	{
 		float ButtonDelta = 0.1f;
 		if (m_pButton)
 		{
-			if(m_nButtonAnimationCount == 0)
-			{ 
+			if (m_nButtonAnimationCount == 0)
+			{
 				//m_nButtonAnimationCount = BUTTON_ANIM_FRAME;
 			}
-			else if (m_nButtonAnimationCount >0)
+			else if (m_nButtonAnimationCount > 0)
 			{
 				XMMATRIX xmmtxTranslate = DirectX::XMMatrixTranslation(0.0f, -ButtonDelta * fTimeElapsed, 0.0f);
 				m_pButton->m_xmf4x4ToParent = Matrix4x4::Multiply(xmmtxTranslate, m_pButton->m_xmf4x4ToParent);

@@ -99,7 +99,6 @@ using Microsoft::WRL::ComPtr;
 //----클라이언트 영역 크기 및 후면 버퍼 크기
 #define FRAME_BUFFER_WIDTH  800
 #define FRAME_BUFFER_HEIGHT 600
-#define PLAYERNUM 1
 
 #define _WITH_CB_WORLD_MATRIX_DESCRIPTOR_TABLE
 //----전체 화면 모드로 시작
@@ -108,7 +107,7 @@ using Microsoft::WRL::ComPtr;
 //1.0f = 1m 
 #define UNIT 1.0f // 1m = 1 unit
 
-
+#define PLAYERNUM 1
 const float PLAYER_VELOCITY = UNIT * 3.f;
 const float BOSS_VELOCITY = UNIT * 2.f;
 
@@ -401,8 +400,10 @@ namespace Plane
 	}
 }
 
-#define DIR_FORWARD	 0x01
-#define DIR_BACKWARD 0x02
-#define DIR_LEFT	 0x04
-#define DIR_RIGHT	 0x08
+#define KEY_FORWARD	 0x01 // w
+#define KEY_BACKWARD 0x02 // a
+#define KEY_LEFT	 0x04 // s
+#define KEY_RIGHT	 0x08 // d
+#define KEY_F		 0x10
+#define KEY_SPACE	 0x20
 

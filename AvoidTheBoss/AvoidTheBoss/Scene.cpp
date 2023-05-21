@@ -50,6 +50,7 @@ void CGameScene::OnProcessingMouseMessage(HWND hWnd, UINT nMessageID, WPARAM wPa
 	}
 }
 
+// 특수키 처리를 위한 것
 void CGameScene::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPARAM wParam, LPARAM lParam)
 {
 	switch (nMessageID)
@@ -228,12 +229,54 @@ void CGameScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandLis
 
 void CGameScene::ProcessInput(HWND& hWnd)
 {
-	if (::GetActiveWindow() != hWnd) return;
-	_players[_playerIdx]->ProcessInput(m_lastKeyInput);
-	if (InputManager::GetKeyStatus(KEY_TYPE::F) == (uint8)KEY_STATUS::KEY_PRESS) // 상호작용 키를 처음 누른 경우 한정 패킷 보내기
+	if (::GetActiveWindow() != hWnd)
 	{
+		std::cout << "Not Active Window\n";
+		return;
 	}
+	int16 keyInput = 0;
+	InputManager::GetInstance().InputStatusUpdate();
+	InputManager::GetInstance().MouseInputStatusUpdate();
+	//=============== 상호작용 관련 처리 ===============
+	if (InputManager::GetInstance().GetKeyBuffer(KEY_TYPE::W) > 0) keyInput |= KEY_FORWARD;
+	if (InputManager::GetInstance().GetKeyBuffer(KEY_TYPE::A) > 0) keyInput |= KEY_LEFT;
+	if (InputManager::GetInstance().GetKeyBuffer(KEY_TYPE::S) > 0) keyInput |= KEY_BACKWARD;	
+	if (InputManager::GetInstance().GetKeyBuffer(KEY_TYPE::D) > 0) keyInput |= KEY_RIGHT;
 	
+	// ============= 마우스 버튼 관련 처리 ================
+	float cxDelta = 0.0f, cyDelta = 0.0f;
+	
+	std::cout << (int32)LOBYTE(keyInput) << "\n";
+	if (InputManager::GetKeyBuffer(KEY_TYPE::MLBUTTON) != (uint8)KEY_STATUS::KEY_NONE)
+	{
+		
+		POINT ptCursorPos;
+		if (::GetCapture() == hWnd)
+		{
+			::SetCursor(NULL);
+			::GetCursorPos(&ptCursorPos);
+			cxDelta = (float)(ptCursorPos.x - m_ptOldCursorPos.x) / 3.0f;
+			cyDelta = (float)(ptCursorPos.y - m_ptOldCursorPos.y) / 3.0f;
+			::SetCursorPos(m_ptOldCursorPos.x, m_ptOldCursorPos.y);
+		}
+		_players[_playerIdx]->Rotate(0.f, cxDelta, 0.0f);
+	}
+	_players[_playerIdx]->Move(keyInput, PLAYER_VELOCITY);
+	
+
+	// 키입력에 변화가 있거나
+	if (m_lastKeyInput != keyInput || (keyInput && cxDelta != 0))
+	{
+
+		C2S_KEY packet; // 키 입력 + 방향 정보를 보낸다.
+		packet.size = sizeof(C2S_KEY);
+		packet.type = C_PACKET_TYPE::CKEY;
+		packet.key = LOBYTE(keyInput);
+		packet.x = _players[_playerIdx]->GetLook().x;
+		packet.z = _players[_playerIdx]->GetLook().z;
+		clientCore._client->DoSend(&packet);
+	}
+	m_lastKeyInput = keyInput;
 }
 
 void CGameScene::Update(HWND hWnd)
@@ -246,56 +289,6 @@ void CGameScene::Update(HWND hWnd)
 		_jobQueue->DoTasks();
 	}
 
-	DWORD dwDirection = 0;
-	
-	UCHAR pKeyBuffer[256];
-	if(::GetKeyboardState(pKeyBuffer));
-
-
-	// 마우스 처리는 동일하게 진행되므로 그냥 남겨놨습니다.
-	float cxDelta = 0.0f, cyDelta = 0.0f;
-	POINT ptCursorPos;
-	if (::GetCapture() == hWnd)
-	{
-		::SetCursor(NULL);
-		::GetCursorPos(&ptCursorPos);
-		cxDelta = (float)(ptCursorPos.x - m_ptOldCursorPos.x) / 3.0f;
-		cyDelta = (float)(ptCursorPos.y - m_ptOldCursorPos.y) / 3.0f;
-		::SetCursorPos(m_ptOldCursorPos.x, m_ptOldCursorPos.y);
-	}
-
-	if ((dwDirection != 0) || (cxDelta != 0.0f) || (cyDelta != 0.0f))
-	{
-		if (cxDelta || cyDelta)
-		{
-			if (pKeyBuffer[VK_LBUTTON] & 0xF0)
-			{
-				_players[_playerIdx]->Rotate(0.f, cxDelta, 0.0f);
-				if (LOBYTE(dwDirection) == 0)
-				{
-					C2S_ROTATE packet;
-					packet.size = sizeof(C2S_ROTATE);
-					packet.type = C_PACKET_TYPE::CROT;
-					packet.angle = cxDelta;
-					clientCore._client->DoSend(&packet);
-				}
-			}
-		}
-	}
-	_players[_playerIdx]->Move(dwDirection, PLAYER_VELOCITY);
-	if (LOBYTE(m_lastKeyInput) != LOBYTE(dwDirection) || (LOBYTE(dwDirection) != 0 && (cxDelta != 0.0f))) // 이전과 방향(키입력이 다른 경우에만 무브 이벤트 패킷을 보낸다)
-	{
-
-		C2S_KEY packet; // 키 입력 + 방향 정보를 보낸다.
-		packet.size = sizeof(C2S_KEY);
-		packet.type = C_PACKET_TYPE::CKEY;
-		packet.key = LOBYTE(dwDirection);
-		packet.x = _players[_playerIdx]->GetLook().x;
-		packet.z = _players[_playerIdx]->GetLook().z;
-		clientCore._client->DoSend(&packet);
-	}
-
-	m_lastKeyInput = dwDirection;
 	for (int k = 0; k < PLAYERNUM; ++k)
 	{
 		if (k == _playerIdx) _players[k]->Update(_timer.GetTimeElapsed(), PLAYER_TYPE::OWNER);
@@ -326,7 +319,7 @@ void CGameScene::Update(HWND hWnd)
 	str.append(L" ");
 	str.append(std::to_wstring(_players[_playerIdx]->GetPosition().z));
 	str.append(L")- FPS: ");
-	str.append(std::to_wstring(_timer.GetFrameRate()));
+	if(_timer.GetFrameRate()) str.append(std::to_wstring(1000.f / _timer.GetFrameRate()));
 	::SetWindowText(hWnd, str.c_str());
 }
 

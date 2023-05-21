@@ -1,6 +1,7 @@
 #pragma once
 
 enum class KEY_TYPE
+	: int32
 {
 	UP = VK_UP,
 	DOWN = VK_DOWN,
@@ -15,39 +16,43 @@ enum class KEY_TYPE
 	F = 0x45
 };
 
-enum class KEY_STATUS :	uint8
+enum class KEY_STATUS :	int8
 {
-	KEY_PRESS = 0, // 처음 누른 것
-	KEY_DOWN = 1,  // 이미 눌려있는 것
-	KEY_UP, // 키를 눌렀다 땠을 경우
-	KEY_NONE, // 애초에 누른 적이 없는 경우
+	KEY_NONE = -1, // 애초에 누른 적이 없는 경우
+	KEY_UP = 0, // 키를 눌렀다 땠을 경우
+	KEY_PRESS = 1, // 처음 누른 것
+	KEY_DOWN = 2,  // 이미 눌려있는 것
+	
+	
 };
 
 // 키 입력 처리하기 위한 것 싱글톤 패턴으로 생성한다.
 class InputManager
 {
 private:
-	static InputManager* im;
-	static float m_deltaX, m_deltaY;
-	static float m_cursorX, m_cursorY;
-	static int16 m_lastkeyInput; // 최종적으로 입력된 키입력을 나타낸다.
-	static uint8  keyBuffer[256];
+	static InputManager* instance;
+	static int8 m_keyBuffer[256];
 private:
-	InputManager() { m_lastkeyInput = 0; }
+	InputManager() 
+	{ 
+		for (int i = 0; i < 256; ++i) m_keyBuffer[i] = (int8)KEY_STATUS::KEY_NONE;
+	}
 	InputManager(const InputManager& ref) {}
 	InputManager& operator=(const InputManager& ref) {}
 	~InputManager() {}
-	static bool SetKeyStatus(const KEY_TYPE& key);
+	static void Update(const KEY_TYPE key);
+	static void SetKeyPress(const KEY_TYPE key);
+	static void SetKeyUp(const KEY_TYPE key);
 public:	
 static InputManager& GetInstance() 
 {
-	if (im == nullptr) im = new InputManager();
-	return *im;
+	if (instance == nullptr) instance = new InputManager();
+	return *instance;
 }
 public:
-	static void ProcessInput();
-	static void ProcessMouseInput() {}
-	static int16 GetLastInput() { return m_lastkeyInput; }
-	static uint8 GetKeyStatus(const KEY_TYPE& key) { return keyBuffer[(int32)key]; }
+
+	static void InputStatusUpdate();
+	static void MouseInputStatusUpdate();
+	static int8 GetKeyBuffer(const KEY_TYPE key) { return m_keyBuffer[(int32)key]; }
 };
 

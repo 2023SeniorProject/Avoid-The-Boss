@@ -1,49 +1,64 @@
 #include "pch.h"
 #include "InputManager.h"
 
-InputManager* InputManager::im = nullptr;
-int16 InputManager::m_lastkeyInput = 0;
-uint8 InputManager::keyBuffer[256] = {};
-void InputManager::ProcessInput()
+InputManager* InputManager::instance = nullptr;
+
+int8 InputManager::m_keyBuffer[256] = {-1,};
+
+void InputManager::InputStatusUpdate()
 {
-	// 기본적인 이동 방향에 관한 키 입력처리 0x8001 || 0x8000
-	if (SetKeyStatus(KEY_TYPE::W)) m_lastkeyInput &= KEY_FORWARD;
-	if (SetKeyStatus(KEY_TYPE::A)) m_lastkeyInput &= KEY_LEFT;
-	if (SetKeyStatus(KEY_TYPE::S)) m_lastkeyInput &= KEY_BACKWARD;
-	if (SetKeyStatus(KEY_TYPE::D)) m_lastkeyInput &= KEY_RIGHT;
+	// 기본적인 이동 방향에 관한 키 입력처리 0x8001 || 0x8000	
+	Update(KEY_TYPE::W);
+	Update(KEY_TYPE::A);
+	Update(KEY_TYPE::S);
+	Update(KEY_TYPE::D);
 
 	// 상호작용과 관련된 키 입력 처리 0x8000 처음 입력한 경우, 입력하다가 땐 경우 0x0001
-	if (SetKeyStatus(KEY_TYPE::F))
-	{
-		m_lastkeyInput &= KEY_F;
-	}
-	else
-	{
-		m_lastkeyInput ^= KEY_F; // 이전에 누르다가 땠을 경우나 false 인 경우 xor연산으로 해당 부분을 지운다.
-	}
-	if (SetKeyStatus(KEY_TYPE::SPACE)) m_lastkeyInput &= KEY_SPACE;
+	Update(KEY_TYPE::F);
+	Update(KEY_TYPE::SPACE); 
+
+
+} 
+
+void InputManager::MouseInputStatusUpdate()
+{
+	if (::GetCapture())	Update(KEY_TYPE::MLBUTTON);
 }
 
-bool InputManager::SetKeyStatus(const KEY_TYPE& key)
+void InputManager::SetKeyPress(const KEY_TYPE key)
 {
-	if (GetAsyncKeyState((int32)key) == 0x8001) // 키를 처음 입력한 경우
+	if (m_keyBuffer[(int)key] != (int8)KEY_STATUS::KEY_DOWN)
 	{
-		keyBuffer[(int32)key] = (uint8)KEY_STATUS::KEY_PRESS;
-		return true;
+		m_keyBuffer[(int)key] = (int8)KEY_STATUS::KEY_PRESS;
 	}
-	else if(GetAsyncKeyState((int32)key) == 0x8000) // 키를 이전부터 누르고 있었던 경우
+	else if(m_keyBuffer[(int)key] == (int8)KEY_STATUS::KEY_PRESS)
 	{
-		if(GetKeyStatus(key) == (uint8)KEY_STATUS::KEY_PRESS) keyBuffer[(int32)key] = (uint8)KEY_STATUS::KEY_DOWN;
-		return true;
+		m_keyBuffer[(int)key] = (int8)KEY_STATUS::KEY_DOWN;
 	}
-	else if (GetAsyncKeyState((int32)key) == 0x0001) // 키를 누르다가 땠을 경우
+}
+
+void InputManager::SetKeyUp(const KEY_TYPE key)
+{
+	if (m_keyBuffer[(int)key] != (int8)KEY_STATUS::KEY_NONE)
 	{
-		if (GetKeyStatus(key) == (uint8)KEY_STATUS::KEY_DOWN) keyBuffer[(int32)key] = (uint8)KEY_STATUS::KEY_UP;
-		return false;
+		m_keyBuffer[(int)key] = (int8)KEY_STATUS::KEY_UP;
 	}
-	else if (GetAsyncKeyState((int32)key) == 0x0000) // 아예 안누른 경우
+	else if(m_keyBuffer[(int)key] != (int8)KEY_STATUS::KEY_UP)
 	{
-		if (GetKeyStatus(key) == (uint8)KEY_STATUS::KEY_UP) keyBuffer[(int32)key] = (uint8)KEY_STATUS::KEY_DOWN;
-		return false;
+		m_keyBuffer[(int)key] = (int8)KEY_STATUS::KEY_NONE;
 	}
+}
+
+void InputManager::Update(const KEY_TYPE key)
+{
+	
+	if (::GetAsyncKeyState((int32)key) & 0x8000) // 키를 이전부터 누르고 있었던 경우
+	{
+		SetKeyPress(key);
+	}	
+	else 
+	{
+		SetKeyUp(key);
+	}
+
 }

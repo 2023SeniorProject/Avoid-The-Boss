@@ -10,6 +10,7 @@ class CGameFramework
 	friend class queueEvent;
 	friend class moveEvnet;
 	friend class posEvent;
+	friend class InteractionEvent;
 	friend class CSession;
 	friend class CEmployee;
 	friend class CGameScene;

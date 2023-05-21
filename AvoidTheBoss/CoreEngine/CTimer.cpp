@@ -93,7 +93,7 @@ void Timer::Tick(float fLockFPS)
 	//누적된 프레임 처리 시간의 평균을 구하여 프레임 처리 시간을 구한다. 
 	if (fLockFPS == 0.f) // 고정 fps 아니면 평균 출력
 	{
-		//_fTimeElapsedAvg = 0.0f;
+		_fTimeElapsedAvg = 0.0f;
 		for (ULONG i = 0; i < _nSampleCount; i++) _fTimeElapsedAvg += _SampleFrameTime[i];
 		if (_nSampleCount > 0)
 		{
@@ -103,6 +103,7 @@ void Timer::Tick(float fLockFPS)
 	}
 	GetFrameRate();
 }
+
 
 unsigned long Timer::GetFrameRate(LPTSTR lpszString, int nCharacters)
 {

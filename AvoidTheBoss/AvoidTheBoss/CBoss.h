@@ -18,7 +18,7 @@ public:
 	virtual void Rotate(float x, float y, float z);
 	virtual void PrepareAnimate();
 	virtual void Move(const int16& dwDirection, float fDistance);
-	void AttackAnimationOn();
+	void AttackAnimationOn() {};
 	virtual void Update(float fTimeElapsed, PLAYER_TYPE ptype);
 
 	virtual void ProcessInput(const int16&); // 04-29 Ãß°¡

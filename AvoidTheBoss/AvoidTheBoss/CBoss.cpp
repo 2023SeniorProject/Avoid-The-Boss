@@ -225,9 +225,6 @@ void CBoss::Update(float fTimeElapsed, PLAYER_TYPE ptype)
 	
 }
 
-void CBoss::OnInteractionAnimation() // 상호작용 애니메이션 카운트
-{
-}
 
 void CBoss::ProcessInput(const int16& dwDirection)
 {

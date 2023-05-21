@@ -173,14 +173,15 @@ void CSession::ProcessPacket(char* packet)
 			mainGame.m_pScene->_players[i]->SetPlayerSid(gsp->sids[i]);
 			// 각 플레이어 별로 세션 아이디 부여
 		}
-		// 각 플레이어 초기 위치 값 셋팅
+		// ================= 플레이어 초기 위치 초기화 ==================
 		mainGame.m_pScene->_players[0]->MakePosition(XMFLOAT3(0, 0.25, -20));
 		if (mainGame.m_pScene->_players[1] != nullptr) mainGame.m_pScene->_players[1]->MakePosition(XMFLOAT3(10, 0.25, -20));
 		if(mainGame.m_pScene->_players[2] != nullptr) mainGame.m_pScene->_players[2]->MakePosition(XMFLOAT3(15, 0.25, -20));
 		if (mainGame.m_pScene->_players[3] != nullptr) mainGame.m_pScene->_players[3]->MakePosition(XMFLOAT3(20, 0.25, -20));
-		// 자신의 클라이언트 Idx 값 출력
-
+		// ================= 자신의 클라이언트 IDX 확인 =================
 		std::cout << "MYPLAYER IDX : " << mainGame.m_pScene->_playerIdx << "\n";
+		
+		// ================= 카메라 셋팅 ================================
 		CPlayer* myPlayer = mainGame.m_pScene->_players[mainGame.m_pScene->_playerIdx];
 		std::wstring str = L"Client";
 		str.append(std::to_wstring(mainGame.m_pScene->_playerIdx));
@@ -192,12 +193,12 @@ void CSession::ProcessPacket(char* packet)
 		mainGame.m_pScene->InitScene();
 	}
 	break;
+	// ================ 로그인 관련 처리 ================
 	case S_PACKET_TYPE::LOGIN_OK:
 	{
 		S2C_LOGIN_OK* lo = (S2C_LOGIN_OK*)packet;
 		_cid = lo->cid;
 		_sid = lo->sid;
-
 	}
 	break;
 	case S_PACKET_TYPE::LOGIN_FAIL:
@@ -207,7 +208,7 @@ void CSession::ProcessPacket(char* packet)
 		::SendMessage(mainGame.m_hWnd, WM_QUIT, 0, 0);
 	}
 	break;
-	// ===== 방 관련 패킷 ============
+	// ============= 방 관련 패킷 ============
 	case S_ROOM_PACKET_TYPE::REP_ENTER_RM:
 	{
 		S2C_ROOM_ENTER* re = (S2C_ROOM_ENTER*)packet;
@@ -283,6 +284,7 @@ void CSession::ProcessPacket(char* packet)
 			mainGame.m_pScene->_players[0]->m_InteractionCountTime = BOSS_INTERACTION_TIME;
 			((CBoss*)mainGame.m_pScene->_players[0])->m_pBullet->SetOnShoot(true);
 			((CBoss*)mainGame.m_pScene->_players[0])->AttackAnimationOn();
+			break;
 		default:
 			break;
 		}

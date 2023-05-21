@@ -259,14 +259,17 @@ void CGameScene::ProcessInput(HWND& hWnd)
 			cyDelta = (float)(ptCursorPos.y - m_ptOldCursorPos.y) / 3.0f;
 			::SetCursorPos(m_ptOldCursorPos.x, m_ptOldCursorPos.y);
 		}
-		_players[_playerIdx]->Rotate(0.f, cxDelta, 0.0f);
+		if(cxDelta > 0) _players[_playerIdx]->Rotate(0.f, cxDelta, 0.0f);
 	}
+
+
+	//============  플레이어에게 최종 키입력 처리 ============
 	_players[_playerIdx]->ProcessInput(keyInput); // 입력된 키를 기반으로 인풋 처리 진행
 	
 
-	// 패킷 송신 파트
-	// 키입력에 변화가 있거나 키 입력 중 회전을 수행하는 경우에만.. 이동 관련 패킷을 전송한다.
-	if (m_lastKeyInput != keyInput || (keyInput && cxDelta != 0))
+	// ============ 패킷 송신 파트 ===================
+	// 이동 키 입력에 변화가 있거나 키 입력 중 회전을 수행하는 경우에만.. 이동 관련 패킷을 전송한다.
+	if (LOBYTE(m_lastKeyInput) != LOBYTE(keyInput) || (LOBYTE(keyInput) && cxDelta != 0))
 	{
 
 		C2S_KEY packet; // 키 입력 + 방향 정보를 보낸다.

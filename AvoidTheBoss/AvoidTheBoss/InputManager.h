@@ -1,7 +1,6 @@
 #pragma once
 
 enum class KEY_TYPE
-	: int32
 {
 	UP = VK_UP,
 	DOWN = VK_DOWN,
@@ -16,7 +15,7 @@ enum class KEY_TYPE
 	F = 0x45
 };
 
-enum class KEY_STATUS :	int8
+enum class KEY_STATUS
 {
 	KEY_NONE = -1, // 애초에 누른 적이 없는 경우
 	KEY_UP = 0, // 키를 눌렀다 땠을 경우

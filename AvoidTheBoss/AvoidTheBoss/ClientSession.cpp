@@ -229,6 +229,7 @@ void CSession::ProcessPacket(char* packet)
 		SC_EVENTPACKET* ev = (SC_EVENTPACKET*)packet;
 		switch ((EVENT_TYPE)ev->eventId)
 		{
+			// ================ 스위치 상호작용 관련 이벤트 ================
 		case EVENT_TYPE::SWITCH_ONE_START_EVENT:
 		case EVENT_TYPE::SWITCH_TWO_START_EVENT:
 		case EVENT_TYPE::SWITCH_THREE_START_EVENT:
@@ -270,6 +271,7 @@ void CSession::ProcessPacket(char* packet)
 			}
 		}
 		break;
+		// ========= 플레이어 접속 종료 처리 ==============
 		case EVENT_TYPE::HIDE_PLAYER_ONE:
 		case EVENT_TYPE::HIDE_PLAYER_TWO:
 		case EVENT_TYPE::HIDE_PLAYER_THREE:
@@ -279,6 +281,7 @@ void CSession::ProcessPacket(char* packet)
 			mainGame.m_pScene->_players[ev->eventId - (uint8)EVENT_TYPE::HIDE_PLAYER_ONE]->m_hide = true;
 		}
 		break;
+		// =========== 플레이어 공격관련 상호작용 ====================
 		case EVENT_TYPE::ATTACK_EVENT:
 			mainGame.m_pScene->_players[0]->SetInteractionAnimation(true);
 			mainGame.m_pScene->_players[0]->m_InteractionCountTime = BOSS_INTERACTION_TIME;
@@ -290,6 +293,7 @@ void CSession::ProcessPacket(char* packet)
 		}
 	}
 	break;
+	// ================= 플레이어 스위치 애니메이션 관련 패킷 ==================
 	case S_PACKET_TYPE::SWITCH_ANIM:
 	{
 		S2C_SWITCH_ANIM* sw = (S2C_SWITCH_ANIM*)packet;

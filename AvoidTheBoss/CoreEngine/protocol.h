@@ -35,7 +35,7 @@ enum class EVENT_TYPE : uint8
 	HIDE_PLAYER_THREE = 13,
 	HIDE_PLAYER_FOUR = 14,
 
-	// ======= 플레이어 죽음 이벤트 =========== // 피격시 붉은 피격 이펙트 연출 or 피격 애니메이션 재생
+	// ======= 플레이어 피격 이벤트 =========== // 피격시 붉은 피격 이펙트 연출 or 피격 애니메이션 재생
 	ATTACKED_PLAYER_ONE = 15,
 	ATTACKED_PLAYER_TWO = 16,
 	ATTACKED_PLAYER_THREE = 17,

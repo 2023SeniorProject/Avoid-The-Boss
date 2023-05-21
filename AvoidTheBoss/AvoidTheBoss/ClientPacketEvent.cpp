@@ -59,12 +59,22 @@ void InteractionEvent::Task()
 		mainGame.m_pScene->_players[eventId - (uint8)EVENT_TYPE::HIDE_PLAYER_ONE]->m_hide = true;
 	}
 	break;
-	case EVENT_TYPE::ATTACK_EVENT:
-		player->SetInteractionAnimation(true);
-		player->m_InteractionCountTime = BOSS_INTERACTION_TIME;
-		((CBoss*)player)->m_pBullet->SetOnShoot(true);
-		((CBoss*)player)->AttackAnimationOn();
+	case EVENT_TYPE::ATTACKED_PLAYER_ONE:
+	case EVENT_TYPE::ATTACKED_PLAYER_TWO:
+	case EVENT_TYPE::ATTACKED_PLAYER_THREE:
+	case EVENT_TYPE::ATTACKED_PLAYER_FOUR:
+		// ========= 플레이어 피격 관련 애니메이션 재생
+		// ========= 플레이어 HP 제거 ================
+		player->m_hp -= 1;
 		break;
+	case EVENT_TYPE::DOWN_PLAYER_ONE:
+	case EVENT_TYPE::DOWN_PLAYER_TWO:
+	case EVENT_TYPE::DOWN_PLAYER_THREE:
+	case EVENT_TYPE::DOWN_PLAYER_FOUR :
+		// ========= 플레이어 쓰러지는 애니메이션 재생
+		player->m_hp -= 1;
+		break;
+
 	default:
 		break;
 	}

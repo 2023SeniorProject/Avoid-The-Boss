@@ -53,6 +53,8 @@ public:
 	BoundingSphere m_playerBV; // BV = bounding volume
 	CHARACTER_TYPE m_nCharacterType;
 	bool m_hide = false;// 플레이어를 가릴 것이냐 그릴 것이냐
+	// 05-21 추가
+	int32 m_hp = 5; // hp는 5로 설정
 public: 
 	CPlayer();
 	virtual ~CPlayer();

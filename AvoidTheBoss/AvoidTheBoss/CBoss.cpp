@@ -238,6 +238,12 @@ void CBoss::SetIdleAnimTrack()
 	m_pSkinnedAnimationController->SetTrackPosition(1, 0.0f);
 	m_pSkinnedAnimationController->SetTrackPosition(2, 0.0f);
 	m_pSkinnedAnimationController->SetTrackPosition(3, 0.0f);
+
+	m_pSkinnedAnimationController1->SetTrackEnable(1, false);
+	m_pSkinnedAnimationController1->SetTrackEnable(0, true);
+
+	m_pSkinnedAnimationController1->SetTrackPosition(0, 0.0f);
+	m_pSkinnedAnimationController1->SetTrackPosition(1, 0.0f);
 }
 
 void CBoss::SetRunAnimTrack()
@@ -252,6 +258,12 @@ void CBoss::SetRunAnimTrack()
 	m_pSkinnedAnimationController->SetTrackPosition(1, 0.0f);
 	m_pSkinnedAnimationController->SetTrackPosition(2, 0.0f);
 	m_pSkinnedAnimationController->SetTrackPosition(3, 0.0f);
+
+	m_pSkinnedAnimationController1->SetTrackEnable(0, false);
+	m_pSkinnedAnimationController1->SetTrackEnable(1, true);
+
+	m_pSkinnedAnimationController1->SetTrackPosition(0, 0.0f);
+	m_pSkinnedAnimationController1->SetTrackPosition(1, 0.0f);
 }
 
 void CBoss::SetAttackAnimTrack()
@@ -266,6 +278,12 @@ void CBoss::SetAttackAnimTrack()
 	m_pSkinnedAnimationController->SetTrackPosition(1, 0.0f);
 	m_pSkinnedAnimationController->SetTrackPosition(2, 0.0f);
 	m_pSkinnedAnimationController->SetTrackPosition(3, 0.0f);
+
+	m_pSkinnedAnimationController1->SetTrackEnable(1, false);
+	m_pSkinnedAnimationController1->SetTrackEnable(0, true);
+
+	m_pSkinnedAnimationController1->SetTrackPosition(1, 0.0f);
+	m_pSkinnedAnimationController1->SetTrackPosition(0, 0.0f);
 }
 
 void CBoss::SetRunAttackAnimTrack()
@@ -280,6 +298,12 @@ void CBoss::SetRunAttackAnimTrack()
 	m_pSkinnedAnimationController->SetTrackPosition(1, 0.0f);
 	m_pSkinnedAnimationController->SetTrackPosition(2, 0.0f);
 	m_pSkinnedAnimationController->SetTrackPosition(3, 0.0f);
+
+	m_pSkinnedAnimationController1->SetTrackEnable(0, false);
+	m_pSkinnedAnimationController1->SetTrackEnable(1, true);
+
+	m_pSkinnedAnimationController1->SetTrackPosition(0, 0.0f);
+	m_pSkinnedAnimationController1->SetTrackPosition(1, 0.0f);
 
 	m_InteractionCountTime -= 1;
 }
@@ -299,7 +323,7 @@ void CBoss::AnimTrackUpdate()
 		{
 			if (m_InteractionCountTime == BOSS_INTERACTION_TIME)
 			{
-				if (m_behavior == ATTACK) SetRunAttackAnimTrack();
+				if (m_behavior == ATTACK) SetAttackAnimTrack();
 				else if (m_behavior == RUN_ATTACK) SetRunAttackAnimTrack();
 			}
 			else if (m_InteractionCountTime < BOSS_INTERACTION_TIME)

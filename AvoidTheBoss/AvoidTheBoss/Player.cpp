@@ -51,11 +51,11 @@ void CPlayer::Move(int16 dwDirection, float fDistance)
 		//플레이어를 현재 위치 벡터에서 xmf3Shift 벡터만큼 이동한다
 		m_xmf3Velocity = XMFLOAT3(0, 0, 0);
 		SetVelocity(xmf3Shift);
-		
 	}
+	else SetVelocity(xmf3Shift);
 }
 
-void CPlayer::Update(float fTimeElapsed, PLAYER_TYPE ptype)
+void CPlayer::Update(float fTimeElapsed, CLIENT_TYPE ptype)
 {
 	XMFLOAT3 vel = Vector3::ScalarProduct(m_xmf3Velocity, fTimeElapsed, false);
 	m_xmf3Position = Vector3::Add(m_xmf3Position, vel);

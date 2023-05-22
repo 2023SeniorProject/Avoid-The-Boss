@@ -17,10 +17,20 @@ public:
 	virtual CCamera* ChangeCamera(DWORD nNewCameraMode, float fTimeElapsed);
 	virtual void Rotate(float x, float y, float z);
 	virtual void PrepareAnimate();
-	virtual void Move(const int16& dwDirection, float fDistance);
-	void AttackAnimationOn();
-	virtual void Update(float fTimeElapsed, PLAYER_TYPE ptype);
-	virtual void OnInteractionAnimation();
-
+	// ========== 플레이어 조작 관련 ============
 	virtual void ProcessInput(const int16&); // 04-29 추가
+	virtual void Move(const int16& dwDirection, float fDistance);
+	virtual void Update(float fTimeElapsed, CLIENT_TYPE ptype);
+	virtual void LateUpdate(float ,CLIENT_TYPE);
+	
+
+	// ============= 애니메이션 트랙 셋팅 관련 ============ // 05-22 추가 함수
+	void SetIdleAnimTrack();
+	void SetRunAnimTrack();
+	void SetAttackAnimTrack();
+	void SetRunAttackAnimTrack();
+	virtual void AnimTrackUpdate(); 
+
+	void SetAttackAnimOtherClient();
+	
 };

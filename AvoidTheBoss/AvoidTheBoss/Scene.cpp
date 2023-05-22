@@ -295,8 +295,8 @@ void CGameScene::Update(HWND hWnd)
 
 	for (int k = 0; k < PLAYERNUM; ++k)
 	{
-		if (k == _playerIdx) _players[k]->Update(_timer.GetTimeElapsed(), PLAYER_TYPE::OWNER);
-		else _players[k]->Update(_timer.GetTimeElapsed(), PLAYER_TYPE::OTHER_PLAYER);
+		if (k == _playerIdx) _players[k]->Update(_timer.GetTimeElapsed(), CLIENT_TYPE::OWNER);
+		else _players[k]->Update(_timer.GetTimeElapsed(), CLIENT_TYPE::OTHER_PLAYER);
 	}
 
 	if (m_bIsExitReady) // 탈출 성공 시 , 해야할 일 처리

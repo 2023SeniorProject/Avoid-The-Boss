@@ -1,9 +1,14 @@
 #pragma once
 #include "GameObject.h"
 
-enum class PLAYER_TYPE
+enum class CLIENT_TYPE
 {
 	OWNER,OTHER_PLAYER,NONE
+};
+
+enum class PLAYER_TYPE
+{
+	NONE = 0 ,BOSS = 1,EMPLOYEE = 2
 };
 
 enum class CHARACTER_TYPE: int32
@@ -55,6 +60,8 @@ public:
 	bool m_hide = false;// 플레이어를 가릴 것이냐 그릴 것이냐
 	// 05-21 추가
 	int32 m_hp = 5; // hp는 5로 설정
+	// 05-22 추가
+	int32 m_behavior = IDLE;
 public: 
 	CPlayer();
 	virtual ~CPlayer();
@@ -110,9 +117,11 @@ public: //04-29 추가함수
 	virtual void ProcessInput(const int16&) { };
 	virtual void SetAnimationTrack(int32 num) {};
 	virtual void Move(int16 dwDirection, float fDistance);
-	virtual void Update(float fTimeElapsed, PLAYER_TYPE ptype);
+	virtual void Update(float fTimeElapsed, CLIENT_TYPE ptype);
 	virtual void LateUpdate() {};
 	virtual void Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera = NULL);
+	// 05-22 추가 함수
+	virtual void AnimTrackUpdate(float ,CLIENT_TYPE) {};
 protected:
 	int nInteractionNum = -1;
 	bool m_OnInteraction = false;

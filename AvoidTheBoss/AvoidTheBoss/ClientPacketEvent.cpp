@@ -82,10 +82,9 @@ void InteractionEvent::Task()
 
 void moveEvent::Task()
 {
-
 		player->SetDirection(_dir);
-		player->Move(_key, PLAYER_VELOCITY);
-
+		if(player->m_ctype == (uint8)PLAYER_TYPE::BOSS) static_cast<CBoss*>(player)->Move(_key, BOSS_VELOCITY);
+		else static_cast<CEmployee*>(player)->Move(_key, PLAYER_VELOCITY);
 }
 
 void posEvent::Task()

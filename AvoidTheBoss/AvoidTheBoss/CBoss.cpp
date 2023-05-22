@@ -14,25 +14,33 @@ CBoss::CBoss(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandLis
 	//CLoadedModelInfo* pBossModel = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, g_pstrCharactorRefernece[(int)m_nCharacterType], NULL, Layout::PLAYER);
 	//SetChild(pBossModel->m_pModelRootObject, true);
 
-	CLoadedModelInfo* pBossUpperModel = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "Model/Boss_Shooting_Run_UpperBody_Test.bin", NULL, Layout::PLAYER);
+	CLoadedModelInfo* pBossUpperModel = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "Model/Boss_Shooting_Run_UpperBody(3).bin", NULL, Layout::PLAYER);
 	SetChild(pBossUpperModel->m_pModelRootObject, true);
 	
-	CLoadedModelInfo* pBossLowerModel = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "Model/Boss_Shooting_Run_LowerBody_Test.bin", NULL, Layout::PLAYER);
+	CLoadedModelInfo* pBossLowerModel = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "Model/Boss_Shooting_Run_LowerBody(3).bin", NULL, Layout::PLAYER);
 	SetChild(pBossLowerModel->m_pModelRootObject, true);
 		
-	m_pSkinnedAnimationController = new CAnimationController(pd3dDevice, pd3dCommandList, 1, pBossUpperModel);
-	m_pSkinnedAnimationController1 = new CAnimationController(pd3dDevice, pd3dCommandList, 1, pBossLowerModel);
-	m_pSkinnedAnimationController->SetTrackAnimationSet(0, 0);//Idle
-	m_pSkinnedAnimationController1->SetTrackAnimationSet(0, 0);//Idle
+	m_pSkinnedAnimationController = new CAnimationController(pd3dDevice, pd3dCommandList, 4, pBossUpperModel);
+	m_pSkinnedAnimationController1 = new CAnimationController(pd3dDevice, pd3dCommandList, 4, pBossLowerModel);
+
+	m_pSkinnedAnimationController->SetTrackAnimationSet(3, 0);//RunningShoot 
+	m_pSkinnedAnimationController->SetTrackAnimationSet(0, 1);//Idle
+	m_pSkinnedAnimationController->SetTrackAnimationSet(1, 2);//Run
+	m_pSkinnedAnimationController->SetTrackAnimationSet(2, 3);//Shoot
+
+	m_pSkinnedAnimationController1->SetTrackAnimationSet(1, 0);//Run
+	m_pSkinnedAnimationController1->SetTrackAnimationSet(0, 1);//Idle
+	m_pSkinnedAnimationController1->SetTrackAnimationSet(2, 2);//Run
+	m_pSkinnedAnimationController1->SetTrackAnimationSet(3, 3);//Run
+
 	m_pSkinnedAnimationController->SetTrackEnable(0, true);
 	m_pSkinnedAnimationController1->SetTrackEnable(0, true);
 
+	m_pSkinnedAnimationController1->SetTrackEnable(2, false);
+	m_pSkinnedAnimationController1->SetTrackEnable(3, false);
+
 	//m_pSkinnedAnimationController = new CAnimationController(pd3dDevice, pd3dCommandList, 5, pBossModel);
-	//m_pSkinnedAnimationController->SetTrackAnimationSet(0, 0);//Idle
-	//m_pSkinnedAnimationController->SetTrackAnimationSet(1, 1);//Run
-	//m_pSkinnedAnimationController->SetTrackAnimationSet(2, 2);//Shoot
-	//m_pSkinnedAnimationController->SetTrackAnimationSet(4, 3);//RunningShoot
-	//m_pSkinnedAnimationController->SetTrackAnimationSet(3, 4);//RunningShoot
+
 
 	////m_pSkinnedAnimationController->SetTrackSpeed(3, 0.83f);
 	//m_pSkinnedAnimationController->SetTrackSpeed(2, 0.5f);
@@ -65,6 +73,7 @@ CBoss::CBoss(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandLis
 	//CGameObject::Rotate(0.0f, -180.0f, 0.0f);
 	CreateShaderVariables(pd3dDevice, pd3dCommandList);
 	//if (pBossModel) delete pBossModel;
+
 	if (pBossUpperModel) delete pBossUpperModel;
 	if (pBossLowerModel) delete pBossLowerModel;
 
@@ -123,88 +132,105 @@ void CBoss::PrepareAnimate()
 
 void CBoss::Move(const int16& dwDirection, float fDistance)
 {
-	//if (m_pSkinnedAnimationController)
-	//{
-	//	if (LOBYTE(dwDirection)) // 1. 캐릭터 이동량이 있을 때 (WASD 키 입력)
-	//	{
-	//		if (!m_OnInteraction) // 공격 키 미입력, 이동키 입력 --> 달리기
-	//		{
-	//			m_pSkinnedAnimationController->SetTrackEnable(0, false);
-	//			m_pSkinnedAnimationController->SetTrackEnable(1, true);
-	//			m_pSkinnedAnimationController->SetTrackEnable(2, false);
-	//			m_pSkinnedAnimationController->SetTrackEnable(3, false);
+	if (m_pSkinnedAnimationController && m_pSkinnedAnimationController1)
+	{
+		if (LOBYTE(dwDirection)) // 1. 캐릭터 이동량이 있을 때 (WASD 키 입력)
+		{
+			if (!m_OnInteraction) // 공격 키 미입력, 이동키 입력 --> 달리기
+			{
+				// 상체
+				m_pSkinnedAnimationController->SetTrackEnable(0, false);
+				m_pSkinnedAnimationController->SetTrackEnable(1, true);
+				m_pSkinnedAnimationController->SetTrackEnable(2, false);
+				m_pSkinnedAnimationController->SetTrackEnable(3, false);
 
-	//			m_pSkinnedAnimationController->SetTrackPosition(0, 0.0f);
-	//			m_pSkinnedAnimationController->SetTrackPosition(1, 0.0f);
-	//			m_pSkinnedAnimationController->SetTrackPosition(2, 0.0f);
-	//			m_pSkinnedAnimationController->SetTrackPosition(3, 0.0f);
+				m_pSkinnedAnimationController->SetTrackPosition(0, 0.0f);
+				m_pSkinnedAnimationController->SetTrackPosition(1, 0.0f);
+				m_pSkinnedAnimationController->SetTrackPosition(2, 0.0f);
+				m_pSkinnedAnimationController->SetTrackPosition(3, 0.0f);
 
-	//		}
-	//		else // 공격 키, 이동키 모두 입력 --> 달리면서 쏘기
-	//		{
-	//			if (m_InteractionCountTime == BOSS_INTERACTION_TIME)
-	//			{
-	//				m_pSkinnedAnimationController->SetTrackEnable(0, false);
-	//				m_pSkinnedAnimationController->SetTrackEnable(1, false);
-	//				m_pSkinnedAnimationController->SetTrackEnable(2, false);
-	//				m_pSkinnedAnimationController->SetTrackEnable(3, true);
+				
+			}
+			else // 공격 키, 이동키 모두 입력 --> 달리면서 쏘기
+			{
+				if (m_InteractionCountTime == BOSS_INTERACTION_TIME)
+				{
+					// 상체
+					m_pSkinnedAnimationController->SetTrackEnable(0, false);
+					m_pSkinnedAnimationController->SetTrackEnable(1, false);
+					m_pSkinnedAnimationController->SetTrackEnable(2, false);
+					m_pSkinnedAnimationController->SetTrackEnable(3, true);
 
-	//				m_pSkinnedAnimationController->SetTrackPosition(0, 0.0f);
-	//				m_pSkinnedAnimationController->SetTrackPosition(1, 0.0f);
-	//				m_pSkinnedAnimationController->SetTrackPosition(2, 0.0f);
-	//				m_pSkinnedAnimationController->SetTrackPosition(3, 0.0f);
+					m_pSkinnedAnimationController->SetTrackPosition(0, 0.0f);
+					m_pSkinnedAnimationController->SetTrackPosition(1, 0.0f);
+					m_pSkinnedAnimationController->SetTrackPosition(2, 0.0f);
+					m_pSkinnedAnimationController->SetTrackPosition(3, 0.0f);
 
-	//				m_InteractionCountTime -= 1;
-	//			}
-	//			else if (m_InteractionCountTime < BOSS_INTERACTION_TIME)
-	//			{
-	//				if(m_InteractionCountTime <=0)
-	//					m_OnInteraction = false;
+					m_InteractionCountTime -= 1;
+				}
+				else if (m_InteractionCountTime < BOSS_INTERACTION_TIME)
+				{
+					if(m_InteractionCountTime <=0)
+						m_OnInteraction = false;
 
-	//				m_InteractionCountTime -= 1;
-	//			}
-	//		}
-	//	}
-	//	else if (LOBYTE(dwDirection) == 0) // 이동키 입력이 아닐 때
-	//	{
-	//		if (!m_OnInteraction) // 공격 키, 이동키 모두 미입력
-	//		{
-	//			m_pSkinnedAnimationController->SetTrackEnable(0, true);
-	//			m_pSkinnedAnimationController->SetTrackEnable(1, false);
-	//			m_pSkinnedAnimationController->SetTrackEnable(2, false);
-	//			m_pSkinnedAnimationController->SetTrackEnable(3, false);
+					m_InteractionCountTime -= 1;
+				}
+			}
 
-	//			m_pSkinnedAnimationController->SetTrackPosition(0, 0.0f);
-	//			m_pSkinnedAnimationController->SetTrackPosition(1, 0.0f);
-	//			m_pSkinnedAnimationController->SetTrackPosition(2, 0.0f);
-	//			m_pSkinnedAnimationController->SetTrackPosition(3, 0.0f);
-	//		}
-	//		else // 공격 키만 입력, 이동키는 미입력
-	//		{
-	//			if (m_InteractionCountTime == BOSS_INTERACTION_TIME)
-	//			{
-	//				m_pSkinnedAnimationController->SetTrackEnable(0, false);
-	//				m_pSkinnedAnimationController->SetTrackEnable(1, false);
-	//				m_pSkinnedAnimationController->SetTrackEnable(2, true);
-	//				m_pSkinnedAnimationController->SetTrackEnable(3, false);
+			// 하체
+			m_pSkinnedAnimationController1->SetTrackEnable(0, false);
+			m_pSkinnedAnimationController1->SetTrackEnable(1, true);
 
-	//				m_pSkinnedAnimationController->SetTrackPosition(0, 0.0f);
-	//				m_pSkinnedAnimationController->SetTrackPosition(1, 0.0f);
-	//				m_pSkinnedAnimationController->SetTrackPosition(2, 0.0f);
-	//				m_pSkinnedAnimationController->SetTrackPosition(3, 0.0f);
+			m_pSkinnedAnimationController1->SetTrackPosition(0, 0.0f);
+			m_pSkinnedAnimationController1->SetTrackPosition(1, 0.0f);
+		}
+		else if (LOBYTE(dwDirection) == 0) // 이동키 입력이 아닐 때
+		{
+			if (!m_OnInteraction) // 공격 키, 이동키 모두 미입력
+			{
+				m_pSkinnedAnimationController->SetTrackEnable(0, true);
+				m_pSkinnedAnimationController->SetTrackEnable(1, false);
+				m_pSkinnedAnimationController->SetTrackEnable(2, false);
+				m_pSkinnedAnimationController->SetTrackEnable(3, false);
 
-	//				m_InteractionCountTime -= 1;
-	//			}
-	//			else if (m_InteractionCountTime < BOSS_INTERACTION_TIME)
-	//			{
-	//				if (m_InteractionCountTime <= 0)
-	//					m_OnInteraction = false;
+				m_pSkinnedAnimationController->SetTrackPosition(0, 0.0f);
+				m_pSkinnedAnimationController->SetTrackPosition(1, 0.0f);
+				m_pSkinnedAnimationController->SetTrackPosition(2, 0.0f);
+				m_pSkinnedAnimationController->SetTrackPosition(3, 0.0f);
+			}
+			else // 공격 키만 입력, 이동키는 미입력
+			{
+				if (m_InteractionCountTime == BOSS_INTERACTION_TIME)
+				{
+					m_pSkinnedAnimationController->SetTrackEnable(0, false);
+					m_pSkinnedAnimationController->SetTrackEnable(1, false);
+					m_pSkinnedAnimationController->SetTrackEnable(2, true);
+					m_pSkinnedAnimationController->SetTrackEnable(3, false);
 
-	//				m_InteractionCountTime -= 1;
-	//			}
-	//		}
-	//	}
-	//}
+					m_pSkinnedAnimationController->SetTrackPosition(0, 0.0f);
+					m_pSkinnedAnimationController->SetTrackPosition(1, 0.0f);
+					m_pSkinnedAnimationController->SetTrackPosition(2, 0.0f);
+					m_pSkinnedAnimationController->SetTrackPosition(3, 0.0f);
+
+					m_InteractionCountTime -= 1;
+				}
+				else if (m_InteractionCountTime < BOSS_INTERACTION_TIME)
+				{
+					if (m_InteractionCountTime <= 0)
+						m_OnInteraction = false;
+
+					m_InteractionCountTime -= 1;
+				}
+			}
+
+			// 하체
+			m_pSkinnedAnimationController1->SetTrackEnable(0, true);
+			m_pSkinnedAnimationController1->SetTrackEnable(1, false);
+
+			m_pSkinnedAnimationController1->SetTrackPosition(0, 0.0f);
+			m_pSkinnedAnimationController1->SetTrackPosition(1, 0.0f);
+		}
+	}
 
 	CPlayer::Move(dwDirection, fDistance);
    

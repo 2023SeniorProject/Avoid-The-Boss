@@ -38,7 +38,6 @@ CPlayer::~CPlayer()
 
 void CPlayer::Move(int16 dwDirection, float fDistance)
 {
-
 	XMFLOAT3 xmf3Shift = XMFLOAT3(0, 0, 0);
 	if (LOBYTE(dwDirection))
 	{	
@@ -51,7 +50,6 @@ void CPlayer::Move(int16 dwDirection, float fDistance)
 		//플레이어를 현재 위치 벡터에서 xmf3Shift 벡터만큼 이동한다
 		m_xmf3Velocity = XMFLOAT3(0, 0, 0);
 		SetVelocity(xmf3Shift);
-		
 	}
 }
 

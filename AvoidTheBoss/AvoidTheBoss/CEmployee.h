@@ -13,12 +13,21 @@ public:
 	virtual CCamera* ChangeCamera(DWORD nNewCameraMode, float fTimeElapsed);
 	
 
-	//virtual void Rotate(float x, float y, float z);
-	virtual void Move(DWORD dwDirection, float fDistance);
-	virtual void Update(float fTimeElapsed, PLAYER_TYPE ptype);
-	virtual void OnInteractionAnimation();
-	void SwitchAnimationForOtherClient();
+	// ========== 플레이어 조작 관련 ===================
 	virtual void ProcessInput(const int16&);
+	virtual void Move(DWORD dwDirection, float fDistance);
+	virtual void Update(float fTimeElapsed, CLIENT_TYPE ptype);
+	
+	// ============= 애니메이션 트랙 셋팅 관련 ============
+	void SetInteractionAnimTrack();
+	void SetIdleAnimTrack();
+	void SetRunAnimTrack();
+	void SetAttackedAnimTrack() {};
+	void SetDownAnimTrack() {};
+
+
+	void SetInteractionAnimTrackOtherClient();
+	
 	bool IsPlayerCanSwitchInteraction() { return m_bIsInSwitchArea; }
 	int32 GetAvailableSwitchIdx();
 

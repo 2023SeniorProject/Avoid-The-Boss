@@ -2,6 +2,7 @@
 #include "CBoss.h"
 #include "CBullet.h"
 #include "clientIocpCore.h"
+#include "InputManager.h"
 
 
 CBoss::CBoss(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature)
@@ -171,7 +172,7 @@ void CBoss::Update(float fTimeElapsed, CLIENT_TYPE ptype)
 		m_pBullet->Update(fTimeElapsed);
 	}
 	
-	
+	LateUpdate(fTimeElapsed, ptype);
 	
 }
 
@@ -278,22 +279,24 @@ void CBoss::AnimTrackUpdate()
 
 void CBoss::ProcessInput(const int16& dwDirection)
 {
-	// 1. Set Move Speed
-	
 
-	// 2. 공격 키를 눌렀을 경우 처리 
+	// 1. 공격 키를 눌렀을 경우 처리 
 	if (dwDirection & KEY_SPACE)
 	{
 		if (m_InteractionCountTime <= 0 && m_OnInteraction == false)
 		{
+			//보스 캐릭터 애니메이션 처리
 			SetInteractionAnimation(true);
 			m_InteractionCountTime = BOSS_INTERACTION_TIME;
 			// 05-06 공격 시, 사장님 공격 이벤트 전송
-			SC_EVENTPACKET packet;
-			packet.eventId = (uint8)EVENT_TYPE::ATTACK_EVENT;
-			packet.type = SC_PACKET_TYPE::GAMEEVENT;
-			packet.size = sizeof(SC_EVENTPACKET);
-			clientCore._client->DoSend(&packet);
+			if (InputManager::GetInstance().GetKeyBuffer(KEY_TYPE::SPACE) == (uint8)KEY_STATUS::KEY_PRESS)
+			{
+				SC_EVENTPACKET packet;
+				packet.eventId = (uint8)EVENT_TYPE::ATTACK_EVENT;
+				packet.type = SC_PACKET_TYPE::GAMEEVENT;
+				packet.size = sizeof(SC_EVENTPACKET);
+				clientCore._client->DoSend(&packet);
+			}
 		}
 	}
 

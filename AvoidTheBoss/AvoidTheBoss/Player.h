@@ -60,6 +60,8 @@ public:
 	bool m_hide = false;// 플레이어를 가릴 것이냐 그릴 것이냐
 	// 05-21 추가
 	int32 m_hp = 5; // hp는 5로 설정
+	// 05-22 추가
+	int32 m_behavior = IDLE;
 public: 
 	CPlayer();
 	virtual ~CPlayer();
@@ -118,6 +120,8 @@ public: //04-29 추가함수
 	virtual void Update(float fTimeElapsed, CLIENT_TYPE ptype);
 	virtual void LateUpdate() {};
 	virtual void Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera = NULL);
+	// 05-22 추가 함수
+	virtual void AnimTrackUpdate(float ,CLIENT_TYPE) {};
 protected:
 	int nInteractionNum = -1;
 	bool m_OnInteraction = false;

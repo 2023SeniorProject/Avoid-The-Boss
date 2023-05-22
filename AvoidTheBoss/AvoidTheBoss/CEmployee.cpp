@@ -156,6 +156,28 @@ void CEmployee::SetRunAnimTrack()
 
 
 
+void CEmployee::AnimTrackUpdate()
+{
+	switch (m_behavior)
+	{
+	case IDLE:
+		SetIdleAnimTrack();
+		break;
+	case RUN:
+		SetRunAnimTrack();
+		break;
+	case SWITCH_INTER:
+		SetInteractionAnimTrack();
+		break;
+	case ATTACK:
+	case RUN_ATTACK:
+	{
+		
+	}
+	break;
+	}
+}
+
 void CEmployee::SetInteractionAnimTrackOtherClient()
 {
 	if (m_pSkinnedAnimationController == nullptr) return;

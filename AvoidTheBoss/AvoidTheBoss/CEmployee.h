@@ -24,7 +24,7 @@ public:
 	void SetRunAnimTrack();
 	void SetAttackedAnimTrack() {};
 	void SetDownAnimTrack() {};
-	virtual void AnimTrackUpdate() {};
+	virtual void AnimTrackUpdate();
 
 	void SetInteractionAnimTrackOtherClient();
 	

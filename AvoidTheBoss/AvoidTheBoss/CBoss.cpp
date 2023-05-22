@@ -184,7 +184,6 @@ void CBoss::LateUpdate(float fTimeElapsed, CLIENT_TYPE ptype)
 }
 
 
-
 void CBoss::SetIdleAnimTrack()
 {
 	if (m_pSkinnedAnimationController == nullptr) return;

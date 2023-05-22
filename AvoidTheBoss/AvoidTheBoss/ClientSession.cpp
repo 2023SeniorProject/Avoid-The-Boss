@@ -286,7 +286,7 @@ void CSession::ProcessPacket(char* packet)
 			mainGame.m_pScene->_players[0]->SetInteractionAnimation(true);
 			mainGame.m_pScene->_players[0]->m_InteractionCountTime = BOSS_INTERACTION_TIME;
 			((CBoss*)mainGame.m_pScene->_players[0])->m_pBullet->SetOnShoot(true);
-			((CBoss*)mainGame.m_pScene->_players[0])->AttackAnimationOn();
+			((CBoss*)mainGame.m_pScene->_players[0])->SetAttackAnimOtherClient();
 			break;
 		default:
 			break;

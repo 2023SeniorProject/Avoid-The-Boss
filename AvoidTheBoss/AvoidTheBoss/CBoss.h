@@ -18,9 +18,15 @@ public:
 	virtual void Rotate(float x, float y, float z);
 	virtual void PrepareAnimate();
 	virtual void Move(const int16& dwDirection, float fDistance);
-	void AttackAnimationOn();
+	void SetAttackAnimOtherClient();
 	virtual void Update(float fTimeElapsed, CLIENT_TYPE ptype);
-	virtual void OnInteractionAnimation();
+	
+
+	// ============= 애니메이션 트랙 셋팅 관련 ============
+	void SetIdleAnimTrack();
+	void SetRunAnimTrack();
+	void SetAttackAnimTrack();
+	void SetRunAttackAnimTrack();
 
 	virtual void ProcessInput(const int16&); // 04-29 추가
 };

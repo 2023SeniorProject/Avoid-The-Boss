@@ -89,6 +89,7 @@ void CEmployee::Move(DWORD dwDirection, float fDistance)
 	else if (!LOBYTE(dwDirection) && !m_OnInteraction) SetIdleAnimTrack();
 	else if (m_OnInteraction) SetInteractionAnimTrack();
 	
+	// 플레이어 속도 셋팅
 	CPlayer::Move(dwDirection, PLAYER_VELOCITY);
 }
 

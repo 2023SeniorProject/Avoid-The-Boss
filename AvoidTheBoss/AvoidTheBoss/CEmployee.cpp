@@ -9,10 +9,10 @@
 
 CEmployee::CEmployee(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, CHARACTER_TYPE nType)
 {
-	m_pCamera = ChangeCamera(THIRD_PERSON_CAMERA, 0.0f);
-
+	m_ctype = (uint8)PLAYER_TYPE::EMPLOYEE;
 	m_nCharacterType = nType;
 
+	m_pCamera = ChangeCamera(THIRD_PERSON_CAMERA, 0.0f);
 	m_InteractionCountTime = 40;
 
 	CLoadedModelInfo* pEmployeeModel = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, g_pstrCharactorRefernece[(int)m_nCharacterType], NULL, Layout::PLAYER);
@@ -37,13 +37,7 @@ CEmployee::CEmployee(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCo
 	//m_pSkinnedAnimationController->SetTrackEnable(7, false);
 
 	CreateShaderVariables(pd3dDevice, pd3dCommandList);
-
-	//SetPlayerUpdatedContext();
-	//SetCameraUpdatedContext();
-
-	//SetScale(XMFLOAT3(1.f, 1.f, 1.f));
-	SetPosition(XMFLOAT3(0.0f, 0.25f, -30.0f));//-30.0f
-
+	SetPosition(XMFLOAT3(0.0f, 0.25f, -30.0f));
 	if (pEmployeeModel) delete pEmployeeModel;
 }
 
@@ -82,61 +76,111 @@ CCamera* CEmployee::ChangeCamera(DWORD nNewCameraMode, float fTimeElapsed)
 	}
 	m_pCamera->SetPosition(Vector3::Add(m_xmf3Position, m_pCamera->GetOffset()));
 
-	Update(fTimeElapsed, PLAYER_TYPE::OWNER);
+	Update(fTimeElapsed, CLIENT_TYPE::OWNER);
 
 	return(m_pCamera);
 }
 
 
-void CEmployee::Move(DWORD dwDirection, float fDistance)
+void CEmployee::Move(const int16& dwDirection, float fDistance)
 {
-	
-	if (LOBYTE(dwDirection) && !m_OnInteraction) // 이동 중에 
-	{
-		m_pSkinnedAnimationController->SetTrackEnable(0, false); // 걷기
-		m_pSkinnedAnimationController->SetTrackEnable(1, true); // 달리기
-		m_pSkinnedAnimationController->SetTrackEnable(6, false);
-		m_pSkinnedAnimationController->SetTrackPosition(0, 0);
-		m_pSkinnedAnimationController->SetTrackPosition(6, 0);
-	}
-	else if (!LOBYTE(dwDirection) && !m_OnInteraction)
-	{
-		m_pSkinnedAnimationController->SetTrackEnable(0, true); // 아이들 상태
-		m_pSkinnedAnimationController->SetTrackEnable(1, false); // 달리기
-		m_pSkinnedAnimationController->SetTrackEnable(6, false);
-		m_pSkinnedAnimationController->SetTrackPosition(1, 0);
-		m_pSkinnedAnimationController->SetTrackPosition(6, 0);
-	}
+	// 플레이어의 행동을 저장.
+	if (LOBYTE(dwDirection)) m_behavior = RUN;
+	else if (!LOBYTE(dwDirection)) m_behavior = IDLE;
 	else if (m_OnInteraction)
 	{
-		m_pSkinnedAnimationController->SetTrackEnable(0, false);
-		m_pSkinnedAnimationController->SetTrackEnable(1, false);
-		m_pSkinnedAnimationController->SetTrackEnable(6, true);
-		m_pSkinnedAnimationController->SetTrackPosition(0, 0);
-		m_pSkinnedAnimationController->SetTrackPosition(1, 0);
+		m_behavior = SWITCH_INTER;
+		CPlayer::Move(0, PLAYER_VELOCITY);
 	}
+	// 플레이어 속도 셋팅
 	CPlayer::Move(dwDirection, PLAYER_VELOCITY);
 }
+	
+	
 
-void CEmployee::Update(float fTimeElapsed, PLAYER_TYPE ptype)
+
+void CEmployee::Update(float fTimeElapsed, CLIENT_TYPE ptype)
 {
 	CPlayer::Update(fTimeElapsed, ptype);
+	LateUpdate(fTimeElapsed,ptype);
+}
+
+void CEmployee::LateUpdate(float fTimeElapsed, CLIENT_TYPE ptype)
+{
+	// ===== 애니메이션 트랙 업데이트 ========
+	AnimTrackUpdate();
+	
+	//======= 스위치 위치 판별 =========
 	if (GetAvailableSwitchIdx() != -1) m_bIsInSwitchArea = true;
 	else m_bIsInSwitchArea = false;
 	
-	if (ptype == PLAYER_TYPE::OWNER) m_xmf3Velocity = XMFLOAT3(0.0f, 0.0f, 0.0f);
-	else if (ptype == PLAYER_TYPE::OTHER_PLAYER)
+	if (ptype == CLIENT_TYPE::OWNER) m_xmf3Velocity = XMFLOAT3(0.0f, 0.0f, 0.0f);
+	else if (ptype == CLIENT_TYPE::OTHER_PLAYER)
 	{
-		if(!Vector3::IsZero(m_xmf3Velocity)) SetInteractionAnimation(false);
+		if (m_behavior != SWITCH_INTER) SetInteractionAnimation(false);
 	}
 }
-void CEmployee::OnInteractionAnimation()
-{
 
+// ===============애니메이션 트랙 ==================
+void CEmployee::SetInteractionAnimTrack()
+{
+	if (m_pSkinnedAnimationController == nullptr) return;
+	m_pSkinnedAnimationController->SetTrackEnable(0, false);
+	m_pSkinnedAnimationController->SetTrackEnable(1, false);
+	m_pSkinnedAnimationController->SetTrackEnable(6, true);
+	m_pSkinnedAnimationController->SetTrackPosition(0, 0);
+	m_pSkinnedAnimationController->SetTrackPosition(1, 0);
+	m_pSkinnedAnimationController->SetTrackPosition(6, 0);
 }
 
-void CEmployee::SwitchAnimationForOtherClient()
+void CEmployee::SetIdleAnimTrack()
 {
+	if (m_pSkinnedAnimationController == nullptr) return;
+	m_pSkinnedAnimationController->SetTrackEnable(0, true); // 아이들 상태
+	m_pSkinnedAnimationController->SetTrackEnable(1, false); // 달리기
+	m_pSkinnedAnimationController->SetTrackEnable(6, false);
+	m_pSkinnedAnimationController->SetTrackPosition(1, 0);
+	m_pSkinnedAnimationController->SetTrackPosition(6, 0);
+}
+
+void CEmployee::SetRunAnimTrack()
+{
+	if (m_pSkinnedAnimationController == nullptr) return;
+	m_pSkinnedAnimationController->SetTrackEnable(0, false); 
+	m_pSkinnedAnimationController->SetTrackEnable(1, true); // 달리기
+	m_pSkinnedAnimationController->SetTrackEnable(6, false);
+	m_pSkinnedAnimationController->SetTrackPosition(0, 0);
+	m_pSkinnedAnimationController->SetTrackPosition(1, 0);
+	m_pSkinnedAnimationController->SetTrackPosition(6, 0);
+}
+
+
+
+void CEmployee::AnimTrackUpdate()
+{
+	switch (m_behavior)
+	{
+	case IDLE:
+		SetIdleAnimTrack();
+		break;
+	case RUN:
+		SetRunAnimTrack();
+		break;
+	case SWITCH_INTER:
+		SetInteractionAnimTrack();
+		break;
+	case ATTACK:
+	case RUN_ATTACK:
+	{
+		
+	}
+	break;
+	}
+}
+
+void CEmployee::SetInteractionAnimTrackOtherClient()
+{
+	if (m_pSkinnedAnimationController == nullptr) return;
 	if (m_OnInteraction)
 	{
 		m_pSkinnedAnimationController->SetTrackEnable(0, false);
@@ -167,8 +211,7 @@ int32 CEmployee::GetAvailableSwitchIdx()
 // 04-29 직원 키입력 처리 추가
 void CEmployee::ProcessInput(const int16& inputKey)
 {
-	Move(inputKey, PLAYER_VELOCITY);
-	
+
 	if (IsPlayerCanSwitchInteraction()) //  플레이어가 스위치 영역에 있는 경우
 	{
 		int32 switchIdx = GetAvailableSwitchIdx(); // 어느 스위치 영역인지 확인한다.
@@ -186,7 +229,7 @@ void CEmployee::ProcessInput(const int16& inputKey)
 					!targetGenerator->m_bSwitchActive) // 플레이어가 상호작용 상태가 아니였다면
 				{
 					// ====== 플레이어 처리 ==============
-					SetInteractionAnimation(true); // 캐릭터 애니메이션 재생을 활성화 한다.
+					SetInteractionAnimation(true); // 캐릭터 상호작용 애니메이션 재생을 활성화 한다.
 					
 
 					// ========== 발전기 처리 ===============
@@ -226,4 +269,5 @@ void CEmployee::ProcessInput(const int16& inputKey)
 			}
 		}
 	}
+	Move(inputKey, PLAYER_VELOCITY);
 }

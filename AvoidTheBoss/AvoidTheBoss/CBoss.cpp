@@ -8,7 +8,7 @@ CBoss::CBoss(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandLis
 {
 	m_type = 0;
 	m_pCamera = ChangeCamera(THIRD_PERSON_CAMERA, 0.0f);
-
+	m_ctype = (uint8)PLAYER_TYPE::BOSS;
 	m_nCharacterType = CHARACTER_TYPE::BOSS;
 
 	CLoadedModelInfo* pBossModel = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, g_pstrCharactorRefernece[(int)m_nCharacterType], NULL, Layout::PLAYER);
@@ -28,21 +28,7 @@ CBoss::CBoss(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandLis
 	m_pSkinnedAnimationController->SetTrackEnable(2, false);
 	m_pSkinnedAnimationController->SetTrackEnable(3, false);
 
-	//	m_pSkinnedAnimationController->SetCallbackKeys(1, 2);
-	//#ifdef _WITH_SOUND_RESOURCE
-	//	m_pSkinnedAnimationController->SetCallbackKey(0, 0.1f, _T("Footstep01"));
-	//	m_pSkinnedAnimationController->SetCallbackKey(1, 0.5f, _T("Footstep02"));
-	//	m_pSkinnedAnimationController->SetCallbackKey(2, 0.9f, _T("Footstep03"));
-	//#else
-	//	m_pSkinnedAnimationController->SetCallbackKey(1, 0, 0.001f, _T("Sound/Footstep01.wav"));
-	//	m_pSkinnedAnimationController->SetCallbackKey(1, 1, 0.125f, _T("Sound/Footstep02.wav"));
-	//	m_pSkinnedAnimationController->SetCallbackKey(1, 2, 0.39f, _T("Sound/Footstep03.wav"));
-	//#endif
-		//CAnimationCallbackHandler *pAnimationCallbackHandler = new CSoundCallbackHandler();
-		//m_pSkinnedAnimationController->SetAnimationCallbackHandler(1, pAnimationCallbackHandler);
-
-	//SetPlayerUpdatedContext();
-	//SetCameraUpdatedContext();
+	
 
 	SetScale(XMFLOAT3(1.f, 1.f, 1.f));
 	SetPosition(XMFLOAT3(0.0f, 0.25f, -30.0f));
@@ -85,7 +71,7 @@ CCamera* CBoss::ChangeCamera(DWORD nNewCameraMode, float fTimeElapsed)
 	}
 	m_pCamera->SetPosition(Vector3::Add(m_xmf3Position, m_pCamera->GetOffset()));
 
-	Update(fTimeElapsed, PLAYER_TYPE::NONE);
+	Update(fTimeElapsed, CLIENT_TYPE::NONE);
 
 	return(m_pCamera);
 }
@@ -262,7 +248,7 @@ void CBoss::AttackAnimationOn()
 	}
 }
 
-void CBoss::Update(float fTimeElapsed, PLAYER_TYPE ptype)
+void CBoss::Update(float fTimeElapsed, CLIENT_TYPE ptype)
 {
 	CPlayer::Update(fTimeElapsed, ptype);
 
@@ -272,7 +258,7 @@ void CBoss::Update(float fTimeElapsed, PLAYER_TYPE ptype)
 		m_pBullet->SetBulletPosition(GetPosition());
 		m_pBullet->Update(fTimeElapsed);
 	}
-	if (ptype == PLAYER_TYPE::OWNER) m_xmf3Velocity = XMFLOAT3(0.0f, 0.0f, 0.0f);
+	if (ptype == CLIENT_TYPE::OWNER) m_xmf3Velocity = XMFLOAT3(0.0f, 0.0f, 0.0f);
 	else if(m_pBullet) AttackAnimationOn();
 	
 }

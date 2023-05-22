@@ -302,7 +302,7 @@ void CSession::ProcessPacket(char* packet)
 		if (myPlayer != nullptr)
 		{
 			myPlayer->SetInteractionAnimation(true);
-			myPlayer->SwitchAnimationForOtherClient();
+			myPlayer->SetInteractionAnimTrackOtherClient();
 		}
 	}
 	break;

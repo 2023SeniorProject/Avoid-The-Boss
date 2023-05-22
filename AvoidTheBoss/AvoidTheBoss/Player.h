@@ -1,9 +1,14 @@
 #pragma once
 #include "GameObject.h"
 
-enum class PLAYER_TYPE
+enum class CLIENT_TYPE
 {
 	OWNER,OTHER_PLAYER,NONE
+};
+
+enum class PLAYER_TYPE
+{
+	NONE = 0 ,BOSS = 1,EMPLOYEE = 2
 };
 
 enum class CHARACTER_TYPE: int32
@@ -110,7 +115,7 @@ public: //04-29 추가함수
 	virtual void ProcessInput(const int16&) { };
 	virtual void SetAnimationTrack(int32 num) {};
 	virtual void Move(int16 dwDirection, float fDistance);
-	virtual void Update(float fTimeElapsed, PLAYER_TYPE ptype);
+	virtual void Update(float fTimeElapsed, CLIENT_TYPE ptype);
 	virtual void LateUpdate() {};
 	virtual void Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera = NULL);
 protected:

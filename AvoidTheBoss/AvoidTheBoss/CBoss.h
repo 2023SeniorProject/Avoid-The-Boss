@@ -19,7 +19,7 @@ public:
 	virtual void PrepareAnimate();
 	virtual void Move(const int16& dwDirection, float fDistance);
 	void AttackAnimationOn();
-	virtual void Update(float fTimeElapsed, PLAYER_TYPE ptype);
+	virtual void Update(float fTimeElapsed, CLIENT_TYPE ptype);
 	virtual void OnInteractionAnimation();
 
 	virtual void ProcessInput(const int16&); // 04-29 Ãß°¡

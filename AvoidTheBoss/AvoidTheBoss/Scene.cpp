@@ -259,7 +259,7 @@ void CGameScene::ProcessInput(HWND& hWnd)
 			cyDelta = (float)(ptCursorPos.y - m_ptOldCursorPos.y) / 3.0f;
 			::SetCursorPos(m_ptOldCursorPos.x, m_ptOldCursorPos.y);
 		}
-		if(cxDelta > 0) _players[_playerIdx]->Rotate(0.f, cxDelta, 0.0f);
+		if(cxDelta != 0) _players[_playerIdx]->Rotate(0.f, cxDelta, 0.0f);
 	}
 
 
@@ -295,8 +295,8 @@ void CGameScene::Update(HWND hWnd)
 
 	for (int k = 0; k < PLAYERNUM; ++k)
 	{
-		if (k == _playerIdx) _players[k]->Update(_timer.GetTimeElapsed(), PLAYER_TYPE::OWNER);
-		else _players[k]->Update(_timer.GetTimeElapsed(), PLAYER_TYPE::OTHER_PLAYER);
+		if (k == _playerIdx) _players[k]->Update(_timer.GetTimeElapsed(), CLIENT_TYPE::OWNER);
+		else _players[k]->Update(_timer.GetTimeElapsed(), CLIENT_TYPE::OTHER_PLAYER);
 	}
 
 	if (m_bIsExitReady) // 탈출 성공 시 , 해야할 일 처리

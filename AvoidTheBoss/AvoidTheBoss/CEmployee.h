@@ -15,16 +15,16 @@ public:
 
 	// ========== 플레이어 조작 관련 ===================
 	virtual void ProcessInput(const int16&);
-	virtual void Move(DWORD dwDirection, float fDistance);
+	virtual void Move(const int16& dwDirection, float fDistance);
 	virtual void Update(float fTimeElapsed, CLIENT_TYPE ptype);
-	
+	virtual void LateUpdate(float fTimeElapsed, CLIENT_TYPE ptype);
 	// ============= 애니메이션 트랙 셋팅 관련 ============
 	void SetInteractionAnimTrack();
 	void SetIdleAnimTrack();
 	void SetRunAnimTrack();
 	void SetAttackedAnimTrack() {};
 	void SetDownAnimTrack() {};
-
+	virtual void AnimTrackUpdate() {};
 
 	void SetInteractionAnimTrackOtherClient();
 	

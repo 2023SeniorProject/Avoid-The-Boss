@@ -94,54 +94,28 @@ void CBoss::Move(const int16& dwDirection, float fDistance)
 	if (LOBYTE(dwDirection)) // 1. 캐릭터 이동량이 있을 때 (WASD 키 입력)
 	{
 		if (!m_OnInteraction) // 공격 키 미입력, 이동키 입력 --> 달리기
-			{
-			
-
-			}
+		{
+			m_behavior = RUN;
+		}
 		else // 공격 키, 이동키 모두 입력 --> 달리면서 쏘기
 		{
-			if (m_InteractionCountTime == BOSS_INTERACTION_TIME)
-			{
-				SetRunAttackAnimTrack();
-				m_pBullet->SetOnShoot(true);
-			}
-			else if (m_InteractionCountTime < BOSS_INTERACTION_TIME)
-			{
-				if (m_InteractionCountTime <= 0)
-				{
-					m_OnInteraction = false;
-					SetRunAnimTrack();
-				}
-				m_InteractionCountTime -= 1;
-			}
-			
+			m_behavior = RUN_ATTACK;
+			m_pBullet->SetOnShoot(true);
+		
 		}
 	}
-	else if (LOBYTE(dwDirection) == 0) // 이동키 입력이 아닐 때
+	else if (!LOBYTE(dwDirection)) // 이동키 입력이 아닐 때
+	{
+		if (!m_OnInteraction) // 공격 키, 이동키 모두 미입력
 		{
-			if (!m_OnInteraction) // 공격 키, 이동키 모두 미입력
-			{
-				SetIdleAnimTrack();
-				m_pBullet->SetOnShoot(true);
-			}
-			else // 공격 키만 입력, 이동키는 미입력
-			{
-				if (m_InteractionCountTime == BOSS_INTERACTION_TIME)
-				{
-					SetAttackAnimTrack();
-				}
-				else if (m_InteractionCountTime < BOSS_INTERACTION_TIME)
-				{
-					if (m_InteractionCountTime <= 0)
-					{
-						m_OnInteraction = false;
-						SetIdleAnimTrack();
-					}
-					else m_InteractionCountTime -= 1;
-				}
-				
-			}
+			m_behavior = IDLE;
 		}
+		else // 공격 키만 입력, 이동키는 미입력
+		{
+			m_behavior = ATTACK;
+			if (m_pBullet) m_pBullet->SetOnShoot(true);
+		}
+	}
 
 	CPlayer::Move(dwDirection, BOSS_VELOCITY);
   
@@ -196,9 +170,16 @@ void CBoss::Update(float fTimeElapsed, CLIENT_TYPE ptype)
 		m_pBullet->SetBulletPosition(GetPosition());
 		m_pBullet->Update(fTimeElapsed);
 	}
-	if (ptype == CLIENT_TYPE::OWNER) m_xmf3Velocity = XMFLOAT3(0.0f, 0.0f, 0.0f);
-	else if(m_pBullet) SetAttackAnimOtherClient();
 	
+	
+	
+}
+
+void CBoss::LateUpdate(float fTimeElapsed, CLIENT_TYPE ptype)
+{
+	if (ptype == CLIENT_TYPE::OWNER) m_xmf3Velocity = XMFLOAT3(0.0f, 0.0f, 0.0f);
+	else if (m_pBullet) SetAttackAnimOtherClient();
+	AnimTrackUpdate();
 }
 
 
@@ -261,11 +242,44 @@ void CBoss::SetRunAttackAnimTrack()
 	m_InteractionCountTime -= 1;
 }
 
+void CBoss::AnimTrackUpdate()
+{
+	switch (m_behavior)
+	{
+		case IDLE:
+			SetIdleAnimTrack();
+			break;
+		case RUN:
+			SetRunAnimTrack();
+			break;
+		case ATTACK:
+		case RUN_ATTACK:
+		{
+			if (m_InteractionCountTime == BOSS_INTERACTION_TIME)
+			{
+				if (m_behavior == ATTACK) SetRunAttackAnimTrack();
+				else if (m_behavior == RUN_ATTACK) SetRunAttackAnimTrack();
+			}
+			else if (m_InteractionCountTime < BOSS_INTERACTION_TIME)
+			{
+				if (m_InteractionCountTime <= 0)
+				{
+					m_OnInteraction = false;
+					SetRunAnimTrack();
+				}
+				m_InteractionCountTime -= 1;
+			}
+		}
+		break;
+	}
+
+}
+
 
 void CBoss::ProcessInput(const int16& dwDirection)
 {
 	// 1. Set Move Speed
-	Move(dwDirection, BOSS_VELOCITY);
+	
 
 	// 2. 공격 키를 눌렀을 경우 처리 
 	if (dwDirection & KEY_SPACE)
@@ -282,5 +296,7 @@ void CBoss::ProcessInput(const int16& dwDirection)
 			clientCore._client->DoSend(&packet);
 		}
 	}
+
+	Move(dwDirection, BOSS_VELOCITY);
 }
 

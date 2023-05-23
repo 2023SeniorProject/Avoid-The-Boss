@@ -1,10 +1,8 @@
 #include "pch.h"
-#include "CEmployee.h"
+
 #include "clientIocpCore.h"
 #include "GameFramework.h"
 #include "InputManager.h"
-
-#include "Player.h"
 
 
 CEmployee::CEmployee(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, CHARACTER_TYPE nType)
@@ -137,6 +135,7 @@ void CEmployee::LateUpdate(float fTimeElapsed, CLIENT_TYPE ptype)
 	//======= 스위치 위치 판별 =========
 	if (GetAvailableSwitchIdx() != -1) m_bIsInSwitchArea = true;
 	else m_bIsInSwitchArea = false;
+	//======= 상호작용 가능 유저 판별 ==========
 	
 	if (ptype == CLIENT_TYPE::OWNER) m_xmf3Velocity = XMFLOAT3(0.0f, 0.0f, 0.0f);
 	else if (ptype == CLIENT_TYPE::OTHER_PLAYER)
@@ -378,8 +377,13 @@ int32 CEmployee::GetAvailableSwitchIdx()
 	return -1;
 }
 
+int32 CEmployee::GetRescueAvailablePlayerIdx()
+{
+	return int32();
+}
+
 // ============== 플레이어 상태 변경 처리 ============ 05-23
-void CEmployee::DeCreaseHP()
+void CEmployee::PlayerAttacked()
 {
 	if (m_hp > 0)
 	{
@@ -388,8 +392,14 @@ void CEmployee::DeCreaseHP()
 	}
 	else
 	{
-		m_behavior = DOWN;
+		PlayerDown();
 	}
+}
+
+void CEmployee::PlayerDown()
+{
+	m_behavior = DOWN;
+	m_downAnimationCount = EMPLOYEE_DOWN_TIME;
 }
 
 // 04-29 직원 키입력 처리 추가

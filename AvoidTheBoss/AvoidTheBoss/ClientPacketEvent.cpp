@@ -66,9 +66,11 @@ void InteractionEvent::Task()
 	case EVENT_TYPE::ATTACKED_PLAYER_FOUR:
 		// ========= 플레이어 피격 관련 애니메이션 재생
 		// ========= 플레이어 HP 제거 ================
+	{
 		CPlayer* player = mainGame.m_pScene->_players[eventId - (int8)(EVENT_TYPE::ATTACKED_PLAYER_ONE)];
 		if (player == nullptr) break;
-		static_cast<CEmployee*>(player)->DeCreaseHP();
+		static_cast<CEmployee*>(player)->PlayerAttacked();
+	}
 		break;
 	case EVENT_TYPE::DOWN_PLAYER_ONE:
 	case EVENT_TYPE::DOWN_PLAYER_TWO:

@@ -19,11 +19,15 @@ public:
 	virtual void Update(float fTimeElapsed, CLIENT_TYPE ptype);
 	virtual void LateUpdate(float fTimeElapsed, CLIENT_TYPE ptype);
 	// ============= 애니메이션 트랙 셋팅 관련 ============
-	void SetInteractionAnimTrack();
-	void SetIdleAnimTrack();
-	void SetRunAnimTrack();
-	void SetAttackedAnimTrack() {};
-	void SetDownAnimTrack() {};
+	void SetIdleAnimTrack(); // 걷기
+	void SetRunAnimTrack(); // 달리기
+
+	void SetAttackedAnimTrack(); // 절뚝거리기 
+	void SetDownAnimTrack(); // 피격
+	void SetCrawlAnimTrack(); // 기어가기
+	void SetStandAnimTrack(); // 일어나기
+	void SetInteractionAnimTrack(); // 발전기 상호작용
+
 	virtual void AnimTrackUpdate();
 
 	void SetInteractionAnimTrackOtherClient();

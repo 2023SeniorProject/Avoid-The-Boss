@@ -85,8 +85,33 @@ CCamera* CEmployee::ChangeCamera(DWORD nNewCameraMode, float fTimeElapsed)
 
 void CEmployee::Move(const int16& dwDirection, float fDistance)
 {
+	
+	// Down 됐을 경우에는 기존 조건문과 다르게 처리한다.
+	if (m_behavior == DOWN)
+	{
+		CPlayer::Move(0, 0); // 움직이지 않는다.
+		return;
+	}
+	// Attacked 됐을 경우 
+	if (m_behavior == ATTACKED) 
+	{
+		CPlayer::Move(dwDirection, PLAYER_VELOCITY - 1.0f); // 일시적으로 속도 느려지게 하기
+		return;
+	}
+
+	// Crawl 됐을 경우 
+	if (m_behavior == CRAWL)
+	{
+		CPlayer::Move(dwDirection, PLAYER_VELOCITY - 2.0f); // 일시적으로 속도 느려지게 하기
+		return;
+	}
+
 	// 플레이어의 행동을 저장.
-	if (LOBYTE(dwDirection)) m_behavior = RUN;
+	if (LOBYTE(dwDirection))
+	{
+		if (m_hp > 0) m_behavior = RUN;
+		else m_behavior = CRAWL;
+	}
 	else if (!LOBYTE(dwDirection)) m_behavior = IDLE;
 	else if (m_OnInteraction)
 	{
@@ -98,8 +123,6 @@ void CEmployee::Move(const int16& dwDirection, float fDistance)
 }
 	
 	
-
-
 void CEmployee::Update(float fTimeElapsed, CLIENT_TYPE ptype)
 {
 	CPlayer::Update(fTimeElapsed, ptype);
@@ -264,7 +287,6 @@ void CEmployee::SetInteractionAnimTrack()
 	m_pSkinnedAnimationController->SetTrackPosition(6, 0);
 }
 
-
 void CEmployee::AnimTrackUpdate()
 {
 	switch (m_behavior)
@@ -278,11 +300,41 @@ void CEmployee::AnimTrackUpdate()
 	case SWITCH_INTER:
 		SetInteractionAnimTrack();
 		break;
-	case ATTACK:
-	case RUN_ATTACK:
-	{
-		
-	}
+	case ATTACKED:
+		if (m_attackedAnimationCount == EMPLOYEE_ATTACKED_TIME)
+		{
+			SetAttackedAnimTrack();
+			m_attackedAnimationCount--;
+		}
+		else 
+		{
+			m_attackedAnimationCount--;
+			m_behavior = ATTACKED;
+			if (m_attackedAnimationCount == 0)
+			{
+				m_behavior = IDLE;
+			}
+		}
+		break;
+	case DOWN:
+		if (m_downAnimationCount == EMPLOYEE_DOWN_TIME)
+		{
+			SetDownAnimTrack();
+			m_downAnimationCount--;
+		}
+		else
+		{
+			m_downAnimationCount--;
+			m_behavior = DOWN;
+			if (m_downAnimationCount == 0)
+			{
+				m_behavior = CRAWL;
+			}
+		}
+		break;
+	case CRAWL:
+		SetCrawlAnimTrack();
+		break;
 	break;
 	}
 }
@@ -326,6 +378,19 @@ int32 CEmployee::GetAvailableSwitchIdx()
 	return -1;
 }
 
+// ============== 플레이어 상태 변경 처리 ============ 05-23
+void CEmployee::DeCreaseHP()
+{
+	if (m_hp > 0)
+	{
+		m_hp -= 1;
+		m_behavior = ATTACKED;
+	}
+	else
+	{
+		m_behavior = DOWN;
+	}
+}
 
 // 04-29 직원 키입력 처리 추가
 void CEmployee::ProcessInput(const int16& inputKey)

@@ -7,6 +7,9 @@ public:
 private:
 	bool m_bIsInSwitchArea = false;
 public:
+	int32 m_attackedAnimationCount = 0.f;
+	int32 m_downAnimationCount = 0.f;
+public:
 	CEmployee(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, CHARACTER_TYPE nType);
 	virtual ~CEmployee();
 
@@ -29,8 +32,14 @@ public:
 	void SetInteractionAnimTrack(); // 발전기 상호작용
 
 	virtual void AnimTrackUpdate();
-
+	// ================ 다른 클라이언트 애니메이션 재생 전용
 	void SetInteractionAnimTrackOtherClient();
+
+	// ================ 캐릭터 상태 반환 ============ 05-23 추가함수
+public: // 05-23 추가 함수
+	void DeCreaseHP();
+	void PlayerDown();
+	int32 GetPlayerBehavior() { return m_behavior; }
 	
 	bool IsPlayerCanSwitchInteraction() { return m_bIsInSwitchArea; }
 	int32 GetAvailableSwitchIdx();

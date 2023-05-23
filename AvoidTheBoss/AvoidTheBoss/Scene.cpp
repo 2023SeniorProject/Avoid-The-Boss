@@ -567,7 +567,6 @@ void CGameScene::ReleaseUploadBuffers()
 }
 
 
-
 void CGameScene::CreateCbvSrvDescriptorHeaps(ID3D12Device* pd3dDevice, int nConstantBufferViews, int nShaderResourceViews)
 {
 	D3D12_DESCRIPTOR_HEAP_DESC d3dDescriptorHeapDesc;

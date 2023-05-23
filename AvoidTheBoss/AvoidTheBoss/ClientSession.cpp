@@ -227,70 +227,74 @@ void CSession::ProcessPacket(char* packet)
 	case SC_PACKET_TYPE::GAMEEVENT:
 	{
 		SC_EVENTPACKET* ev = (SC_EVENTPACKET*)packet;
-		switch ((EVENT_TYPE)ev->eventId)
-		{
-			// ================ 스위치 상호작용 관련 이벤트 ================
-		case EVENT_TYPE::SWITCH_ONE_START_EVENT:
-		case EVENT_TYPE::SWITCH_TWO_START_EVENT:
-		case EVENT_TYPE::SWITCH_THREE_START_EVENT:
-		{
-			CGenerator* mSwitch = mainGame.m_pScene->m_ppSwitches[ev->eventId - 2];
-			mSwitch->m_lock.lock();
-			mSwitch->m_bOtherPlayerInteractionOn = true;
-			mainGame.m_pScene->m_ppSwitches[ev->eventId - 2]->InteractAnimation(true); // 발전기 애니메이션 재생을 시작한다.
-			mainGame.m_pScene->m_ppSwitches[ev->eventId - 2]->SetAnimationCount(BUTTON_ANIM_FRAME);
-			mSwitch->m_lock.unlock();
-		}
-		break;
-		case EVENT_TYPE::SWITCH_ONE_END_EVENT:
-		case EVENT_TYPE::SWITCH_TWO_END_EVENT:
-		case EVENT_TYPE::SWITCH_THREE_END_EVENT:
-		{
-			std::cout << "Switch Cancel\n";
-			CGenerator* mSwitch = mainGame.m_pScene->m_ppSwitches[ev->eventId - 5];
-			mSwitch->m_lock.lock();
-			mSwitch->m_bOtherPlayerInteractionOn = false;
-			mSwitch->m_lock.unlock();
-		}
-		break;
-		// 만약 스위치 활성화가 됐다는 패킷이 전송 되었을 때,
-		case EVENT_TYPE::SWITCH_ONE_ACTIVATE_EVENT:
-		case EVENT_TYPE::SWITCH_TWO_ACTIVATE_EVENT:
-		case EVENT_TYPE::SWITCH_THREE_ACTIVATE_EVENT:
-		{
-			CGenerator* mSwitch = mainGame.m_pScene->m_ppSwitches[ev->eventId - 8];
-			mSwitch->m_lock.lock();
-			mainGame.m_pScene->m_ppSwitches[ev->eventId - 8]->m_bSwitchActive = true;
-			mSwitch->m_lock.unlock();
-			mainGame.m_pScene->m_ActiveSwitchCnt.fetch_add(1);
-			std::cout  << (int)(ev->eventId -  8) << "Switch Activate\n";
-			if (mainGame.m_pScene->m_ActiveSwitchCnt == 1) // 만약 3개의 스위치가 모두 활성화 되었다면, 
-			{
-				std::cout << "Clear\n";
-				mainGame.m_pScene->m_bIsExitReady = true; // 탈출 조건 true
-			}
-		}
-		break;
-		// ========= 플레이어 접속 종료 처리 ==============
-		case EVENT_TYPE::HIDE_PLAYER_ONE:
-		case EVENT_TYPE::HIDE_PLAYER_TWO:
-		case EVENT_TYPE::HIDE_PLAYER_THREE:
-		case EVENT_TYPE::HIDE_PLAYER_FOUR:
-		{
-			std::cout << "PLAYER_HIDE\n";
-			mainGame.m_pScene->_players[ev->eventId - (uint8)EVENT_TYPE::HIDE_PLAYER_ONE]->m_hide = true;
-		}
-		break;
-		// =========== 플레이어 공격관련 상호작용 ====================
-		case EVENT_TYPE::ATTACK_EVENT:
-			mainGame.m_pScene->_players[0]->SetInteractionAnimation(true);
-			mainGame.m_pScene->_players[0]->m_InteractionCountTime = BOSS_INTERACTION_TIME;
-			((CBoss*)mainGame.m_pScene->_players[0])->m_pBullet->SetOnShoot(true);
-			((CBoss*)mainGame.m_pScene->_players[0])->SetAttackAnimOtherClient();
-			break;
-		default:
-			break;
-		}
+		InteractionEvent* gev = new InteractionEvent();
+		gev->eventId = ev->eventId;
+		mainGame.m_pScene->AddEvent(static_cast<queueEvent*>(gev), 0.f);
+
+	//	switch ((EVENT_TYPE)ev->eventId)
+	//	{
+	//		// ================ 스위치 상호작용 관련 이벤트 ================
+	//	case EVENT_TYPE::SWITCH_ONE_START_EVENT:
+	//	case EVENT_TYPE::SWITCH_TWO_START_EVENT:
+	//	case EVENT_TYPE::SWITCH_THREE_START_EVENT:
+	//	{
+	//		CGenerator* mSwitch = mainGame.m_pScene->m_ppSwitches[ev->eventId - 2];
+	//		mSwitch->m_lock.lock();
+	//		mSwitch->m_bOtherPlayerInteractionOn = true;
+	//		mainGame.m_pScene->m_ppSwitches[ev->eventId - 2]->InteractAnimation(true); // 발전기 애니메이션 재생을 시작한다.
+	//		mainGame.m_pScene->m_ppSwitches[ev->eventId - 2]->SetAnimationCount(BUTTON_ANIM_FRAME);
+	//		mSwitch->m_lock.unlock();
+	//	}
+	//	break;
+	//	case EVENT_TYPE::SWITCH_ONE_END_EVENT:
+	//	case EVENT_TYPE::SWITCH_TWO_END_EVENT:
+	//	case EVENT_TYPE::SWITCH_THREE_END_EVENT:
+	//	{
+	//		std::cout << "Switch Cancel\n";
+	//		CGenerator* mSwitch = mainGame.m_pScene->m_ppSwitches[ev->eventId - 5];
+	//		mSwitch->m_lock.lock();
+	//		mSwitch->m_bOtherPlayerInteractionOn = false;
+	//		mSwitch->m_lock.unlock();
+	//	}
+	//	break;
+	//	// 만약 스위치 활성화가 됐다는 패킷이 전송 되었을 때,
+	//	case EVENT_TYPE::SWITCH_ONE_ACTIVATE_EVENT:
+	//	case EVENT_TYPE::SWITCH_TWO_ACTIVATE_EVENT:
+	//	case EVENT_TYPE::SWITCH_THREE_ACTIVATE_EVENT:
+	//	{
+	//		CGenerator* mSwitch = mainGame.m_pScene->m_ppSwitches[ev->eventId - 8];
+	//		mSwitch->m_lock.lock();
+	//		mainGame.m_pScene->m_ppSwitches[ev->eventId - 8]->m_bSwitchActive = true;
+	//		mSwitch->m_lock.unlock();
+	//		mainGame.m_pScene->m_ActiveSwitchCnt.fetch_add(1);
+	//		std::cout  << (int)(ev->eventId -  8) << "Switch Activate\n";
+	//		if (mainGame.m_pScene->m_ActiveSwitchCnt == 1) // 만약 3개의 스위치가 모두 활성화 되었다면, 
+	//		{
+	//			std::cout << "Clear\n";
+	//			mainGame.m_pScene->m_bIsExitReady = true; // 탈출 조건 true
+	//		}
+	//	}
+	//	break;
+	//	// ========= 플레이어 접속 종료 처리 ==============
+	//	case EVENT_TYPE::HIDE_PLAYER_ONE:
+	//	case EVENT_TYPE::HIDE_PLAYER_TWO:
+	//	case EVENT_TYPE::HIDE_PLAYER_THREE:
+	//	case EVENT_TYPE::HIDE_PLAYER_FOUR:
+	//	{
+	//		std::cout << "PLAYER_HIDE\n";
+	//		mainGame.m_pScene->_players[ev->eventId - (uint8)EVENT_TYPE::HIDE_PLAYER_ONE]->m_hide = true;
+	//	}
+	//	break;
+	//	// =========== 플레이어 공격관련 상호작용 ====================
+	//	case EVENT_TYPE::ATTACK_EVENT:
+	//		mainGame.m_pScene->_players[0]->SetInteractionAnimation(true);
+	//		mainGame.m_pScene->_players[0]->m_InteractionCountTime = BOSS_INTERACTION_TIME;
+	//		((CBoss*)mainGame.m_pScene->_players[0])->m_pBullet->SetOnShoot(true);
+	//		((CBoss*)mainGame.m_pScene->_players[0])->SetAttackAnimOtherClient();
+	//		break;
+	//	default:
+	//		break;
+	//	}
 	}
 	break;
 	// ================= 플레이어 스위치 애니메이션 관련 패킷 ==================

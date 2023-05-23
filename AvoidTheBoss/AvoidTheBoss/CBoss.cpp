@@ -228,7 +228,7 @@ void CBoss::LateUpdate(float fTimeElapsed, CLIENT_TYPE ptype)
 
 void CBoss::SetIdleAnimTrack()
 {
-	if (m_pSkinnedAnimationController == nullptr) return;
+	if (m_pSkinnedAnimationController == nullptr || m_pSkinnedAnimationController1 == nullptr) return;
 	m_pSkinnedAnimationController->SetTrackEnable(0, true); // 아이들
 	m_pSkinnedAnimationController->SetTrackEnable(1, false);
 	m_pSkinnedAnimationController->SetTrackEnable(2, false);
@@ -239,8 +239,9 @@ void CBoss::SetIdleAnimTrack()
 	m_pSkinnedAnimationController->SetTrackPosition(2, 0.0f);
 	m_pSkinnedAnimationController->SetTrackPosition(3, 0.0f);
 
-	m_pSkinnedAnimationController1->SetTrackEnable(1, false);
-	m_pSkinnedAnimationController1->SetTrackEnable(0, true);
+	// ===============  하체 ===========================
+	m_pSkinnedAnimationController1->SetTrackEnable(0, true); // IDLE
+	m_pSkinnedAnimationController1->SetTrackEnable(1, false);  // Run
 
 	m_pSkinnedAnimationController1->SetTrackPosition(0, 0.0f);
 	m_pSkinnedAnimationController1->SetTrackPosition(1, 0.0f);
@@ -248,7 +249,8 @@ void CBoss::SetIdleAnimTrack()
 
 void CBoss::SetRunAnimTrack()
 {
-	if (m_pSkinnedAnimationController == nullptr) return;
+	if (m_pSkinnedAnimationController == nullptr || m_pSkinnedAnimationController1 == nullptr) return;
+	// ================= 상체 =========================
 	m_pSkinnedAnimationController->SetTrackEnable(0, false);
 	m_pSkinnedAnimationController->SetTrackEnable(1, true); // 달리기
 	m_pSkinnedAnimationController->SetTrackEnable(2, false);
@@ -259,16 +261,17 @@ void CBoss::SetRunAnimTrack()
 	m_pSkinnedAnimationController->SetTrackPosition(2, 0.0f);
 	m_pSkinnedAnimationController->SetTrackPosition(3, 0.0f);
 
-	m_pSkinnedAnimationController1->SetTrackEnable(0, false);
-	m_pSkinnedAnimationController1->SetTrackEnable(1, true);
+	// ===============  하체 ===========================
+	m_pSkinnedAnimationController1->SetTrackEnable(0, false); // IDLE
+	m_pSkinnedAnimationController1->SetTrackEnable(1, true);  // Run
 
-	m_pSkinnedAnimationController1->SetTrackPosition(0, 0.0f);
+	m_pSkinnedAnimationController1->SetTrackPosition(0, 0.0f); 
 	m_pSkinnedAnimationController1->SetTrackPosition(1, 0.0f);
 }
 
 void CBoss::SetAttackAnimTrack()
 {
-	if (m_pSkinnedAnimationController == nullptr) return;
+	if (m_pSkinnedAnimationController == nullptr || m_pSkinnedAnimationController1 == nullptr) return;
 	m_pSkinnedAnimationController->SetTrackEnable(0, false);
 	m_pSkinnedAnimationController->SetTrackEnable(1, false);
 	m_pSkinnedAnimationController->SetTrackEnable(2, true); // 공격
@@ -279,16 +282,19 @@ void CBoss::SetAttackAnimTrack()
 	m_pSkinnedAnimationController->SetTrackPosition(2, 0.0f);
 	m_pSkinnedAnimationController->SetTrackPosition(3, 0.0f);
 
-	m_pSkinnedAnimationController1->SetTrackEnable(1, false);
-	m_pSkinnedAnimationController1->SetTrackEnable(0, true);
+	// ===============  하체 ===========================
+	m_pSkinnedAnimationController1->SetTrackEnable(0, true); // IDLE
+	m_pSkinnedAnimationController1->SetTrackEnable(1, false);  // Run
 
-	m_pSkinnedAnimationController1->SetTrackPosition(1, 0.0f);
 	m_pSkinnedAnimationController1->SetTrackPosition(0, 0.0f);
+	m_pSkinnedAnimationController1->SetTrackPosition(1, 0.0f);
+
+	m_InteractionCountTime -= 1;
 }
 
 void CBoss::SetRunAttackAnimTrack()
 {
-	if (m_pSkinnedAnimationController == nullptr) return;
+	if (m_pSkinnedAnimationController == nullptr || m_pSkinnedAnimationController1 == nullptr) return;
 	m_pSkinnedAnimationController->SetTrackEnable(0, false);
 	m_pSkinnedAnimationController->SetTrackEnable(1, false);
 	m_pSkinnedAnimationController->SetTrackEnable(2, false);
@@ -299,8 +305,9 @@ void CBoss::SetRunAttackAnimTrack()
 	m_pSkinnedAnimationController->SetTrackPosition(2, 0.0f);
 	m_pSkinnedAnimationController->SetTrackPosition(3, 0.0f);
 
-	m_pSkinnedAnimationController1->SetTrackEnable(0, false);
-	m_pSkinnedAnimationController1->SetTrackEnable(1, true);
+	// ===============  하체 ===========================
+	m_pSkinnedAnimationController1->SetTrackEnable(0, false); // IDLE
+	m_pSkinnedAnimationController1->SetTrackEnable(1, true);  // Run
 
 	m_pSkinnedAnimationController1->SetTrackPosition(0, 0.0f);
 	m_pSkinnedAnimationController1->SetTrackPosition(1, 0.0f);
@@ -331,7 +338,8 @@ void CBoss::AnimTrackUpdate()
 				if (m_InteractionCountTime <= 0)
 				{
 					m_OnInteraction = false;
-					SetRunAnimTrack();
+					if (m_behavior == RUN_ATTACK) SetRunAnimTrack();
+					else SetIdleAnimTrack();
 				}
 				m_InteractionCountTime -= 1;
 			}

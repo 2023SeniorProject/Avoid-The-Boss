@@ -29,7 +29,7 @@ void InputManager::SetKeyPress(const KEY_TYPE key)
 {
 	if (m_keyBuffer[(int)key] <= 0 )
 	{
-		std::cout << "Press\n";
+		
 		m_keyBuffer[(int)key] = (int8)KEY_STATUS::KEY_PRESS;
 	}
 	else if(m_keyBuffer[(int)key] == (int8)KEY_STATUS::KEY_PRESS)
@@ -43,7 +43,6 @@ void InputManager::SetKeyUp(const KEY_TYPE key)
 {
 	if (m_keyBuffer[(int)key] > 0)
 	{
-		std::cout << "Up\n";
 		m_keyBuffer[(int)key] = (int8)KEY_STATUS::KEY_UP;
 	}
 	else if(m_keyBuffer[(int)key] != (int8)KEY_STATUS::KEY_UP)

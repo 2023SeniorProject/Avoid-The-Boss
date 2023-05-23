@@ -404,6 +404,6 @@ namespace Plane
 #define KEY_BACKWARD 0x02 // a
 #define KEY_LEFT	 0x04 // s
 #define KEY_RIGHT	 0x08 // d
-#define KEY_F		 0x10
-#define KEY_SPACE	 0x20
+#define KEY_F		 0x0100
+#define KEY_SPACE	 0x0200
 

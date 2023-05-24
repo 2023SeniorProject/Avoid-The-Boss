@@ -67,17 +67,11 @@ void InteractionEvent::Task()
 		// ========= 플레이어 피격 관련 애니메이션 재생
 		// ========= 플레이어 HP 제거 ================
 	{
+		
 		CPlayer* player = mainGame.m_pScene->_players[eventId - (int8)(EVENT_TYPE::ATTACKED_PLAYER_ONE)];
 		if (player == nullptr) break;
 		static_cast<CEmployee*>(player)->PlayerAttacked();
 	}
-		break;
-	case EVENT_TYPE::DOWN_PLAYER_ONE:
-	case EVENT_TYPE::DOWN_PLAYER_TWO:
-	case EVENT_TYPE::DOWN_PLAYER_THREE:
-	case EVENT_TYPE::DOWN_PLAYER_FOUR :
-		// ========= 플레이어 쓰러지는 애니메이션 재생
-		// 05-23 굳이 필요하지 않을 수 있음
 		break;
 
 	default:

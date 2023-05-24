@@ -73,7 +73,17 @@ void InteractionEvent::Task()
 		static_cast<CEmployee*>(player)->PlayerAttacked();
 	}
 		break;
-
+	case EVENT_TYPE::ALIVE_PLAYER_TWO:
+	case EVENT_TYPE::ALIVE_PLAYER_THREE:
+	case EVENT_TYPE::ALIVE_PLAYER_FOUR:
+		// ========= 플레이어 피격 관련 애니메이션 재생
+		// ========= 플레이어 HP 제거 ================
+	{
+		CPlayer* player = mainGame.m_pScene->_players[eventId - (int8)(EVENT_TYPE::ALIVE_PLAYER_ONE)];
+		if (player == nullptr) break;
+		player->m_behavior = STAND;
+	}
+	break;
 	default:
 		break;
 	}

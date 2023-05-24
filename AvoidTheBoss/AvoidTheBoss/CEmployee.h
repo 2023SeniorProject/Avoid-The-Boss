@@ -10,6 +10,7 @@ private:
 public:
 	int32 m_attackedAnimationCount = 0.f;
 	int32 m_downAnimationCount = 0.f;
+	int32 m_standAnimationCount = 0.f;
 public:
 	CEmployee(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, CHARACTER_TYPE nType);
 	virtual ~CEmployee();

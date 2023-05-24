@@ -105,6 +105,11 @@ void CEmployee::Move(const int16& dwDirection, float fDistance)
 		CPlayer::Move(0, 0); // 일시적으로 속도 느려지게 하기
 		return;
 	}
+	if (m_behavior == STAND)
+	{
+		CPlayer::Move(0, 0);
+		return;
+	}
 	
 	// 플레이어의 행동을 저장.
 	if (LOBYTE(dwDirection))
@@ -339,7 +344,23 @@ void CEmployee::AnimTrackUpdate()
 	case CRAWL:
 		SetCrawlAnimTrack();
 		break;
-	break;
+	case STAND:
+		if (m_standAnimationCount == EMPLOYEE_STAND_TIME)
+		{
+			SetStandAnimTrack();
+			m_standAnimationCount--;
+		}
+		else
+		{
+			m_standAnimationCount--;
+			m_behavior = STAND;
+			if (m_standAnimationCount == 0)
+			{
+
+				m_behavior = IDLE;
+			}
+		}
+		break;
 	}
 }
 
@@ -488,12 +509,14 @@ void CEmployee::ProcessInput(const int16& inputKey)
 			}
 		}
 	}
+	
+	int32 targetIdx = -1;
+	targetIdx = GetRescueAvailablePlayerIdx();
 
 	// 플레이어 살리기 상호작용
 	if (inputKey & KEY_E)
 	{
-		int32 targetIdx = -1;
-		targetIdx = GetRescueAvailablePlayerIdx();
+		
 		if (targetIdx != -1) // 활성화 가능한 타겟이 있다면
 		{
 			// 구하는 이벤트에 관한 패킷을 전송하도록 한다.
@@ -507,5 +530,17 @@ void CEmployee::ProcessInput(const int16& inputKey)
 			}
 		}
 	}
+	else
+	{
+		if (InputManager::GetKeyBuffer(KEY_TYPE::E) == (int8)KEY_STATUS::KEY_UP)
+		{
+			SC_EVENTPACKET packet;
+			packet.eventId = targetIdx + (int32)EVENT_TYPE::RESCUE_CANCEL_PLAYER_ONE;
+			packet.size = sizeof(SC_EVENTPACKET);
+			packet.type = SC_PACKET_TYPE::GAMEEVENT;
+			clientCore._client->DoSend(&packet);
+		}
+	}
+
 	Move(inputKey, PLAYER_VELOCITY);
 }

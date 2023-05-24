@@ -53,6 +53,13 @@ enum class EVENT_TYPE : uint8
 	RESCUE_CANCEL_PLAYER_TWO = 24,
 	RESCUE_CANCEL_PLAYER_THREE = 25,
 	RESCUE_CANCEL_PLAYER_FOUR = 26
+
+	// ======== ±ú¿ì±â ================
+	,
+	ALIVE_PLAYER_ONE = 27,
+	ALIVE_PLAYER_TWO = 28,
+	ALIVE_PLAYER_THREE = 29,
+	ALIVE_PLAYER_FOUR = 30
 };
 
 #pragma pack (push, 1)

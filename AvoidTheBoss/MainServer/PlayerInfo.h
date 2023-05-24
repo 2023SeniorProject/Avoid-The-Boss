@@ -22,6 +22,7 @@ public:
 
 	// 05-24 추가 변수
 	bool m_bIsAwaking = false;
+	int32 rescueTime = 5.0f;
 public:
 	BoundingSphere m_playerBV;
 	int32 m_sid = -1;

@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "PlayerInfo.h"
 #include "CollisionDetector.h"
+#include "CSIocpCore.h"
 
 PlayerInfo::PlayerInfo() 
 {
@@ -106,7 +107,21 @@ void PlayerInfo::Update(float fTimeElapsed)
 	}
 	else
 	{
-
+		if (m_bIsAwaking)
+		{
+			rescueTime -= fTimeElapsed;
+			if (rescueTime < 0)
+			{
+				rescueTime = 5.0;
+				SC_EVENTPACKET packet;
+				packet.size = sizeof(SC_EVENTPACKET);
+				packet.type = SC_PACKET_TYPE::GAMEEVENT;
+				packet.eventId = m_idx + (uint8)EVENT_TYPE::ALIVE_PLAYER_ONE;
+				ServerIocpCore._rmgr->GetRoom(m_sid).BroadCasting(&packet);
+				m_bIsAwaking = false;
+				m_behavior = IDLE;
+			}
+		}
 	}
 	LateUpdate();
 }

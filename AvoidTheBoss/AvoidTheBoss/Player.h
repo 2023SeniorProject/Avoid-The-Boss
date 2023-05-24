@@ -29,7 +29,7 @@ static const char *g_pstrCharactorRefernece[5] =
 
 #define EMPLOYEE_ATTACKED_TIME 48 //20프레임 (기존 65)
 #define EMPLOYEE_DOWN_TIME 30 //25프레임 (기존 65)
-
+#define EMPLOYEE_STAND_TIME 30 //25프레임 (기존 65)
 #define EMPLOYEE_INTERACTION_TIME 40 //20프레임
 
 class CPlayer : public CGameObject

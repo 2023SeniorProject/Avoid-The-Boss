@@ -43,12 +43,11 @@ enum class EVENT_TYPE : uint8
 	ATTACKED_PLAYER_THREE = 17,
 	ATTACKED_PLAYER_FOUR = 18,
 
-	// ======= 플레이어 죽음 이벤트 ===========
-	DOWN_PLAYER_ONE = 19,
-	DOWN_PLAYER_TWO = 20,
-	DOWN_PLAYER_THREE = 21,
-	DOWN_PLAYER_FOUR = 22,
 	// ========= 플레이어 상호작용 애니메이션
+	RESCUE_PLAYER_ONE = 19,
+	RESCUE_PLAYER_TWO = 20,
+	RESCUE_PLAYER_THREE = 21,
+	RESCUE_PLAYER_FOUR = 22
 };
 
 #pragma pack (push, 1)

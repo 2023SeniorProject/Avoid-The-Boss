@@ -12,7 +12,8 @@ enum class KEY_TYPE
 	A = 0x41,
 	S = 0x53,
 	D = 0x44,
-	F = 0x45
+	E = 0x45,
+	F = 0x46
 };
 
 enum class KEY_STATUS

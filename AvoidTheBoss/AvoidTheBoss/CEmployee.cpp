@@ -87,6 +87,7 @@ void CEmployee::Move(const int16& dwDirection, float fDistance)
 	// Down 됐을 경우에는 기존 조건문과 다르게 처리한다.
 	if (m_behavior == DOWN)
 	{
+		
 		CPlayer::Move(0, 0); // 움직이지 않는다.
 		return;
 	}
@@ -100,10 +101,11 @@ void CEmployee::Move(const int16& dwDirection, float fDistance)
 	// Crawl 됐을 경우 
 	if (m_behavior == CRAWL)
 	{
-		CPlayer::Move(dwDirection, PLAYER_VELOCITY - 2.0f); // 일시적으로 속도 느려지게 하기
+		
+		CPlayer::Move(0, 0); // 일시적으로 속도 느려지게 하기
 		return;
 	}
-
+	
 	// 플레이어의 행동을 저장.
 	if (LOBYTE(dwDirection))
 	{
@@ -212,7 +214,7 @@ void CEmployee::SetCrawlAnimTrack()
 	m_pSkinnedAnimationController->SetTrackEnable(0, false);
 	m_pSkinnedAnimationController->SetTrackEnable(1, false);
 	m_pSkinnedAnimationController->SetTrackEnable(2, false);
-	m_pSkinnedAnimationController->SetTrackEnable(3, true);
+	m_pSkinnedAnimationController->SetTrackEnable(3, true); // CRAWL
 	m_pSkinnedAnimationController->SetTrackEnable(4, false);
 	m_pSkinnedAnimationController->SetTrackEnable(5, false);
 	m_pSkinnedAnimationController->SetTrackEnable(6, false);
@@ -327,6 +329,7 @@ void CEmployee::AnimTrackUpdate()
 			m_behavior = DOWN;
 			if (m_downAnimationCount == 0)
 			{
+				
 				m_behavior = CRAWL;
 			}
 		}
@@ -388,12 +391,18 @@ void CEmployee::PlayerAttacked()
 	if (m_hp > 0)
 	{
 		m_hp -= 1;
-		m_behavior = ATTACKED;
+		if (m_hp == 0)
+		{
+			PlayerDown();
+		}
+		else
+		{
+			m_behavior = ATTACKED;
+			m_attackedAnimationCount = EMPLOYEE_ATTACKED_TIME;
+		}
+		
 	}
-	else
-	{
-		PlayerDown();
-	}
+	
 }
 
 void CEmployee::PlayerDown()

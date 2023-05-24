@@ -133,19 +133,19 @@ void CBoss::PrepareAnimate()
 
 void CBoss::Move(const int16& dwDirection, float fDistance)
 {
-	std::cout << (int32)LOBYTE(dwDirection) << "\n";
+	
 	if (LOBYTE(dwDirection)) // 1. 캐릭터 이동량이 있을 때 (WASD 키 입력)
 	{
 		if (!m_OnInteraction) // 공격 키 미입력, 이동키 입력 --> 달리기
 		{
 			m_behavior = RUN;
-			std::cout << "RUN\n";
+		
 		}
 		else // 공격 키, 이동키 모두 입력 --> 달리면서 쏘기
 		{
 			m_behavior = RUN_ATTACK;
 			m_pBullet->SetOnShoot(true);
-			std::cout << "RUN ATTACK\n";
+			
 		
 		}
 	}
@@ -154,13 +154,13 @@ void CBoss::Move(const int16& dwDirection, float fDistance)
 		if (!m_OnInteraction) // 공격 키, 이동키 모두 미입력
 		{
 			m_behavior = IDLE;
-			std::cout << "IDLE\n";
+			
 		}
 		else // 공격 키만 입력, 이동키는 미입력
 		{
 			m_behavior = ATTACK;
 			if (m_pBullet) m_pBullet->SetOnShoot(true);
-			std::cout << "ATTACK\n";
+			
 		}
 	}
 

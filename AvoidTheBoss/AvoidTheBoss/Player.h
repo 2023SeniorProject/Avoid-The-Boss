@@ -8,7 +8,7 @@ enum class CLIENT_TYPE
 
 enum class PLAYER_TYPE
 {
-	NONE = 0 ,BOSS = 1,EMPLOYEE = 2
+	NONE = 0 ,BOSS = 1, EMPLOYEE = 2
 };
 
 enum class CHARACTER_TYPE: int32
@@ -27,7 +27,7 @@ static const char *g_pstrCharactorRefernece[5] =
 
 #define BOSS_INTERACTION_TIME 60 //25프레임 (기존 65)
 
-#define EMPLOYEE_ATTACKED_TIME 24 //20프레임 (기존 65)
+#define EMPLOYEE_ATTACKED_TIME 48 //20프레임 (기존 65)
 #define EMPLOYEE_DOWN_TIME 20 //25프레임 (기존 65)
 
 #define EMPLOYEE_INTERACTION_TIME 40 //20프레임

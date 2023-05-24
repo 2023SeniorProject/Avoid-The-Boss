@@ -231,7 +231,6 @@ void CGameScene::ProcessInput(HWND& hWnd)
 {
 	if (::GetActiveWindow() != hWnd)
 	{
-		std::cout << "Not Active Window\n";
 		return;
 	}
 	int16 keyInput = 0;
@@ -663,7 +662,7 @@ D3D12_GPU_DESCRIPTOR_HANDLE CGameScene::CreateShaderResourceViews(ID3D12Device* 
 
 void CGameScene::AnimateObjects()
 { 
-	for (int i = 0; i < m_nGameObjects; i++) if (m_ppGameObjects[i]) m_ppGameObjects[i]->Animate(_timer.GetTimeElapsed());
+	//for (int i = 0; i < m_nGameObjects; i++) if (m_ppGameObjects[i]) m_ppGameObjects[i]->Animate(_timer.GetTimeElapsed());
 	for (int i = 0; i < m_nShaders; i++) if (m_ppShaders[i]) m_ppShaders[i]->AnimateObjects(_timer.GetTimeElapsed());
 
 	for (int i = 0; i < PLAYERNUM; i++)
@@ -692,7 +691,7 @@ void CGameScene::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCa
 
 	if (m_pSkyBox) m_pSkyBox->Render(pd3dCommandList, pCamera);
 
-	for (int i = 0; i < m_nGameObjects; i++) if (m_ppGameObjects[i]) m_ppGameObjects[i]->Render(pd3dCommandList, pCamera);
+	//for (int i = 0; i < m_nGameObjects; i++) if (m_ppGameObjects[i]) m_ppGameObjects[i]->Render(pd3dCommandList, pCamera);
 	for (int i = 0; i < m_nShaders; i++) if (m_ppShaders[i]) m_ppShaders[i]->Render(pd3dCommandList, pCamera);
 
 	for (int i = 0; i < m_nHierarchicalGameObjects; i++)

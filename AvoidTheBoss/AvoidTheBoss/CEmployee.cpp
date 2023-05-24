@@ -1,8 +1,8 @@
 #include "pch.h"
-
 #include "clientIocpCore.h"
 #include "GameFramework.h"
 #include "InputManager.h"
+
 
 
 CEmployee::CEmployee(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, CHARACTER_TYPE nType)
@@ -138,6 +138,8 @@ void CEmployee::LateUpdate(float fTimeElapsed, CLIENT_TYPE ptype)
 	if (GetAvailableSwitchIdx() != -1) m_bIsInSwitchArea = true;
 	else m_bIsInSwitchArea = false;
 	//======= 상호작용 가능 유저 판별 ==========
+
+
 	
 	if (ptype == CLIENT_TYPE::OWNER) m_xmf3Velocity = XMFLOAT3(0.0f, 0.0f, 0.0f);
 	else if (ptype == CLIENT_TYPE::OTHER_PLAYER)
@@ -382,7 +384,20 @@ int32 CEmployee::GetAvailableSwitchIdx()
 
 int32 CEmployee::GetRescueAvailablePlayerIdx()
 {
-	return int32();
+	for (int i = 1; i < 3; ++i)
+	{
+		if (i = mainGame.m_pScene->_playerIdx) continue;
+		CPlayer* target = mainGame.m_pScene->_players[i];
+		XMFLOAT3 targetPos = target->GetPosition();
+		XMFLOAT3 myPos = GetPosition();
+		XMFLOAT3 f3Dist = Vector3::Subtract(myPos, targetPos);
+		float fDist = Vector3::Length(f3Dist);
+		if (fDist <= 0.1)
+		{
+			if (target->GetPlayerBehavior() == CRAWL) return i;
+		}
+	}
+	return -1;
 }
 
 // ============== 플레이어 상태 변경 처리 ============ 05-23
@@ -415,6 +430,7 @@ void CEmployee::PlayerDown()
 void CEmployee::ProcessInput(const int16& inputKey)
 {
 
+	// 발전기 상호작용 관련 인풋 처리
 	if (IsPlayerCanSwitchInteraction()) //  플레이어가 스위치 영역에 있는 경우
 	{
 		int32 switchIdx = GetAvailableSwitchIdx(); // 어느 스위치 영역인지 확인한다.
@@ -422,7 +438,7 @@ void CEmployee::ProcessInput(const int16& inputKey)
 		if (switchIdx != -1) targetGenerator = mainGame.m_pScene->m_ppSwitches[switchIdx]; // 2. 활성화 가능한 스위치가 주변에 있다면
 		else return;
 
-		if (HIBYTE(inputKey) & KEY_F) // 1. 상호작용 키가 눌려있을 때 
+		if (inputKey & KEY_F) // 1. 상호작용 키가 눌려있을 때 
 		{
 			// 1-1. 타겟 스위치 정보를 가져온다
 			targetGenerator->m_lock.lock();
@@ -466,6 +482,25 @@ void CEmployee::ProcessInput(const int16& inputKey)
 				//========= 패킷 송신 처리 ==============
 				SC_EVENTPACKET packet;
 				packet.eventId = switchIdx + (int32)EVENT_TYPE::SWITCH_ONE_END_EVENT;;
+				packet.size = sizeof(SC_EVENTPACKET);
+				packet.type = SC_PACKET_TYPE::GAMEEVENT;
+				clientCore._client->DoSend(&packet);
+			}
+		}
+	}
+
+	// 플레이어 살리기 상호작용
+	if (inputKey & KEY_E)
+	{
+		int32 targetIdx = -1;
+		targetIdx = GetRescueAvailablePlayerIdx();
+		if (targetIdx != -1) // 활성화 가능한 타겟이 있다면
+		{
+			// 구하는 이벤트에 관한 패킷을 전송하도록 한다.
+			if (InputManager::GetKeyBuffer(KEY_TYPE::E) == (int8)KEY_STATUS::KEY_PRESS)
+			{
+				SC_EVENTPACKET packet;
+				packet.eventId = targetIdx + (int32)EVENT_TYPE::RESCUE_PLAYER_ONE;
 				packet.size = sizeof(SC_EVENTPACKET);
 				packet.type = SC_PACKET_TYPE::GAMEEVENT;
 				clientCore._client->DoSend(&packet);

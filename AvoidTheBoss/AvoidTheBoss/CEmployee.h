@@ -45,6 +45,6 @@ public: // 05-23 추가 함수
 	bool IsPlayerCanSwitchInteraction() { return m_bIsInSwitchArea; }
 	int32 GetAvailableSwitchIdx();
 	int32 GetRescueAvailablePlayerIdx();
-
+public: // 05-24 추가함수
 	SwitchInformation m_pSwitches[3];
 };

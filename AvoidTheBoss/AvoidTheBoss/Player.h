@@ -25,7 +25,7 @@ static const char *g_pstrCharactorRefernece[5] =
 	"Model/Character4_Idle.bin"
 };
 
-#define BOSS_INTERACTION_TIME 60 //25프레임 (기존 65)
+#define BOSS_INTERACTION_TIME 20 //25프레임 (기존 65)
 #define EMPLOYEE_INTERACTION_TIME 40 //20프레임
 
 class CPlayer : public CGameObject

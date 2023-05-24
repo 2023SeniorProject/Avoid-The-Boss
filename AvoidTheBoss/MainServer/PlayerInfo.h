@@ -28,6 +28,10 @@ public:
 	bool m_hide = false;
 	int32 m_hp = 5; // 05-06추가 플레이어 HP
 public:
+	int32 m_behavior = IDLE;
+	int32 m_attackedAnimationCount = 0;
+	int32 m_downAnimationCount = 0;
+public:
 	PlayerInfo();
 	virtual ~PlayerInfo();
 
@@ -37,7 +41,7 @@ public:
 	
 	void SetPosition(const XMFLOAT3& xmf3Position)
 	{
-		UpdateMove(XMFLOAT3(xmf3Position.x - m_xmf3Position.x, xmf3Position.y - m_xmf3Position.y, xmf3Position.z - m_xmf3Position.z));
+		m_xmf3Look = xmf3Position;
 	}
 	void SetDirection(const XMFLOAT3 look);
 

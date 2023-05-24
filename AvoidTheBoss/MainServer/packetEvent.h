@@ -144,14 +144,18 @@ public:
 				{
 					std::cout << ServerIocpCore._rmgr->GetRoom(roomNum)._players[i].m_idx << "Get Attacked\n";
 					ServerIocpCore._rmgr->GetRoom(roomNum)._players[i].m_hp -= 1;
+					
+					SC_EVENTPACKET packet;
+					packet.type = SC_PACKET_TYPE::GAMEEVENT;
+					packet.size = sizeof(SC_EVENTPACKET);
+					packet.eventId = (uint8)EVENT_TYPE::ATTACKED_PLAYER_ONE + i;
+					ServerIocpCore._rmgr->GetRoom(roomNum).BroadCasting(&packet);
+
 					if (ServerIocpCore._rmgr->GetRoom(roomNum)._players[i].m_hp == 0)
 					{
 						std::cout << ServerIocpCore._rmgr->GetRoom(roomNum)._players[i].m_idx << "Player DOWN\n";
-						SC_EVENTPACKET packet;
-						packet.type = SC_PACKET_TYPE::GAMEEVENT;
-						packet.size = sizeof(SC_EVENTPACKET);
-						packet.eventId = (uint8)EVENT_TYPE::DOWN_PLAYER_ONE + i;
-						ServerIocpCore._rmgr->GetRoom(roomNum).BroadCasting(&packet);
+						ServerIocpCore._rmgr->GetRoom(roomNum)._players[i].m_behavior = CRAWL;
+						
 					}
 				}
 

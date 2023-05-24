@@ -112,10 +112,10 @@ void Room::UserIn(int32 sid)
 			_switchs[1]._pos = XMFLOAT3(23.08867, 1.083242, 3.155997);
 			_switchs[2]._pos = XMFLOAT3(0.6774719, 1.083242, -23.05909);
 
-			_players[0].SetPosition(XMFLOAT3(0,  0.25, -20));
-			_players[1].SetPosition(XMFLOAT3(10, 0.25, -20));
-			_players[2].SetPosition(XMFLOAT3(15, 0.25, -20));
-			_players[3].SetPosition(XMFLOAT3(20, 0.25, -20));
+			_players[0].SetPosition(XMFLOAT3(0,  0.25, -18));
+			_players[1].SetPosition(XMFLOAT3(10, 0.25, -18));
+			_players[2].SetPosition(XMFLOAT3(15, 0.25, -18));
+			_players[3].SetPosition(XMFLOAT3(20, 0.25, -18));
 			for (int i = 0; i < 3; ++i)
 			{
 				_switchs[i]._idx = i;

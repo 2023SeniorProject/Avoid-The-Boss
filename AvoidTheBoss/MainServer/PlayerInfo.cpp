@@ -9,7 +9,7 @@ PlayerInfo::PlayerInfo()
 	m_xmf3Up = XMFLOAT3(0.0f, 1.0f, 0.0f);
 	m_xmf3Look = XMFLOAT3(0.0f, 0.0f, 1.0f);
 
-	m_xmf3Position = XMFLOAT3(0.0f, 0.25f, -30.0f);
+	m_xmf3Position = XMFLOAT3(0.0f, 0.25f, -20.0f);
 	m_xmf3Velocity = XMFLOAT3(0.0f, 0.0f, 0.0f);
 
 	m_fPitch = 0.0f;
@@ -99,9 +99,11 @@ void PlayerInfo::UpdateMove(const XMFLOAT3& xmf3Shift)
 void PlayerInfo::Update(float fTimeElapsed)
 {
 	//플레이어를 속도 벡터 만큼 실제로 이동한다(카메라도 이동될 것이다). 
-	
-	XMFLOAT3 xmf3Velocity = Vector3::ScalarProduct(m_xmf3Velocity, fTimeElapsed, false);
-	m_xmf3Position = Vector3::Add(m_xmf3Position, xmf3Velocity);
+	if (m_behavior != CRAWL)
+	{
+		XMFLOAT3 xmf3Velocity = Vector3::ScalarProduct(m_xmf3Velocity, fTimeElapsed, false);
+		m_xmf3Position = Vector3::Add(m_xmf3Position, xmf3Velocity);
+	}
 	LateUpdate();
 }
 

@@ -162,6 +162,15 @@ public:
 			}
 		}
 		break;
+
+		case EVENT_TYPE::RESCUE_PLAYER_ONE:
+		case EVENT_TYPE::RESCUE_PLAYER_TWO:
+		case EVENT_TYPE::RESCUE_PLAYER_THREE:
+		case EVENT_TYPE::RESCUE_PLAYER_FOUR:
+		{
+			
+		}
+			break;
 		default:
 			std::cout << "UnKnown Game Event Please Check Your Packet Type\n";
 			break;

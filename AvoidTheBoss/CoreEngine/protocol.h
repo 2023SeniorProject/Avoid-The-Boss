@@ -43,11 +43,16 @@ enum class EVENT_TYPE : uint8
 	ATTACKED_PLAYER_THREE = 17,
 	ATTACKED_PLAYER_FOUR = 18,
 
-	// ========= 플레이어 상호작용 애니메이션
+	// ========= 플레이어 깨우기 상호작용 ============
 	RESCUE_PLAYER_ONE = 19,
 	RESCUE_PLAYER_TWO = 20,
 	RESCUE_PLAYER_THREE = 21,
-	RESCUE_PLAYER_FOUR = 22
+	RESCUE_PLAYER_FOUR = 22,
+	// ======== 깨우기 ================
+	RESCUE_CANCEL_PLAYER_ONE = 23,
+	RESCUE_CANCEL_PLAYER_TWO = 24,
+	RESCUE_CANCEL_PLAYER_THREE = 25,
+	RESCUE_CANCEL_PLAYER_FOUR = 26
 };
 
 #pragma pack (push, 1)

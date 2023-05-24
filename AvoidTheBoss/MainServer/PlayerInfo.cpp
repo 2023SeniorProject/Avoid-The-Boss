@@ -104,6 +104,10 @@ void PlayerInfo::Update(float fTimeElapsed)
 		XMFLOAT3 xmf3Velocity = Vector3::ScalarProduct(m_xmf3Velocity, fTimeElapsed, false);
 		m_xmf3Position = Vector3::Add(m_xmf3Position, xmf3Velocity);
 	}
+	else
+	{
+
+	}
 	LateUpdate();
 }
 

@@ -20,7 +20,8 @@ public:
 	XMFLOAT3 m_xmf3Position;
 	XMFLOAT3 m_xmf3Velocity;
 
-
+	// 05-24 추가 변수
+	bool m_bIsAwaking = false;
 public:
 	BoundingSphere m_playerBV;
 	int32 m_sid = -1;

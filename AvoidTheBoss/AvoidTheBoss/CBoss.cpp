@@ -34,6 +34,14 @@ CBoss::CBoss(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandLis
 	m_pSkinnedAnimationController1->SetTrackAnimationSet(2, 2);//Run
 	m_pSkinnedAnimationController1->SetTrackAnimationSet(3, 3);//Run
 
+	/*m_pSkinnedAnimationController->SetTrackSpeed(0, 1.875);
+	m_pSkinnedAnimationController->SetTrackSpeed(1, 1.875);
+	m_pSkinnedAnimationController->SetTrackSpeed(2, 1.875);
+	m_pSkinnedAnimationController->SetTrackSpeed(3, 1.875);
+
+	m_pSkinnedAnimationController1->SetTrackSpeed(0, 1.875);
+	m_pSkinnedAnimationController1->SetTrackSpeed(1, 1.875);*/
+
 	m_pSkinnedAnimationController->SetTrackEnable(0, true);
 	m_pSkinnedAnimationController1->SetTrackEnable(0, true);
 

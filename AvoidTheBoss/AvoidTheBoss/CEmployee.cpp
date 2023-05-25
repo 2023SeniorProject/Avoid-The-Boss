@@ -511,7 +511,7 @@ void CEmployee::ProcessInput(const int16& inputKey)
 	}
 	
 	int32 targetIdx = -1;
-	targetIdx = GetRescueAvailablePlayerIdx();
+	//targetIdx = GetRescueAvailablePlayerIdx();
 
 	// 플레이어 살리기 상호작용
 	if (inputKey & KEY_E)

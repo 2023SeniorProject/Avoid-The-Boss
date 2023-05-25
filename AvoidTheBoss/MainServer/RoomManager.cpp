@@ -119,7 +119,6 @@ void Room::UserIn(int32 sid)
 			_players[1].SetPosition(XMFLOAT3(10, 0.25, -18));
 			_players[2].SetPosition(XMFLOAT3(15, 0.25, -18));
 			_players[3].SetPosition(XMFLOAT3(20, 0.25, -18));
-			
 			_status = ROOM_STATUS::FULL;
 			_timer.Reset();
 		}

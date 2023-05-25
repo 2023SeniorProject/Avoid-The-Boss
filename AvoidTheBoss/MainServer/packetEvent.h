@@ -162,15 +162,32 @@ public:
 			}
 		}
 		break;
-
+		// ============== 깨우기 관련 이벤트 =============
 		case EVENT_TYPE::RESCUE_PLAYER_ONE:
 		case EVENT_TYPE::RESCUE_PLAYER_TWO:
 		case EVENT_TYPE::RESCUE_PLAYER_THREE:
 		case EVENT_TYPE::RESCUE_PLAYER_FOUR:
 		{
-			
+			if (!ServerIocpCore._rmgr->GetRoom(roomNum)._players[(int8)eventId - (int8)EVENT_TYPE::RESCUE_PLAYER_ONE].m_bIsAwaking)
+			{
+				ServerIocpCore._rmgr->GetRoom(roomNum)._players[(int8)eventId - (int8)EVENT_TYPE::RESCUE_PLAYER_ONE].m_bIsAwaking = true;
+				std::cout << "RESCUING\n";
+			}
 		}
 			break;
+		case EVENT_TYPE::RESCUE_CANCEL_PLAYER_ONE:
+		case EVENT_TYPE::RESCUE_CANCEL_PLAYER_TWO:
+		case EVENT_TYPE::RESCUE_CANCEL_PLAYER_THREE:
+		case EVENT_TYPE::RESCUE_CANCEL_PLAYER_FOUR:
+		{
+			if (ServerIocpCore._rmgr->GetRoom(roomNum)._players[(int8)eventId - (int8)EVENT_TYPE::RESCUE_PLAYER_ONE].m_bIsAwaking)
+			{
+				ServerIocpCore._rmgr->GetRoom(roomNum)._players[(int8)eventId - (int8)EVENT_TYPE::RESCUE_PLAYER_ONE].m_bIsAwaking = true;
+				ServerIocpCore._rmgr->GetRoom(roomNum)._players[(int8)eventId - (int8)EVENT_TYPE::RESCUE_PLAYER_ONE].rescueTime = 5.0;
+			}
+			std::cout << "RESCUE CANCEL\n";
+		}
+		break;
 		default:
 			std::cout << "UnKnown Game Event Please Check Your Packet Type\n";
 			break;

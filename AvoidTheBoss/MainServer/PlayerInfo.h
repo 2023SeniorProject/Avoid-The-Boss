@@ -43,7 +43,7 @@ public:
 	
 	void SetPosition(const XMFLOAT3& xmf3Position)
 	{
-		m_xmf3Look = xmf3Position;
+		m_xmf3Position = xmf3Position;
 	}
 	void SetDirection(const XMFLOAT3 look);
 

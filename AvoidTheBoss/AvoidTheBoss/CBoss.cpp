@@ -104,7 +104,7 @@ CCamera* CBoss::ChangeCamera(DWORD nNewCameraMode, float fTimeElapsed)
 	case THIRD_PERSON_CAMERA:
 		m_pCamera = OnChangeCamera(THIRD_PERSON_CAMERA, nCurrentCameraMode);
 		m_pCamera->SetTimeLag(0.0f);
-		m_pCamera->SetOffset(XMFLOAT3(0.0f, 1.7f * UNIT, -5 * UNIT));
+		m_pCamera->SetOffset(XMFLOAT3(0.0f, 1.7f * UNIT, 5 * UNIT));
 		m_pCamera->GenerateProjectionMatrix(1.01f, MaxDepthofMap, ASPECT_RATIO, 60.0f);
 		m_pCamera->SetViewport(0, 0, FRAME_BUFFER_WIDTH, FRAME_BUFFER_HEIGHT, 0.0f, 1.0f);
 		m_pCamera->SetScissorRect(0, 0, FRAME_BUFFER_WIDTH, FRAME_BUFFER_HEIGHT);
@@ -170,40 +170,17 @@ void CBoss::Move(const int16& dwDirection, float fDistance)
 
 void CBoss::SetAttackAnimOtherClient()
 {
-	if (m_pSkinnedAnimationController == nullptr) return;
+	// 스키닝 애니메이션이 진행중이거나 이미 애니메이션 트랙이 재생 중일 경우
+	if (m_pSkinnedAnimationController == nullptr || m_behavior == ATTACK || m_behavior == RUN_ATTACK) return;
 	if (!Vector3::IsZero(m_xmf3Velocity))
 	{
-			if (m_InteractionCountTime == BOSS_INTERACTION_TIME)
-			{
-				SetRunAttackAnimTrack();
-			}
-			else if (m_InteractionCountTime < BOSS_INTERACTION_TIME)
-			{
-				if (m_InteractionCountTime <= 0) 
-				{
-					m_OnInteraction = false;
-					m_pBullet->SetOnShoot(false);
-					SetRunAnimTrack();
-				}
-				m_InteractionCountTime -= 1;
-			}
+			m_behavior = RUN_ATTACK;
+			m_InteractionCountTime = BOSS_INTERACTION_TIME;
 	}
 	else if(Vector3::IsZero(m_xmf3Velocity))
 	{
-		if (m_InteractionCountTime == BOSS_INTERACTION_TIME)
-		{
-			SetAttackAnimTrack();
-		}
-		else if (m_InteractionCountTime < BOSS_INTERACTION_TIME)
-		{
-			if (m_InteractionCountTime <= 0)
-			{
-				m_OnInteraction = false;
-				m_pBullet->SetOnShoot(false);
-				SetIdleAnimTrack();
-			}
-			m_InteractionCountTime -= 1;
-		}
+		m_behavior == ATTACK;
+		m_InteractionCountTime = BOSS_INTERACTION_TIME;
 	}
 }
 
@@ -271,6 +248,7 @@ void CBoss::SetRunAnimTrack()
 
 	m_pSkinnedAnimationController1->SetTrackPosition(0, 0.0f); 
 	m_pSkinnedAnimationController1->SetTrackPosition(1, 0.0f);
+	
 }
 
 void CBoss::SetAttackAnimTrack()
@@ -336,14 +314,15 @@ void CBoss::AnimTrackUpdate()
 			{
 				if (m_behavior == ATTACK) SetAttackAnimTrack();
 				else if (m_behavior == RUN_ATTACK) SetRunAttackAnimTrack();
+				m_InteractionCountTime -= 1;
 			}
 			else if (m_InteractionCountTime < BOSS_INTERACTION_TIME)
 			{
 				if (m_InteractionCountTime <= 0)
 				{
 					m_OnInteraction = false;
-					if (m_behavior == RUN_ATTACK) SetRunAnimTrack();
-					else SetIdleAnimTrack();
+					if (m_behavior == RUN_ATTACK) m_behavior = RUN;
+					else m_behavior = IDLE;
 				}
 				m_InteractionCountTime -= 1;
 			}
@@ -360,20 +339,17 @@ void CBoss::ProcessInput(const int16& dwDirection)
 	// 1. 공격 키를 눌렀을 경우 처리 
 	if (dwDirection & KEY_SPACE)
 	{
-		if (m_InteractionCountTime <= 0 && m_OnInteraction == false)
+		if (m_OnInteraction == false)
 		{
 			//보스 캐릭터 애니메이션 처리
 			SetInteractionAnimation(true);
 			m_InteractionCountTime = BOSS_INTERACTION_TIME;
 			// 05-06 공격 시, 사장님 공격 이벤트 전송
-			if (InputManager::GetInstance().GetKeyBuffer(KEY_TYPE::SPACE) == (uint8)KEY_STATUS::KEY_PRESS)
-			{
-				SC_EVENTPACKET packet;
-				packet.eventId = (uint8)EVENT_TYPE::ATTACK_EVENT;
-				packet.type = SC_PACKET_TYPE::GAMEEVENT;
-				packet.size = sizeof(SC_EVENTPACKET);
-				clientCore._client->DoSend(&packet);
-			}
+			SC_EVENTPACKET packet;
+			packet.eventId = (uint8)EVENT_TYPE::ATTACK_EVENT;
+			packet.type = SC_PACKET_TYPE::GAMEEVENT;
+			packet.size = sizeof(SC_EVENTPACKET);
+			clientCore._client->DoSend(&packet);
 		}
 	}
 

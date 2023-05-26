@@ -243,7 +243,7 @@ void CGameScene::ProcessInput(HWND& hWnd)
 	if (InputManager::GetInstance().GetKeyBuffer(KEY_TYPE::D) > 0) keyInput |= KEY_RIGHT;
 	if (InputManager::GetInstance().GetKeyBuffer(KEY_TYPE::F) > 0) keyInput |= KEY_F;
 	if (InputManager::GetInstance().GetKeyBuffer(KEY_TYPE::E) > 0) keyInput |= KEY_E;
-	if (InputManager::GetInstance().GetKeyBuffer(KEY_TYPE::SPACE) > 0) keyInput |= KEY_SPACE;
+	if (InputManager::GetInstance().GetKeyBuffer(KEY_TYPE::SPACE) == (int8)KEY_STATUS::KEY_PRESS) keyInput |= KEY_SPACE;
 
 	// ============= 마우스 버튼 관련 처리 ================
 	float cxDelta = 0.0f, cyDelta = 0.0f;

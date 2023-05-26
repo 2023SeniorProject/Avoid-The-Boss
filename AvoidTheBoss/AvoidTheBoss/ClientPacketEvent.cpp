@@ -61,6 +61,15 @@ void InteractionEvent::Task()
 		player->m_hide = true;
 	}
 	break;
+	case EVENT_TYPE::ATTACK_EVENT:
+	{	
+		CBoss* boss = static_cast<CBoss*>(mainGame.m_pScene->_players[0]);
+		if (boss == nullptr) break;
+		boss->SetnInteractionCountTime(BOSS_INTERACTION_TIME);
+		boss->SetAttackAnimOtherClient();
+		
+	}
+		break;
 	case EVENT_TYPE::ATTACKED_PLAYER_TWO:
 	case EVENT_TYPE::ATTACKED_PLAYER_THREE:
 	case EVENT_TYPE::ATTACKED_PLAYER_FOUR:

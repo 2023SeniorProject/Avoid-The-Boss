@@ -450,7 +450,7 @@ CMapObjectsShader::~CMapObjectsShader()
 
 void CMapObjectsShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, CLoadedModelInfo* pModel, void* pContext)
 {
-	m_nObjects = 2;
+	m_nObjects = 3;
 	m_ppObjects = new CGameObject * [m_nObjects];
 
 	CGameObject* pMap = CGameObject::LoadGeometryFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "Model/Industry_Map(6).bin", NULL,Layout::MAP);
@@ -464,6 +464,12 @@ void CMapObjectsShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCom
 	m_ppObjects[1] = new CGameObject();
 	m_ppObjects[1]->SetChild(pTile);
 	m_ppObjects[1]->SetPosition(XMFLOAT3(0.0f, 0.0f, 0.0f));
+
+	CGameObject* pCrane = CGameObject::LoadGeometryFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "Model/Crane.bin", NULL, Layout::MAP);
+
+	m_ppObjects[2] = new CGameObject();
+	m_ppObjects[2]->SetChild(pCrane);
+	m_ppObjects[2]->SetPosition(XMFLOAT3(0.0f, 0.0f, 0.0f));
 
 	CreateShaderVariables(pd3dDevice, pd3dCommandList);
 }

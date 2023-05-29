@@ -151,7 +151,7 @@ void CGameScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandLis
 	//그래픽 루트 시그너쳐를 생성한다. 
 	m_pd3dGraphicsRootSignature = CreateGraphicsRootSignature(pd3dDevice);
 
-	CreateCbvSrvDescriptorHeaps(pd3dDevice, 0, 52+1+1+12+3+12+3 + 89 + 5 + 5*4 + 6*17 + 2*50+ 3*2 + 14 + 1);//Albedomap 52 / player 1 / skybox 1 / box subTexture 3 * 4/ tile subTexture 3 * 1/ woodPallet 3 * 4 / pillar2 3 * 1 / BoundsMap 89 / 스위치 2 + 3 / 문 / 사이렌 6 / 총알 100 / 사이드 문 3*2 / 14
+	CreateCbvSrvDescriptorHeaps(pd3dDevice, 0, 52+1+1+12+3+12+3 + 89 + 5 + 5*4 + 6*17 + 2*50+ 3*2 + 14 + 1 + 12);//Albedomap 52 / player 1 / skybox 1 / box subTexture 3 * 4/ tile subTexture 3 * 1/ woodPallet 3 * 4 / pillar2 3 * 1 / BoundsMap 89 / 스위치 2 + 3 / 문 / 사이렌 6 / 총알 100 / 사이드 문 3*2 / 14
 
 	CMaterial::PrepareShaders(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature);
 

@@ -173,7 +173,7 @@ void Room::Update()
 		{ 
 			std::cout << i << " Complete\n";
 			SC_EVENTPACKET packet;
-			packet.type = SC_PACKET_TYPE::GAMEEVENT;
+			packet.type = (uint8)SC_PACKET_TYPE::GAMEEVENT;
 			packet.size = sizeof(SC_EVENTPACKET);
 			packet.eventId = 10 + (i - 2);
 			BroadCasting(&packet);
@@ -192,7 +192,7 @@ void Room::Update()
 			S2C_POS packet;
 			packet.sid = _players[i].m_sid;
 			packet.size = sizeof(S2C_POS);
-			packet.type = S_PACKET_TYPE::SPOS;
+			packet.type = (uint8)S_PACKET_TYPE::SPOS;
 			packet.x = _players[i].GetPosition().x;
 			packet.z = _players[i].GetPosition().z;
 			packet.fidx = _history.GetCurFrameIdx();
@@ -233,7 +233,7 @@ void RoomManager::CreateRoom(int32 sid)
 	{
 		S2C_ROOM_CREATE packet;
 		packet.size = sizeof(S2C_ROOM_CREATE);
-		packet.type = S_ROOM_PACKET_TYPE::MK_RM_FAIL;
+		packet.type = (uint8)S_ROOM_PACKET_TYPE::MK_RM_FAIL;
 		ServerIocpCore._clients[sid]->DoSend(&packet);
 		return;
 	}

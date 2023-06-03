@@ -8,9 +8,9 @@ private:
 	bool m_bIsInSwitchArea = false;
 	bool m_bIsInDownPlayerArea = false; // Down된 플레이어와 인접해 있는가?
 public:
-	int32 m_attackedAnimationCount = 0.f;
-	int32 m_downAnimationCount = 0.f;
-	int32 m_standAnimationCount = 0.f;
+	int32 m_attackedAnimationCount = 0;
+	int32 m_downAnimationCount = 0;
+	int32 m_standAnimationCount = 0;
 public:
 	CEmployee(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, CHARACTER_TYPE nType);
 	virtual ~CEmployee();

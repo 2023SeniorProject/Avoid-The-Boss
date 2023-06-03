@@ -274,7 +274,7 @@ void CGameScene::ProcessInput(HWND& hWnd)
 
 		C2S_KEY packet; // 키 입력 + 방향 정보를 보낸다.
 		packet.size = sizeof(C2S_KEY);
-		packet.type = C_PACKET_TYPE::CKEY;
+		packet.type = (uint8)C_PACKET_TYPE::CKEY;
 		packet.key = LOBYTE(keyInput);
 		packet.x = _players[_playerIdx]->GetLook().x;
 		packet.z = _players[_playerIdx]->GetLook().z;

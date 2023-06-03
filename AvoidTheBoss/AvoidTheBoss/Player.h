@@ -66,7 +66,7 @@ public:
 	// 05-21 추가
 	int32 m_hp = 5; // hp는 5로 설정
 	// 05-22 추가
-	int32 m_behavior = IDLE;
+	int32 m_behavior = (int32)PLAYER_BEHAVIOR::IDLE;
 public: 
 	CPlayer();
 	virtual ~CPlayer();

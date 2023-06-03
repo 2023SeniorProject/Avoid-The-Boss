@@ -90,7 +90,7 @@ void InteractionEvent::Task()
 	{
 		CPlayer* player = mainGame.m_pScene->_players[eventId - (int8)(EVENT_TYPE::ALIVE_PLAYER_ONE)];
 		if (player == nullptr) break;
-		player->m_behavior = STAND;
+		player->m_behavior = (int32)PLAYER_BEHAVIOR::STAND;
 	}
 	break;
 	default:
@@ -102,7 +102,7 @@ void moveEvent::Task()
 {
 		player->SetDirection(_dir);
 		if(player->m_ctype == (uint8)PLAYER_TYPE::BOSS) static_cast<CBoss*>(player)->Move(_key, BOSS_VELOCITY);
-		else static_cast<CEmployee*>(player)->Move(_key, PLAYER_VELOCITY);
+		else static_cast<CEmployee*>(player)->Move(_key, EMPLOYEE_VELOCITY);
 }
 
 void posEvent::Task()

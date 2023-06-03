@@ -138,12 +138,12 @@ void CBoss::Move(const int16& dwDirection, float fDistance)
 	{
 		if (!m_OnInteraction) // 공격 키 미입력, 이동키 입력 --> 달리기
 		{
-			m_behavior = RUN;
+			m_behavior = (int32)PLAYER_BEHAVIOR::RUN;
 		
 		}
 		else // 공격 키, 이동키 모두 입력 --> 달리면서 쏘기
 		{
-			m_behavior = RUN_ATTACK;
+			m_behavior = (int32)PLAYER_BEHAVIOR::RUN_ATTACK;
 			m_pBullet->SetOnShoot(true);
 			
 		
@@ -153,12 +153,12 @@ void CBoss::Move(const int16& dwDirection, float fDistance)
 	{
 		if (!m_OnInteraction) // 공격 키, 이동키 모두 미입력
 		{
-			m_behavior = IDLE;
+			m_behavior = (int32)PLAYER_BEHAVIOR::IDLE;
 			
 		}
 		else // 공격 키만 입력, 이동키는 미입력
 		{
-			m_behavior = ATTACK;
+			m_behavior = (int32)PLAYER_BEHAVIOR::ATTACK;
 			if (m_pBullet) m_pBullet->SetOnShoot(true);
 			
 		}
@@ -171,15 +171,15 @@ void CBoss::Move(const int16& dwDirection, float fDistance)
 void CBoss::SetAttackAnimOtherClient()
 {
 	// 스키닝 애니메이션이 진행중이거나 이미 애니메이션 트랙이 재생 중일 경우
-	if (m_pSkinnedAnimationController == nullptr || m_behavior == ATTACK || m_behavior == RUN_ATTACK) return;
+	if (m_pSkinnedAnimationController == nullptr || m_behavior == (int32)PLAYER_BEHAVIOR::ATTACK || m_behavior == (int32)PLAYER_BEHAVIOR::RUN_ATTACK) return;
 	if (!Vector3::IsZero(m_xmf3Velocity))
 	{
-			m_behavior = RUN_ATTACK;
+			m_behavior = (int32)PLAYER_BEHAVIOR::RUN_ATTACK;
 			m_InteractionCountTime = BOSS_INTERACTION_TIME;
 	}
 	else if(Vector3::IsZero(m_xmf3Velocity))
 	{
-		m_behavior == ATTACK;
+		m_behavior == (int32)PLAYER_BEHAVIOR::ATTACK;
 		m_InteractionCountTime = BOSS_INTERACTION_TIME;
 	}
 }
@@ -202,7 +202,7 @@ void CBoss::Update(float fTimeElapsed, CLIENT_TYPE ptype)
 void CBoss::LateUpdate(float fTimeElapsed, CLIENT_TYPE ptype)
 {
 	if (ptype == CLIENT_TYPE::OWNER) m_xmf3Velocity = XMFLOAT3(0.0f, 0.0f, 0.0f);
-	else if (m_pBullet) SetAttackAnimOtherClient();
+	else if (ptype != CLIENT_TYPE::OTHER_PLAYER && m_pBullet) SetAttackAnimOtherClient();
 	AnimTrackUpdate();
 }
 
@@ -301,19 +301,19 @@ void CBoss::AnimTrackUpdate()
 {
 	switch (m_behavior)
 	{
-		case IDLE:
+		case (int32)PLAYER_BEHAVIOR::IDLE:
 			SetIdleAnimTrack();
 			break;
-		case RUN:
+		case(int32)PLAYER_BEHAVIOR::RUN:
 			SetRunAnimTrack();
 			break;
-		case ATTACK:
-		case RUN_ATTACK:
+		case (int32)PLAYER_BEHAVIOR::ATTACK:
+		case (int32)PLAYER_BEHAVIOR::RUN_ATTACK:
 		{
 			if (m_InteractionCountTime == BOSS_INTERACTION_TIME)
 			{
-				if (m_behavior == ATTACK) SetAttackAnimTrack();
-				else if (m_behavior == RUN_ATTACK) SetRunAttackAnimTrack();
+				if (m_behavior == (int32)PLAYER_BEHAVIOR::ATTACK) SetAttackAnimTrack();
+				else if (m_behavior == (int32)PLAYER_BEHAVIOR::RUN_ATTACK) SetRunAttackAnimTrack();
 				m_InteractionCountTime -= 1;
 			}
 			else if (m_InteractionCountTime < BOSS_INTERACTION_TIME)
@@ -321,8 +321,8 @@ void CBoss::AnimTrackUpdate()
 				if (m_InteractionCountTime <= 0)
 				{
 					m_OnInteraction = false;
-					if (m_behavior == RUN_ATTACK) m_behavior = RUN;
-					else m_behavior = IDLE;
+					if (m_behavior == (int32)PLAYER_BEHAVIOR::RUN_ATTACK) m_behavior = (int32)PLAYER_BEHAVIOR::RUN;
+					else m_behavior = (int32)PLAYER_BEHAVIOR::IDLE;
 				}
 				m_InteractionCountTime -= 1;
 			}
@@ -347,7 +347,7 @@ void CBoss::ProcessInput(const int16& dwDirection)
 			// 05-06 공격 시, 사장님 공격 이벤트 전송
 			SC_EVENTPACKET packet;
 			packet.eventId = (uint8)EVENT_TYPE::ATTACK_EVENT;
-			packet.type = SC_PACKET_TYPE::GAMEEVENT;
+			packet.type = (uint8)SC_PACKET_TYPE::GAMEEVENT;
 			packet.size = sizeof(SC_EVENTPACKET);
 			clientCore._client->DoSend(&packet);
 		}

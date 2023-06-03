@@ -126,20 +126,20 @@ public: //04-29 추가함수
 	virtual void Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera = NULL);
 	// 05-22 추가 함수
 	virtual void AnimTrackUpdate(float ,CLIENT_TYPE) {};
-protected:
-	int nInteractionNum = -1;
-	bool m_OnInteraction = false;
-	int m_InteractionCountTime = -1;;
+protected: // 06-03 애니메이션 관련 처리인지 아니면 상호작용 관련 처리인건지 명확하게 구별해야함
+	int			m_InteractionType = -1;
+	bool		m_OnInteraction = false;
+	int			m_InteractionCountTime = -1;;
 public:
-	void SetInteractionAnimation(bool value) { m_OnInteraction = value; }
+	virtual void SetInteractionOn(bool value) 
+	{ 
+		m_OnInteraction = value;
+	}
 	bool GetOnInteraction() { return m_OnInteraction; }
-
-	void SetnInteractionNum(int value) { nInteractionNum = value; }
-	int GetnInteractionNum() { return nInteractionNum; }
 	
 	void SetnInteractionCountTime(int value) { m_InteractionCountTime = value; }
-	int GetnInteractionCountTime() { return m_InteractionCountTime; }
-	virtual void OnInteractionAnimation() {}
+	int  GetnInteractionCountTime() { return m_InteractionCountTime; }
+
 	virtual int32 GetPlayerBehavior() { return m_behavior; }
 };
 

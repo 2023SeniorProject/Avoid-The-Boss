@@ -241,7 +241,7 @@ void CSession::ProcessPacket(char* packet)
 		CEmployee* myPlayer = (CEmployee*)mainGame.m_pScene->_players[idx];
 		if (myPlayer != nullptr)
 		{
-			myPlayer->SetInteractionAnimation(true);
+			myPlayer->SetInteractionOn(true);
 			myPlayer->SetInteractionAnimTrackOtherClient();
 		}
 	}
@@ -253,7 +253,7 @@ void CSession::ProcessPacket(char* packet)
 		CPlayer* myPlayer = mainGame.m_pScene->_players[idx];
 		if (myPlayer != nullptr)
 		{
-			myPlayer->SetInteractionAnimation(false);
+			myPlayer->SetInteractionOn(false);
 		}
 	}
 	break;

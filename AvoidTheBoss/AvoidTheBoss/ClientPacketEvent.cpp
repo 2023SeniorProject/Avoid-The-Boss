@@ -13,11 +13,11 @@ void InteractionEvent::Task()
 	case EVENT_TYPE::SWITCH_TWO_START_EVENT:
 	case EVENT_TYPE::SWITCH_THREE_START_EVENT:
 	{
-		CGenerator* mSwitch = mainGame.m_pScene->m_ppSwitches[eventId - 2];
+		CGenerator* mSwitch = mainGame.m_pScene->GetSceneGenerator(eventId - (uint8)EVENT_TYPE::SWITCH_ONE_START_EVENT);
+		if (mSwitch == nullptr) break;
 		mSwitch->m_lock.lock();
-		mSwitch->m_bOtherPlayerInteractionOn = true;
-		mainGame.m_pScene->m_ppSwitches[eventId - 2]->InteractAnimation(true); // 발전기 애니메이션 재생을 시작한다.
-		mainGame.m_pScene->m_ppSwitches[eventId - 2]->SetAnimationCount(BUTTON_ANIM_FRAME);
+		mainGame.m_pScene->GetSceneGenerator(eventId - (uint8)EVENT_TYPE::SWITCH_ONE_START_EVENT)->SetInteractionOn(true); // 발전기 애니메이션 재생을 시작한다.
+		mainGame.m_pScene->GetSceneGenerator(eventId - (uint8)EVENT_TYPE::SWITCH_ONE_START_EVENT)->SetAnimationCount(BUTTON_ANIM_FRAME);
 		mSwitch->m_lock.unlock();
 	}
 	break;
@@ -26,9 +26,10 @@ void InteractionEvent::Task()
 	case EVENT_TYPE::SWITCH_THREE_END_EVENT:
 	{
 		std::cout << "Switch Cancel\n";
-		CGenerator* mSwitch = mainGame.m_pScene->m_ppSwitches[eventId - 5];
+		CGenerator* mSwitch = mainGame.m_pScene->GetSceneGenerator(eventId - (uint8)EVENT_TYPE::SWITCH_ONE_START_EVENT);
+		if (mSwitch == nullptr) break;
 		mSwitch->m_lock.lock();
-		mSwitch->m_bOtherPlayerInteractionOn = false;
+		mSwitch->SetInteractionOn(true);
 		mSwitch->m_lock.unlock();
 	}
 	break;
@@ -37,13 +38,13 @@ void InteractionEvent::Task()
 	case EVENT_TYPE::SWITCH_TWO_ACTIVATE_EVENT:
 	case EVENT_TYPE::SWITCH_THREE_ACTIVATE_EVENT:
 	{
-		CGenerator* mSwitch = mainGame.m_pScene->m_ppSwitches[eventId - 8];
+		CGenerator* mSwitch = mainGame.m_pScene->GetSceneGenerator(eventId - (uint8)EVENT_TYPE::SWITCH_ONE_START_EVENT);
+		if (mSwitch == nullptr) break;
 		mSwitch->m_lock.lock();
-		mainGame.m_pScene->m_ppSwitches[eventId - 8]->m_bSwitchActive = true;
+		mSwitch->m_bSwitchActive = true;
 		mSwitch->m_lock.unlock();
-		mainGame.m_pScene->m_ActiveSwitchCnt.fetch_add(1);
-		std::cout << (int)(eventId - 8) << "Switch Activate\n";
-		if (mainGame.m_pScene->m_ActiveSwitchCnt == 1) // 만약 3개의 스위치가 모두 활성화 되었다면, 
+		mainGame.m_pScene->m_ActiveGeneratorCnt.fetch_add(1);
+		if (mainGame.m_pScene->m_ActiveGeneratorCnt == 1) // 만약 3개의 스위치가 모두 활성화 되었다면, 
 		{
 			std::cout << "Clear\n";
 			mainGame.m_pScene->m_bIsExitReady = true; // 탈출 조건 true

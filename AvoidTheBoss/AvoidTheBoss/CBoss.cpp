@@ -342,7 +342,7 @@ void CBoss::ProcessInput(const int16& dwDirection)
 		if (m_OnInteraction == false)
 		{
 			//보스 캐릭터 애니메이션 처리
-			SetInteractionAnimation(true);
+			SetInteractionOn(true);
 			m_InteractionCountTime = BOSS_INTERACTION_TIME;
 			// 05-06 공격 시, 사장님 공격 이벤트 전송
 			SC_EVENTPACKET packet;

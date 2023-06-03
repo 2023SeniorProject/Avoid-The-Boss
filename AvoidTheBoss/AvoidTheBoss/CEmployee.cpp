@@ -141,7 +141,11 @@ void CEmployee::LateUpdate(float fTimeElapsed, CLIENT_TYPE ptype)
 	AnimTrackUpdate();
 	
 	//======= 스위치 위치 판별 =========
-	if (GetAvailableSwitchIdx() != -1) m_bIsInSwitchArea = true;
+	if (GetAvailableSwitchIdx() != -1)
+	{
+		CGenerator* targetSwitch = mainGame.m_pScene->GetSceneGenerator(GetAvailableSwitchIdx());
+		if(!targetSwitch->m_OnInteraction && !targetSwitch->m_bSwitchActive) m_bIsInSwitchArea = true;
+	}
 	else m_bIsInSwitchArea = false;
 	//======= 상호작용 가능 유저 판별 ==========
 
@@ -150,7 +154,7 @@ void CEmployee::LateUpdate(float fTimeElapsed, CLIENT_TYPE ptype)
 	if (ptype == CLIENT_TYPE::OWNER) m_xmf3Velocity = XMFLOAT3(0.0f, 0.0f, 0.0f);
 	else if (ptype == CLIENT_TYPE::OTHER_PLAYER)
 	{
-		if (m_behavior != (int32)PLAYER_BEHAVIOR::SWITCH_INTER) SetInteractionAnimation(false);
+		if (m_behavior != (int32)PLAYER_BEHAVIOR::SWITCH_INTER) SetInteractionOn(false);
 	}
 }
 
@@ -452,7 +456,7 @@ void CEmployee::PlayerDown()
 void CEmployee::ProcessInput(const int16& inputKey)
 {
 	int32 switchIdx = GetAvailableSwitchIdx(); // 어느 스위치 영역인지 확인한다.
-	CGenerator* targetGenerator = mainGame.m_pScene->m_ppSwitches[switchIdx];
+	CGenerator* targetGenerator = mainGame.m_pScene->GetSceneGenerator(switchIdx);
 	int32 targetPlayerIdx = -1;
 	targetPlayerIdx = GetRescueAvailablePlayerIdx();
 
@@ -461,28 +465,24 @@ void CEmployee::ProcessInput(const int16& inputKey)
 	{
 		if (inputKey & KEY_F) // 1. 상호작용 키가 눌려있을 때 
 		{
-			targetGenerator->m_lock.lock();
-			if (!targetGenerator->m_bOtherPlayerInteractionOn && !targetGenerator->m_bSwitchActive) // 다른 플레이어가 상호작용 상태가 아니라면
-			{
-				
 				// ====== 플레이어 처리 ==============
-				SetInteractionAnimation(true); // 캐릭터 상호작용 애니메이션 재생을 활성화 한다.
-				// ========== 발전기 처리 ===============
-				targetGenerator->InteractAnimation(true); // 발전기 애니메이션 재생을 시작한다.
-				targetGenerator->SetAnimationCount(BUTTON_ANIM_FRAME);
+			SetInteractionOn(true); // 캐릭터 상호작용 애니메이션 재생을 활성화 한다.
 
-				// ==========  패킷 송신 처리 ==================
-				// 키가 한번 입력 됐을 때만 호출하는 것
-				if (InputManager::GetInstance().GetKeyBuffer(KEY_TYPE::F) == (int8)KEY_STATUS::KEY_PRESS)
-				{
-					SC_EVENTPACKET packet;
-					packet.eventId = switchIdx + (int32)EVENT_TYPE::SWITCH_ONE_START_EVENT;
-					packet.size = sizeof(SC_EVENTPACKET);
-					packet.type = (uint8)SC_PACKET_TYPE::GAMEEVENT;
-					clientCore._client->DoSend(&packet);
-				}	
-			}
-			targetGenerator->m_lock.unlock();
+			// ========== 발전기 처리 ===============
+			targetGenerator->SetInteractionOn(true); // 발전기 애니메이션 재생을 시작한다.
+			targetGenerator->SetAnimationCount(BUTTON_ANIM_FRAME);
+
+			// ==========  패킷 송신 처리 ==================
+			// 키가 한번 입력 됐을 때만 호출하는 것
+			if (InputManager::GetInstance().GetKeyBuffer(KEY_TYPE::F) == (int8)KEY_STATUS::KEY_PRESS)
+			{
+				SC_EVENTPACKET packet;
+				packet.eventId = switchIdx + (int32)EVENT_TYPE::SWITCH_ONE_START_EVENT;
+				packet.size = sizeof(SC_EVENTPACKET);
+				packet.type = (uint8)SC_PACKET_TYPE::GAMEEVENT;
+				clientCore._client->DoSend(&packet);
+			}	
+		
 		}
 		else // 상호작용 키가 눌러있지 않은 경우
 		{
@@ -490,13 +490,15 @@ void CEmployee::ProcessInput(const int16& inputKey)
 			if (InputManager::GetInstance().GetKeyBuffer(KEY_TYPE::F) == (int8)KEY_STATUS::KEY_UP)
 			{
 				// ======== 플레이어 처리 ===============
-				SetInteractionAnimation(false);
+				SetInteractionOn(false);
 
 				// =======  발전기 처리 =================
-				targetGenerator->m_lock.lock();
-				targetGenerator->InteractAnimation(false); // 애니메이션 재생을 정지한다.
-				targetGenerator->m_lock.unlock();
-				
+				if (targetGenerator->m_OnInteraction)
+				{
+					targetGenerator->m_lock.lock();
+					targetGenerator->SetInteractionOn(false); // 애니메이션 재생을 정지한다.
+					targetGenerator->m_lock.unlock();
+				}
 				//========= 패킷 송신 처리 ==============
 				SC_EVENTPACKET packet;
 				packet.eventId = switchIdx + (int32)EVENT_TYPE::SWITCH_ONE_END_EVENT;;
@@ -519,7 +521,7 @@ void CEmployee::ProcessInput(const int16& inputKey)
 			if (InputManager::GetKeyBuffer(KEY_TYPE::E) == (int8)KEY_STATUS::KEY_PRESS)
 			{
 				SC_EVENTPACKET packet;
-				packet.eventId = targetIdx + (int32)EVENT_TYPE::RESCUE_PLAYER_ONE;
+				packet.eventId = targetPlayerIdx + (int32)EVENT_TYPE::RESCUE_PLAYER_ONE;
 				packet.size = sizeof(SC_EVENTPACKET);
 				packet.type = (uint8)SC_PACKET_TYPE::GAMEEVENT;
 				clientCore._client->DoSend(&packet);
@@ -531,7 +533,7 @@ void CEmployee::ProcessInput(const int16& inputKey)
 		if (InputManager::GetKeyBuffer(KEY_TYPE::E) == (int8)KEY_STATUS::KEY_UP)
 		{
 			SC_EVENTPACKET packet;
-			packet.eventId = targetIdx + (int32)EVENT_TYPE::RESCUE_CANCEL_PLAYER_ONE;
+			packet.eventId = targetPlayerIdx + (int32)EVENT_TYPE::RESCUE_CANCEL_PLAYER_ONE;
 			packet.size = sizeof(SC_EVENTPACKET);
 			packet.type = (uint8)SC_PACKET_TYPE::GAMEEVENT;
 			clientCore._client->DoSend(&packet);

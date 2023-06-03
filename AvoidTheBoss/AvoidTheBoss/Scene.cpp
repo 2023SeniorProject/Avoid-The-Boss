@@ -195,10 +195,10 @@ void CGameScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandLis
 	pBoundsMapShader->CreateShader(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature);
 	pBoundsMapShader->BuildObjects(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature,NULL,NULL);
 
-	m_ppSwitches = new CGenerator * [nSwitch];
+	m_ppGenerator = new CGenerator * [m_nGenerator];
 	for (int i = 0; i < 3; ++i)
 	{
-		m_ppSwitches[i] = ((CGenerator*)pGeneratorObjectsShader->m_ppObjects[i]);
+		m_ppGenerator[i] = ((CGenerator*)pGeneratorObjectsShader->m_ppObjects[i]);
 	}
 	for (int i = 0; i < PLAYERNUM; ++i)
 	{

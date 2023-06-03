@@ -39,7 +39,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
    //DialogBox(hInstance, MAKEINTRESOURCE(IDD_LOGINDIALOG), NULL, reinterpret_cast<DLGPROC>(MyDialogBox));
    C2S_LOGIN loginPacket;
    loginPacket.size = sizeof(C2S_LOGIN);
-   loginPacket.type = C_PACKET_TYPE::ACQ_LOGIN;
+   loginPacket.type = (uint8)C_PACKET_TYPE::ACQ_LOGIN;
    std::cout << "ID: ";
    std::wcin.getline(loginPacket.name, 10);
    std::cout << "PW: ";

@@ -31,17 +31,30 @@ void PlayerInfo::SetSpeed(const XMFLOAT3& xmf3Shift)
 	m_xmf3Velocity = Vector3::Add(m_xmf3Velocity, xmf3Shift);
 }
 
-void PlayerInfo::SetDirection(const XMFLOAT3 look)
+void PlayerInfo::SetDirection(const XMFLOAT3& lookVec)
 {
-	m_xmf3Look = look;
+	m_xmf3Look = lookVec;
 	m_xmf3Right = Vector3::CrossProduct(m_xmf3Up, m_xmf3Look, true);
 }
 
-void PlayerInfo::Move(uint8 dwDirection, float fDistance)
+void PlayerInfo::ProcessInput(const int16& input,const XMFLOAT3& lookVec)
+{
+	SetDirection(lookVec);
+	if (m_idx == 0) Move(input, BOSS_VELOCITY);
+	else Move(input, EMPLOYEE_VELOCITY);
+}
+
+void PlayerInfo::Move(const int16& dwDirection, float fDistance)
 {
 	XMFLOAT3 xmf3Shift = XMFLOAT3(0, 0, 0);
+	if (m_behavior != (int32)PLAYER_BEHAVIOR::IDLE && m_behavior != (int32)PLAYER_BEHAVIOR::RUN)
+	{
+		SetVelocity(xmf3Shift);
+		return;
+	}
+	
 	if (dwDirection)
-	{	
+	{
 		if (dwDirection & KEY_FORWARD)  xmf3Shift = Vector3::Add(xmf3Shift, m_xmf3Look,fDistance);
 		if (dwDirection & KEY_BACKWARD) xmf3Shift = Vector3::Add(xmf3Shift, m_xmf3Look, -fDistance);
 		if (dwDirection & KEY_RIGHT)    xmf3Shift = Vector3::Add(xmf3Shift, m_xmf3Right,fDistance);
@@ -54,82 +67,35 @@ void PlayerInfo::Move(uint8 dwDirection, float fDistance)
 	
 }
 
-void PlayerInfo::Rotate(float x, float y, float z)
-{
-	if (x != 0.0f)
-	{
-		m_fPitch += x;
-		if (m_fPitch > +89.0f) { x -= (m_fPitch - 89.0f); m_fPitch = +89.0f; }
-		if (m_fPitch < -89.0f) { x -= (m_fPitch + 89.0f); m_fPitch = -89.0f; }
-	}
-	if (y != 0.0f)
-	{
-
-		m_fYaw += y;
-		if (m_fYaw > 360.0f) m_fYaw -= 360.0f;
-		if (m_fYaw < 0.0f) m_fYaw += 360.0f;
-	}
-	if (z != 0.0f)
-	{
-
-		m_fRoll += z;
-		if (m_fRoll > +20.0f) { z -= (m_fRoll - 20.0f); m_fRoll = +20.0f; }
-		if (m_fRoll < -20.0f) { z -= (m_fRoll + 20.0f); m_fRoll = -20.0f; }
-	}
-
-
-	if (y != 0.0f)
-	{
-		XMMATRIX xmmtxRotate = XMMatrixRotationAxis(XMLoadFloat3(&m_xmf3Up),
-			XMConvertToRadians(y));
-		m_xmf3Look = Vector3::TransformNormal(m_xmf3Look, xmmtxRotate);
-		m_xmf3Right = Vector3::TransformNormal(m_xmf3Right, xmmtxRotate);
-	}
-
-	m_xmf3Look = Vector3::Normalize(m_xmf3Look);
-	m_xmf3Right = Vector3::CrossProduct(m_xmf3Up, m_xmf3Look, true);
-	m_xmf3Up = Vector3::CrossProduct(m_xmf3Look, m_xmf3Right, true);
-}
-
-void PlayerInfo::UpdateMove(const XMFLOAT3& xmf3Shift)
-{
-	//플레이어를 현재 위치 벡터에서 xmf3Shift 벡터만큼 이동한다. 
-	
-}
-
 void PlayerInfo::Update(float fTimeElapsed)
 {
 	//플레이어를 속도 벡터 만큼 실제로 이동한다(카메라도 이동될 것이다). 
-	if (m_behavior != CRAWL)
-	{
-		XMFLOAT3 xmf3Velocity = Vector3::ScalarProduct(m_xmf3Velocity, fTimeElapsed, false);
-		m_xmf3Position = Vector3::Add(m_xmf3Position, xmf3Velocity);
-	}
-	else
-	{
-		if (m_bIsAwaking)
-		{
-			rescueTime -= fTimeElapsed;
-			if (rescueTime < 0)
-			{
-				rescueTime = 5.0;
-				SC_EVENTPACKET packet;
-				packet.size = sizeof(SC_EVENTPACKET);
-				packet.type = SC_PACKET_TYPE::GAMEEVENT;
-				packet.eventId = m_idx + (uint8)EVENT_TYPE::ALIVE_PLAYER_ONE;
-				ServerIocpCore._rmgr->GetRoom(m_sid).BroadCasting(&packet);
-				m_bIsAwaking = false;
-				m_behavior = IDLE;
-			}
-		}
-	}
-	LateUpdate();
+
+	XMFLOAT3 xmf3Velocity = Vector3::ScalarProduct(m_xmf3Velocity, fTimeElapsed, false);
+	m_xmf3Position = Vector3::Add(m_xmf3Position, xmf3Velocity);
+	LateUpdate(fTimeElapsed);
 }
 
-void PlayerInfo::LateUpdate()
+void PlayerInfo::LateUpdate(float fTimeElapsed)
 {
 	m_playerBV.Center = GetPosition();
 	BoxTree->CheckCollision(m_playerBV, m_xmf3Position);
+
+	if (m_bIsAwaking)
+	{
+		rescueTime -= fTimeElapsed;
+		if (rescueTime < 0)
+		{
+			rescueTime = 5.0;
+			SC_EVENTPACKET packet;
+			packet.size = sizeof(SC_EVENTPACKET);
+			packet.type = (uint8)SC_PACKET_TYPE::GAMEEVENT;
+			packet.eventId = m_idx + (uint8)EVENT_TYPE::ALIVE_PLAYER_ONE;
+			ServerIocpCore._rmgr->GetRoom(m_sid).BroadCasting(&packet);
+			m_bIsAwaking = false;
+			m_behavior = (uint8)PLAYER_BEHAVIOR::IDLE;
+		}
+	}
 	
 }
 

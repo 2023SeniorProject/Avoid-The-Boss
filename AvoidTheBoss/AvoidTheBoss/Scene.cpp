@@ -195,10 +195,10 @@ void CGameScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandLis
 	pBoundsMapShader->CreateShader(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature);
 	pBoundsMapShader->BuildObjects(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature,NULL,NULL);
 
-	m_ppSwitches = new CGenerator * [nSwitch];
+	m_ppGenerator = new CGenerator * [m_nGenerator];
 	for (int i = 0; i < 3; ++i)
 	{
-		m_ppSwitches[i] = ((CGenerator*)pGeneratorObjectsShader->m_ppObjects[i]);
+		m_ppGenerator[i] = ((CGenerator*)pGeneratorObjectsShader->m_ppObjects[i]);
 	}
 	for (int i = 0; i < PLAYERNUM; ++i)
 	{
@@ -243,7 +243,7 @@ void CGameScene::ProcessInput(HWND& hWnd)
 	if (InputManager::GetInstance().GetKeyBuffer(KEY_TYPE::D) > 0) keyInput |= KEY_RIGHT;
 	if (InputManager::GetInstance().GetKeyBuffer(KEY_TYPE::F) > 0) keyInput |= KEY_F;
 	if (InputManager::GetInstance().GetKeyBuffer(KEY_TYPE::E) > 0) keyInput |= KEY_E;
-	if (InputManager::GetInstance().GetKeyBuffer(KEY_TYPE::SPACE) > 0) keyInput |= KEY_SPACE;
+	if (InputManager::GetInstance().GetKeyBuffer(KEY_TYPE::SPACE) == (int8)KEY_STATUS::KEY_PRESS) keyInput |= KEY_SPACE;
 
 	// ============= 마우스 버튼 관련 처리 ================
 	float cxDelta = 0.0f, cyDelta = 0.0f;
@@ -274,7 +274,7 @@ void CGameScene::ProcessInput(HWND& hWnd)
 
 		C2S_KEY packet; // 키 입력 + 방향 정보를 보낸다.
 		packet.size = sizeof(C2S_KEY);
-		packet.type = C_PACKET_TYPE::CKEY;
+		packet.type = (uint8)C_PACKET_TYPE::CKEY;
 		packet.key = LOBYTE(keyInput);
 		packet.x = _players[_playerIdx]->GetLook().x;
 		packet.z = _players[_playerIdx]->GetLook().z;

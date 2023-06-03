@@ -85,46 +85,47 @@ void CEmployee::Move(const int16& dwDirection, float fDistance)
 {
 	
 	// Down 됐을 경우에는 기존 조건문과 다르게 처리한다.
-	if (m_behavior == DOWN)
+	if (m_behavior == (int32)PLAYER_BEHAVIOR::DOWN)
 	{
-		
 		CPlayer::Move(0, 0); // 움직이지 않는다.
 		return;
 	}
-	// Attacked 됐을 경우 
-	if (m_behavior == ATTACKED) 
-	{
-		CPlayer::Move(dwDirection, PLAYER_VELOCITY - 1.0f); // 일시적으로 속도 느려지게 하기
-		return;
-	}
+
 
 	// Crawl 됐을 경우 
-	if (m_behavior == CRAWL)
+	if (m_behavior == (int32)PLAYER_BEHAVIOR::CRAWL)
 	{
 		
 		CPlayer::Move(0, 0); // 일시적으로 속도 느려지게 하기
 		return;
 	}
-	if (m_behavior == STAND)
+	if (m_behavior == (int32)PLAYER_BEHAVIOR::STAND)
 	{
 		CPlayer::Move(0, 0);
+		return;
+	}
+
+	// Attacked 됐을 경우 
+	if (m_behavior == (int32)PLAYER_BEHAVIOR::ATTACKED)
+	{
+		CPlayer::Move(dwDirection, EMPLOYEE_VELOCITY - 1.0f); // 일시적으로 속도 느려지게 하기
 		return;
 	}
 	
 	// 플레이어의 행동을 저장.
 	if (LOBYTE(dwDirection))
 	{
-		if (m_hp > 0) m_behavior = RUN;
-		else m_behavior = CRAWL;
+		if (m_hp > 0) m_behavior = (int32)PLAYER_BEHAVIOR::RUN;
+		else m_behavior = (int32)PLAYER_BEHAVIOR::CRAWL;
 	}
-	else if (!LOBYTE(dwDirection)) m_behavior = IDLE;
+	else if (!LOBYTE(dwDirection)) m_behavior = (int32)PLAYER_BEHAVIOR::IDLE;
 	else if (m_OnInteraction)
 	{
-		m_behavior = SWITCH_INTER;
-		CPlayer::Move(0, PLAYER_VELOCITY);
+		m_behavior = (int32)PLAYER_BEHAVIOR::SWITCH_INTER;
+		CPlayer::Move(0, EMPLOYEE_VELOCITY);
 	}
 	// 플레이어 속도 셋팅
-	CPlayer::Move(dwDirection, PLAYER_VELOCITY);
+	CPlayer::Move(dwDirection, EMPLOYEE_VELOCITY);
 }
 	
 	
@@ -140,7 +141,11 @@ void CEmployee::LateUpdate(float fTimeElapsed, CLIENT_TYPE ptype)
 	AnimTrackUpdate();
 	
 	//======= 스위치 위치 판별 =========
-	if (GetAvailableSwitchIdx() != -1) m_bIsInSwitchArea = true;
+	if (GetAvailableSwitchIdx() != -1)
+	{
+		CGenerator* targetSwitch = mainGame.m_pScene->GetSceneGenerator(GetAvailableSwitchIdx());
+		if(!targetSwitch->m_OnInteraction && !targetSwitch->m_bSwitchActive) m_bIsInSwitchArea = true;
+	}
 	else m_bIsInSwitchArea = false;
 	//======= 상호작용 가능 유저 판별 ==========
 
@@ -149,7 +154,7 @@ void CEmployee::LateUpdate(float fTimeElapsed, CLIENT_TYPE ptype)
 	if (ptype == CLIENT_TYPE::OWNER) m_xmf3Velocity = XMFLOAT3(0.0f, 0.0f, 0.0f);
 	else if (ptype == CLIENT_TYPE::OTHER_PLAYER)
 	{
-		if (m_behavior != SWITCH_INTER) SetInteractionAnimation(false);
+		if (m_behavior != (int32)PLAYER_BEHAVIOR::SWITCH_INTER) SetInteractionOn(false);
 	}
 }
 
@@ -299,16 +304,16 @@ void CEmployee::AnimTrackUpdate()
 {
 	switch (m_behavior)
 	{
-	case IDLE:
+	case (int32)PLAYER_BEHAVIOR::IDLE:
 		SetIdleAnimTrack();
 		break;
-	case RUN:
+	case (int32)PLAYER_BEHAVIOR::RUN:
 		SetRunAnimTrack();
 		break;
-	case SWITCH_INTER:
+	case (int32)PLAYER_BEHAVIOR::SWITCH_INTER:
 		SetInteractionAnimTrack();
 		break;
-	case ATTACKED:
+	case (int32)PLAYER_BEHAVIOR::ATTACKED:
 		if (m_attackedAnimationCount == EMPLOYEE_ATTACKED_TIME)
 		{
 			SetAttackedAnimTrack();
@@ -317,14 +322,14 @@ void CEmployee::AnimTrackUpdate()
 		else 
 		{
 			m_attackedAnimationCount--;
-			m_behavior = ATTACKED;
+			m_behavior = (int32)PLAYER_BEHAVIOR::ATTACKED;
 			if (m_attackedAnimationCount == 0)
 			{
-				m_behavior = IDLE;
+				m_behavior = (int32)PLAYER_BEHAVIOR::IDLE;
 			}
 		}
 		break;
-	case DOWN:
+	case (int32)PLAYER_BEHAVIOR::DOWN:
 		if (m_downAnimationCount == EMPLOYEE_DOWN_TIME)
 		{
 			SetDownAnimTrack();
@@ -333,18 +338,18 @@ void CEmployee::AnimTrackUpdate()
 		else
 		{
 			m_downAnimationCount--;
-			m_behavior = DOWN;
+			m_behavior = (int32)PLAYER_BEHAVIOR::DOWN;
 			if (m_downAnimationCount == 0)
 			{
 				
-				m_behavior = CRAWL;
+				m_behavior = (int32)PLAYER_BEHAVIOR::CRAWL;
 			}
 		}
 		break;
-	case CRAWL:
+	case (int32)PLAYER_BEHAVIOR::CRAWL:
 		SetCrawlAnimTrack();
 		break;
-	case STAND:
+	case (int32)PLAYER_BEHAVIOR::STAND:
 		if (m_standAnimationCount == EMPLOYEE_STAND_TIME)
 		{
 			SetStandAnimTrack();
@@ -353,11 +358,11 @@ void CEmployee::AnimTrackUpdate()
 		else
 		{
 			m_standAnimationCount--;
-			m_behavior = STAND;
+			m_behavior = (int32)PLAYER_BEHAVIOR::STAND;
 			if (m_standAnimationCount == 0)
 			{
 
-				m_behavior = IDLE;
+				m_behavior = (int32)PLAYER_BEHAVIOR::IDLE;
 			}
 		}
 		break;
@@ -415,7 +420,7 @@ int32 CEmployee::GetRescueAvailablePlayerIdx()
 		float fDist = Vector3::Length(f3Dist);
 		if (fDist <= 0.1)
 		{
-			if (target->GetPlayerBehavior() == CRAWL) return i;
+			if (target->GetPlayerBehavior() == (int32)PLAYER_BEHAVIOR::CRAWL) return i;
 		}
 	}
 	return -1;
@@ -433,7 +438,7 @@ void CEmployee::PlayerAttacked()
 		}
 		else
 		{
-			m_behavior = ATTACKED;
+			m_behavior = (int32)PLAYER_BEHAVIOR::ATTACKED;
 			m_attackedAnimationCount = EMPLOYEE_ATTACKED_TIME;
 		}
 		
@@ -443,49 +448,41 @@ void CEmployee::PlayerAttacked()
 
 void CEmployee::PlayerDown()
 {
-	m_behavior = DOWN;
+	m_behavior = (int32)PLAYER_BEHAVIOR::DOWN;
 	m_downAnimationCount = EMPLOYEE_DOWN_TIME;
 }
 
 // 04-29 직원 키입력 처리 추가
 void CEmployee::ProcessInput(const int16& inputKey)
 {
+	int32 switchIdx = GetAvailableSwitchIdx(); // 어느 스위치 영역인지 확인한다.
+	CGenerator* targetGenerator = mainGame.m_pScene->GetSceneGenerator(switchIdx);
+	int32 targetPlayerIdx = -1;
+	targetPlayerIdx = GetRescueAvailablePlayerIdx();
 
 	// 발전기 상호작용 관련 인풋 처리
 	if (IsPlayerCanSwitchInteraction()) //  플레이어가 스위치 영역에 있는 경우
 	{
-		int32 switchIdx = GetAvailableSwitchIdx(); // 어느 스위치 영역인지 확인한다.
-		CGenerator* targetGenerator = nullptr;
-		if (switchIdx != -1) targetGenerator = mainGame.m_pScene->m_ppSwitches[switchIdx]; // 2. 활성화 가능한 스위치가 주변에 있다면
-		else return;
-
 		if (inputKey & KEY_F) // 1. 상호작용 키가 눌려있을 때 
 		{
-			// 1-1. 타겟 스위치 정보를 가져온다
-			targetGenerator->m_lock.lock();
-			if (!targetGenerator->m_bOtherPlayerInteractionOn) // 다른 플레이어가 상호작용 상태가 아니라면
+				// ====== 플레이어 처리 ==============
+			SetInteractionOn(true); // 캐릭터 상호작용 애니메이션 재생을 활성화 한다.
+
+			// ========== 발전기 처리 ===============
+			targetGenerator->SetInteractionOn(true); // 발전기 애니메이션 재생을 시작한다.
+			targetGenerator->SetAnimationCount(BUTTON_ANIM_FRAME);
+
+			// ==========  패킷 송신 처리 ==================
+			// 키가 한번 입력 됐을 때만 호출하는 것
+			if (InputManager::GetInstance().GetKeyBuffer(KEY_TYPE::F) == (int8)KEY_STATUS::KEY_PRESS)
 			{
-				if (InputManager::GetInstance().GetKeyBuffer(KEY_TYPE::F) == (int8)KEY_STATUS::KEY_PRESS &&
-					!targetGenerator->m_bSwitchActive) // 플레이어가 상호작용 상태가 아니였다면
-				{
-					// ====== 플레이어 처리 ==============
-					SetInteractionAnimation(true); // 캐릭터 상호작용 애니메이션 재생을 활성화 한다.
-					
-
-					// ========== 발전기 처리 ===============
-					targetGenerator->InteractAnimation(true); // 발전기 애니메이션 재생을 시작한다.
-					targetGenerator->SetAnimationCount(BUTTON_ANIM_FRAME);
-
-					// ==========  패킷 송신 처리 ==================
-					// 키가 한번 입력 됐을 때만 호출하는 것
-					SC_EVENTPACKET packet;
-					packet.eventId = switchIdx + (int32)EVENT_TYPE::SWITCH_ONE_START_EVENT;
-					packet.size = sizeof(SC_EVENTPACKET);
-					packet.type = SC_PACKET_TYPE::GAMEEVENT;
-					clientCore._client->DoSend(&packet);
-					
-				}
-			}
+				SC_EVENTPACKET packet;
+				packet.eventId = switchIdx + (int32)EVENT_TYPE::SWITCH_ONE_START_EVENT;
+				packet.size = sizeof(SC_EVENTPACKET);
+				packet.type = (uint8)SC_PACKET_TYPE::GAMEEVENT;
+				clientCore._client->DoSend(&packet);
+			}	
+		
 		}
 		else // 상호작용 키가 눌러있지 않은 경우
 		{
@@ -493,39 +490,40 @@ void CEmployee::ProcessInput(const int16& inputKey)
 			if (InputManager::GetInstance().GetKeyBuffer(KEY_TYPE::F) == (int8)KEY_STATUS::KEY_UP)
 			{
 				// ======== 플레이어 처리 ===============
-				SetInteractionAnimation(false);
+				SetInteractionOn(false);
 
 				// =======  발전기 처리 =================
-				targetGenerator->m_lock.lock();
-				targetGenerator->InteractAnimation(false); // 애니메이션 재생을 정지한다.
-				targetGenerator->m_lock.unlock();
-				
+				if (targetGenerator->m_OnInteraction)
+				{
+					targetGenerator->m_lock.lock();
+					targetGenerator->SetInteractionOn(false); // 애니메이션 재생을 정지한다.
+					targetGenerator->m_lock.unlock();
+				}
 				//========= 패킷 송신 처리 ==============
 				SC_EVENTPACKET packet;
 				packet.eventId = switchIdx + (int32)EVENT_TYPE::SWITCH_ONE_END_EVENT;;
 				packet.size = sizeof(SC_EVENTPACKET);
-				packet.type = SC_PACKET_TYPE::GAMEEVENT;
+				packet.type = (uint8)SC_PACKET_TYPE::GAMEEVENT;
 				clientCore._client->DoSend(&packet);
 			}
 		}
 	}
 	
-	int32 targetIdx = -1;
-	//targetIdx = GetRescueAvailablePlayerIdx();
+	
 
 	// 플레이어 살리기 상호작용
 	if (inputKey & KEY_E)
 	{
 		
-		if (targetIdx != -1) // 활성화 가능한 타겟이 있다면
+		if (targetPlayerIdx != -1) // 활성화 가능한 타겟이 있다면
 		{
 			// 구하는 이벤트에 관한 패킷을 전송하도록 한다.
 			if (InputManager::GetKeyBuffer(KEY_TYPE::E) == (int8)KEY_STATUS::KEY_PRESS)
 			{
 				SC_EVENTPACKET packet;
-				packet.eventId = targetIdx + (int32)EVENT_TYPE::RESCUE_PLAYER_ONE;
+				packet.eventId = targetPlayerIdx + (int32)EVENT_TYPE::RESCUE_PLAYER_ONE;
 				packet.size = sizeof(SC_EVENTPACKET);
-				packet.type = SC_PACKET_TYPE::GAMEEVENT;
+				packet.type = (uint8)SC_PACKET_TYPE::GAMEEVENT;
 				clientCore._client->DoSend(&packet);
 			}
 		}
@@ -535,12 +533,12 @@ void CEmployee::ProcessInput(const int16& inputKey)
 		if (InputManager::GetKeyBuffer(KEY_TYPE::E) == (int8)KEY_STATUS::KEY_UP)
 		{
 			SC_EVENTPACKET packet;
-			packet.eventId = targetIdx + (int32)EVENT_TYPE::RESCUE_CANCEL_PLAYER_ONE;
+			packet.eventId = targetPlayerIdx + (int32)EVENT_TYPE::RESCUE_CANCEL_PLAYER_ONE;
 			packet.size = sizeof(SC_EVENTPACKET);
-			packet.type = SC_PACKET_TYPE::GAMEEVENT;
+			packet.type = (uint8)SC_PACKET_TYPE::GAMEEVENT;
 			clientCore._client->DoSend(&packet);
 		}
 	}
 
-	Move(inputKey, PLAYER_VELOCITY);
+	Move(inputKey, EMPLOYEE_VELOCITY);
 }

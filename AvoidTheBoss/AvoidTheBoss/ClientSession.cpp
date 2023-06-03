@@ -116,7 +116,7 @@ void CSession::ProcessPacket(char* packet)
 	switch ((uint8)packet[1])
 	{
 
-	case S_PACKET_TYPE::SKEY:
+	case (uint8)S_PACKET_TYPE::SKEY:
 	{
 		S2C_KEY* movePacket = reinterpret_cast<S2C_KEY*>(packet);
 		moveEvent* mev = new moveEvent();
@@ -133,7 +133,7 @@ void CSession::ProcessPacket(char* packet)
 	}
 	break;
 
-	case S_PACKET_TYPE::SROT:
+	case (uint8)S_PACKET_TYPE::SROT:
 	{
 		S2C_ROTATE* rotatePacket = reinterpret_cast<S2C_ROTATE*>(packet);
 		CPlayer* player = mainGame.m_pScene->GetScenePlayer(rotatePacket->sid);
@@ -144,7 +144,7 @@ void CSession::ProcessPacket(char* packet)
 
 	}
 	break;
-	case S_PACKET_TYPE::SPOS: // 미리 계산한 좌표값을 보내준다.
+	case (uint8)S_PACKET_TYPE::SPOS: // 미리 계산한 좌표값을 보내준다.
 	{
 		S2C_POS* posPacket = reinterpret_cast<S2C_POS*>(packet);
 		CPlayer* player = mainGame.m_pScene->GetScenePlayer(posPacket->sid);
@@ -160,11 +160,11 @@ void CSession::ProcessPacket(char* packet)
 		
 	}
 	break;
-	case S_PACKET_TYPE::SCHAT:
+	case (uint8)S_PACKET_TYPE::SCHAT:
 	{
 		break;
 	}
-	case S_PACKET_TYPE::GAME_START:
+	case (uint8)S_PACKET_TYPE::GAME_START:
 	{
 		S2C_GAMESTART* gsp = reinterpret_cast<S2C_GAMESTART*>(packet);
 		for (int i = 0; i < PLAYERNUM; ++i)
@@ -194,14 +194,14 @@ void CSession::ProcessPacket(char* packet)
 	}
 	break;
 	// ================ 로그인 관련 처리 ================
-	case S_PACKET_TYPE::LOGIN_OK:
+	case (uint8)S_PACKET_TYPE::LOGIN_OK:
 	{
 		S2C_LOGIN_OK* lo = (S2C_LOGIN_OK*)packet;
 		_cid = lo->cid;
 		_sid = lo->sid;
 	}
 	break;
-	case S_PACKET_TYPE::LOGIN_FAIL:
+	case (uint8)S_PACKET_TYPE::LOGIN_FAIL:
 	{
 		S2C_LOGIN_FAIL* lo = (S2C_LOGIN_FAIL*)packet;
 		std::cout << "Login Fail" << std::endl;
@@ -209,7 +209,7 @@ void CSession::ProcessPacket(char* packet)
 	}
 	break;
 	// ============= 방 관련 패킷 ============
-	case S_ROOM_PACKET_TYPE::REP_ENTER_RM:
+	case (uint8)S_ROOM_PACKET_TYPE::REP_ENTER_RM:
 	{
 		S2C_ROOM_ENTER* re = (S2C_ROOM_ENTER*)packet;
 		if (re->success)
@@ -219,12 +219,12 @@ void CSession::ProcessPacket(char* packet)
 		else std::cout << "FAIL TO ENTER ROOM" << std::endl;
 	}
 	break;
-	case S_ROOM_PACKET_TYPE::MK_RM_FAIL:
+	case (uint8)S_ROOM_PACKET_TYPE::MK_RM_FAIL:
 	{
 		std::cout << "Fail to Create Room!!(MAX_CAPACITY)" << std::endl;
 	}
 	break;
-	case SC_PACKET_TYPE::GAMEEVENT:
+	case (uint8)SC_PACKET_TYPE::GAMEEVENT:
 	{
 		SC_EVENTPACKET* ev = (SC_EVENTPACKET*)packet;
 		InteractionEvent* gev = new InteractionEvent();
@@ -234,26 +234,26 @@ void CSession::ProcessPacket(char* packet)
 	}
 	break;
 	// ================= 플레이어 스위치 애니메이션 관련 패킷 ==================
-	case S_PACKET_TYPE::SWITCH_ANIM:
+	case (uint8)S_PACKET_TYPE::SWITCH_ANIM:
 	{
 		S2C_SWITCH_ANIM* sw = (S2C_SWITCH_ANIM*)packet;
 		uint8 idx = sw->idx;
 		CEmployee* myPlayer = (CEmployee*)mainGame.m_pScene->_players[idx];
 		if (myPlayer != nullptr)
 		{
-			myPlayer->SetInteractionAnimation(true);
+			myPlayer->SetInteractionOn(true);
 			myPlayer->SetInteractionAnimTrackOtherClient();
 		}
 	}
 	break;
-	case S_PACKET_TYPE::SWITCH_ANIM_CANCEL:
+	case (uint8)S_PACKET_TYPE::SWITCH_ANIM_CANCEL:
 	{
 		S2C_SWITCH_ANIM* sw = (S2C_SWITCH_ANIM*)packet;
 		uint8 idx = sw->idx;
 		CPlayer* myPlayer = mainGame.m_pScene->_players[idx];
 		if (myPlayer != nullptr)
 		{
-			myPlayer->SetInteractionAnimation(false);
+			myPlayer->SetInteractionOn(false);
 		}
 	}
 	break;

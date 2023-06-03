@@ -43,6 +43,8 @@ class CGameScene : public SceneInterface
 {
 	friend class CSession;
 	friend class queueEvent;
+private:
+	Timer _timer;
 public:
 	CGameScene();
 	~CGameScene();
@@ -64,11 +66,7 @@ public:
 	ID3D12RootSignature* CreateGraphicsRootSignature(ID3D12Device* pd3dDevice);
 	ID3D12RootSignature* GetGraphicsRootSignature() { return(m_pd3dGraphicsRootSignature); }
 
-	
-	
-	
 	void AnimateObjects();
-	
 	void ReleaseUploadBuffers();
 	void ChangeMyPlayerCamera() 
 	{
@@ -92,12 +90,15 @@ public: // 오승담 작성 함수
 		}
 		return nullptr;
 	}
+	CGenerator* GetSceneGenerator(const int32 idx)
+	{
+		return m_ppGenerator[idx];
+	}
+	void StopTimer() { _timer.Stop(); }
+	void StartTimer() { _timer.Start(); }
 	void AddEvent(queueEvent*, float);
 public:
-	Timer _timer;
-//protected:
-//	//배치(Batch) 처리를 하기 위하여 씬을 셰이더들의 리스트로 표현한다. 
-
+	
 	CCamera*					m_pCamera;
 	WCHAR						txtFrameBuf[20];
 
@@ -129,10 +130,14 @@ public: // 씬에 있는 오브젝트 관련 변수
 	CPlayer*					_players[4];
 	int16						_playerIdx = 0;
 	int16						m_lastKeyInput = 0;
-	int							nSwitch = 3;
-	CGenerator**				m_ppSwitches = NULL;
-	Atomic<int32>				m_ActiveSwitchCnt = 0; // 활성화 된 스위치 카운트;
 
+private:
+	// 발전기
+	int							m_nGenerator = 3;
+	CGenerator**				m_ppGenerator = NULL;
+public:
+	Atomic<int32>				m_ActiveGeneratorCnt = 0; // 활성화 된 스위치 카운트;
+public:
 	bool						m_bIsExitReady = false;
 public:
 	Scheduler* _jobQueue;

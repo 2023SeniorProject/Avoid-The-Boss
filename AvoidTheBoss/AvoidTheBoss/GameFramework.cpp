@@ -61,13 +61,13 @@ bool CGameFramework::OnCreate(HINSTANCE hInstance, HWND hMainWnd)
 	CreateDepthStencilView();
 	
 	//렌더링할 게임 객체를 생성한다.
-	BuildObjects();
+	BuildScenes();
 	return(true);
 }
 
 void CGameFramework::OnDestroy()
 {
-	ReleaseObjects();
+	ReleaseScenes();
 	//게임 객체(게임 월드 객체)를 소멸한다.
 
 	::CloseHandle(m_hFenceEvent);
@@ -334,7 +334,7 @@ void CGameFramework::CreateDepthStencilView()
 	m_pd3dDevice->CreateDepthStencilView(m_pd3dDepthStencilBuffer, &d3dDepthStencilViewDesc, d3dDsvCPUDescriptorHandle);
 }
 
-void CGameFramework::BuildObjects()
+void CGameFramework::BuildScenes()
 {
 	m_pd3dCommandList->Reset(m_pd3dCommandAllocator, NULL);
 
@@ -356,7 +356,7 @@ void CGameFramework::BuildObjects()
 	//m_pScene->InitScene();
 }
 
-void CGameFramework::ReleaseObjects()
+void CGameFramework::ReleaseScenes()
 {
 	if (m_pScene) m_pScene->ReleaseObjects();
 	if (m_pScene) delete m_pScene;
@@ -516,12 +516,6 @@ void CGameFramework::OnProcessingMouseMessage(HWND hWnd, UINT nMessageID, WPARAM
 	m_pScene->OnProcessingMouseMessage(hWnd, nMessageID, wParam, lParam);
 }
 
-bool CGameFramework::CollisionCheck()
-{
-	
-	return false;
-}
-
 void CGameFramework::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPARAM wParam, LPARAM lParam)
 {
 	
@@ -534,10 +528,8 @@ LRESULT CGameFramework::OnProcessingWindowMessage(HWND hWnd, UINT nMessageID, WP
 	{
 	case WM_ACTIVATE:
 	{
-		if (LOWORD(wParam) == WA_INACTIVE)
-			m_pScene->_timer.Stop();
-		else
-			m_pScene->_timer.Start();
+		if (LOWORD(wParam) == WA_INACTIVE) m_pScene->StopTimer();
+		else m_pScene->StartTimer();
 		break;
 	}
 	case WM_SIZE:

@@ -30,7 +30,7 @@ public:
 	bool m_hide = false;
 	int32 m_hp = 5; // 05-06추가 플레이어 HP
 public:
-	int32 m_behavior = IDLE;
+	int32 m_behavior = (int32)PLAYER_BEHAVIOR::IDLE;
 	int32 m_attackedAnimationCount = 0;
 	int32 m_downAnimationCount = 0;
 public:
@@ -45,7 +45,7 @@ public:
 	{
 		m_xmf3Position = xmf3Position;
 	}
-	void SetDirection(const XMFLOAT3 look);
+	void SetDirection(const XMFLOAT3& lookVec);
 
 	XMFLOAT3& GetVelocity() { return(m_xmf3Velocity); }
 
@@ -57,17 +57,14 @@ public:
 	{
 		std::cout << m_xmf3Velocity.x << " " << m_xmf3Velocity.z << "\n";
 	}
-
 	void PrintPos()
 	{
 		std::cout << m_xmf3Position.x << " " << m_xmf3Position.z << "\n";
 	}
 
-	void Rotate(float x, float y, float z);
-	void Move(uint8 dwDirection, float fDistance);
-	void UpdateMove(const XMFLOAT3& velocity);
-	
+	void ProcessInput(const int16& input, const XMFLOAT3& lookVec);
+	void Move(const int16& dwDirection, float fDistance);
 	//플레이어의 위치와 회전 정보를 경과 시간에 따라 갱신하는 함수이다.
 	void Update(float fTimeElapsed);
-	void LateUpdate();
+	void LateUpdate(float fTimeElapsed);
 };

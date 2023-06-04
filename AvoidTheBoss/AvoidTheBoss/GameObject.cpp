@@ -1274,7 +1274,7 @@ void CSiren::OnPrepareAnimate()
 
 void CSiren::Animate(float fTimeElapsed)
 {
-	if (m_bIsExitReady)
+	if (m_bEmpExit)
 	{
 		float delta = 100.0f;
 		if (m_AnimationDegree > 0.0f)
@@ -1319,7 +1319,7 @@ void CFrontDoor::OnPrepareAnimate()
 }
 void CFrontDoor::Animate(float fTimeElapsed)
 {
-	if (m_bIsExitReady)
+	if (m_bEmpExit)
 	{
 		float delta = 1.0f;
 	
@@ -1357,7 +1357,7 @@ CEmergencyDoor::~CEmergencyDoor()
 }
 void CEmergencyDoor::Animate(float fTimeElapsed)
 {
-	if (m_bIsExitReady)
+	if (m_bEmpExit)
 	{
 		float delta = 10.0f;
 	
@@ -1393,7 +1393,7 @@ void CShutterDoor::OnPrepareAnimate()
 
 void CShutterDoor::Animate(float fTimeElapsed)
 {
-	if (m_bIsExitReady)
+	if (m_bEmpExit)
 	{
 		float delta = 0.1f;
 	

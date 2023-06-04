@@ -26,6 +26,12 @@ public:
 	// ============= 애니메이션 트랙 셋팅 관련 ============
 	void SetIdleAnimTrack(); // 걷기
 	void SetRunAnimTrack(); // 달리기
+	bool IsMovable() 
+	{ 
+		return !(m_behavior == (int32)PLAYER_BEHAVIOR::DOWN || 
+			m_behavior == (int32)PLAYER_BEHAVIOR::CRAWL || m_behavior == (int32)PLAYER_BEHAVIOR::STAND 
+			|| m_behavior == (int32)PLAYER_BEHAVIOR::RESCUE || m_behavior == (int32)PLAYER_BEHAVIOR::SWITCH_INTER);
+	}
 
 	void SetAttackedAnimTrack(); // 절뚝거리기 
 	void SetDownAnimTrack(); // 피격

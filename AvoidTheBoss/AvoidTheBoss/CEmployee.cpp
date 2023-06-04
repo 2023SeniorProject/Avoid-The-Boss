@@ -118,22 +118,23 @@ void CEmployee::ProcessInput(const int16& inputKey)
 		// 키가 누르다 때졌을 때만 처리해야하는 처리들
 		if (InputManager::GetInstance().GetKeyBuffer(KEY_TYPE::F) == (int8)KEY_STATUS::KEY_UP)
 		{
+			
 			// ======== 플레이어 처리 ===============
 			SetInteractionOn(false);
-
+			m_behavior = (uint8)PLAYER_BEHAVIOR::IDLE;
 			// =======  발전기 처리 =================
-			if (targetGenerator->m_bOnInteraction)
+			if (targetGenerator)
 			{
-				targetGenerator->m_lock.lock();
-				targetGenerator->SetInteractionOn(false); // 애니메이션 재생을 정지한다.
-				targetGenerator->m_lock.unlock();
-
-				//========= 패킷 송신 처리 ==============
-				SC_EVENTPACKET packet;
-				packet.eventId = genIdx + (int32)EVENT_TYPE::SWITCH_ONE_END_EVENT;;
-				packet.size = sizeof(SC_EVENTPACKET);
-				packet.type = (uint8)SC_PACKET_TYPE::GAMEEVENT;
-				clientCore._client->DoSend(&packet);
+				if (targetGenerator->m_bOnInteraction)
+				{
+					targetGenerator->SetInteractionOn(false); // 애니메이션 재생을 정지한다.
+					//========= 패킷 송신 처리 ==============
+					SC_EVENTPACKET packet;
+					packet.eventId = genIdx + (int32)EVENT_TYPE::SWITCH_ONE_END_EVENT;;
+					packet.size = sizeof(SC_EVENTPACKET);
+					packet.type = (uint8)SC_PACKET_TYPE::GAMEEVENT;
+					clientCore._client->DoSend(&packet);
+				}
 			}
 		}
 	}
@@ -168,52 +169,36 @@ void CEmployee::ProcessInput(const int16& inputKey)
 }
 void CEmployee::Move(const int16& dwDirection, float fDistance)
 {
+
+	if (m_bOnInteraction)
+	{
+		std::cout << "switch Inter\n";
+		m_behavior = (int32)PLAYER_BEHAVIOR::SWITCH_INTER;
 	
-	// Down 됐을 경우에는 기존 조건문과 다르게 처리한다.
-	if (m_behavior == (int32)PLAYER_BEHAVIOR::DOWN)
+	}
+
+	if (!IsMovable())
 	{
-		CPlayer::Move(0, 0); // 움직이지 않는다.
+		CPlayer::Move(dwDirection, 0);
 		return;
 	}
 
-
-	// Crawl 됐을 경우 
-	if (m_behavior == (int32)PLAYER_BEHAVIOR::CRAWL)
-	{
-		
-		CPlayer::Move(0, 0); // 일시적으로 속도 느려지게 하기
-		return;
-	}
-	if (m_behavior == (int32)PLAYER_BEHAVIOR::STAND)
-	{
-		CPlayer::Move(0, 0);
-		return;
-	}
 
 	// Attacked 됐을 경우 
 	if (m_behavior == (int32)PLAYER_BEHAVIOR::ATTACKED)
 	{
-		CPlayer::Move(dwDirection, EMPLOYEE_VELOCITY - 1.0f); // 일시적으로 속도 느려지게 하기
+		CPlayer::Move(dwDirection, EMPLOYEE_VELOCITY); // 일시적으로 속도 느려지게 하기
 		return;
 	}
 	
 	// 플레이어의 행동을 저장.
-	if (LOBYTE(dwDirection))
-	{
-		if (m_hp > 0) m_behavior = (int32)PLAYER_BEHAVIOR::RUN;
-		else m_behavior = (int32)PLAYER_BEHAVIOR::CRAWL;
-	}
+	if (LOBYTE(dwDirection)) m_behavior = (int32)PLAYER_BEHAVIOR::RUN;
 	else if (!LOBYTE(dwDirection)) m_behavior = (int32)PLAYER_BEHAVIOR::IDLE;
-	else if (m_bOnInteraction)
-	{
-		m_behavior = (int32)PLAYER_BEHAVIOR::SWITCH_INTER;
-		CPlayer::Move(0, EMPLOYEE_VELOCITY);
-	}
+
 	// 플레이어 속도 셋팅
 	CPlayer::Move(dwDirection, EMPLOYEE_VELOCITY);
 }
-	
-	
+
 void CEmployee::Update(float fTimeElapsed, CLIENT_TYPE ptype)
 {
 	CPlayer::Update(fTimeElapsed, ptype);

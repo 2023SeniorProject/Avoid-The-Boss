@@ -12,14 +12,14 @@ CGenerator::CGenerator()
 
 void CGenerator::Update(float fTimeElapsed)
 {
-	if (m_OnInteraction && !m_bSwitchActive)
+	if (m_bOnInteraction && !m_bGenActive)
 	{
 		m_curGuage += m_guageSpeed * fTimeElapsed;
 	}
 
 	if (m_curGuage >= m_maxGuage)
 	{
-		m_bSwitchActive = true;
+		m_bGenActive = true;
 	}
 }
 
@@ -38,7 +38,7 @@ void CGenerator::OnPrepareAnimate()
 
 void CGenerator::Animate(float fTimeElapsed)
 {
-	if (m_OnInteraction)
+	if (m_bOnInteraction || m_bAlreadyOn)
 	{
 		float delta = 0.3f;
 		for (int i = 0; i < m_nPipe; i++) //1.8 ->1.7    ̵  10.f

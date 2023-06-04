@@ -84,13 +84,9 @@ public:
 	void SetPlayerSid(const int16& sid) { m_sid = sid; }
 	void SetPosition(const XMFLOAT3& xmf3Position) 
 	{
-		MakePosition(xmf3Position);
-	}
-	void SetScale(const XMFLOAT3& xmf3Scale) { m_xmf3Scale = xmf3Scale; }
-	void MakePosition(const XMFLOAT3& xmf3Position)
-	{
 		m_xmf3Position = xmf3Position;
 	}
+	void SetScale(const XMFLOAT3& xmf3Scale) { m_xmf3Scale = xmf3Scale; }
 	const XMFLOAT3& GetVelocity() const { return(m_xmf3Velocity); }
 	float GetYaw() { return(m_fYaw); }
 	float GetPitch() { return(m_fPitch); }

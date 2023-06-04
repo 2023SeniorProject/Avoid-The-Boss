@@ -24,7 +24,7 @@ void InteractionEvent::Task()
 	case EVENT_TYPE::SWITCH_THREE_END_EVENT:
 	{
 		std::cout << "Switch Cancel\n";
-		CGenerator* targetGen = mainGame.m_pScene->GetSceneGenerator(eventId - (uint8)EVENT_TYPE::SWITCH_ONE_START_EVENT);
+		CGenerator* targetGen = mainGame.m_pScene->GetSceneGenerator(eventId - (uint8)EVENT_TYPE::SWITCH_ONE_END_EVENT);
 		if (targetGen == nullptr) break;
 		targetGen->SetAlreadyOn(false);
 		targetGen->SetAnimationCount(0);
@@ -35,7 +35,8 @@ void InteractionEvent::Task()
 	case EVENT_TYPE::SWITCH_TWO_ACTIVATE_EVENT:
 	case EVENT_TYPE::SWITCH_THREE_ACTIVATE_EVENT:
 	{
-		CGenerator* targetGen = mainGame.m_pScene->GetSceneGenerator(eventId - (uint8)EVENT_TYPE::SWITCH_ONE_START_EVENT);
+		std::cout << "Activate\n";
+		CGenerator* targetGen = mainGame.m_pScene->GetSceneGenerator(eventId - (uint8)EVENT_TYPE::SWITCH_ONE_ACTIVATE_EVENT);
 		if (targetGen == nullptr) break;
 		targetGen->m_bGenActive = true;
 
@@ -106,6 +107,6 @@ void posEvent::Task()
 	if (Vector3::Length(distance) > 0.2f)
 	{
 		std::cout << "Mass Offset Detected. Reseting Pos\n";
-		player->MakePosition(XMFLOAT3(_pos.x, _pos.y, _pos.z));
+		player->SetPosition(XMFLOAT3(_pos.x, _pos.y, _pos.z));
 	}
 }

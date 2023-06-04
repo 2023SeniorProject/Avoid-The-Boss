@@ -23,7 +23,8 @@ void InteractionEvent::Task()
 			}
 			else
 			{
-				targetGen.SwitchInteractionOn(true);
+				std::cout << "Gen\n";
+				targetGen.GenInteractionOn(true);
 				SC_EVENTPACKET packet;
 				packet.size = sizeof(SC_EVENTPACKET);
 				packet.type = (uint8)SC_PACKET_TYPE::GAMEEVENT;
@@ -50,7 +51,7 @@ void InteractionEvent::Task()
 		{
 	
 			// 상호작용 상태로 변경
-			targetGen.SwitchInteractionOn(false);
+			targetGen.GenInteractionOn(false);
 			SC_EVENTPACKET packet;
 			packet.size = sizeof(SC_EVENTPACKET);
 			packet.type = (uint8)SC_PACKET_TYPE::GAMEEVENT;
@@ -65,6 +66,20 @@ void InteractionEvent::Task()
 			targetRoom.BroadCastingExcept(&animPacket, _sid);
 			targetRoom.BroadCastingExcept(&packet, _sid);
 		}
+	}
+	break;
+
+	case EVENT_TYPE::SWITCH_ONE_ACTIVATE_EVENT: // 상호작용 도중에 끝낸 경우
+	case EVENT_TYPE::SWITCH_TWO_ACTIVATE_EVENT: // 상호작용 도중에 끝낸 경우
+	case EVENT_TYPE::SWITCH_THREE_ACTIVATE_EVENT: // 상호작용 도중에 끝낸 경우
+	{
+		SGenerator& targetGen = targetRoom._generator[eventId - (uint8)EVENT_TYPE::SWITCH_ONE_END_EVENT];
+		targetGen.GenActivate(true);
+		SC_EVENTPACKET packet;
+		packet.size = sizeof(SC_EVENTPACKET);
+		packet.type = (uint8)SC_PACKET_TYPE::GAMEEVENT;
+		packet.eventId = eventId;
+		targetRoom.BroadCastingExcept(&packet, _sid);
 	}
 	break;
 	// ============== 공격 관련 이벤트 ================

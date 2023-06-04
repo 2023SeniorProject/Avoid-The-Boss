@@ -17,14 +17,21 @@ enum class C_PACKET_TYPE : uint8
 enum class S_PACKET_TYPE : uint8 
 { 
 	LOGIN_OK = 150,  
-	LOGIN_FAIL, 
-	SCHAT, 
-	SKEY, 
-	SROT, 
-	SPOS, 
-	GAME_START, 
-	SWITCH_ANIM, 
-	SWITCH_ANIM_CANCEL
+	LOGIN_FAIL = 151, 
+	SCHAT = 152, 
+	SKEY = 153, 
+	SROT = 154, 
+	SPOS = 155, 
+	GAME_START = 156, 
+	ANIM
+};
+
+enum class ANIMTRACK : uint8
+{
+	GEN_ANIM = 170,
+	GEN_ANIM_CANCEL = 171,
+	ATTACK_ANIM = 172,
+	
 };
 enum class SC_PACKET_TYPE : uint8 { GAMEEVENT = 208};
 
@@ -248,11 +255,12 @@ struct SC_EVENTPACKET
 	uint8 eventId; // 0: 발전기 시작 / 1: 발전기 완료 // 2: 사장님 공격 처리 // 3: 사장님 공격 쿨타임 
 };
 
-struct S2C_SWITCH_ANIM
+struct S2C_ANIMPACKET
 {
 	uint8 size;
 	uint8 type;
 	uint8 idx;
+	uint8 track;
 };
 
 #pragma pack (pop)

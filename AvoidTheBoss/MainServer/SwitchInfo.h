@@ -21,12 +21,12 @@ public:
 	}
 	~SGenerator() {}
 
-	void SwitchInteractionOn(bool value) 
+	void GenInteractionOn(bool value) 
 	{
 		_IsOnInteraction = value;
 	}
 
-	void SwitchActivate(bool value)
+	void GenActivate(bool value)
 	{
 		
 		_IsActive = value;

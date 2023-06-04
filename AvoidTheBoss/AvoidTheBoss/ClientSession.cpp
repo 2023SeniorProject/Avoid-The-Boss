@@ -234,26 +234,15 @@ void CSession::ProcessPacket(char* packet)
 	}
 	break;
 	// ================= 플레이어 스위치 애니메이션 관련 패킷 ==================
-	case (uint8)S_PACKET_TYPE::SWITCH_ANIM:
+	case (uint8)S_PACKET_TYPE::ANIM:
 	{
-		S2C_SWITCH_ANIM* sw = (S2C_SWITCH_ANIM*)packet;
+		S2C_ANIMPACKET* sw = (S2C_ANIMPACKET*)packet;
 		uint8 idx = sw->idx;
-		CEmployee* myPlayer = (CEmployee*)mainGame.m_pScene->_players[idx];
+		CEmployee* myPlayer = (CEmployee*)mainGame.m_pScene->GetScenePlayer(idx);
 		if (myPlayer != nullptr)
 		{
-			myPlayer->SetInteractionOn(true);
-			myPlayer->SetInteractionAnimTrackOtherClient();
-		}
-	}
-	break;
-	case (uint8)S_PACKET_TYPE::SWITCH_ANIM_CANCEL:
-	{
-		S2C_SWITCH_ANIM* sw = (S2C_SWITCH_ANIM*)packet;
-		uint8 idx = sw->idx;
-		CPlayer* myPlayer = mainGame.m_pScene->_players[idx];
-		if (myPlayer != nullptr)
-		{
-			myPlayer->SetInteractionOn(false);
+			if (sw->track == (uint8)ANIMTRACK::GEN_ANIM) myPlayer->SetBehavior(PLAYER_BEHAVIOR::SWITCH_INTER);
+			else myPlayer->SetBehavior(PLAYER_BEHAVIOR::IDLE);
 		}
 	}
 	break;

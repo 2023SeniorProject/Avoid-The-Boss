@@ -110,6 +110,7 @@ public: // 오승담 작성 함수
 		return m_ppGenerator[idx];
 	}
 
+	void InitGame(void* packet ,int32 sid);
 	void StopTimer() { _timer.Stop(); }
 	void StartTimer() { _timer.Start(); }
 	void AddEvent(queueEvent*, float);

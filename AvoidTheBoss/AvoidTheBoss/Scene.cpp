@@ -196,9 +196,10 @@ void CGameScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandLis
 	pBoundsMapShader->BuildObjects(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature,NULL,NULL);
 
 	m_ppGenerator = new CGenerator * [m_nGenerator];
-	for (int i = 0; i < 3; ++i)
+	for (int i = 0; i < m_nGenerator; ++i)
 	{
 		m_ppGenerator[i] = ((CGenerator*)pGeneratorObjectsShader->m_ppObjects[i]);
+		m_ppGenerator[i]->m_idx = i;
 	}
 	for (int i = 0; i < PLAYERNUM; ++i)
 	{
@@ -698,6 +699,22 @@ void CGameScene::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCa
 	{
 		if(!_players[i]->m_hide) _players[i]->Render(pd3dCommandList, pCamera);
 	}
+}
+
+void CGameScene::InitGame(void* packet, int32 sid)
+{
+	S2C_GAMESTART* gsp = reinterpret_cast<S2C_GAMESTART*>(packet);
+	for (int i = 0; i < PLAYERNUM; ++i)
+	{
+		if (gsp->sids[i] == sid) _playerIdx = i;
+		_players[i]->SetPlayerSid(gsp->sids[i]);
+		// 각 플레이어 별로 세션 아이디 부여
+	}
+
+	_players[0]->SetPosition(XMFLOAT3(0, 0.25, -18));
+	if(_players[1] != nullptr)_players[1]->SetPosition(XMFLOAT3(10, 0.25, -18));
+	if(_players[2] != nullptr)_players[2]->SetPosition(XMFLOAT3(15, 0.25, -18));
+	if(_players[3] != nullptr)_players[3]->SetPosition(XMFLOAT3(20, 0.25, -18));
 }
 
 void CGameScene::AddEvent(queueEvent* ev, float after)

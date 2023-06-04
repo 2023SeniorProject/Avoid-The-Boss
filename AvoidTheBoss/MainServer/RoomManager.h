@@ -27,7 +27,7 @@ public:
 	void BroadCastingExcept(void* packet, int32 sid);
 	void Update();
 
-	PlayerInfo& GetMyPlayerFromRoom(int32 sid) 
+	SPlayer& GetMyPlayerFromRoom(int32 sid) 
 	{ 
 		std::shared_lock<std::shared_mutex> ll(_listLock);
 		auto i = std::find(_cList.begin(), _cList.end(), sid);
@@ -48,8 +48,8 @@ public:
 
 	Scheduler* _jobQueue; // 방에 속해 있는 클라이언트가 야기한 이벤트 큐
 	std::shared_mutex _jobQueueLock; // eventQueue 관리용 Lock
-	PlayerInfo _players[4];
-	SwitchInfo _switchs[3];
+	SPlayer _players[4];
+	SGenerator _generator[3];
 	Rewinder<30> _history;
 	Timer _timer;
 

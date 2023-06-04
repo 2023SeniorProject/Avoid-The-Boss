@@ -3,7 +3,7 @@
 // 오직 위치 정보만 가지고 있는 플레이어 클래스
 // 렌더링과 관련된 정보 X
 
-class PlayerInfo
+class SPlayer
 {
 public:
 	//플레이어의 위치 벡터, x-축(Right), y-축(Up), z-축(Look) 벡터이다.
@@ -22,7 +22,7 @@ public:
 
 	// 05-24 추가 변수
 	bool m_bIsAwaking = false;
-	int32 rescueTime = 5.0f;
+	
 public:
 	BoundingSphere m_playerBV;
 	int32 m_sid = -1;
@@ -34,8 +34,8 @@ public:
 	int32 m_attackedAnimationCount = 0;
 	int32 m_downAnimationCount = 0;
 public:
-	PlayerInfo();
-	virtual ~PlayerInfo();
+	SPlayer();
+	virtual ~SPlayer();
 
 	XMFLOAT3 GetPosition() const { return(m_xmf3Position); }
 	void SetVelocity(const XMFLOAT3& xmf3Velocity) { m_xmf3Velocity = xmf3Velocity; }

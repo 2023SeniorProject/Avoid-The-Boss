@@ -3,7 +3,7 @@
 #include "CollisionDetector.h"
 #include "CSIocpCore.h"
 
-PlayerInfo::PlayerInfo() 
+SPlayer::SPlayer() 
 {
 	
 	m_xmf3Right = XMFLOAT3(1.0f, 0.0f, 0.0f);
@@ -22,29 +22,29 @@ PlayerInfo::PlayerInfo()
 	
 }
 
-PlayerInfo::~PlayerInfo()
+SPlayer::~SPlayer()
 {
 }
 
-void PlayerInfo::SetSpeed(const XMFLOAT3& xmf3Shift)
+void SPlayer::SetSpeed(const XMFLOAT3& xmf3Shift)
 {
 	m_xmf3Velocity = Vector3::Add(m_xmf3Velocity, xmf3Shift);
 }
 
-void PlayerInfo::SetDirection(const XMFLOAT3& lookVec)
+void SPlayer::SetDirection(const XMFLOAT3& lookVec)
 {
 	m_xmf3Look = lookVec;
 	m_xmf3Right = Vector3::CrossProduct(m_xmf3Up, m_xmf3Look, true);
 }
 
-void PlayerInfo::ProcessInput(const int16& input,const XMFLOAT3& lookVec)
+void SPlayer::ProcessInput(const int16& input,const XMFLOAT3& lookVec)
 {
 	SetDirection(lookVec);
 	if (m_idx == 0) Move(input, BOSS_VELOCITY);
 	else Move(input, EMPLOYEE_VELOCITY);
 }
 
-void PlayerInfo::Move(const int16& dwDirection, float fDistance)
+void SPlayer::Move(const int16& dwDirection, float fDistance)
 {
 	XMFLOAT3 xmf3Shift = XMFLOAT3(0, 0, 0);
 	if (m_behavior != (int32)PLAYER_BEHAVIOR::IDLE && m_behavior != (int32)PLAYER_BEHAVIOR::RUN)
@@ -67,7 +67,7 @@ void PlayerInfo::Move(const int16& dwDirection, float fDistance)
 	
 }
 
-void PlayerInfo::Update(float fTimeElapsed)
+void SPlayer::Update(float fTimeElapsed)
 {
 	//플레이어를 속도 벡터 만큼 실제로 이동한다(카메라도 이동될 것이다). 
 
@@ -76,27 +76,10 @@ void PlayerInfo::Update(float fTimeElapsed)
 	LateUpdate(fTimeElapsed);
 }
 
-void PlayerInfo::LateUpdate(float fTimeElapsed)
+void SPlayer::LateUpdate(float fTimeElapsed)
 {
 	m_playerBV.Center = GetPosition();
 	BoxTree->CheckCollision(m_playerBV, m_xmf3Position);
-
-	if (m_bIsAwaking)
-	{
-		rescueTime -= fTimeElapsed;
-		if (rescueTime < 0)
-		{
-			rescueTime = 5.0;
-			SC_EVENTPACKET packet;
-			packet.size = sizeof(SC_EVENTPACKET);
-			packet.type = (uint8)SC_PACKET_TYPE::GAMEEVENT;
-			packet.eventId = m_idx + (uint8)EVENT_TYPE::ALIVE_PLAYER_ONE;
-			ServerIocpCore._rmgr->GetRoom(m_sid).BroadCasting(&packet);
-			m_bIsAwaking = false;
-			m_behavior = (uint8)PLAYER_BEHAVIOR::IDLE;
-		}
-	}
-	
 }
 
 

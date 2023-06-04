@@ -89,7 +89,7 @@ public:
 
 		return _worldHistory[(_frameIndex + MAX_REWIND - delta) % MAX_REWIND];
 	}
-	void AddHistory(PlayerInfo* p)
+	void AddHistory(SPlayer* p)
 	{
 			_lastWorldStatus._pPos[0] = p[0].GetPosition();
 			_lastWorldStatus._pPos[1] = p[1].GetPosition();

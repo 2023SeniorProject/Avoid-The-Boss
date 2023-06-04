@@ -5,7 +5,7 @@ class CEmployee : public CPlayer
 public:
 	bool m_bIsPlayerOnSwitchInteration = false; // F키를 눌렀다 땠는지 확인하는 용도
 private:
-	bool m_bIsInSwitchArea = false;
+	bool m_bIsInGenArea = false;
 	bool m_bIsInDownPlayerArea = false; // Down된 플레이어와 인접해 있는가?
 public:
 	int32 m_attackedAnimationCount = 0;
@@ -43,9 +43,9 @@ public: // 05-23 추가 함수
 	void PlayerDown();
 	int32 GetPlayerBehavior() { return m_behavior; }
 	
-	bool IsPlayerCanSwitchInteraction() { return m_bIsInSwitchArea; }
-	int32 GetAvailableSwitchIdx();
-	int32 GetRescueAvailablePlayerIdx();
+	bool GetIsInGenArea() { return m_bIsInGenArea; }
+	int32 GetAvailGenIdx();
+	int32 GetAvailEMPldx();
 public: // 05-24 추가함수
 	SwitchInformation m_pSwitches[3];
 };

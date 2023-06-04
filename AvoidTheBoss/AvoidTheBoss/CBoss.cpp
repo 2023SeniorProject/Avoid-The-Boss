@@ -136,7 +136,7 @@ void CBoss::Move(const int16& dwDirection, float fDistance)
 	
 	if (LOBYTE(dwDirection)) // 1. 캐릭터 이동량이 있을 때 (WASD 키 입력)
 	{
-		if (!m_OnInteraction) // 공격 키 미입력, 이동키 입력 --> 달리기
+		if (!m_bOnInteraction) // 공격 키 미입력, 이동키 입력 --> 달리기
 		{
 			m_behavior = (int32)PLAYER_BEHAVIOR::RUN;
 		
@@ -151,7 +151,7 @@ void CBoss::Move(const int16& dwDirection, float fDistance)
 	}
 	else if (!LOBYTE(dwDirection)) // 이동키 입력이 아닐 때
 	{
-		if (!m_OnInteraction) // 공격 키, 이동키 모두 미입력
+		if (!m_bOnInteraction) // 공격 키, 이동키 모두 미입력
 		{
 			m_behavior = (int32)PLAYER_BEHAVIOR::IDLE;
 			
@@ -320,7 +320,7 @@ void CBoss::AnimTrackUpdate()
 			{
 				if (m_InteractionCountTime <= 0)
 				{
-					m_OnInteraction = false;
+					m_bOnInteraction = false;
 					if (m_behavior == (int32)PLAYER_BEHAVIOR::RUN_ATTACK) m_behavior = (int32)PLAYER_BEHAVIOR::RUN;
 					else m_behavior = (int32)PLAYER_BEHAVIOR::IDLE;
 				}
@@ -339,7 +339,7 @@ void CBoss::ProcessInput(const int16& dwDirection)
 	// 1. 공격 키를 눌렀을 경우 처리 
 	if (dwDirection & KEY_SPACE)
 	{
-		if (m_OnInteraction == false)
+		if (m_bOnInteraction == false)
 		{
 			//보스 캐릭터 애니메이션 처리
 			SetInteractionOn(true);

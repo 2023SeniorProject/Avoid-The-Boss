@@ -5,6 +5,7 @@
 #define GENERATOR_ANIM_FRAM 50
 class CGenerator : public CGameObject
 {
+	
 	float radius = 0.0f;
 	int m_nPipe = 3;
 	CGameObject** m_ppPipe = NULL;
@@ -13,9 +14,10 @@ class CGenerator : public CGameObject
 	bool m_nPipeStartAnimation[3];
 	bool m_bPipeMoveUp[3];
 public: //06-03 추가
+	int m_idx = -1;
 	float m_maxGuage = 100;
 	float m_curGuage = 0;
-	float m_guageSpeed = 5.0f;
+	float m_guageSpeed = 50.0f;
 public:
 	std::mutex m_lock;
 	bool m_bGenActive = false; // --> 발전기가 활성화 되었는가

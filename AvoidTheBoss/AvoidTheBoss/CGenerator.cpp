@@ -1,4 +1,5 @@
 ﻿#include "pch.h"
+#include "clientIocpCore.h"
 #include "CGenerator.h"
 
 CGenerator::CGenerator()
@@ -8,19 +9,23 @@ CGenerator::CGenerator()
 	{
 		m_nPipeStartAnimation[i] = false;
 	}
+	
 }
 
 void CGenerator::Update(float fTimeElapsed)
 {
-	if (m_bOnInteraction && !m_bGenActive)
-	{
-		m_curGuage += m_guageSpeed * fTimeElapsed;
-	}
-
-	if (m_curGuage >= m_maxGuage)
+	if (m_bOnInteraction && !m_bGenActive) m_curGuage += m_guageSpeed * fTimeElapsed;
+	if (m_curGuage > m_maxGuage && !m_bGenActive)
 	{
 		m_bGenActive = true;
+		SC_EVENTPACKET packet;
+		packet.size = sizeof(SC_EVENTPACKET);
+		packet.eventId = (uint8)EVENT_TYPE::SWITCH_ONE_ACTIVATE_EVENT + m_idx;
+		clientCore._client->DoSend(&packet);
 	}
+
+
+	
 }
 
 void CGenerator::OnPrepareAnimate()

@@ -112,9 +112,6 @@
     <ClInclude Include="CBoss.h">
       <Filter>Player\BOSS</Filter>
     </ClInclude>
-    <ClInclude Include="CEmployee.h">
-      <Filter>Player\EMPLOYEE</Filter>
-    </ClInclude>
     <ClInclude Include="CGenerator.h">
       <Filter>GameObject</Filter>
     </ClInclude>
@@ -135,6 +132,9 @@
     </ClInclude>
     <ClInclude Include="InputManager.h">
       <Filter>Mananger</Filter>
+    </ClInclude>
+    <ClInclude Include="CEmployee.h">
+      <Filter>Player\EMPLOYEE</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

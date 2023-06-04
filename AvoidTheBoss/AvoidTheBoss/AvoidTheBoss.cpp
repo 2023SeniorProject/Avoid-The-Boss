@@ -44,10 +44,10 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
    std::wcin.getline(loginPacket.name, 10);
    std::cout << "PW: ";
    std::wcin.getline(loginPacket.pw, 10);
-   std::cout << "IP Address: ";
-   char ipaddress[20];
-   std::cin.getline(ipaddress, 20);
-   clientCore.InitConnect(ipaddress);
+   // std::cout << "IP Address: ";
+   //char ipaddress[20];
+   //std::cin.getline(ipaddress, 20);
+   clientCore.InitConnect("127.0.0.1");
    clientCore.DoConnect(&loginPacket);
    
    // 전역 문자열을 초기화합니다.

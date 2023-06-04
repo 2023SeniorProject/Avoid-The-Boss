@@ -25,7 +25,7 @@ CGameScene::CGameScene()
 
 CGameScene::~CGameScene()
 {
-
+	delete _jobQueue;
 }
 
 void CGameScene::OnProcessingMouseMessage(HWND hWnd, UINT nMessageID, WPARAM wParam, LPARAM lParam)
@@ -298,22 +298,9 @@ void CGameScene::Update(HWND hWnd)
 		if (k == _playerIdx) _players[k]->Update(_timer.GetTimeElapsed(), CLIENT_TYPE::OWNER);
 		else _players[k]->Update(_timer.GetTimeElapsed(), CLIENT_TYPE::OTHER_PLAYER);
 	}
+	for (int k = 0; k < m_nGenerator; ++k) m_ppGenerator[k]->Update(_timer.GetTimeElapsed());
 
-	if (m_bIsExitReady) // 탈출 성공 시 , 해야할 일 처리
-	{
-		for (int i = 0; i < m_nShaders; i++)
-		{
-			CStandardObjectsShader* pShaderObjects = (CStandardObjectsShader*)m_ppShaders[i];
-			for (int i = 0; i < pShaderObjects->m_nObjects; i++)
-			{
-				if (pShaderObjects->m_ppObjects[i])
-				{
-					if ((pShaderObjects->m_ppObjects[i]->objLayer == Layout::SIREN) || (pShaderObjects->m_ppObjects[i]->objLayer == Layout::DOOR))
-						pShaderObjects->m_ppObjects[i]->m_bIsExitReady = true;
-				}
-			}
-		}
-	}
+	
 
 	// 평균 프레임 레이트 출력
 	std::wstring str = L"[";
@@ -717,4 +704,23 @@ void CGameScene::AddEvent(queueEvent* ev, float after)
 {
 	std::unique_lock<std::shared_mutex> wl(_jobQueueLock);
 	_jobQueue->PushTask(ev, after);
+}
+
+void CGameScene::Exit()
+{
+	if (m_bEmpExit) // 탈출 성공 시 , 해야할 일 처리
+	{
+		for (int i = 0; i < m_nShaders; i++)
+		{
+			CStandardObjectsShader* pShaderObjects = (CStandardObjectsShader*)m_ppShaders[i];
+			for (int i = 0; i < pShaderObjects->m_nObjects; i++)
+			{
+				if (pShaderObjects->m_ppObjects[i])
+				{
+					if ((pShaderObjects->m_ppObjects[i]->objLayer == Layout::SIREN) || (pShaderObjects->m_ppObjects[i]->objLayer == Layout::DOOR))
+						pShaderObjects->m_ppObjects[i]->m_bEmpExit = true;
+				}
+			}
+		}
+	}
 }

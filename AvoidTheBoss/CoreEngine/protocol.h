@@ -12,7 +12,8 @@ enum class C_PACKET_TYPE : uint8
 	CCHAT, 
 	CKEY,
 	CROT, 
-	CMOVE 
+	CMOVE,
+	CATTACK
 };
 enum class S_PACKET_TYPE : uint8 
 { 
@@ -23,7 +24,8 @@ enum class S_PACKET_TYPE : uint8
 	SROT = 154, 
 	SPOS = 155, 
 	GAME_START = 156, 
-	ANIM
+	ANIM = 157,
+	FRAME = 158,
 };
 
 enum class ANIMTRACK : uint8
@@ -158,7 +160,7 @@ struct C2S_ATTACK
 {
 	uint8 size;
 	uint8 type;
-	int16 cid; // 타겟
+	int16 tidx; // 타겟
 	int8 wf; // 발생 시점 월드 프레임
 };
 
@@ -247,6 +249,13 @@ struct S2C_HIDE_ROOM
 	int32 rmNum;
 };
 
+struct S2C_FRAMEPAKCET
+{
+	uint8 size;
+	uint8 type;
+	int32 wf;
+};
+
 // 클라 / 서버 공용
 struct SC_EVENTPACKET
 {
@@ -262,5 +271,6 @@ struct S2C_ANIMPACKET
 	uint8 idx;
 	uint8 track;
 };
+
 
 #pragma pack (pop)

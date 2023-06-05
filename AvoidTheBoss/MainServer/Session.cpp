@@ -138,7 +138,7 @@ void ServerSession::ProcessPacket(char* packet)
 			// 키 패킷 처리
 			C2S_KEY* movePacket = reinterpret_cast<C2S_KEY*>(packet);
 			moveEvent* mv = new moveEvent(_sid, movePacket->key, XMFLOAT3{ movePacket->x,0,movePacket->z });
-			queueEvent* me = static_cast<queueEvent*>(mv);
+			QueueEvent* me = static_cast<QueueEvent*>(mv);
 			
 			// 서버키 패킷 전송
 			S2C_KEY packet;
@@ -188,6 +188,17 @@ void ServerSession::ProcessPacket(char* packet)
 			ServerIocpCore._rmgr->CreateRoom(_sid);
 		}
 		break;
+		case (uint8)C_PACKET_TYPE::CATTACK:
+		{
+			C2S_ATTACK* ap = reinterpret_cast<C2S_ATTACK*>(packet);
+
+			AttackEvent* ape = new AttackEvent();
+			ape->_sid = _sid;
+			ape->_tidx = ap->tidx;
+			ape->_wf = ap->wf;
+			ServerIocpCore._rmgr->GetRoom(_myRm).AddEvent(ape, 0);
+		}
+			break;
 		case (uint8)SC_PACKET_TYPE::GAMEEVENT:
 		{
 			SC_EVENTPACKET* ep = reinterpret_cast<SC_EVENTPACKET*>(packet);
@@ -198,6 +209,7 @@ void ServerSession::ProcessPacket(char* packet)
 			ServerIocpCore._rmgr->GetRoom(_myRm).AddEvent(swev, 0);
 		}
 		break;
+		
 	}
 }
 

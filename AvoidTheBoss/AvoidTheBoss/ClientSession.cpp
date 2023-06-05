@@ -5,6 +5,7 @@
 #include "IocpEvent.h"
 #include "ClientPacketEvent.h"
 #include "CBullet.h"
+#include "CJobQueue.h"
 #include <string>
 
 CSession::CSession()
@@ -147,8 +148,7 @@ void CSession::ProcessPacket(char* packet)
 	case (uint8)S_PACKET_TYPE::SPOS: // 미리 계산한 좌표값을 보내준다.
 	{
 		S2C_POS* posPacket = reinterpret_cast<S2C_POS*>(packet);
-		CPlayer* player = mainGame.m_pScene->GetScenePlayer(posPacket->sid);
-		mainGame.m_pScene->_curFrameIdx.store(posPacket->fidx);		
+		CPlayer* player = mainGame.m_pScene->GetScenePlayer(posPacket->sid);		
 		if (player == nullptr) break;
 		
 		XMFLOAT3 newPos = XMFLOAT3(posPacket->x, player->GetPosition().y, posPacket->z);

@@ -168,7 +168,16 @@ void Room::Update()
 	for (int i = 0; i < PLAYERNUM; ++i) if(!_players[i].m_hide)_players[i].Update(_timer.GetTimeElapsed());
 	
 
-	if (_timer.IsTimeToAddHistory()) _history.AddHistory(_players); // 1 (1/60초) 프레임마다 월드 상태를 기록한다.
+	if (_timer.IsTimeToAddHistory())
+
+	{
+		_history.AddHistory(_players); // 1 (1/60초) 프레임마다 월드 상태를 기록한다.
+		S2C_FRAMEPACKET packet;
+		packet.size = sizeof(S2C_FRAMEPACKET);
+		packet.type = (uint8)S_PACKET_TYPE::FRAME;
+		packet.wf = _history.GetCurFrame();
+		BroadCasting(&packet);
+	}
 	if (_timer.IsAfterTick(45)) // 1/45초마다 정확한 위치값을 브로드캐스팅 한다.
 	{
 		
@@ -182,7 +191,6 @@ void Room::Update()
 			packet.type = (uint8)S_PACKET_TYPE::SPOS;
 			packet.x = _players[i].GetPosition().x;
 			packet.z = _players[i].GetPosition().z;
-			packet.fidx = _history.GetCurFrameIdx();
 			BroadCasting(&packet);
 		}
 	}

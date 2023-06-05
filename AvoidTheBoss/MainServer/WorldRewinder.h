@@ -14,6 +14,7 @@ public:
 	}
 };
 
+
 class WorldStatus // 서버에서 가지고 있을 정보
 {
 public:
@@ -22,15 +23,12 @@ public:
 	{
 		_myWorldFrame = 0;
 	}
-	void PrintWorldInfo()
-	{
-		//for (int i = 0; i < PLAYERNUM; ++i) std::cout <<  " )" << "(" << _pPos[i].x << " " << _pPos[i].z << ") ";
-		//std::cout << "\n";
-	}
+	XMFLOAT3 GetPos(int32 idx) { return XMFLOAT3(_pPos[idx].x, 0.f, _pPos[idx].z); }
+	void PrintWorldInfo() {}
 public:
 	POS _pPos[4]; // 도망자 위치
-	XMFLOAT3 _attackLay; // 레이저 방향
 	uint32   _myWorldFrame; //자기 자신의 월드 프레임
+	XMFLOAT3 _bossDir;
 };
 
 template <uint32 MAX_REWIND>
@@ -69,15 +67,14 @@ public:
 			_worldHistory[_frameIndex] = prevWorld;
 			++_curFrame;
 		}
-		_worldHistory[_frameIndex].PrintWorldInfo();
+	
 		_worldHistory[_frameIndex] = obj;
 	}
 
 	WorldStatus GetWorldStatusByFrame(uint32 frame) const // 검증을 위해 해당하는 프레임의 월드 상태를 가져온다.
 	{
 		// 현재 가지고 있는것보다 미래의 값을 요구할 때는 그냥 최신값 리턴
-		if (frame > _curFrame)
-			return _worldHistory[_frameIndex];
+		if (frame > _curFrame) return _worldHistory[_frameIndex];
 
 		// 범위밖 과거의 값을 요구할때는 가장 과거값 리턴
 		auto delta = _curFrame - frame;
@@ -89,21 +86,39 @@ public:
 
 		return _worldHistory[(_frameIndex + MAX_REWIND - delta) % MAX_REWIND];
 	}
-	void AddHistory(SPlayer* p)
-	{
-			_lastWorldStatus._pPos[0] = p[0].GetPosition();
-			_lastWorldStatus._pPos[1] = p[1].GetPosition();
-			_lastWorldStatus._pPos[2] = p[2].GetPosition();
-			_lastWorldStatus._pPos[3] = p[3].GetPosition();
+	void AddHistory(SPlayer* players)
+	{	
+		    _lastWorldStatus._pPos[0] = players[0].GetPosition();
+			_lastWorldStatus._bossDir = players[0].GetLook();
 
+			_lastWorldStatus._pPos[1] = players[1].GetPosition();
+			_lastWorldStatus._pPos[2] = players[2].GetPosition();
+			_lastWorldStatus._pPos[3] = players[3].GetPosition();
+			
 			++_lastWorldStatus._myWorldFrame;
 			SetWorldStatusByFrame(_lastWorldStatus._myWorldFrame, _lastWorldStatus);
 	}
-	bool IsAttackAvailable(uint32 frame)
+	bool IsAttackAvailable(uint32 frame, int32 targetIdx)
 	{
-		const WorldStatus& cw = GetWorldStatusByFrame(frame);
+		WorldStatus cw = GetWorldStatusByFrame(frame);
 		// 공격이 검증 가능한 것인지 확인하는 로직
+		float rayDist = 10.0f;
+		XMFLOAT3 bossLoc = cw.GetPos(0);
+		XMFLOAT3 targetLoc = cw.GetPos(targetIdx);
+		XMFLOAT3 layDir = cw._bossDir;
+		BoundingSphere playerBV;
+		playerBV.Center = targetLoc;
+		playerBV.Radius = 0.3f;
 
+		// RTT를 고려해서 5 프레임이상 차이까지는 과거 패킷이 아닌 것으로 간주한다.
+		if (frame + 5 <= _curFrame) std::cout << "Past Packet Detected. CurFrame :" << _curFrame 
+			<< "Packet Frame : " << frame << "\n";
+		if (playerBV.Intersects(XMLoadFloat3(&bossLoc), XMLoadFloat3(&layDir), rayDist))
+		{
+			std::cout << "Late Attacked Detected. Target Player :" << targetIdx << "\n";
+			return true;
+		}
+		return false;
 	}
 
 	void Clear()

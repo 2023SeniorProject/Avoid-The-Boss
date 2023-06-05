@@ -95,10 +95,14 @@ void CEmployee::ProcessInput(const int16& inputKey)
 		if (GetIsInGenArea()) // 발전기 주변에 있었다면
 		{
 			// ====== 플레이어 처리 ==============
-			SetInteractionOn(true); // 캐릭터 상호작용 애니메이션 재생을 활성화 한다.
+		
 			// ========== 발전기 처리 ===============
-			targetGenerator->SetInteractionOn(true); // 발전기 애니메이션 재생을 시작한다.
-			targetGenerator->SetAnimationCount(BUTTON_ANIM_FRAME);
+			if (targetGenerator)
+			{
+				SetInteractionOn(true); // 캐릭터 상호작용 애니메이션 재생을 활성화 한다.
+				targetGenerator->SetInteractionOn(true); // 발전기 애니메이션 재생을 시작한다.
+				targetGenerator->SetAnimationCount(BUTTON_ANIM_FRAME);
+			}
 
 			// ==========  패킷 송신 처리 ==================
 			// 키가 한번 입력 됐을 때만 호출하는 것
@@ -172,9 +176,7 @@ void CEmployee::Move(const int16& dwDirection, float fDistance)
 
 	if (m_bOnInteraction)
 	{
-		std::cout << "switch Inter\n";
 		m_behavior = (int32)PLAYER_BEHAVIOR::SWITCH_INTER;
-	
 	}
 
 	if (!IsMovable())

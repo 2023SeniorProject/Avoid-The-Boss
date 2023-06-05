@@ -73,13 +73,14 @@ void InteractionEvent::Task()
 	case EVENT_TYPE::SWITCH_TWO_ACTIVATE_EVENT: // 상호작용 도중에 끝낸 경우
 	case EVENT_TYPE::SWITCH_THREE_ACTIVATE_EVENT: // 상호작용 도중에 끝낸 경우
 	{
-		SGenerator& targetGen = targetRoom._generator[eventId - (uint8)EVENT_TYPE::SWITCH_ONE_END_EVENT];
+		std::cout << "Active\n";
+		SGenerator& targetGen = targetRoom._generator[eventId - (uint8)EVENT_TYPE::SWITCH_ONE_ACTIVATE_EVENT];
 		targetGen.GenActivate(true);
 		SC_EVENTPACKET packet;
 		packet.size = sizeof(SC_EVENTPACKET);
 		packet.type = (uint8)SC_PACKET_TYPE::GAMEEVENT;
 		packet.eventId = eventId;
-		targetRoom.BroadCastingExcept(&packet, _sid);
+		targetRoom.BroadCasting(&packet);
 	}
 	break;
 	// ============== 공격 관련 이벤트 ================

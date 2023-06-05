@@ -87,6 +87,7 @@ void InteractionEvent::Task()
 		if (player == nullptr) break;
 		static_cast<CEmployee*>(player)->SetBehavior(PLAYER_BEHAVIOR::STAND);
 	}
+	
 	break;
 	default:
 		break;
@@ -109,4 +110,9 @@ void posEvent::Task()
 		std::cout << "Mass Offset Detected. Reseting Pos\n";
 		player->SetPosition(XMFLOAT3(_pos.x, _pos.y, _pos.z));
 	}
+}
+
+void FrameEvent::Task()
+{
+	mainGame.m_pScene->_curFrame = _wf;
 }

@@ -90,7 +90,9 @@ enum class EVENT_TYPE : uint8
 	ALIVE_PLAYER_ONE = 27,
 	ALIVE_PLAYER_TWO = 28,
 	ALIVE_PLAYER_THREE = 29,
-	ALIVE_PLAYER_FOUR = 30
+	ALIVE_PLAYER_FOUR = 30,
+
+	ADD_FRAME = 31,
 };
 
 #pragma pack (push, 1)
@@ -249,7 +251,7 @@ struct S2C_HIDE_ROOM
 	int32 rmNum;
 };
 
-struct S2C_FRAMEPAKCET
+struct S2C_FRAMEPACKET
 {
 	uint8 size;
 	uint8 type;

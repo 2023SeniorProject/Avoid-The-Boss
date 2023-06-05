@@ -46,3 +46,14 @@ public:
 	
 };
 
+class FrameEvent : public queueEvent
+{
+public:
+	FrameEvent() {};
+	FrameEvent(int32 wf) : _wf(wf) {}
+	virtual ~FrameEvent() {};
+	int32 _wf = -1;
+public:
+	virtual void Task();
+};
+

@@ -132,6 +132,11 @@ public:
 	{
 		return _frameIndex;
 	}
+
+	uint32 GetCurFrame() const
+	{
+		return _curFrame;
+	}
 private:
 	uint32 _curFrame; //   현재 프레임
 	uint32 _frameIndex; // 배열내 위치

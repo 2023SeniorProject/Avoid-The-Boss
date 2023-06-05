@@ -239,5 +239,12 @@ void CSession::ProcessPacket(char* packet)
 		}
 	}
 	break;
+	case (uint8)S_PACKET_TYPE::FRAME:
+	{
+		S2C_FRAMEPACKET* fp = (S2C_FRAMEPACKET*)packet;
+		FrameEvent* fe = new FrameEvent(fp->wf);
+		mainGame.m_pScene->AddEvent(static_cast<queueEvent*>(fe),0);
+	}
+	break;
 	}
 }

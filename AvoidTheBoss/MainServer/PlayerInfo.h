@@ -38,6 +38,7 @@ public:
 	virtual ~SPlayer();
 
 	XMFLOAT3 GetPosition() const { return(m_xmf3Position); }
+	XMFLOAT3 GetLook() const { return(m_xmf3Look); }
 	void SetVelocity(const XMFLOAT3& xmf3Velocity) { m_xmf3Velocity = xmf3Velocity; }
 	void SetSpeed(const XMFLOAT3& xmf3Shift);
 	

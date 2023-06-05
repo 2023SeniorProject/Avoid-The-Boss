@@ -43,7 +43,7 @@ class CGameScene : public SceneInterface
 {
 	friend class CSession;
 	friend class queueEvent;
-
+	friend class FrameEvent;
 public:
 	static void CreateCbvSrvDescriptorHeaps(ID3D12Device* pd3dDevice, int nConstantBufferViews, int nShaderResourceViews);
 
@@ -164,7 +164,7 @@ public:
 	Scheduler* _jobQueue;
 	
 	std::shared_mutex _jobQueueLock;
-	Atomic<uint8> _curFrame;
+	int32 _curFrame;
 	int32 m_cid = -1;
 	int32 m_sid = -1;
 // ========================================================

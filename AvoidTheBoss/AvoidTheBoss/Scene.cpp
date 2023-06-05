@@ -311,7 +311,8 @@ void CGameScene::Update(HWND hWnd)
 	str.append(L" ");
 	str.append(std::to_wstring(_players[_playerIdx]->GetPosition().z));
 	str.append(L")- FPS: ");
-	if(_timer.GetFrameRate()) str.append(std::to_wstring(1000.f / _timer.GetFrameRate()));
+	str.append(std::to_wstring(_curFrame));
+	//if(_timer.GetFrameRate()) str.append(std::to_wstring(1000.f / _timer.GetFrameRate()));
 	::SetWindowText(hWnd, str.c_str());
 }
 

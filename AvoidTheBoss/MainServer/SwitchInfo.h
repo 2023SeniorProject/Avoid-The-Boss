@@ -1,6 +1,6 @@
 #pragma once
 
-class SwitchInfo
+class SGenerator
 {
 public:
 	XMFLOAT3 _pos;
@@ -14,32 +14,26 @@ public:
 	float _ActiveRadius = 1.25f;
 	int32 _idx;
 public:
-	SwitchInfo() 
+	SGenerator() 
 	{
 		_pos = XMFLOAT3(0.0f, 0.0f, 0.0f);
 		_idx = 0;
 	}
-	~SwitchInfo() {}
+	~SGenerator() {}
 
-	void SwitchInteractionOn(bool value) 
+	void GenInteractionOn(bool value) 
 	{
 		_IsOnInteraction = value;
 	}
 
-	void SwitchActivate(bool value)
+	void GenActivate(bool value)
 	{
 		
 		_IsActive = value;
 		
 	}
 	
-	void ResetGuage()
-	{
-		_lock.lock();
-		_curGuage = 0.f;
-		_coolTime = 0.f;
-		_lock.unlock();
-	}
+	
 	bool CanInteraction(int32 rm, int32 sid);
-	void UpdateGuage(float elapsedTime);
+	
 };

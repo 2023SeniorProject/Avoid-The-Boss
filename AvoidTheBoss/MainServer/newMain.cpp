@@ -19,7 +19,7 @@ int main()
 	AcceptManager listener;
 	listener.InitAccept();
 	GThreadManager = new ThreadManager;
-	for (int32 i = 0; i < thread::hardware_concurrency() - 2; i++)
+	for (uint32 i = 0; i < thread::hardware_concurrency() - 2; i++)
 	{
 		GThreadManager->Launch([=]()
 			{

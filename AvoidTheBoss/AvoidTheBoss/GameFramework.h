@@ -11,8 +11,10 @@ class CGameFramework
 	friend class moveEvnet;
 	friend class posEvent;
 	friend class InteractionEvent;
+	friend class FrameEvent;
 	friend class CSession;
 	friend class CEmployee;
+	friend class CBoss;
 	friend class CGameScene;
 private:
 	HINSTANCE m_hInstance;

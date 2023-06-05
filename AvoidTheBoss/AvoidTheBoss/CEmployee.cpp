@@ -80,55 +80,127 @@ CCamera* CEmployee::ChangeCamera(DWORD nNewCameraMode, float fTimeElapsed)
 	return(m_pCamera);
 }
 
+// 04-29 직원 키입력 처리 추가
+void CEmployee::ProcessInput(const int16& inputKey)
+{
+	int32 genIdx = GetAvailGenIdx(); // 어느 스위치 영역인지 확인한다.
+	int32 pIdx = GetAvailEMPldx();
+	CGenerator* targetGenerator = mainGame.m_pScene->GetSceneGenerator(genIdx);
+	
+	// 발전기 상호작용 관련 인풋 처리
+	
 
+	if (inputKey & KEY_F) // 1. 상호작용 키가 눌려있을 때 
+	{
+		if (GetIsInGenArea()) // 발전기 주변에 있었다면
+		{
+			// ====== 플레이어 처리 ==============
+		
+			// ========== 발전기 처리 ===============
+			if (targetGenerator)
+			{
+				SetInteractionOn(true); // 캐릭터 상호작용 애니메이션 재생을 활성화 한다.
+				targetGenerator->SetInteractionOn(true); // 발전기 애니메이션 재생을 시작한다.
+				targetGenerator->SetAnimationCount(BUTTON_ANIM_FRAME);
+			}
+
+			// ==========  패킷 송신 처리 ==================
+			// 키가 한번 입력 됐을 때만 호출하는 것
+			if (InputManager::GetInstance().GetKeyBuffer(KEY_TYPE::F) == (int8)KEY_STATUS::KEY_PRESS)
+			{
+				SC_EVENTPACKET packet;
+				packet.eventId = genIdx + (int32)EVENT_TYPE::SWITCH_ONE_START_EVENT;
+				packet.size = sizeof(SC_EVENTPACKET);
+				packet.type = (uint8)SC_PACKET_TYPE::GAMEEVENT;
+				clientCore._client->DoSend(&packet);
+			}
+		}
+
+	}
+	else // 상호작용 키가 눌러있지 않은 경우
+	{
+		// 키가 누르다 때졌을 때만 처리해야하는 처리들
+		if (InputManager::GetInstance().GetKeyBuffer(KEY_TYPE::F) == (int8)KEY_STATUS::KEY_UP)
+		{
+			
+			// ======== 플레이어 처리 ===============
+			SetInteractionOn(false);
+			m_behavior = (uint8)PLAYER_BEHAVIOR::IDLE;
+			// =======  발전기 처리 =================
+			if (targetGenerator)
+			{
+				if (targetGenerator->m_bOnInteraction)
+				{
+					targetGenerator->SetInteractionOn(false); // 애니메이션 재생을 정지한다.
+					//========= 패킷 송신 처리 ==============
+					SC_EVENTPACKET packet;
+					packet.eventId = genIdx + (int32)EVENT_TYPE::SWITCH_ONE_END_EVENT;;
+					packet.size = sizeof(SC_EVENTPACKET);
+					packet.type = (uint8)SC_PACKET_TYPE::GAMEEVENT;
+					clientCore._client->DoSend(&packet);
+				}
+			}
+		}
+	}
+
+	// 플레이어 살리기 상호작용
+	if (inputKey & KEY_E)
+	{
+		// 구하는 이벤트에 관한 패킷을 전송하도록 한다.
+		if (InputManager::GetKeyBuffer(KEY_TYPE::E) == (int8)KEY_STATUS::KEY_PRESS && pIdx != -1)
+		{
+			SC_EVENTPACKET packet;
+			packet.eventId = pIdx + (int32)EVENT_TYPE::RESCUE_PLAYER_ONE;
+			packet.size = sizeof(SC_EVENTPACKET);
+			packet.type = (uint8)SC_PACKET_TYPE::GAMEEVENT;
+			clientCore._client->DoSend(&packet);
+		}
+		
+	}
+	else
+	{
+		if (InputManager::GetKeyBuffer(KEY_TYPE::E) == (int8)KEY_STATUS::KEY_UP && pIdx != -1)
+		{
+			SC_EVENTPACKET packet;
+			packet.eventId = pIdx + (int32)EVENT_TYPE::RESCUE_CANCEL_PLAYER_ONE;
+			packet.size = sizeof(SC_EVENTPACKET);
+			packet.type = (uint8)SC_PACKET_TYPE::GAMEEVENT;
+			clientCore._client->DoSend(&packet);
+		}
+	}
+
+	Move(inputKey, EMPLOYEE_VELOCITY);
+}
 void CEmployee::Move(const int16& dwDirection, float fDistance)
 {
-	
-	// Down 됐을 경우에는 기존 조건문과 다르게 처리한다.
-	if (m_behavior == (int32)PLAYER_BEHAVIOR::DOWN)
+
+	if (m_bOnInteraction)
 	{
-		CPlayer::Move(0, 0); // 움직이지 않는다.
+		m_behavior = (int32)PLAYER_BEHAVIOR::SWITCH_INTER;
+	}
+
+	if (!IsMovable())
+	{
+		CPlayer::Move(dwDirection, 0);
 		return;
 	}
 
-
-	// Crawl 됐을 경우 
-	if (m_behavior == (int32)PLAYER_BEHAVIOR::CRAWL)
-	{
-		
-		CPlayer::Move(0, 0); // 일시적으로 속도 느려지게 하기
-		return;
-	}
-	if (m_behavior == (int32)PLAYER_BEHAVIOR::STAND)
-	{
-		CPlayer::Move(0, 0);
-		return;
-	}
 
 	// Attacked 됐을 경우 
 	if (m_behavior == (int32)PLAYER_BEHAVIOR::ATTACKED)
 	{
-		CPlayer::Move(dwDirection, EMPLOYEE_VELOCITY - 1.0f); // 일시적으로 속도 느려지게 하기
+		CPlayer::Move(dwDirection, EMPLOYEE_VELOCITY); // 일시적으로 속도 느려지게 하기
 		return;
 	}
 	
 	// 플레이어의 행동을 저장.
-	if (LOBYTE(dwDirection))
-	{
-		if (m_hp > 0) m_behavior = (int32)PLAYER_BEHAVIOR::RUN;
-		else m_behavior = (int32)PLAYER_BEHAVIOR::CRAWL;
-	}
+	if (LOBYTE(dwDirection)) m_behavior = (int32)PLAYER_BEHAVIOR::RUN;
 	else if (!LOBYTE(dwDirection)) m_behavior = (int32)PLAYER_BEHAVIOR::IDLE;
-	else if (m_OnInteraction)
-	{
-		m_behavior = (int32)PLAYER_BEHAVIOR::SWITCH_INTER;
-		CPlayer::Move(0, EMPLOYEE_VELOCITY);
-	}
+
 	// 플레이어 속도 셋팅
 	CPlayer::Move(dwDirection, EMPLOYEE_VELOCITY);
 }
-	
-	
+
 void CEmployee::Update(float fTimeElapsed, CLIENT_TYPE ptype)
 {
 	CPlayer::Update(fTimeElapsed, ptype);
@@ -141,12 +213,8 @@ void CEmployee::LateUpdate(float fTimeElapsed, CLIENT_TYPE ptype)
 	AnimTrackUpdate();
 	
 	//======= 스위치 위치 판별 =========
-	if (GetAvailableSwitchIdx() != -1)
-	{
-		CGenerator* targetSwitch = mainGame.m_pScene->GetSceneGenerator(GetAvailableSwitchIdx());
-		if(!targetSwitch->m_OnInteraction && !targetSwitch->m_bSwitchActive) m_bIsInSwitchArea = true;
-	}
-	else m_bIsInSwitchArea = false;
+	if (GetAvailGenIdx() != -1) m_bIsInGenArea = true;
+	else m_bIsInGenArea = false;
 	//======= 상호작용 가능 유저 판별 ==========
 
 
@@ -341,7 +409,6 @@ void CEmployee::AnimTrackUpdate()
 			m_behavior = (int32)PLAYER_BEHAVIOR::DOWN;
 			if (m_downAnimationCount == 0)
 			{
-				
 				m_behavior = (int32)PLAYER_BEHAVIOR::CRAWL;
 			}
 		}
@@ -372,7 +439,7 @@ void CEmployee::AnimTrackUpdate()
 void CEmployee::SetInteractionAnimTrackOtherClient()
 {
 	if (m_pSkinnedAnimationController == nullptr) return;
-	if (m_OnInteraction)
+	if (m_bOnInteraction)
 	{
 		m_pSkinnedAnimationController->SetTrackEnable(0, false);
 		m_pSkinnedAnimationController->SetTrackEnable(1, false);
@@ -392,7 +459,7 @@ void CEmployee::SetInteractionAnimTrackOtherClient()
 	}
 }
 
-int32 CEmployee::GetAvailableSwitchIdx()
+int32 CEmployee::GetAvailGenIdx()
 {
 	for (int i = 0; i < 3; ++i)
 	{
@@ -401,27 +468,26 @@ int32 CEmployee::GetAvailableSwitchIdx()
 		float sumRange = m_playerBV.Radius + m_pSwitches[i].radius;
 		if (distance <= sumRange)
 		{
-			return i;
+			CGenerator* targetGenerator = mainGame.m_pScene->GetSceneGenerator(i);
+			if (targetGenerator)
+			{
+				if (targetGenerator->IsAvailable()) return i;
+			}
 		}
 	}
 	
 	return -1;
 }
 
-int32 CEmployee::GetRescueAvailablePlayerIdx()
+int32 CEmployee::GetAvailEMPldx()
 {
-	for (int i = 1; i < 3; ++i)
+	for (int i = 1; i < PLAYERNUM; ++i)
 	{
-		if (i = mainGame.m_pScene->_playerIdx) continue;
-		CPlayer* target = mainGame.m_pScene->_players[i];
-		XMFLOAT3 targetPos = target->GetPosition();
-		XMFLOAT3 myPos = GetPosition();
-		XMFLOAT3 f3Dist = Vector3::Subtract(myPos, targetPos);
-		float fDist = Vector3::Length(f3Dist);
-		if (fDist <= 0.1)
-		{
-			if (target->GetPlayerBehavior() == (int32)PLAYER_BEHAVIOR::CRAWL) return i;
-		}
+		CPlayer* p = mainGame.m_pScene->GetScenePlayer(i);
+		XMFLOAT3 ppos = p->GetPosition();
+		ppos = Vector3::Subtract(m_xmf3Position, ppos);
+		float dist = Vector3::Length(ppos);
+		if (dist < 1.5) return p->m_sid;
 	}
 	return -1;
 }
@@ -452,93 +518,3 @@ void CEmployee::PlayerDown()
 	m_downAnimationCount = EMPLOYEE_DOWN_TIME;
 }
 
-// 04-29 직원 키입력 처리 추가
-void CEmployee::ProcessInput(const int16& inputKey)
-{
-	int32 switchIdx = GetAvailableSwitchIdx(); // 어느 스위치 영역인지 확인한다.
-	CGenerator* targetGenerator = mainGame.m_pScene->GetSceneGenerator(switchIdx);
-	int32 targetPlayerIdx = -1;
-	targetPlayerIdx = GetRescueAvailablePlayerIdx();
-
-	// 발전기 상호작용 관련 인풋 처리
-	if (IsPlayerCanSwitchInteraction()) //  플레이어가 스위치 영역에 있는 경우
-	{
-		if (inputKey & KEY_F) // 1. 상호작용 키가 눌려있을 때 
-		{
-				// ====== 플레이어 처리 ==============
-			SetInteractionOn(true); // 캐릭터 상호작용 애니메이션 재생을 활성화 한다.
-
-			// ========== 발전기 처리 ===============
-			targetGenerator->SetInteractionOn(true); // 발전기 애니메이션 재생을 시작한다.
-			targetGenerator->SetAnimationCount(BUTTON_ANIM_FRAME);
-
-			// ==========  패킷 송신 처리 ==================
-			// 키가 한번 입력 됐을 때만 호출하는 것
-			if (InputManager::GetInstance().GetKeyBuffer(KEY_TYPE::F) == (int8)KEY_STATUS::KEY_PRESS)
-			{
-				SC_EVENTPACKET packet;
-				packet.eventId = switchIdx + (int32)EVENT_TYPE::SWITCH_ONE_START_EVENT;
-				packet.size = sizeof(SC_EVENTPACKET);
-				packet.type = (uint8)SC_PACKET_TYPE::GAMEEVENT;
-				clientCore._client->DoSend(&packet);
-			}	
-		
-		}
-		else // 상호작용 키가 눌러있지 않은 경우
-		{
-				// 키가 누르다 때졌을 때만 처리해야하는 처리들
-			if (InputManager::GetInstance().GetKeyBuffer(KEY_TYPE::F) == (int8)KEY_STATUS::KEY_UP)
-			{
-				// ======== 플레이어 처리 ===============
-				SetInteractionOn(false);
-
-				// =======  발전기 처리 =================
-				if (targetGenerator->m_OnInteraction)
-				{
-					targetGenerator->m_lock.lock();
-					targetGenerator->SetInteractionOn(false); // 애니메이션 재생을 정지한다.
-					targetGenerator->m_lock.unlock();
-				}
-				//========= 패킷 송신 처리 ==============
-				SC_EVENTPACKET packet;
-				packet.eventId = switchIdx + (int32)EVENT_TYPE::SWITCH_ONE_END_EVENT;;
-				packet.size = sizeof(SC_EVENTPACKET);
-				packet.type = (uint8)SC_PACKET_TYPE::GAMEEVENT;
-				clientCore._client->DoSend(&packet);
-			}
-		}
-	}
-	
-	
-
-	// 플레이어 살리기 상호작용
-	if (inputKey & KEY_E)
-	{
-		
-		if (targetPlayerIdx != -1) // 활성화 가능한 타겟이 있다면
-		{
-			// 구하는 이벤트에 관한 패킷을 전송하도록 한다.
-			if (InputManager::GetKeyBuffer(KEY_TYPE::E) == (int8)KEY_STATUS::KEY_PRESS)
-			{
-				SC_EVENTPACKET packet;
-				packet.eventId = targetPlayerIdx + (int32)EVENT_TYPE::RESCUE_PLAYER_ONE;
-				packet.size = sizeof(SC_EVENTPACKET);
-				packet.type = (uint8)SC_PACKET_TYPE::GAMEEVENT;
-				clientCore._client->DoSend(&packet);
-			}
-		}
-	}
-	else
-	{
-		if (InputManager::GetKeyBuffer(KEY_TYPE::E) == (int8)KEY_STATUS::KEY_UP)
-		{
-			SC_EVENTPACKET packet;
-			packet.eventId = targetPlayerIdx + (int32)EVENT_TYPE::RESCUE_CANCEL_PLAYER_ONE;
-			packet.size = sizeof(SC_EVENTPACKET);
-			packet.type = (uint8)SC_PACKET_TYPE::GAMEEVENT;
-			clientCore._client->DoSend(&packet);
-		}
-	}
-
-	Move(inputKey, EMPLOYEE_VELOCITY);
-}

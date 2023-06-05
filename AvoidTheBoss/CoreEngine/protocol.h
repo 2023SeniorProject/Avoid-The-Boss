@@ -12,19 +12,29 @@ enum class C_PACKET_TYPE : uint8
 	CCHAT, 
 	CKEY,
 	CROT, 
-	CMOVE 
+	CMOVE,
+	CATTACK,
 };
+
 enum class S_PACKET_TYPE : uint8 
 { 
 	LOGIN_OK = 150,  
-	LOGIN_FAIL, 
-	SCHAT, 
-	SKEY, 
-	SROT, 
-	SPOS, 
-	GAME_START, 
-	SWITCH_ANIM, 
-	SWITCH_ANIM_CANCEL
+	LOGIN_FAIL = 151, 
+	SCHAT = 152, 
+	SKEY = 153, 
+	SROT = 154, 
+	SPOS = 155, 
+	GAME_START = 156, 
+	ANIM = 157,
+	FRAME = 158,
+};
+
+enum class ANIMTRACK : uint8
+{
+	GEN_ANIM = 170,
+	GEN_ANIM_CANCEL = 171,
+	ATTACK_ANIM = 172,
+	
 };
 enum class SC_PACKET_TYPE : uint8 { GAMEEVENT = 208};
 
@@ -80,7 +90,9 @@ enum class EVENT_TYPE : uint8
 	ALIVE_PLAYER_ONE = 27,
 	ALIVE_PLAYER_TWO = 28,
 	ALIVE_PLAYER_THREE = 29,
-	ALIVE_PLAYER_FOUR = 30
+	ALIVE_PLAYER_FOUR = 30,
+
+	ADD_FRAME = 31,
 };
 
 #pragma pack (push, 1)
@@ -151,7 +163,7 @@ struct C2S_ATTACK
 {
 	uint8 size;
 	uint8 type;
-	int16 cid; // 타겟
+	int16 tidx; // 타겟
 	int8 wf; // 발생 시점 월드 프레임
 };
 
@@ -193,7 +205,6 @@ struct S2C_POS
 	uint8 size;
 	uint8 type;
 	int16 sid;
-	uint8 fidx;
 	float x;
 	float z;
 };
@@ -240,6 +251,13 @@ struct S2C_HIDE_ROOM
 	int32 rmNum;
 };
 
+struct S2C_FRAMEPACKET
+{
+	uint8 size;
+	uint8 type;
+	int32 wf;
+};
+
 // 클라 / 서버 공용
 struct SC_EVENTPACKET
 {
@@ -248,11 +266,13 @@ struct SC_EVENTPACKET
 	uint8 eventId; // 0: 발전기 시작 / 1: 발전기 완료 // 2: 사장님 공격 처리 // 3: 사장님 공격 쿨타임 
 };
 
-struct S2C_SWITCH_ANIM
+struct S2C_ANIMPACKET
 {
 	uint8 size;
 	uint8 type;
 	uint8 idx;
+	uint8 track;
 };
+
 
 #pragma pack (pop)

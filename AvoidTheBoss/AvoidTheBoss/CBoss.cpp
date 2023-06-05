@@ -136,7 +136,7 @@ void CBoss::Move(const int16& dwDirection, float fDistance)
 	
 	if (LOBYTE(dwDirection)) // 1. 캐릭터 이동량이 있을 때 (WASD 키 입력)
 	{
-		if (!m_OnInteraction) // 공격 키 미입력, 이동키 입력 --> 달리기
+		if (!m_bOnInteraction) // 공격 키 미입력, 이동키 입력 --> 달리기
 		{
 			m_behavior = (int32)PLAYER_BEHAVIOR::RUN;
 		
@@ -144,14 +144,14 @@ void CBoss::Move(const int16& dwDirection, float fDistance)
 		else // 공격 키, 이동키 모두 입력 --> 달리면서 쏘기
 		{
 			m_behavior = (int32)PLAYER_BEHAVIOR::RUN_ATTACK;
-			m_pBullet->SetOnShoot(true);
+			if(m_pBullet) if(!m_pBullet->GetOnShoot()) m_pBullet->SetOnShoot(true);
 			
 		
 		}
 	}
 	else if (!LOBYTE(dwDirection)) // 이동키 입력이 아닐 때
 	{
-		if (!m_OnInteraction) // 공격 키, 이동키 모두 미입력
+		if (!m_bOnInteraction) // 공격 키, 이동키 모두 미입력
 		{
 			m_behavior = (int32)PLAYER_BEHAVIOR::IDLE;
 			
@@ -159,7 +159,7 @@ void CBoss::Move(const int16& dwDirection, float fDistance)
 		else // 공격 키만 입력, 이동키는 미입력
 		{
 			m_behavior = (int32)PLAYER_BEHAVIOR::ATTACK;
-			if (m_pBullet) m_pBullet->SetOnShoot(true);
+			if (m_pBullet)  if (!m_pBullet->GetOnShoot()) m_pBullet->SetOnShoot(true);
 			
 		}
 	}
@@ -320,7 +320,7 @@ void CBoss::AnimTrackUpdate()
 			{
 				if (m_InteractionCountTime <= 0)
 				{
-					m_OnInteraction = false;
+					m_bOnInteraction = false;
 					if (m_behavior == (int32)PLAYER_BEHAVIOR::RUN_ATTACK) m_behavior = (int32)PLAYER_BEHAVIOR::RUN;
 					else m_behavior = (int32)PLAYER_BEHAVIOR::IDLE;
 				}
@@ -339,17 +339,33 @@ void CBoss::ProcessInput(const int16& dwDirection)
 	// 1. 공격 키를 눌렀을 경우 처리 
 	if (dwDirection & KEY_SPACE)
 	{
-		if (m_OnInteraction == false)
+		if (m_bOnInteraction == false)
 		{
 			//보스 캐릭터 애니메이션 처리
 			SetInteractionOn(true);
 			m_InteractionCountTime = BOSS_INTERACTION_TIME;
 			// 05-06 공격 시, 사장님 공격 이벤트 전송
-			SC_EVENTPACKET packet;
-			packet.eventId = (uint8)EVENT_TYPE::ATTACK_EVENT;
-			packet.type = (uint8)SC_PACKET_TYPE::GAMEEVENT;
-			packet.size = sizeof(SC_EVENTPACKET);
-			clientCore._client->DoSend(&packet);
+			C2S_ATTACK packet;
+			packet.type = (uint8)C_PACKET_TYPE::CATTACK;
+			packet.size = sizeof(C2S_ATTACK);
+			packet.wf = mainGame.m_pScene->_curFrame;
+			
+			
+			XMFLOAT3 bossPos = mainGame.m_pScene->_players[0]->GetPosition();
+			XMFLOAT3 bossDir = mainGame.m_pScene->_players[0]->GetLook();
+			float rayDist = 10.0f;
+			if (PLAYERNUM > 1)
+			{
+				for (int i = 1; i < PLAYERNUM; ++i)
+				{
+					if (mainGame.m_pScene->_players[i]->m_playerBV.Intersects(XMLoadFloat3(&bossPos), XMLoadFloat3(&bossDir), rayDist))
+					{
+						packet.tidx = i;
+						clientCore._client->DoSend(&packet);
+						break;
+					}
+				}
+			}
 		}
 	}
 

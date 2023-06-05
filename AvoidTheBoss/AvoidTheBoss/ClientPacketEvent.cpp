@@ -13,12 +13,10 @@ void InteractionEvent::Task()
 	case EVENT_TYPE::SWITCH_TWO_START_EVENT:
 	case EVENT_TYPE::SWITCH_THREE_START_EVENT:
 	{
-		CGenerator* mSwitch = mainGame.m_pScene->GetSceneGenerator(eventId - (uint8)EVENT_TYPE::SWITCH_ONE_START_EVENT);
-		if (mSwitch == nullptr) break;
-		mSwitch->m_lock.lock();
-		mainGame.m_pScene->GetSceneGenerator(eventId - (uint8)EVENT_TYPE::SWITCH_ONE_START_EVENT)->SetInteractionOn(true); // 발전기 애니메이션 재생을 시작한다.
-		mainGame.m_pScene->GetSceneGenerator(eventId - (uint8)EVENT_TYPE::SWITCH_ONE_START_EVENT)->SetAnimationCount(BUTTON_ANIM_FRAME);
-		mSwitch->m_lock.unlock();
+		CGenerator* targetGen = mainGame.m_pScene->GetSceneGenerator(eventId - (uint8)EVENT_TYPE::SWITCH_ONE_START_EVENT);
+		if (targetGen == nullptr) break;
+		targetGen->SetAlreadyOn(true);
+		targetGen->SetAnimationCount(BUTTON_ANIM_FRAME);
 	}
 	break;
 	case EVENT_TYPE::SWITCH_ONE_END_EVENT:
@@ -26,11 +24,10 @@ void InteractionEvent::Task()
 	case EVENT_TYPE::SWITCH_THREE_END_EVENT:
 	{
 		std::cout << "Switch Cancel\n";
-		CGenerator* mSwitch = mainGame.m_pScene->GetSceneGenerator(eventId - (uint8)EVENT_TYPE::SWITCH_ONE_START_EVENT);
-		if (mSwitch == nullptr) break;
-		mSwitch->m_lock.lock();
-		mSwitch->SetInteractionOn(true);
-		mSwitch->m_lock.unlock();
+		CGenerator* targetGen = mainGame.m_pScene->GetSceneGenerator(eventId - (uint8)EVENT_TYPE::SWITCH_ONE_END_EVENT);
+		if (targetGen == nullptr) break;
+		targetGen->SetAlreadyOn(false);
+		targetGen->SetAnimationCount(0);
 	}
 	break;
 	// 만약 스위치 활성화가 됐다는 패킷이 전송 되었을 때,
@@ -38,17 +35,14 @@ void InteractionEvent::Task()
 	case EVENT_TYPE::SWITCH_TWO_ACTIVATE_EVENT:
 	case EVENT_TYPE::SWITCH_THREE_ACTIVATE_EVENT:
 	{
-		CGenerator* mSwitch = mainGame.m_pScene->GetSceneGenerator(eventId - (uint8)EVENT_TYPE::SWITCH_ONE_START_EVENT);
-		if (mSwitch == nullptr) break;
-		mSwitch->m_lock.lock();
-		mSwitch->m_bSwitchActive = true;
-		mSwitch->m_lock.unlock();
-		mainGame.m_pScene->m_ActiveGeneratorCnt.fetch_add(1);
-		if (mainGame.m_pScene->m_ActiveGeneratorCnt == 1) // 만약 3개의 스위치가 모두 활성화 되었다면, 
-		{
-			std::cout << "Clear\n";
-			mainGame.m_pScene->m_bIsExitReady = true; // 탈출 조건 true
-		}
+		std::cout << "Activate\n";
+		CGenerator* targetGen = mainGame.m_pScene->GetSceneGenerator(eventId - (uint8)EVENT_TYPE::SWITCH_ONE_ACTIVATE_EVENT);
+		if (targetGen == nullptr) break;
+		targetGen->m_bGenActive = true;
+
+		mainGame.m_pScene->m_ActiveGeneratorCnt.fetch_add(1); // 카운트 증가
+		if (mainGame.m_pScene->m_ActiveGeneratorCnt == 1) mainGame.m_pScene->m_bEmpExit = true; // 탈출 조건 true
+		
 	}
 	break;
 	case EVENT_TYPE::HIDE_PLAYER_ONE:
@@ -91,8 +85,9 @@ void InteractionEvent::Task()
 	{
 		CPlayer* player = mainGame.m_pScene->_players[eventId - (int8)(EVENT_TYPE::ALIVE_PLAYER_ONE)];
 		if (player == nullptr) break;
-		player->m_behavior = (int32)PLAYER_BEHAVIOR::STAND;
+		static_cast<CEmployee*>(player)->SetBehavior(PLAYER_BEHAVIOR::STAND);
 	}
+	
 	break;
 	default:
 		break;
@@ -113,6 +108,11 @@ void posEvent::Task()
 	if (Vector3::Length(distance) > 0.2f)
 	{
 		std::cout << "Mass Offset Detected. Reseting Pos\n";
-		player->MakePosition(XMFLOAT3(_pos.x, _pos.y, _pos.z));
+		player->SetPosition(XMFLOAT3(_pos.x, _pos.y, _pos.z));
 	}
+}
+
+void FrameEvent::Task()
+{
+	mainGame.m_pScene->_curFrame = _wf;
 }

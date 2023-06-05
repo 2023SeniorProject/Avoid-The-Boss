@@ -3,32 +3,9 @@
 #include "CSIocpCore.h"
 
 
-void SwitchInfo::UpdateGuage(float elapsedTime)
-{
-	
-	if (_IsOnInteraction && !_IsActive)
-	{
-		_lock.lock();
-		_coolTime -= elapsedTime;
-		if (_coolTime <= 0.f)
-		{
-			
-			_coolTime = 0.1;
-			_curGuage += _GuageOffset;
-			
-			std::cout << "["<< _idx << "]" << _curGuage << "%\n";
-	
-			if (_curGuage == _maxGuage)
-			{
-				SwitchActivate(true);
-			}
-		}
-		_lock.unlock();
-	}
-	
-}
 
-bool SwitchInfo::CanInteraction(int32 rm,int32 sid)
+
+bool SGenerator::CanInteraction(int32 rm,int32 sid)
 {
 	ServerIocpCore._rmgr->GetRoom(rm).GetMyPlayerFromRoom(sid)._lock.lock();
 	XMFLOAT3 myPlayerpos = ServerIocpCore._rmgr->GetRoom(rm).GetMyPlayerFromRoom(sid).GetPosition();

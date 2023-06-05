@@ -5,6 +5,7 @@
 #include "IocpEvent.h"
 #include "ClientPacketEvent.h"
 #include "CBullet.h"
+#include "CJobQueue.h"
 #include <string>
 
 CSession::CSession()
@@ -147,8 +148,7 @@ void CSession::ProcessPacket(char* packet)
 	case (uint8)S_PACKET_TYPE::SPOS: // 미리 계산한 좌표값을 보내준다.
 	{
 		S2C_POS* posPacket = reinterpret_cast<S2C_POS*>(packet);
-		CPlayer* player = mainGame.m_pScene->GetScenePlayer(posPacket->sid);
-		mainGame.m_pScene->_curFrameIdx.store(posPacket->fidx);		
+		CPlayer* player = mainGame.m_pScene->GetScenePlayer(posPacket->sid);		
 		if (player == nullptr) break;
 		
 		XMFLOAT3 newPos = XMFLOAT3(posPacket->x, player->GetPosition().y, posPacket->z);
@@ -167,17 +167,10 @@ void CSession::ProcessPacket(char* packet)
 	case (uint8)S_PACKET_TYPE::GAME_START:
 	{
 		S2C_GAMESTART* gsp = reinterpret_cast<S2C_GAMESTART*>(packet);
-		for (int i = 0; i < PLAYERNUM; ++i)
-		{
-			if (gsp->sids[i] == _sid) mainGame.m_pScene->_playerIdx = i;
-			mainGame.m_pScene->_players[i]->SetPlayerSid(gsp->sids[i]);
-			// 각 플레이어 별로 세션 아이디 부여
-		}
+		
 		// ================= 플레이어 초기 위치 초기화 ==================
-		mainGame.m_pScene->_players[0]->MakePosition(XMFLOAT3(0, 0.25, -18));
-		if (mainGame.m_pScene->_players[1] != nullptr) mainGame.m_pScene->_players[1]->MakePosition(XMFLOAT3(10, 0.25, -18));
-		if(mainGame.m_pScene->_players[2] != nullptr) mainGame.m_pScene->_players[2]->MakePosition(XMFLOAT3(15, 0.25, -18));
-		if (mainGame.m_pScene->_players[3] != nullptr) mainGame.m_pScene->_players[3]->MakePosition(XMFLOAT3(20, 0.25, -18));
+		mainGame.m_pScene->InitGame(gsp, _sid);
+
 		// ================= 자신의 클라이언트 IDX 확인 =================
 		std::cout << "MYPLAYER IDX : " << mainGame.m_pScene->_playerIdx << "\n";
 		
@@ -234,27 +227,23 @@ void CSession::ProcessPacket(char* packet)
 	}
 	break;
 	// ================= 플레이어 스위치 애니메이션 관련 패킷 ==================
-	case (uint8)S_PACKET_TYPE::SWITCH_ANIM:
+	case (uint8)S_PACKET_TYPE::ANIM:
 	{
-		S2C_SWITCH_ANIM* sw = (S2C_SWITCH_ANIM*)packet;
+		S2C_ANIMPACKET* sw = (S2C_ANIMPACKET*)packet;
 		uint8 idx = sw->idx;
-		CEmployee* myPlayer = (CEmployee*)mainGame.m_pScene->_players[idx];
+		CEmployee* myPlayer = (CEmployee*)mainGame.m_pScene->GetScenePlayer(idx);
 		if (myPlayer != nullptr)
 		{
-			myPlayer->SetInteractionOn(true);
-			myPlayer->SetInteractionAnimTrackOtherClient();
+			if (sw->track == (uint8)ANIMTRACK::GEN_ANIM) myPlayer->SetBehavior(PLAYER_BEHAVIOR::SWITCH_INTER);
+			else myPlayer->SetBehavior(PLAYER_BEHAVIOR::IDLE);
 		}
 	}
 	break;
-	case (uint8)S_PACKET_TYPE::SWITCH_ANIM_CANCEL:
+	case (uint8)S_PACKET_TYPE::FRAME:
 	{
-		S2C_SWITCH_ANIM* sw = (S2C_SWITCH_ANIM*)packet;
-		uint8 idx = sw->idx;
-		CPlayer* myPlayer = mainGame.m_pScene->_players[idx];
-		if (myPlayer != nullptr)
-		{
-			myPlayer->SetInteractionOn(false);
-		}
+		S2C_FRAMEPACKET* fp = (S2C_FRAMEPACKET*)packet;
+		FrameEvent* fe = new FrameEvent(fp->wf);
+		mainGame.m_pScene->AddEvent(static_cast<queueEvent*>(fe),0);
 	}
 	break;
 	}

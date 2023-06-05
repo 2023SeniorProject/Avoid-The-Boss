@@ -330,7 +330,7 @@ public:
 
 public:
 	Layout							objLayer;
-	bool							m_bIsExitReady = false;
+	bool							m_bEmpExit = false;
 
 	char							m_pstrFrameName[64];
 

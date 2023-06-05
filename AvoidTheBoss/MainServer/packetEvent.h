@@ -5,18 +5,18 @@
 // 0 1 2
 
 
-class queueEvent
+class QueueEvent
 {
 public:
 	int64 generateTime = 0.f;
 	int32 _sid = -1;
 public:
-	queueEvent() {};
-	virtual ~queueEvent() {};
+	QueueEvent() {};
+	virtual ~QueueEvent() {};
 	virtual void Task() {};
 };
 
-class moveEvent : public queueEvent // 33 ms 마다 전송한다.
+class moveEvent : public QueueEvent // 33 ms 마다 전송한다.
 {
 public:
 	moveEvent() { };
@@ -30,7 +30,7 @@ public:
 
 
 
-class InteractionEvent : public queueEvent
+class InteractionEvent : public QueueEvent
 {
 public:
 	InteractionEvent() {};
@@ -40,3 +40,13 @@ public:
 	virtual void Task();
 };
 
+class AttackEvent : public QueueEvent
+{
+public:
+	int16 _tidx;
+	int32 _wf;
+public:
+	AttackEvent():_wf(0), _tidx(0) {};
+	virtual ~AttackEvent() {}
+	virtual void Task();
+ };

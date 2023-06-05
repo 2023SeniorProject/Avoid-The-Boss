@@ -188,13 +188,13 @@ void Room::Update()
 	}
 }
 
-void Room::AddEvent(queueEvent* qe, float after)
+void Room::AddEvent(QueueEvent* qe, float after)
 {
 	std::unique_lock<std::shared_mutex> ql(_jobQueueLock); // Queue Lock 호출
 	_jobQueue->PushTask(qe,after);
 }
 
-void Room::AddEvent(queueEvent* qe)
+void Room::AddEvent(QueueEvent* qe)
 {
 	std::unique_lock<std::shared_mutex> ql(_jobQueueLock); // Queue Lock 호출
 	_jobQueue->PushTask(qe);

@@ -12,7 +12,7 @@ enum ROOM_STATUS : int8
 
 
 class Scheduler;
-class queueEvent;
+class QueueEvent;
 
 // 방은 호스트가 요청하는 순간 생성한다.
 class Room
@@ -25,6 +25,7 @@ public:
 	void UserIn(int32 sid);
 	void BroadCasting(void* packet);
 	void BroadCastingExcept(void* packet, int32 sid);
+	bool ProcessAttackPacket(const int32& frame, const int16& target) { return _history.IsAttackAvailable(frame, target); }
 	void Update();
 
 	SPlayer& GetMyPlayerFromRoom(int32 sid) 
@@ -33,13 +34,14 @@ public:
 		auto i = std::find(_cList.begin(), _cList.end(), sid);
 		if (i != _cList.end()) return _players[std::distance(_cList.begin(), i)]; // 방에 있는 클라이언트들을 알아서 탐색
 	}
-	void AddEvent(queueEvent* packet, float after); // 이벤트 패킷이 들어오면 큐에다가 추가를 할 것이다.
-	void AddEvent(queueEvent* qe);
+	void AddEvent(QueueEvent* packet, float after); // 이벤트 패킷이 들어오면 큐에다가 추가를 할 것이다.
+	void AddEvent(QueueEvent* qe);
 	void StartGame() 
 	{
 		_timer.Reset();
 	}
-
+private:
+	Rewinder<30> _history;
 public:
 	std::shared_mutex _listLock;
 	std::list<int32> _cList; // 방에 속해있는 클라이언트 리스트
@@ -50,9 +52,9 @@ public:
 	std::shared_mutex _jobQueueLock; // eventQueue 관리용 Lock
 	SPlayer _players[4];
 	SGenerator _generator[3];
-	Rewinder<30> _history;
+	
 	Timer _timer;
-
+	
 
 };
 

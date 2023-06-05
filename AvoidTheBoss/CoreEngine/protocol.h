@@ -13,8 +13,9 @@ enum class C_PACKET_TYPE : uint8
 	CKEY,
 	CROT, 
 	CMOVE,
-	CATTACK
+	CATTACK,
 };
+
 enum class S_PACKET_TYPE : uint8 
 { 
 	LOGIN_OK = 150,  
@@ -202,7 +203,6 @@ struct S2C_POS
 	uint8 size;
 	uint8 type;
 	int16 sid;
-	uint8 fidx;
 	float x;
 	float z;
 };

@@ -2,6 +2,7 @@
 #include "Asession.h"
 
 class IocpEvent;
+class Scheduler;
 
 class CSession : public ASession
 {
@@ -17,12 +18,15 @@ public:
 	// 세션 정보를 얻어 내거나 세팅할 수 있는 함수들
 	SOCKET GetSock() { return _sock; }
 	bool DoSend(void* packet);
+	bool DoDelaySend(void* packet, float afterTick);
 	bool DoRecv();
 	void ProcessPacket(char*);
 public:
 	int16 _myRm = -1;
 	int32 _prev_remain = 0;
 	int16  _loginOk = -3;
+private:
+	Scheduler* _DelayjobQueue;
 //public:
 //	SOCKET _sock = INVALID_SOCKET;
 //	RecvEvent _rev;

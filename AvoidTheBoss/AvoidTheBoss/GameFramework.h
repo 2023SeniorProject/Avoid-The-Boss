@@ -13,6 +13,7 @@ class CGameFramework
 	friend class InteractionEvent;
 	friend class CSession;
 	friend class CEmployee;
+	friend class CBoss;
 	friend class CGameScene;
 private:
 	HINSTANCE m_hInstance;

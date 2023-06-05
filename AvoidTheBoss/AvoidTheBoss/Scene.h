@@ -162,9 +162,9 @@ public:
 	bool						m_bBossWin = false;
 public:
 	Scheduler* _jobQueue;
-	Scheduler* _DelayjobQueue;
+	
 	std::shared_mutex _jobQueueLock;
-	Atomic<uint8> _curFrameIdx;
+	Atomic<uint8> _curFrame;
 	int32 m_cid = -1;
 	int32 m_sid = -1;
 // ========================================================

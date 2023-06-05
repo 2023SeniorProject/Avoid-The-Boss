@@ -83,47 +83,46 @@ void InteractionEvent::Task()
 		targetRoom.BroadCasting(&packet);
 	}
 	break;
-	// ============== 공격 관련 이벤트 ================
-	case EVENT_TYPE::ATTACK_EVENT:
-	{
-		// 공격 이벤트 검증
-		int32 myIdx = targetRoom.GetMyPlayerFromRoom(_sid).m_idx;
-		SPlayer& bossPlayer = targetRoom.GetMyPlayerFromRoom(_sid);
-		XMFLOAT3 BossPos = bossPlayer.GetPosition();
-		XMFLOAT3 BossDir = bossPlayer.m_xmf3Look;
+	//// ============== 공격 관련 이벤트 ================
+	//case EVENT_TYPE::ATTACK_EVENT:
+	//{
+	//	// 공격 이벤트 검증
+	//	int32 myIdx = targetRoom.GetMyPlayerFromRoom(_sid).m_idx;
+	//	SPlayer& bossPlayer = targetRoom.GetMyPlayerFromRoom(_sid);
+	//	XMFLOAT3 BossPos = bossPlayer.GetPosition();
+	//	XMFLOAT3 BossDir = bossPlayer.m_xmf3Look;
 
-		//사장님 애니메이션 재생을 위한 이벤트 패킷
-		SC_EVENTPACKET packet;
-		packet.type = (uint8)SC_PACKET_TYPE::GAMEEVENT;
-		packet.size = sizeof(SC_EVENTPACKET);
-		packet.eventId = (uint8)EVENT_TYPE::ATTACK_EVENT;
-		targetRoom.BroadCastingExcept(&packet, _sid);
+	//	//사장님 애니메이션 재생을 위한 이벤트 패킷
+	//	SC_EVENTPACKET packet;
+	//	packet.type = (uint8)SC_PACKET_TYPE::GAMEEVENT;
+	//	packet.size = sizeof(SC_EVENTPACKET);
+	//	packet.eventId = (uint8)EVENT_TYPE::ATTACK_EVENT;
+	//	targetRoom.BroadCastingExcept(&packet, _sid);
 
 
-		float rayDist = 10.0f;
-		for (int i = 0; i < PLAYERNUM; ++i)
-		{
-			if (i == myIdx) continue;
-			if (targetRoom._players[i].m_playerBV.Intersects(XMLoadFloat3(&BossPos), XMLoadFloat3(&BossDir), rayDist))
-			{
-				std::cout << targetRoom._players[i].m_idx << "Get Attacked\n";
-				targetRoom._players[i].m_hp -= 1;
+	//	float rayDist = 10.0f;
+	//	for (int i = 0; i < PLAYERNUM; ++i)
+	//	{
+	//		if (i == myIdx) continue;
+	//		if (targetRoom._players[i].m_playerBV.Intersects(XMLoadFloat3(&BossPos), XMLoadFloat3(&BossDir), rayDist))
+	//		{
+	//			std::cout << targetRoom._players[i].m_idx << "Get Attacked\n";
+	//			targetRoom._players[i].m_hp -= 1;
 
-				SC_EVENTPACKET packet;
-				packet.type = (uint8)SC_PACKET_TYPE::GAMEEVENT;
-				packet.size = sizeof(SC_EVENTPACKET);
-				packet.eventId = (uint8)EVENT_TYPE::ATTACKED_PLAYER_ONE + i;
-				targetRoom.BroadCasting(&packet);
+	//			SC_EVENTPACKET packet;
+	//			packet.type = (uint8)SC_PACKET_TYPE::GAMEEVENT;
+	//			packet.size = sizeof(SC_EVENTPACKET);
+	//			packet.eventId = (uint8)EVENT_TYPE::ATTACKED_PLAYER_ONE + i;
+	//			targetRoom.BroadCasting(&packet);
 
-				if (targetRoom._players[i].m_hp == 0)
-				{
-					targetRoom._players[i].m_behavior = (int32)PLAYER_BEHAVIOR::CRAWL;
-				}
-			}
-
-		}
-	}
-	break;
+	//			if (targetRoom._players[i].m_hp == 0)
+	//			{
+	//				targetRoom._players[i].m_behavior = (int32)PLAYER_BEHAVIOR::CRAWL;
+	//			}
+	//		}
+	//	}
+	//}
+	//break;
 	// ============== 깨우기 관련 이벤트 =============
 	case EVENT_TYPE::RESCUE_PLAYER_ONE:
 	case EVENT_TYPE::RESCUE_PLAYER_TWO:
@@ -192,3 +191,11 @@ void moveEvent::Task()
 	}
 };
 
+void AttackEvent::Task()
+{
+	bool retVal = ServerIocpCore._rmgr->GetRoom(_sid).ProcessAttackPacket(_wf, _tidx);
+	if (retVal)
+	{
+		std::cout << "Attacked\n";
+	}
+}

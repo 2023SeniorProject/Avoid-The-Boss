@@ -8,7 +8,7 @@ enum class CLIENT_TYPE
 
 enum class PLAYER_TYPE
 {
-	NONE = 0 ,BOSS = 1,EMPLOYEE = 2
+	NONE = 0 ,BOSS = 1, EMPLOYEE = 2
 };
 
 enum class CHARACTER_TYPE: int32
@@ -25,7 +25,12 @@ static const char *g_pstrCharactorRefernece[5] =
 	"Model/Character4_Idle.bin"
 };
 
-#define BOSS_INTERACTION_TIME 20 //25프레임 (기존 65)
+#define BOSS_INTERACTION_TIME 25 //25프레임 (기존 65)
+#define BOSS_RUNATTACK_TIME 50 //25프레임 (기존 65)
+
+#define EMPLOYEE_ATTACKED_TIME 30 //20프레임 (기존 65)
+#define EMPLOYEE_DOWN_TIME 30 //25프레임 (기존 65)
+#define EMPLOYEE_STAND_TIME 30 //25프레임 (기존 65)
 #define EMPLOYEE_INTERACTION_TIME 40 //20프레임
 
 class CPlayer : public CGameObject
@@ -61,7 +66,7 @@ public:
 	// 05-21 추가
 	int32 m_hp = 5; // hp는 5로 설정
 	// 05-22 추가
-	int32 m_behavior = IDLE;
+	int32 m_behavior = (int32)PLAYER_BEHAVIOR::IDLE;
 public: 
 	CPlayer();
 	virtual ~CPlayer();
@@ -79,13 +84,9 @@ public:
 	void SetPlayerSid(const int16& sid) { m_sid = sid; }
 	void SetPosition(const XMFLOAT3& xmf3Position) 
 	{
-		MakePosition(xmf3Position);
-	}
-	void SetScale(const XMFLOAT3& xmf3Scale) { m_xmf3Scale = xmf3Scale; }
-	void MakePosition(const XMFLOAT3& xmf3Position)
-	{
 		m_xmf3Position = xmf3Position;
 	}
+	void SetScale(const XMFLOAT3& xmf3Scale) { m_xmf3Scale = xmf3Scale; }
 	const XMFLOAT3& GetVelocity() const { return(m_xmf3Velocity); }
 	float GetYaw() { return(m_fYaw); }
 	float GetPitch() { return(m_fPitch); }
@@ -121,21 +122,20 @@ public: //04-29 추가함수
 	virtual void Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera = NULL);
 	// 05-22 추가 함수
 	virtual void AnimTrackUpdate(float ,CLIENT_TYPE) {};
-protected:
-	int nInteractionNum = -1;
-	bool m_OnInteraction = false;
-	int m_InteractionCountTime = -1;;
-public:
-	void SetInteractionAnimation(bool value) { m_OnInteraction = value; }
-	bool GetOnInteraction() { return m_OnInteraction; }
 
-	void SetnInteractionNum(int value) { nInteractionNum = value; }
-	int GetnInteractionNum() { return nInteractionNum; }
+	virtual void SetBehavior(PLAYER_BEHAVIOR b) { m_behavior = (int32)b; };
+protected: // 06-03 애니메이션 관련 처리인지 아니면 상호작용 관련 처리인건지 명확하게 구별해야함
+	int			m_InteractionType = -1;
+	bool		m_bOnInteraction = false;
+	int			m_InteractionCountTime = -1;;
+public:
+	virtual void SetInteractionOn(bool value) { m_bOnInteraction = value; }
+	bool GetOnInteraction() { return m_bOnInteraction; }
 	
 	void SetnInteractionCountTime(int value) { m_InteractionCountTime = value; }
-	int GetnInteractionCountTime() { return m_InteractionCountTime; }
-	virtual void OnInteractionAnimation() {}
+	int  GetnInteractionCountTime() { return m_InteractionCountTime; }
 
+	virtual int32 GetPlayerBehavior() { return m_behavior; }
 };
 
 

@@ -43,6 +43,22 @@ class CGameScene : public SceneInterface
 {
 	friend class CSession;
 	friend class queueEvent;
+	friend class FrameEvent;
+public:
+	static void CreateCbvSrvDescriptorHeaps(ID3D12Device* pd3dDevice, int nConstantBufferViews, int nShaderResourceViews);
+
+	static D3D12_GPU_DESCRIPTOR_HANDLE CreateConstantBufferViews(ID3D12Device* pd3dDevice, int nConstantBufferViews, ID3D12Resource* pd3dConstantBuffers, UINT nStride);
+	static D3D12_GPU_DESCRIPTOR_HANDLE CreateShaderResourceViews(ID3D12Device* pd3dDevice, CTexture* pTexture, UINT nRootParameter, bool bAutoIncrement);
+
+	D3D12_CPU_DESCRIPTOR_HANDLE GetCPUCbvDescriptorStartHandle() { return(m_d3dCbvCPUDescriptorStartHandle); }
+	D3D12_GPU_DESCRIPTOR_HANDLE GetGPUCbvDescriptorStartHandle() { return(m_d3dCbvGPUDescriptorStartHandle); }
+	D3D12_CPU_DESCRIPTOR_HANDLE GetCPUSrvDescriptorStartHandle() { return(m_d3dSrvCPUDescriptorStartHandle); }
+	D3D12_GPU_DESCRIPTOR_HANDLE GetGPUSrvDescriptorStartHandle() { return(m_d3dSrvGPUDescriptorStartHandle); }
+
+	D3D12_CPU_DESCRIPTOR_HANDLE GetCPUCbvDescriptorNextHandle() { return(m_d3dCbvCPUDescriptorNextHandle); }
+	D3D12_GPU_DESCRIPTOR_HANDLE GetGPUCbvDescriptorNextHandle() { return(m_d3dCbvGPUDescriptorNextHandle); }
+	D3D12_CPU_DESCRIPTOR_HANDLE GetCPUSrvDescriptorNextHandle() { return(m_d3dSrvCPUDescriptorNextHandle); }
+	D3D12_GPU_DESCRIPTOR_HANDLE GetGPUSrvDescriptorNextHandle() { return(m_d3dSrvGPUDescriptorNextHandle); }
 public:
 	CGameScene();
 	~CGameScene();
@@ -64,11 +80,7 @@ public:
 	ID3D12RootSignature* CreateGraphicsRootSignature(ID3D12Device* pd3dDevice);
 	ID3D12RootSignature* GetGraphicsRootSignature() { return(m_pd3dGraphicsRootSignature); }
 
-	
-	
-	
 	void AnimateObjects();
-	
 	void ReleaseUploadBuffers();
 	void ChangeMyPlayerCamera() 
 	{
@@ -92,12 +104,19 @@ public: // 오승담 작성 함수
 		}
 		return nullptr;
 	}
-	void AddEvent(queueEvent*, float);
-public:
-	Timer _timer;
-//protected:
-//	//배치(Batch) 처리를 하기 위하여 씬을 셰이더들의 리스트로 표현한다. 
+	CGenerator* GetSceneGenerator(const int32 idx)
+	{
+		if (idx == -1) return nullptr;
+		return m_ppGenerator[idx];
+	}
 
+	void InitGame(void* packet ,int32 sid);
+	void StopTimer() { _timer.Stop(); }
+	void StartTimer() { _timer.Start(); }
+	void AddEvent(queueEvent*, float);
+	void Exit();
+public:
+	
 	CCamera*					m_pCamera;
 	WCHAR						txtFrameBuf[20];
 
@@ -124,21 +143,28 @@ public:
 	LIGHTS*								m_pcbMappedLights = NULL;
 
 
+private:
+	Timer _timer;
 // ========== 서버 처리를 위해 사용하는 변수들 ==============
 public: // 씬에 있는 오브젝트 관련 변수
 	CPlayer*					_players[4];
 	int16						_playerIdx = 0;
 	int16						m_lastKeyInput = 0;
-	int							nSwitch = 3;
-	CGenerator**				m_ppSwitches = NULL;
-	Atomic<int32>				m_ActiveSwitchCnt = 0; // 활성화 된 스위치 카운트;
 
-	bool						m_bIsExitReady = false;
+private:
+	// 발전기
+	int							m_nGenerator = 3;
+	CGenerator**				m_ppGenerator = NULL;
+public:
+	Atomic<int32>				m_ActiveGeneratorCnt = 0; // 활성화 된 스위치 카운트;
+public:
+	bool						m_bEmpExit = false;
+	bool						m_bBossWin = false;
 public:
 	Scheduler* _jobQueue;
-	Scheduler* _DelayjobQueue;
+	
 	std::shared_mutex _jobQueueLock;
-	Atomic<uint8> _curFrameIdx;
+	int32 _curFrame;
 	int32 m_cid = -1;
 	int32 m_sid = -1;
 // ========================================================
@@ -156,21 +182,5 @@ protected:
 	static D3D12_GPU_DESCRIPTOR_HANDLE	m_d3dCbvGPUDescriptorNextHandle;
 	static D3D12_CPU_DESCRIPTOR_HANDLE	m_d3dSrvCPUDescriptorNextHandle;
 	static D3D12_GPU_DESCRIPTOR_HANDLE	m_d3dSrvGPUDescriptorNextHandle;
-
-public:
-	static void CreateCbvSrvDescriptorHeaps(ID3D12Device* pd3dDevice, int nConstantBufferViews, int nShaderResourceViews);
-
-	static D3D12_GPU_DESCRIPTOR_HANDLE CreateConstantBufferViews(ID3D12Device* pd3dDevice, int nConstantBufferViews, ID3D12Resource* pd3dConstantBuffers, UINT nStride);
-	static D3D12_GPU_DESCRIPTOR_HANDLE CreateShaderResourceViews(ID3D12Device* pd3dDevice, CTexture* pTexture, UINT nRootParameter, bool bAutoIncrement);
-
-	D3D12_CPU_DESCRIPTOR_HANDLE GetCPUCbvDescriptorStartHandle() { return(m_d3dCbvCPUDescriptorStartHandle); }
-	D3D12_GPU_DESCRIPTOR_HANDLE GetGPUCbvDescriptorStartHandle() { return(m_d3dCbvGPUDescriptorStartHandle); }
-	D3D12_CPU_DESCRIPTOR_HANDLE GetCPUSrvDescriptorStartHandle() { return(m_d3dSrvCPUDescriptorStartHandle); }
-	D3D12_GPU_DESCRIPTOR_HANDLE GetGPUSrvDescriptorStartHandle() { return(m_d3dSrvGPUDescriptorStartHandle); }
-
-	D3D12_CPU_DESCRIPTOR_HANDLE GetCPUCbvDescriptorNextHandle() { return(m_d3dCbvCPUDescriptorNextHandle); }
-	D3D12_GPU_DESCRIPTOR_HANDLE GetGPUCbvDescriptorNextHandle() { return(m_d3dCbvGPUDescriptorNextHandle); }
-	D3D12_CPU_DESCRIPTOR_HANDLE GetCPUSrvDescriptorNextHandle() { return(m_d3dSrvCPUDescriptorNextHandle); }
-	D3D12_GPU_DESCRIPTOR_HANDLE GetGPUSrvDescriptorNextHandle() { return(m_d3dSrvGPUDescriptorNextHandle); }
 };
 

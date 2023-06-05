@@ -25,7 +25,7 @@ CGameScene::CGameScene()
 
 CGameScene::~CGameScene()
 {
-
+	delete _jobQueue;
 }
 
 void CGameScene::OnProcessingMouseMessage(HWND hWnd, UINT nMessageID, WPARAM wParam, LPARAM lParam)
@@ -195,10 +195,11 @@ void CGameScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandLis
 	pBoundsMapShader->CreateShader(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature);
 	pBoundsMapShader->BuildObjects(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature,NULL,NULL);
 
-	m_ppSwitches = new CGenerator * [nSwitch];
-	for (int i = 0; i < 3; ++i)
+	m_ppGenerator = new CGenerator * [m_nGenerator];
+	for (int i = 0; i < m_nGenerator; ++i)
 	{
-		m_ppSwitches[i] = ((CGenerator*)pGeneratorObjectsShader->m_ppObjects[i]);
+		m_ppGenerator[i] = ((CGenerator*)pGeneratorObjectsShader->m_ppObjects[i]);
+		m_ppGenerator[i]->m_idx = i;
 	}
 	for (int i = 0; i < PLAYERNUM; ++i)
 	{
@@ -231,7 +232,6 @@ void CGameScene::ProcessInput(HWND& hWnd)
 {
 	if (::GetActiveWindow() != hWnd)
 	{
-		std::cout << "Not Active Window\n";
 		return;
 	}
 	int16 keyInput = 0;
@@ -243,7 +243,8 @@ void CGameScene::ProcessInput(HWND& hWnd)
 	if (InputManager::GetInstance().GetKeyBuffer(KEY_TYPE::S) > 0) keyInput |= KEY_BACKWARD;	
 	if (InputManager::GetInstance().GetKeyBuffer(KEY_TYPE::D) > 0) keyInput |= KEY_RIGHT;
 	if (InputManager::GetInstance().GetKeyBuffer(KEY_TYPE::F) > 0) keyInput |= KEY_F;
-	if (InputManager::GetInstance().GetKeyBuffer(KEY_TYPE::SPACE) > 0) keyInput |= KEY_SPACE;
+	if (InputManager::GetInstance().GetKeyBuffer(KEY_TYPE::E) > 0) keyInput |= KEY_E;
+	if (InputManager::GetInstance().GetKeyBuffer(KEY_TYPE::SPACE) == (int8)KEY_STATUS::KEY_PRESS) keyInput |= KEY_SPACE;
 
 	// ============= 마우스 버튼 관련 처리 ================
 	float cxDelta = 0.0f, cyDelta = 0.0f;
@@ -274,7 +275,7 @@ void CGameScene::ProcessInput(HWND& hWnd)
 
 		C2S_KEY packet; // 키 입력 + 방향 정보를 보낸다.
 		packet.size = sizeof(C2S_KEY);
-		packet.type = C_PACKET_TYPE::CKEY;
+		packet.type = (uint8)C_PACKET_TYPE::CKEY;
 		packet.key = LOBYTE(keyInput);
 		packet.x = _players[_playerIdx]->GetLook().x;
 		packet.z = _players[_playerIdx]->GetLook().z;
@@ -298,22 +299,9 @@ void CGameScene::Update(HWND hWnd)
 		if (k == _playerIdx) _players[k]->Update(_timer.GetTimeElapsed(), CLIENT_TYPE::OWNER);
 		else _players[k]->Update(_timer.GetTimeElapsed(), CLIENT_TYPE::OTHER_PLAYER);
 	}
+	for (int k = 0; k < m_nGenerator; ++k) m_ppGenerator[k]->Update(_timer.GetTimeElapsed());
 
-	if (m_bIsExitReady) // 탈출 성공 시 , 해야할 일 처리
-	{
-		for (int i = 0; i < m_nShaders; i++)
-		{
-			CStandardObjectsShader* pShaderObjects = (CStandardObjectsShader*)m_ppShaders[i];
-			for (int i = 0; i < pShaderObjects->m_nObjects; i++)
-			{
-				if (pShaderObjects->m_ppObjects[i])
-				{
-					if ((pShaderObjects->m_ppObjects[i]->objLayer == Layout::SIREN) || (pShaderObjects->m_ppObjects[i]->objLayer == Layout::DOOR))
-						pShaderObjects->m_ppObjects[i]->m_bIsExitReady = true;
-				}
-			}
-		}
-	}
+	
 
 	// 평균 프레임 레이트 출력
 	std::wstring str = L"[";
@@ -323,7 +311,8 @@ void CGameScene::Update(HWND hWnd)
 	str.append(L" ");
 	str.append(std::to_wstring(_players[_playerIdx]->GetPosition().z));
 	str.append(L")- FPS: ");
-	if(_timer.GetFrameRate()) str.append(std::to_wstring(1000.f / _timer.GetFrameRate()));
+	str.append(std::to_wstring(_curFrame));
+	//if(_timer.GetFrameRate()) str.append(std::to_wstring(1000.f / _timer.GetFrameRate()));
 	::SetWindowText(hWnd, str.c_str());
 }
 
@@ -567,7 +556,6 @@ void CGameScene::ReleaseUploadBuffers()
 }
 
 
-
 void CGameScene::CreateCbvSrvDescriptorHeaps(ID3D12Device* pd3dDevice, int nConstantBufferViews, int nShaderResourceViews)
 {
 	D3D12_DESCRIPTOR_HEAP_DESC d3dDescriptorHeapDesc;
@@ -664,7 +652,7 @@ D3D12_GPU_DESCRIPTOR_HANDLE CGameScene::CreateShaderResourceViews(ID3D12Device* 
 
 void CGameScene::AnimateObjects()
 { 
-	for (int i = 0; i < m_nGameObjects; i++) if (m_ppGameObjects[i]) m_ppGameObjects[i]->Animate(_timer.GetTimeElapsed());
+	//for (int i = 0; i < m_nGameObjects; i++) if (m_ppGameObjects[i]) m_ppGameObjects[i]->Animate(_timer.GetTimeElapsed());
 	for (int i = 0; i < m_nShaders; i++) if (m_ppShaders[i]) m_ppShaders[i]->AnimateObjects(_timer.GetTimeElapsed());
 
 	for (int i = 0; i < PLAYERNUM; i++)
@@ -693,7 +681,7 @@ void CGameScene::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCa
 
 	if (m_pSkyBox) m_pSkyBox->Render(pd3dCommandList, pCamera);
 
-	for (int i = 0; i < m_nGameObjects; i++) if (m_ppGameObjects[i]) m_ppGameObjects[i]->Render(pd3dCommandList, pCamera);
+	//for (int i = 0; i < m_nGameObjects; i++) if (m_ppGameObjects[i]) m_ppGameObjects[i]->Render(pd3dCommandList, pCamera);
 	for (int i = 0; i < m_nShaders; i++) if (m_ppShaders[i]) m_ppShaders[i]->Render(pd3dCommandList, pCamera);
 
 	for (int i = 0; i < m_nHierarchicalGameObjects; i++)
@@ -714,8 +702,43 @@ void CGameScene::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCa
 	}
 }
 
+void CGameScene::InitGame(void* packet, int32 sid)
+{
+	S2C_GAMESTART* gsp = reinterpret_cast<S2C_GAMESTART*>(packet);
+	for (int i = 0; i < PLAYERNUM; ++i)
+	{
+		if (gsp->sids[i] == sid) _playerIdx = i;
+		_players[i]->SetPlayerSid(gsp->sids[i]);
+		// 각 플레이어 별로 세션 아이디 부여
+	}
+
+	_players[0]->SetPosition(XMFLOAT3(0, 0.25, -18));
+	if(_players[1] != nullptr)_players[1]->SetPosition(XMFLOAT3(10, 0.25, -18));
+	if(_players[2] != nullptr)_players[2]->SetPosition(XMFLOAT3(15, 0.25, -18));
+	if(_players[3] != nullptr)_players[3]->SetPosition(XMFLOAT3(20, 0.25, -18));
+}
+
 void CGameScene::AddEvent(queueEvent* ev, float after)
 {
 	std::unique_lock<std::shared_mutex> wl(_jobQueueLock);
 	_jobQueue->PushTask(ev, after);
+}
+
+void CGameScene::Exit()
+{
+	if (m_bEmpExit) // 탈출 성공 시 , 해야할 일 처리
+	{
+		for (int i = 0; i < m_nShaders; i++)
+		{
+			CStandardObjectsShader* pShaderObjects = (CStandardObjectsShader*)m_ppShaders[i];
+			for (int i = 0; i < pShaderObjects->m_nObjects; i++)
+			{
+				if (pShaderObjects->m_ppObjects[i])
+				{
+					if ((pShaderObjects->m_ppObjects[i]->objLayer == Layout::SIREN) || (pShaderObjects->m_ppObjects[i]->objLayer == Layout::DOOR))
+						pShaderObjects->m_ppObjects[i]->m_bEmpExit = true;
+				}
+			}
+		}
+	}
 }

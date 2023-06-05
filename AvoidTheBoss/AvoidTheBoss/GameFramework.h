@@ -11,8 +11,10 @@ class CGameFramework
 	friend class moveEvnet;
 	friend class posEvent;
 	friend class InteractionEvent;
+	friend class FrameEvent;
 	friend class CSession;
 	friend class CEmployee;
+	friend class CBoss;
 	friend class CGameScene;
 private:
 	HINSTANCE m_hInstance;
@@ -69,9 +71,8 @@ private:
 	
 protected:
 	CGameScene*				m_pScene;
-	Atomic<int8>			_curScene = 0;
 public:
-
+	Atomic<int8>			_curScene = 0;
 public:
 	CGameFramework();
 	~CGameFramework();
@@ -94,8 +95,8 @@ public:
 	//----전체 화면 모드 F9
 	void ChangeSwapChainState();
 
-	void BuildObjects();
-	void ReleaseObjects();
+	void BuildScenes();
+	void ReleaseScenes();
 	//렌더링할 메쉬와 게임 객체를 생성하고 소멸하는 함수이다. 
 
 	//프레임워크의 핵심(사용자 입력, 애니메이션, 렌더링)을 구성하는 함수이다. 
@@ -103,9 +104,6 @@ public:
 	void UpdateObject();
 	void AnimateObjects();
 	void FrameAdvance();
-
-	bool CollisionCheck();
-
 	void WaitForGpuComplete();
 	//CPU와 GPU를 동기화하는 함수이다.
 	void Render();

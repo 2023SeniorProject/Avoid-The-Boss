@@ -5,6 +5,7 @@
 #define GENERATOR_ANIM_FRAM 50
 class CGenerator : public CGameObject
 {
+	
 	float radius = 0.0f;
 	int m_nPipe = 3;
 	CGameObject** m_ppPipe = NULL;
@@ -12,27 +13,31 @@ class CGenerator : public CGameObject
 	int m_fPipeDistanceCount[3];
 	bool m_nPipeStartAnimation[3];
 	bool m_bPipeMoveUp[3];
-	//bool m_bPipeMoveDown = false;
+public: //06-03 추가
+	int m_idx = -1;
+	float m_maxGuage = 100;
+	float m_curGuage = 0;
+	float m_guageSpeed = 50.0f;
 public:
-	bool m_bSwitchActive = false; // --> 발전기가 활성화 되었는가
-	bool m_bSwitchAnimationOn = false; // 애니메이션 재생을 위한 변수
-	bool m_bOtherPlayerInteractionOn = false; // 다른 플레이어가 상호작용 중인가? --> 다른 플레이어가 상호작용 중이라면 활성화 불가능
-	int  m_nButtonAnimationCount = BUTTON_ANIM_FRAME;
-	int m_nGeneratorAnimationCount = GENERATOR_ANIM_FRAM;
-
 	std::mutex m_lock;
-
+	bool m_bGenActive = false; // --> 발전기가 활성화 되었는가
+	bool m_bOnInteraction = false; // --> 발전기가 상호작용 중인가?
+	bool m_bAlreadyOn = false;
+public:
+	int  m_nButtonAnimationCount = BUTTON_ANIM_FRAME;
+	int  m_nGeneratorAnimationCount = GENERATOR_ANIM_FRAM;
+public:
 	CGenerator();
 	virtual ~CGenerator() {};
-
-	CGameObject* GetButton() { std::cout << "button pos" << m_pButton->GetPosition().x << m_pButton->GetPosition().y << m_pButton->GetPosition().z << std::endl; return m_pButton; }
-
 	float GetRadius() { return radius; }
+	
 	void SetAnimationCount(int value) { m_nGeneratorAnimationCount = value; }
 	bool GetAnimationCount() { return m_nGeneratorAnimationCount; }
-	void InteractAnimation(bool value) { m_bSwitchAnimationOn = value; };
+	void SetInteractionOn(bool value) { m_bOnInteraction = value; };
+	void SetAlreadyOn(bool value) { m_bAlreadyOn = value; }
+	bool IsAvailable() { return (!m_bAlreadyOn && !m_bGenActive); }
 
-
+	virtual void Update(float fTimeElapsed);
 	virtual void OnPrepareAnimate();
 	virtual void Animate(float fTimeElapsed);
 };

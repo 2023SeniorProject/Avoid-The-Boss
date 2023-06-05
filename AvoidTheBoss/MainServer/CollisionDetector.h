@@ -17,7 +17,7 @@ public:
 	virtual ~LeafNode() { boxs.clear(); }
 };
 
-class PlayerInfo;
+class SPlayer;
 
 class OcTree
 {

@@ -25,7 +25,8 @@ public:
 	void UserIn(int32 sid);
 	void BroadCasting(void* packet);
 	void BroadCastingExcept(void* packet, int32 sid);
-	bool ProcessAttackPacket(const int32& frame, const int16& target) { return _history.IsAttackAvailable(frame, target); }
+	bool ProcessAttackPacket(const int32& frame, const int16& target) 
+	{ return (_history.IsAttackAvailable(frame, target) && _players[target].m_behavior != (int32)PLAYER_BEHAVIOR::CRAWL); }
 	void Update();
 
 	SPlayer& GetMyPlayerFromRoom(int32 sid) 

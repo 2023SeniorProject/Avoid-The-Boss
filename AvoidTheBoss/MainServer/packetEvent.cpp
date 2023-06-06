@@ -91,17 +91,18 @@ void InteractionEvent::Task()
 	case EVENT_TYPE::RESCUE_PLAYER_FOUR:
 	{
 		SPlayer& p = targetRoom._players[(int8)eventId - (int8)EVENT_TYPE::RESCUE_PLAYER_ONE];
-		if (!p.m_bIsAwaking)
+		if (!p.m_bIsRescue)
 		{
-			p.m_bIsAwaking = true;
+			p.m_bIsRescue = true;
 			std::cout << "RESCUING\n";
+
+			SC_EVENTPACKET packet;
+			packet.type = (uint8)SC_PACKET_TYPE::GAMEEVENT;
+			packet.size = sizeof(SC_EVENTPACKET);
+			packet.eventId = eventId;
+			targetRoom.BroadCastingExcept(&packet, _sid);
 		}
 
-		SC_EVENTPACKET packet;
-		packet.type = (uint8)SC_PACKET_TYPE::GAMEEVENT;
-		packet.size = sizeof(SC_EVENTPACKET);
-		packet.eventId = eventId;
-		targetRoom.BroadCastingExcept(&packet, _sid);
 	}
 	break;
 	case EVENT_TYPE::RESCUE_CANCEL_PLAYER_ONE:
@@ -110,7 +111,7 @@ void InteractionEvent::Task()
 	case EVENT_TYPE::RESCUE_CANCEL_PLAYER_FOUR:
 	{
 		SPlayer& p = targetRoom._players[(int8)eventId - (int8)EVENT_TYPE::RESCUE_CANCEL_PLAYER_ONE];
-		if (p.m_bIsAwaking) p.m_bIsAwaking = false;
+		if (p.m_bIsRescue) p.m_bIsRescue = false;
 		std::cout << "RESCUE CANCEL\n";
 
 		SC_EVENTPACKET packet;
@@ -147,7 +148,7 @@ void moveEvent::Task()
 		packet.type = (uint8)S_PACKET_TYPE::SPOS;
 		packet.x = targetPlayer.GetPosition().x;
 		packet.z = targetPlayer.GetPosition().z;
-		std::cout << "[" << _sid << "] (" << packet.x << "," << packet.z << ")\n";
+		//std::cout << "[" << _sid << "] (" << packet.x << "," << packet.z << ")\n";
 		targetRoom.BroadCastingExcept(&packet, _sid);
 	}
 };
@@ -156,9 +157,12 @@ void AttackEvent::Task()
 {
 	int16 roomNum = ServerIocpCore._clients[_sid]->_myRm;
 	bool retVal = ServerIocpCore._rmgr->GetRoom(_sid).ProcessAttackPacket(_wf, _tidx);
+
+	SPlayer& emp = ServerIocpCore._rmgr->GetRoom(_sid)._players[_tidx];
 	if (retVal)
 	{
-		std::cout << "Attacked\n";
+		emp.AttackedPlayer();
+
 		S2C_ANIMPACKET apacket;
 		apacket.size = sizeof(S2C_ANIMPACKET);
 		apacket.type = (uint8)S_PACKET_TYPE::ANIM;

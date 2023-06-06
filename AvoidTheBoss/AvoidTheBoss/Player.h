@@ -65,6 +65,7 @@ public:
 	bool m_hide = false;// 플레이어를 가릴 것이냐 그릴 것이냐
 	// 05-21 추가
 	int32 m_hp = 5; // hp는 5로 설정
+	int32 m_idx = 0;
 	// 05-22 추가
 	int32 m_behavior = (int32)PLAYER_BEHAVIOR::IDLE;
 public: 

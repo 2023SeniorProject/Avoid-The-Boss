@@ -15,6 +15,7 @@ void InputManager::InputStatusUpdate()
 
 	//// 상호작용과 관련된 키 입력 처리 0x8000 처음 입력한 경우, 입력하다가 땐 경우 0x0001
 	Update(KEY_TYPE::F);
+	Update(KEY_TYPE::E);
 	Update(KEY_TYPE::SPACE); 
 
 } 

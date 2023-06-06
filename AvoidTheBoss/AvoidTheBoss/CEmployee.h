@@ -7,6 +7,11 @@ public:
 private:
 	bool m_bIsInGenArea = false;
 	bool m_bIsInDownPlayerArea = false; // Down된 플레이어와 인접해 있는가?
+private:
+	float m_maxRGuage = 100;
+	float m_curGuage = 0;
+	float m_rVel = 5.0f;
+	float m_bIsRescuing = false;
 public:
 	int32 m_attackedAnimationCount = 0;
 	int32 m_downAnimationCount = 0;
@@ -32,12 +37,22 @@ public:
 			m_behavior == (int32)PLAYER_BEHAVIOR::CRAWL || m_behavior == (int32)PLAYER_BEHAVIOR::STAND 
 			|| m_behavior == (int32)PLAYER_BEHAVIOR::RESCUE || m_behavior == (int32)PLAYER_BEHAVIOR::SWITCH_INTER);
 	}
+	
+	// 깨우기
+	void RescueOn(bool value) 
+	{ 
+		if (m_behavior == (int32)PLAYER_BEHAVIOR::CRAWL) m_bIsRescuing = true;
+
+	}
+	void ResetRescueGuage() { m_curGuage = 0; }
+	bool GetRescueOn() { return m_bIsRescuing; }
 
 	void SetAttackedAnimTrack(); // 절뚝거리기 
 	void SetDownAnimTrack(); // 피격
 	void SetCrawlAnimTrack(); // 기어가기
 	void SetStandAnimTrack(); // 일어나기
 	void SetInteractionAnimTrack(); // 발전기 상호작용
+	
 
 	virtual void AnimTrackUpdate();
 	// ================ 다른 클라이언트 애니메이션 재생 전용

@@ -35,14 +35,14 @@ void InteractionEvent::Task()
 	case EVENT_TYPE::SWITCH_TWO_ACTIVATE_EVENT:
 	case EVENT_TYPE::SWITCH_THREE_ACTIVATE_EVENT:
 	{
-		std::cout << "Activate\n";
+
 		CGenerator* targetGen = mainGame.m_pScene->GetSceneGenerator(eventId - (uint8)EVENT_TYPE::SWITCH_ONE_ACTIVATE_EVENT);
 		if (targetGen == nullptr) break;
 		targetGen->m_bGenActive = true;
 
-		mainGame.m_pScene->m_ActiveGeneratorCnt.fetch_add(1); // 카운트 증가
+		mainGame.m_pScene->m_ActiveGeneratorCnt += 1; // 카운트 증가
 		if (mainGame.m_pScene->m_ActiveGeneratorCnt == 1) mainGame.m_pScene->m_bEmpExit = true; // 탈출 조건 true
-		
+
 	}
 	break;
 	case EVENT_TYPE::HIDE_PLAYER_ONE:
@@ -57,35 +57,57 @@ void InteractionEvent::Task()
 	}
 	break;
 	case EVENT_TYPE::ATTACK_EVENT:
-	{	
+	{
 		CBoss* boss = static_cast<CBoss*>(mainGame.m_pScene->_players[0]);
 		if (boss == nullptr) break;
 		boss->SetnInteractionCountTime(BOSS_INTERACTION_TIME);
 		boss->SetAttackAnimOtherClient();
-		
+
 	}
-		break;
+	break;
 	case EVENT_TYPE::ATTACKED_PLAYER_TWO:
 	case EVENT_TYPE::ATTACKED_PLAYER_THREE:
 	case EVENT_TYPE::ATTACKED_PLAYER_FOUR:
 		// ========= 플레이어 피격 관련 애니메이션 재생
 		// ========= 플레이어 HP 제거 ================
 	{
-		
+
 		CPlayer* player = mainGame.m_pScene->_players[eventId - (int8)(EVENT_TYPE::ATTACKED_PLAYER_ONE)];
 		if (player == nullptr) break;
 		static_cast<CEmployee*>(player)->PlayerAttacked();
 	}
+	break;
+	case EVENT_TYPE::RESCUE_PLAYER_TWO:
+	case EVENT_TYPE::RESCUE_PLAYER_THREE:
+	case EVENT_TYPE::RESCUE_PLAYER_FOUR:
+	{
+		CPlayer* player = mainGame.m_pScene->_players[eventId - (int8)(EVENT_TYPE::RESCUE_PLAYER_ONE)];
+		if (player == nullptr) break;
+		static_cast<CEmployee*>(player)->RescueOn(true);
+	}
 		break;
+	case EVENT_TYPE::RESCUE_CANCEL_PLAYER_TWO:
+	case EVENT_TYPE::RESCUE_CANCEL_PLAYER_THREE:
+	case EVENT_TYPE::RESCUE_CANCEL_PLAYER_FOUR:
+	{
+		CPlayer* player = mainGame.m_pScene->_players[eventId - (int8)(EVENT_TYPE::RESCUE_CANCEL_PLAYER_ONE)];
+		if (player == nullptr) break;
+		static_cast<CEmployee*>(player)->RescueOn(false);
+	}
+	break;
+
 	case EVENT_TYPE::ALIVE_PLAYER_TWO:
 	case EVENT_TYPE::ALIVE_PLAYER_THREE:
 	case EVENT_TYPE::ALIVE_PLAYER_FOUR:
 		// ========= 플레이어 피격 관련 애니메이션 재생
 		// ========= 플레이어 HP 제거 ================
 	{
+		std::cout << "Alive\n";
 		CPlayer* player = mainGame.m_pScene->_players[eventId - (int8)(EVENT_TYPE::ALIVE_PLAYER_ONE)];
 		if (player == nullptr) break;
 		static_cast<CEmployee*>(player)->SetBehavior(PLAYER_BEHAVIOR::STAND);
+		static_cast<CEmployee*>(player)->m_standAnimationCount = EMPLOYEE_STAND_TIME;
+
 	}
 	
 	break;

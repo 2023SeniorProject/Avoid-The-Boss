@@ -17,7 +17,6 @@ void CGenerator::Update(float fTimeElapsed)
 	if (m_bOnInteraction && !m_bGenActive) m_curGuage += m_guageSpeed * fTimeElapsed;
 	if (m_curGuage > m_maxGuage && !m_bGenActive)
 	{
-		std::cout << "Active\n";
 		m_bGenActive = true;
 		SC_EVENTPACKET packet;
 		packet.type = (uint8)SC_PACKET_TYPE::GAMEEVENT;

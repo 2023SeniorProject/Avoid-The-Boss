@@ -728,6 +728,7 @@ void CGameScene::Exit()
 {
 	if (m_bEmpExit) // 탈출 성공 시 , 해야할 일 처리
 	{
+		std::cout << "Exit Ready\n";
 		for (int i = 0; i < m_nShaders; i++)
 		{
 			CStandardObjectsShader* pShaderObjects = (CStandardObjectsShader*)m_ppShaders[i];

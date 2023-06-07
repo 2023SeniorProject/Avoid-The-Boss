@@ -111,7 +111,7 @@ public:
 		playerBV.Radius = 0.3f;
 
 		// RTT를 고려해서 5 프레임이상 차이까지는 과거 패킷이 아닌 것으로 간주한다.
-		if (frame + 10 <= _curFrame) std::cout << "Past Packet Detected. CurFrame :" << _curFrame << " Packet Frame : " << frame << "\n";
+		if (frame + 5 <= _curFrame) std::cout << "Past Attacked Packet Detected. CurFrame :" << _curFrame << " Packet Frame : " << frame << "\n";
 		if (playerBV.Intersects(XMLoadFloat3(&bossLoc), XMLoadFloat3(&layDir), rayDist))
 		{
 			return true;

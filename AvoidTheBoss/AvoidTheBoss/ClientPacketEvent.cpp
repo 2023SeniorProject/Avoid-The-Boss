@@ -13,7 +13,7 @@ void InteractionEvent::Task()
 	case EVENT_TYPE::SWITCH_TWO_START_EVENT:
 	case EVENT_TYPE::SWITCH_THREE_START_EVENT:
 	{
-		CGenerator* targetGen = mainGame.m_pScene->GetSceneGenerator(eventId - (uint8)EVENT_TYPE::SWITCH_ONE_START_EVENT);
+		CGenerator* targetGen = mainGame.m_pScene->GetSceneGenByIdx(eventId - (uint8)EVENT_TYPE::SWITCH_ONE_START_EVENT);
 		if (targetGen == nullptr) break;
 		targetGen->SetAlreadyOn(true);
 		targetGen->SetAnimationCount(BUTTON_ANIM_FRAME);
@@ -24,7 +24,7 @@ void InteractionEvent::Task()
 	case EVENT_TYPE::SWITCH_THREE_END_EVENT:
 	{
 		std::cout << "Switch Cancel\n";
-		CGenerator* targetGen = mainGame.m_pScene->GetSceneGenerator(eventId - (uint8)EVENT_TYPE::SWITCH_ONE_END_EVENT);
+		CGenerator* targetGen = mainGame.m_pScene->GetSceneGenByIdx(eventId - (uint8)EVENT_TYPE::SWITCH_ONE_END_EVENT);
 		if (targetGen == nullptr) break;
 		targetGen->SetAlreadyOn(false);
 		targetGen->SetAnimationCount(0);
@@ -36,12 +36,12 @@ void InteractionEvent::Task()
 	case EVENT_TYPE::SWITCH_THREE_ACTIVATE_EVENT:
 	{
 
-		CGenerator* targetGen = mainGame.m_pScene->GetSceneGenerator(eventId - (uint8)EVENT_TYPE::SWITCH_ONE_ACTIVATE_EVENT);
+		CGenerator* targetGen = mainGame.m_pScene->GetSceneGenByIdx(eventId - (uint8)EVENT_TYPE::SWITCH_ONE_ACTIVATE_EVENT);
 		if (targetGen == nullptr) break;
 		targetGen->m_bGenActive = true;
 
 		mainGame.m_pScene->m_ActiveGeneratorCnt += 1; // 카운트 증가
-		if (mainGame.m_pScene->m_ActiveGeneratorCnt == 1) mainGame.m_pScene->m_bEmpExit = true; // 탈출 조건 true
+		if (mainGame.m_pScene->m_ActiveGeneratorCnt >= 1) mainGame.m_pScene->m_bEmpExit = true; // 탈출 조건 true
 
 	}
 	break;

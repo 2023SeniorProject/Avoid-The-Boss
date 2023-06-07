@@ -109,7 +109,7 @@ public: // 오승담 작성 함수
 		return _players[idx];
 	}
 
-	CGenerator* GetSceneGenerator(const int32 idx)
+	CGenerator* GetSceneGenByIdx(const int32 idx)
 	{
 		if (idx == -1) return nullptr;
 		return m_ppGenerator[idx];

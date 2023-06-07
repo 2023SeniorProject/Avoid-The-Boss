@@ -60,9 +60,12 @@ public:
 	uint8 m_ctype = -1; // 자신의 캐릭터 타입을 구현
 	int16 m_sid = -1; // 자신으 Session Id
 	std::mutex m_lock; // 자신의 Lock
+
 	BoundingSphere m_playerBV; // BV = bounding volume
 	CHARACTER_TYPE m_nCharacterType;
+	
 	bool m_hide = false;// 플레이어를 가릴 것이냐 그릴 것이냐
+	
 	// 05-21 추가
 	int32 m_hp = 5; // hp는 5로 설정
 	int32 m_idx = 0;
@@ -115,26 +118,16 @@ public:
 	
 
 public: //04-29 추가함수 
-	virtual void ProcessInput(const int16&) { };
+	virtual uint8 ProcessInput() { };
 	virtual void SetAnimationTrack(int32 num) {};
-	virtual void Move(int16 dwDirection, float fDistance);
+	virtual void Move(const int8& dwDirection, float fDistance);
 	virtual void Update(float fTimeElapsed, CLIENT_TYPE ptype);
 	virtual void LateUpdate() {};
 	virtual void Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera = NULL);
 	// 05-22 추가 함수
 	virtual void AnimTrackUpdate(float ,CLIENT_TYPE) {};
-
 	virtual void SetBehavior(PLAYER_BEHAVIOR b) { m_behavior = (int32)b; };
-protected: // 06-03 애니메이션 관련 처리인지 아니면 상호작용 관련 처리인건지 명확하게 구별해야함
-	int			m_InteractionType = -1;
-	bool		m_bOnInteraction = false;
-	int			m_InteractionCountTime = -1;;
-public:
-	virtual void SetInteractionOn(bool value) { m_bOnInteraction = value; }
-	bool GetOnInteraction() { return m_bOnInteraction; }
-	
-	void SetnInteractionCountTime(int value) { m_InteractionCountTime = value; }
-	int  GetnInteractionCountTime() { return m_InteractionCountTime; }
+
 
 	virtual int32 GetPlayerBehavior() { return m_behavior; }
 };

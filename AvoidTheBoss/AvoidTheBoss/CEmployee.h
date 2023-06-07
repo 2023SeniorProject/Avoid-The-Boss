@@ -3,7 +3,8 @@
 class CEmployee : public CPlayer
 {
 public:
-	bool m_bIsPlayerOnSwitchInteration = false; // F키를 눌렀다 땠는지 확인하는 용도
+	bool m_bIsPlayerOnGenInter = false; // F키를 눌렀다 땠는지 확인하는 용도
+	bool m_bIsPlayerOnRescueInter = false;
 private:
 	bool m_bIsInGenArea = false;
 	bool m_bIsInDownPlayerArea = false; // Down된 플레이어와 인접해 있는가?
@@ -12,6 +13,8 @@ private:
 	float m_curGuage = 0;
 	float m_rVel = 5.0f;
 	float m_bIsRescuing = false;
+private:
+	int32 m_curInterGen = -1;
 public:
 	int32 m_attackedAnimationCount = 0;
 	int32 m_downAnimationCount = 0;
@@ -24,25 +27,33 @@ public:
 	
 
 	// ========== 플레이어 조작 관련 ===================
-	virtual void ProcessInput(const int16&);
-	virtual void Move(const int16& dwDirection, float fDistance);
+	virtual uint8 ProcessInput();
+	virtual void Move(const int8& dwDirection, float fDistance);
 	virtual void Update(float fTimeElapsed, CLIENT_TYPE ptype);
 	virtual void LateUpdate(float fTimeElapsed, CLIENT_TYPE ptype);
+
+	void SetGenInteraction(bool value) { m_bIsPlayerOnGenInter = value; }
+	bool GetIsPlayerOnGenInter() { return m_bIsPlayerOnGenInter; }
+	void SetRescueInteraction(bool value) { m_bIsPlayerOnRescueInter = value; }
+	bool GetIsPlayerOnRescueInter() { return m_bIsPlayerOnRescueInter; }
+
 	// ============= 애니메이션 트랙 셋팅 관련 ============
 	void SetIdleAnimTrack(); // 걷기
 	void SetRunAnimTrack(); // 달리기
 	bool IsMovable() 
 	{ 
-		return !(m_behavior == (int32)PLAYER_BEHAVIOR::DOWN || 
-			m_behavior == (int32)PLAYER_BEHAVIOR::CRAWL || m_behavior == (int32)PLAYER_BEHAVIOR::STAND 
-			|| m_behavior == (int32)PLAYER_BEHAVIOR::RESCUE || m_behavior == (int32)PLAYER_BEHAVIOR::SWITCH_INTER);
+		return !(m_behavior == (int32)PLAYER_BEHAVIOR::RESCUE || m_behavior == (int32)PLAYER_BEHAVIOR::SWITCH_INTER);
+	}
+	bool IsSeMiBehavior() // 스탠드, 크라울, 다운 상태
+	{
+		return !(m_behavior == (int32)PLAYER_BEHAVIOR::DOWN || m_behavior == (int32)PLAYER_BEHAVIOR::CRAWL || m_behavior == (int32)PLAYER_BEHAVIOR::STAND);
 	}
 	
 	// 깨우기
 	void RescueOn(bool value) 
 	{ 
-		if (m_behavior == (int32)PLAYER_BEHAVIOR::CRAWL) m_bIsRescuing = true;
-
+		if(m_bIsRescuing != value ) m_bIsRescuing = value;
+		
 	}
 	void ResetRescueGuage() { m_curGuage = 0; }
 	bool GetRescueOn() { return m_bIsRescuing; }
@@ -62,6 +73,8 @@ public:
 public: // 05-23 추가 함수
 	void PlayerAttacked();
 	void PlayerDown();
+	bool GenTasking();
+	bool RescueTasking();
 	int32 GetPlayerBehavior() { return m_behavior; }
 	
 	bool GetIsInGenArea() { return m_bIsInGenArea; }

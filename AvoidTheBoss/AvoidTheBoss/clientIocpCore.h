@@ -19,8 +19,9 @@ public:
 	~CCIocpCore();
 	void InitConnect(const char* address);
 	void DoConnect(void* loginInfo);
+	void DoSend(void* packet) { _client->DoSend(packet); }
 	virtual void Disconnect(int32 sid) override;
-public:
+private:
 	CSession* _client;
 	SOCKADDR_IN _serveraddr;
 

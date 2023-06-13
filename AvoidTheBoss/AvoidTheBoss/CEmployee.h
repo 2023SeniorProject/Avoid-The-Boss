@@ -75,7 +75,7 @@ public: // 05-23 추가 함수
 	void PlayerDown();
 	bool GenTasking();
 	bool RescueTasking();
-	int32 GetPlayerBehavior() { return m_behavior; }
+	
 	
 	bool GetIsInGenArea() { return m_bIsInGenArea; }
 	int32 GetAvailGenIdx();

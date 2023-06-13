@@ -25,7 +25,7 @@ static const char *g_pstrCharactorRefernece[5] =
 	"Model/Character4_Idle.bin"
 };
 
-#define BOSS_INTERACTION_TIME 25 //25프레임 (기존 65)
+#define BOSS_ATTACK_TIME 25 //25프레임 (기존 65)
 #define BOSS_RUNATTACK_TIME 50 //25프레임 (기존 65)
 
 #define EMPLOYEE_ATTACKED_TIME 30 //20프레임 (기존 65)
@@ -118,7 +118,7 @@ public:
 	
 
 public: //04-29 추가함수 
-	virtual uint8 ProcessInput() { };
+	virtual uint8 ProcessInput() { return 0; };
 	virtual void SetAnimationTrack(int32 num) {};
 	virtual void Move(const int8& dwDirection, float fDistance);
 	virtual void Update(float fTimeElapsed, CLIENT_TYPE ptype);
@@ -127,9 +127,7 @@ public: //04-29 추가함수
 	// 05-22 추가 함수
 	virtual void AnimTrackUpdate(float ,CLIENT_TYPE) {};
 	virtual void SetBehavior(PLAYER_BEHAVIOR b) { m_behavior = (int32)b; };
-
-
-	virtual int32 GetPlayerBehavior() { return m_behavior; }
+	virtual int32 GetBehavior() { return m_behavior; }
 };
 
 

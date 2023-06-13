@@ -11,7 +11,6 @@ CEmployee::CEmployee(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCo
 	m_nCharacterType = nType;
 
 	m_pCamera = ChangeCamera(THIRD_PERSON_CAMERA, 0.0f);
-	m_InteractionCountTime = 40;
 
 	CLoadedModelInfo* pEmployeeModel = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, g_pstrCharactorRefernece[(int)m_nCharacterType], NULL, Layout::PLAYER);
 	SetChild(pEmployeeModel->m_pModelRootObject, true);
@@ -89,7 +88,7 @@ uint8 CEmployee::ProcessInput()
 	// 발전기 상호작용 관련 인풋 처리
 
 	int8 dir = 0;
-	if (IsSeMiBehavior())
+	if (!IsSeMiBehavior())
 	{
 		if (InputManager::GetInstance().GetKeyBuffer(KEY_TYPE::W))  dir |= KEY_FORWARD;
 		if (InputManager::GetInstance().GetKeyBuffer(KEY_TYPE::A))  dir |= KEY_LEFT;
@@ -376,29 +375,6 @@ void CEmployee::AnimTrackUpdate()
 	}
 }
 
-void CEmployee::SetInteractionAnimTrackOtherClient()
-{
-	if (m_pSkinnedAnimationController == nullptr) return;
-	if (m_bOnInteraction)
-	{
-		m_pSkinnedAnimationController->SetTrackEnable(0, false);
-		m_pSkinnedAnimationController->SetTrackEnable(1, false);
-		m_pSkinnedAnimationController->SetTrackEnable(2, false);
-		m_pSkinnedAnimationController->SetTrackEnable(3, false);
-		m_pSkinnedAnimationController->SetTrackEnable(4, false);
-		m_pSkinnedAnimationController->SetTrackEnable(5, false);
-		m_pSkinnedAnimationController->SetTrackEnable(6, true);
-
-		m_pSkinnedAnimationController->SetTrackPosition(0, 0);
-		m_pSkinnedAnimationController->SetTrackPosition(1, 0);
-		m_pSkinnedAnimationController->SetTrackPosition(2, 0);
-		m_pSkinnedAnimationController->SetTrackPosition(3, 0);
-		m_pSkinnedAnimationController->SetTrackPosition(4, 0);
-		m_pSkinnedAnimationController->SetTrackPosition(5, 0);
-		m_pSkinnedAnimationController->SetTrackPosition(6, 0);
-	}
-}
-
 int32 CEmployee::GetAvailGenIdx()
 {
 	for (int i = 0; i < 3; ++i)
@@ -558,5 +534,6 @@ bool CEmployee::RescueTasking()
 			}
 		}
 	}
+	return true;
 }
 

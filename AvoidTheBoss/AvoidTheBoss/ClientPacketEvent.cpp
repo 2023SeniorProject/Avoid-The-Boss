@@ -60,7 +60,6 @@ void InteractionEvent::Task()
 	{
 		CBoss* boss = static_cast<CBoss*>(mainGame.m_pScene->_players[0]);
 		if (boss == nullptr) break;
-		boss->SetnInteractionCountTime(BOSS_INTERACTION_TIME);
 		boss->SetAttackAnimOtherClient();
 
 	}

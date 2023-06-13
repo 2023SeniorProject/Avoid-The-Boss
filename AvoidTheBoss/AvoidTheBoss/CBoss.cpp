@@ -12,9 +12,7 @@ CBoss::CBoss(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandLis
 	m_ctype = (uint8)PLAYER_TYPE::BOSS;
 	m_nCharacterType = CHARACTER_TYPE::BOSS;
 
-	//CLoadedModelInfo* pBossModel = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, g_pstrCharactorRefernece[(int)m_nCharacterType], NULL, Layout::PLAYER);
-	//SetChild(pBossModel->m_pModelRootObject, true);
-
+	
 	CLoadedModelInfo* pBossUpperModel = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "Model/Boss_Shooting_Run_UpperBody(3).bin", NULL, Layout::PLAYER);
 	SetChild(pBossUpperModel->m_pModelRootObject, true);
 	
@@ -40,40 +38,10 @@ CBoss::CBoss(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandLis
 	m_pSkinnedAnimationController1->SetTrackEnable(2, false);
 	m_pSkinnedAnimationController1->SetTrackEnable(3, false);
 
-	//m_pSkinnedAnimationController = new CAnimationController(pd3dDevice, pd3dCommandList, 5, pBossModel);
-
-
-	////m_pSkinnedAnimationController->SetTrackSpeed(3, 0.83f);
-	//m_pSkinnedAnimationController->SetTrackSpeed(2, 0.5f);
-
-	//m_pSkinnedAnimationController->SetTrackEnable(0, true);
-	//m_pSkinnedAnimationController->SetTrackEnable(1, false);
-	//m_pSkinnedAnimationController->SetTrackEnable(2, false);
-	//m_pSkinnedAnimationController->SetTrackEnable(3, false);
-	//m_pSkinnedAnimationController->SetTrackEnable(4, false);
-
-
-	//	m_pSkinnedAnimationController->SetCallbackKeys(1, 2);
-	//#ifdef _WITH_SOUND_RESOURCE
-	//	m_pSkinnedAnimationController->SetCallbackKey(0, 0.1f, _T("Footstep01"));
-	//	m_pSkinnedAnimationController->SetCallbackKey(1, 0.5f, _T("Footstep02"));
-	//	m_pSkinnedAnimationController->SetCallbackKey(2, 0.9f, _T("Footstep03"));
-	//#else
-	//	m_pSkinnedAnimationController->SetCallbackKey(1, 0, 0.001f, _T("Sound/Footstep01.wav"));
-	//	m_pSkinnedAnimationController->SetCallbackKey(1, 1, 0.125f, _T("Sound/Footstep02.wav"));
-	//	m_pSkinnedAnimationController->SetCallbackKey(1, 2, 0.39f, _T("Sound/Footstep03.wav"));
-	//#endif
-		//CAnimationCallbackHandler *pAnimationCallbackHandler = new CSoundCallbackHandler();
-		//m_pSkinnedAnimationController->SetAnimationCallbackHandler(1, pAnimationCallbackHandler);
-
-	//SetPlayerUpdatedContext();
-	//SetCameraUpdatedContext();
-
 	SetScale(XMFLOAT3(1.f, 1.f, 1.f));
 	SetPosition(XMFLOAT3(0.0f, 0.25f, -30.0f));
-	//CGameObject::Rotate(0.0f, -180.0f, 0.0f);
 	CreateShaderVariables(pd3dDevice, pd3dCommandList);
-	//if (pBossModel) delete pBossModel;
+	
 
 	if (pBossUpperModel) delete pBossUpperModel;
 	if (pBossLowerModel) delete pBossLowerModel;
@@ -133,54 +101,24 @@ void CBoss::PrepareAnimate()
 
 void CBoss::Move(const int16& dwDirection, float fDistance)
 {
-	
-	if (LOBYTE(dwDirection)) // 1. 캐릭터 이동량이 있을 때 (WASD 키 입력)
-	{
-		if (!m_bOnInteraction) // 공격 키 미입력, 이동키 입력 --> 달리기
-		{
-			m_behavior = (int32)PLAYER_BEHAVIOR::RUN;
-		
-		}
-		else // 공격 키, 이동키 모두 입력 --> 달리면서 쏘기
-		{
-			m_behavior = (int32)PLAYER_BEHAVIOR::RUN_ATTACK;
-			if(m_pBullet) if(!m_pBullet->GetOnShoot()) m_pBullet->SetOnShoot(true);
-			
-		
-		}
-	}
-	else if (!LOBYTE(dwDirection)) // 이동키 입력이 아닐 때
-	{
-		if (!m_bOnInteraction) // 공격 키, 이동키 모두 미입력
-		{
-			m_behavior = (int32)PLAYER_BEHAVIOR::IDLE;
-			
-		}
-		else // 공격 키만 입력, 이동키는 미입력
-		{
-			m_behavior = (int32)PLAYER_BEHAVIOR::ATTACK;
-			if (m_pBullet)  if (!m_pBullet->GetOnShoot()) m_pBullet->SetOnShoot(true);
-			
-		}
-	}
-
 	CPlayer::Move(dwDirection, BOSS_VELOCITY);
-  
 }
 
 void CBoss::SetAttackAnimOtherClient()
 {
-	// 스키닝 애니메이션이 진행중이거나 이미 애니메이션 트랙이 재생 중일 경우
-	if (m_pSkinnedAnimationController == nullptr || m_behavior == (int32)PLAYER_BEHAVIOR::ATTACK || m_behavior == (int32)PLAYER_BEHAVIOR::RUN_ATTACK) return;
-	if (!Vector3::IsZero(m_xmf3Velocity))
+	if (!GetOnAttack())
 	{
-			m_behavior = (int32)PLAYER_BEHAVIOR::RUN_ATTACK;
-			m_InteractionCountTime = BOSS_INTERACTION_TIME;
-	}
-	else if(Vector3::IsZero(m_xmf3Velocity))
-	{
-		m_behavior == (int32)PLAYER_BEHAVIOR::ATTACK;
-		m_InteractionCountTime = BOSS_INTERACTION_TIME;
+		if (!Vector3::IsZero(m_xmf3Velocity))
+		{
+			SetBehavior(PLAYER_BEHAVIOR::RUN_ATTACK);
+			SetRunAttackAnimTime();
+		}
+		else
+		{
+			SetBehavior(PLAYER_BEHAVIOR::ATTACK);
+			SetAttackAnimTime();
+		}
+		SetOnAttack(true);
 	}
 }
 
@@ -270,8 +208,6 @@ void CBoss::SetAttackAnimTrack()
 
 	m_pSkinnedAnimationController1->SetTrackPosition(0, 0.0f);
 	m_pSkinnedAnimationController1->SetTrackPosition(1, 0.0f);
-
-	m_InteractionCountTime -= 1;
 }
 
 void CBoss::SetRunAttackAnimTrack()
@@ -293,8 +229,6 @@ void CBoss::SetRunAttackAnimTrack()
 
 	m_pSkinnedAnimationController1->SetTrackPosition(0, 0.0f);
 	m_pSkinnedAnimationController1->SetTrackPosition(1, 0.0f);
-
-	m_InteractionCountTime -= 1;
 }
 
 void CBoss::AnimTrackUpdate()
@@ -308,23 +242,38 @@ void CBoss::AnimTrackUpdate()
 			SetRunAnimTrack();
 			break;
 		case (int32)PLAYER_BEHAVIOR::ATTACK:
+		{
+			if (m_standAttackAnimTime == BOSS_ATTACK_TIME)
+			{
+				SetAttackAnimTrack();
+				m_standAttackAnimTime -= 1;
+			}
+			else
+			{
+				m_standAttackAnimTime -= 1;
+				if (m_standAttackAnimTime <= 0)
+				{
+					SetOnAttack(false);
+					SetBehavior(PLAYER_BEHAVIOR::IDLE);
+				}
+			}
+		}
+		break;
 		case (int32)PLAYER_BEHAVIOR::RUN_ATTACK:
 		{
-			if (m_InteractionCountTime == BOSS_INTERACTION_TIME)
+			if (m_runAttackAnimTime == BOSS_RUNATTACK_TIME)
 			{
-				if (m_behavior == (int32)PLAYER_BEHAVIOR::ATTACK) SetAttackAnimTrack();
-				else if (m_behavior == (int32)PLAYER_BEHAVIOR::RUN_ATTACK) SetRunAttackAnimTrack();
-				m_InteractionCountTime -= 1;
+				SetRunAttackAnimTrack();
+				m_runAttackAnimTime -= 1;
 			}
-			else if (m_InteractionCountTime < BOSS_INTERACTION_TIME)
+			else
 			{
-				if (m_InteractionCountTime <= 0)
+				m_runAttackAnimTime -= 1;
+				if (m_runAttackAnimTime <= 0)
 				{
-					m_bOnInteraction = false;
-					if (m_behavior == (int32)PLAYER_BEHAVIOR::RUN_ATTACK) m_behavior = (int32)PLAYER_BEHAVIOR::RUN;
-					else m_behavior = (int32)PLAYER_BEHAVIOR::IDLE;
+					SetOnAttack(false);
+					SetBehavior(PLAYER_BEHAVIOR::RUN);
 				}
-				m_InteractionCountTime -= 1;
 			}
 		}
 		break;
@@ -333,42 +282,35 @@ void CBoss::AnimTrackUpdate()
 }
 
 
-void CBoss::ProcessInput(const int16& dwDirection)
+uint8 CBoss::ProcessInput()
 {
+	int8 dir = 0;
+
+	if (InputManager::GetInstance().GetKeyBuffer(KEY_TYPE::W))  dir |= KEY_FORWARD;
+	if (InputManager::GetInstance().GetKeyBuffer(KEY_TYPE::A))  dir |= KEY_LEFT;
+	if (InputManager::GetInstance().GetKeyBuffer(KEY_TYPE::S))  dir |= KEY_RIGHT;
+	if (InputManager::GetInstance().GetKeyBuffer(KEY_TYPE::D))  dir |= KEY_BACKWARD;
+
+	if (dir) SetBehavior(PLAYER_BEHAVIOR::RUN);
+	else	 SetBehavior(PLAYER_BEHAVIOR::IDLE);
 
 	// 1. 공격 키를 눌렀을 경우 처리 
-	if (dwDirection & KEY_SPACE)
+	if (InputManager::GetInstance().GetKeyBuffer(KEY_TYPE::SPACE) == (uint8)KEY_STATUS::KEY_PRESS && GetOnAttack())
 	{
-		if (m_bOnInteraction == false)
+		SetOnAttack(true);
+		if (GetPlayerBehavior() == (int32)PLAYER_BEHAVIOR::IDLE)
 		{
-			//보스 캐릭터 애니메이션 처리
-			SetInteractionOn(true);
-			m_InteractionCountTime = BOSS_INTERACTION_TIME;
-			// 05-06 공격 시, 사장님 공격 이벤트 전송
-			C2S_ATTACK packet;
-			packet.type = (uint8)C_PACKET_TYPE::CATTACK;
-			packet.size = sizeof(C2S_ATTACK);
-			packet.wf = mainGame.m_pScene->_curFrame;
-			
-			
-			XMFLOAT3 bossPos = mainGame.m_pScene->_players[0]->GetPosition();
-			XMFLOAT3 bossDir = mainGame.m_pScene->_players[0]->GetLook();
-			float rayDist = 10.0f;
-			if (PLAYERNUM > 1)
-			{
-				for (int i = 1; i < PLAYERNUM; ++i)
-				{
-					if (mainGame.m_pScene->_players[i]->m_playerBV.Intersects(XMLoadFloat3(&bossPos), XMLoadFloat3(&bossDir), rayDist))
-					{
-						packet.tidx = i;
-						clientCore._client->DoSend(&packet);
-						break;
-					}
-				}
-			}
+			SetAttackAnimTrack();
+			SetBehavior(PLAYER_BEHAVIOR::ATTACK);
+		}
+		else if (GetPlayerBehavior() == (int32)PLAYER_BEHAVIOR::RUN)
+		{
+			SetRunAttackAnimTrack();
+			SetBehavior(PLAYER_BEHAVIOR::RUN_ATTACK);
 		}
 	}
 
-	Move(dwDirection, BOSS_VELOCITY);
+	Move(dir, BOSS_VELOCITY);
+	return dir;
 }
 

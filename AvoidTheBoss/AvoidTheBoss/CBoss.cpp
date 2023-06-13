@@ -298,12 +298,12 @@ uint8 CBoss::ProcessInput()
 	if (InputManager::GetInstance().GetKeyBuffer(KEY_TYPE::SPACE) == (uint8)KEY_STATUS::KEY_PRESS && GetOnAttack())
 	{
 		SetOnAttack(true);
-		if (GetPlayerBehavior() == (int32)PLAYER_BEHAVIOR::IDLE)
+		if (GetBehavior() == (int32)PLAYER_BEHAVIOR::IDLE)
 		{
 			SetAttackAnimTrack();
 			SetBehavior(PLAYER_BEHAVIOR::ATTACK);
 		}
-		else if (GetPlayerBehavior() == (int32)PLAYER_BEHAVIOR::RUN)
+		else if (GetBehavior() == (int32)PLAYER_BEHAVIOR::RUN)
 		{
 			SetRunAttackAnimTrack();
 			SetBehavior(PLAYER_BEHAVIOR::RUN_ATTACK);

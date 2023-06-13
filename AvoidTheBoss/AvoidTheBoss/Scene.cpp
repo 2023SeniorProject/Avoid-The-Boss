@@ -261,7 +261,7 @@ void CGameScene::ProcessInput(HWND& hWnd)
 
 	// ============ 패킷 송신 파트 ===================
 	// 이동 키 입력에 변화가 있거나 키 입력 중 회전을 수행하는 경우에만.. 이동 관련 패킷을 전송한다.
-	if (LOBYTE(m_lastKeyInput) != keyInput || (keyInput && cxDelta != 0))
+	if (m_lastKeyInput != keyInput || (keyInput && cxDelta != 0))
 	{
 
 		C2S_KEY packet; // 키 입력 + 방향 정보를 보낸다.

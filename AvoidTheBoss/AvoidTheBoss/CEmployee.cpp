@@ -83,8 +83,6 @@ CCamera* CEmployee::ChangeCamera(DWORD nNewCameraMode, float fTimeElapsed)
 // 입력 처리 및 플레이어의 행동을 미리 셋팅한다.
 uint8 CEmployee::ProcessInput()
 {
-
-	
 	// 발전기 상호작용 관련 인풋 처리
 
 	int8 dir = 0;

@@ -153,33 +153,41 @@ void CBoss::LateUpdate(float fTimeElapsed, CLIENT_TYPE ptype)
 
 void CBoss::AnimationLogicUpdate()
 {
-	if (m_IsAttack)
+	if (GetOnAttack())
 	{
-		if (m_InteractionCountTime >= BOSS_INTERACTION_TIME )
 		{
-			m_bOnInteraction = false;
-			m_InteractionCountTime = 0;
-			return;
+			if (m_standAttackAnimTime >= BOSS_ATTACK_TIME)
+			{
+				SetOnAttack(false);
+				SetAttackAnimTime();
+				return;
+			}
+			m_standAttackAnimTime++;
 		}
-		m_InteractionCountTime++;
+		/*else if (GetBehavior() == (int32)PLAYER_BEHAVIOR::RUN_ATTACK)
+		{
+			if (m_runAttackAnimTime >= BOSS_ATTACK_TIME)
+			{
+				SetOnAttack(false);
+				SetRunAttackAnimTime();
+				return;
+			}
+			m_runAttackAnimTime++;
+		}*/
 	}
 }
 
 void CBoss::AimationStateUpdate()
 {
-	if (m_bOnInteraction)
+	if (GetOnAttack())
 	{
-		if(Vector3::IsZero(m_xmf3Velocity))
-			m_behavior = (int32)PLAYER_BEHAVIOR::ATTACK;
-		else
-			m_behavior = (int32)PLAYER_BEHAVIOR::RUN_ATTACK;
+		if(Vector3::IsZero(m_xmf3Velocity)) SetBehavior(PLAYER_BEHAVIOR::ATTACK);
+		else SetBehavior(PLAYER_BEHAVIOR::RUN_ATTACK);
 	}
 	else
 	{
-		if (Vector3::IsZero(m_xmf3Velocity))
-			m_behavior = (int32)PLAYER_BEHAVIOR::IDLE;
-		else
-			m_behavior = (int32)PLAYER_BEHAVIOR::RUN;
+		if (Vector3::IsZero(m_xmf3Velocity)) SetBehavior(PLAYER_BEHAVIOR::IDLE);
+		else SetBehavior(PLAYER_BEHAVIOR::RUN);
 	}
 }
 
@@ -285,7 +293,8 @@ void CBoss::AnimTrackUpdate()
 			break;
 		case (int32)PLAYER_BEHAVIOR::ATTACK:
 		{
-			if (m_standAttackAnimTime == BOSS_ATTACK_TIME)
+			SetAttackAnimTrack();
+			/*if (m_standAttackAnimTime == BOSS_ATTACK_TIME)
 			{
 				SetAttackAnimTrack();
 				m_standAttackAnimTime -= 1;
@@ -298,12 +307,13 @@ void CBoss::AnimTrackUpdate()
 					SetOnAttack(false);
 					SetBehavior(PLAYER_BEHAVIOR::IDLE);
 				}
-			}
+			}*/
 		}
 		break;
 		case (int32)PLAYER_BEHAVIOR::RUN_ATTACK:
 		{
-			if (m_runAttackAnimTime == BOSS_RUNATTACK_TIME)
+			SetRunAttackAnimTrack();
+			/*if (m_runAttackAnimTime == BOSS_RUNATTACK_TIME)
 			{
 				SetRunAttackAnimTrack();
 				m_runAttackAnimTime -= 1;
@@ -316,7 +326,7 @@ void CBoss::AnimTrackUpdate()
 					SetOnAttack(false);
 					SetBehavior(PLAYER_BEHAVIOR::RUN);
 				}
-			}
+			}*/
 		}
 		break;
 	}
@@ -325,7 +335,7 @@ void CBoss::AnimTrackUpdate()
 
 uint8 CBoss::ProcessInput()
 {
-	int8 dir = 0;
+	uint8 dir = 0;
 
 	if (InputManager::GetInstance().GetKeyBuffer(KEY_TYPE::W) > 0)  dir |= KEY_FORWARD;
 	if (InputManager::GetInstance().GetKeyBuffer(KEY_TYPE::A) > 0)  dir |= KEY_LEFT;
@@ -341,17 +351,16 @@ uint8 CBoss::ProcessInput()
 		SetOnAttack(true);
 		if (GetBehavior() == (int32)PLAYER_BEHAVIOR::IDLE)
 		{
-			SetAttackAnimTrack();
-			SetBehavior(PLAYER_BEHAVIOR::ATTACK);
+			//SetAttackAnimTime();
+			//SetBehavior(PLAYER_BEHAVIOR::ATTACK);
 		}
 		else if (GetBehavior() == (int32)PLAYER_BEHAVIOR::RUN)
 		{
-			SetRunAttackAnimTrack();
-			SetBehavior(PLAYER_BEHAVIOR::RUN_ATTACK);
-			}
+			//SetRunAttackAnimTime();
+			//SetBehavior(PLAYER_BEHAVIOR::RUN_ATTACK);
 		}
 	}
-	std::cout << (int32)dir << "\n";
+	
 	Move(dir, BOSS_VELOCITY);
 	return dir;
 }

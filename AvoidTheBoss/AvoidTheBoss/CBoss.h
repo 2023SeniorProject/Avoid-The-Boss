@@ -8,9 +8,9 @@ class CBoss : public CPlayer
 private:
 	CGameObject* m_RightHands = NULL;
 private: // 06/11 --> 06/13 Ãß°¡
-	int32 m_runAttackAnimTime = BOSS_RUNATTACK_TIME;
-	int32 m_standAttackAnimTime = BOSS_ATTACK_TIME;
-	bool  m_IsOnAttack;
+	int32 m_runAttackAnimTime = 0;
+	int32 m_standAttackAnimTime = 0;
+	bool  m_IsOnAttack = false ;
 public:
 	int nBullet = 50;
 	CBullet* m_pBullet = NULL;
@@ -42,11 +42,11 @@ public:
 	bool GetOnAttack() { return m_IsOnAttack; }
 	void SetAttackAnimTime()
 	{
-		m_standAttackAnimTime = BOSS_ATTACK_TIME;
+		m_standAttackAnimTime = 0;
 	}
 	void SetRunAttackAnimTime()
 	{
-		m_runAttackAnimTime = BOSS_RUNATTACK_TIME;
+		m_runAttackAnimTime = 0;
 	}
 
 	void SetAttackAnimOtherClient();

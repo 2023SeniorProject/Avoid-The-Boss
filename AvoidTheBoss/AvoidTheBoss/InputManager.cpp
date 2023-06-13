@@ -11,6 +11,8 @@ void InputManager::InputStatusUpdate()
 	{
 		Update(i);
 	}
+
+	Update(VK_SPACE);
 } 
 
 void InputManager::MouseInputStatusUpdate()

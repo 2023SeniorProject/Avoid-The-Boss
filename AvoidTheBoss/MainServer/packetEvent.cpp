@@ -122,6 +122,15 @@ void InteractionEvent::Task()
 
 	}
 	break;
+	case EVENT_TYPE::ALIVE_PLAYER_ONE:
+	case EVENT_TYPE::ALIVE_PLAYER_TWO:
+	case EVENT_TYPE::ALIVE_PLAYER_THREE:
+	case EVENT_TYPE::ALIVE_PLAYER_FOUR:
+	{
+		SPlayer& p = targetRoom._players[(int8)eventId - (int8)EVENT_TYPE::ALIVE_PLAYER_ONE];
+		p.ProcessAlive();
+	}
+	break;
 	default:
 		std::cout << "UnKnown Game Event Please Check Your Packet Type\n";
 		break;
@@ -148,7 +157,7 @@ void moveEvent::Task()
 		packet.type = (uint8)S_PACKET_TYPE::SPOS;
 		packet.x = targetPlayer.GetPosition().x;
 		packet.z = targetPlayer.GetPosition().z;
-		//std::cout << "[" << _sid << "] (" << packet.x << "," << packet.z << ")\n";
+		
 		targetRoom.BroadCastingExcept(&packet, _sid);
 	}
 };
@@ -156,12 +165,12 @@ void moveEvent::Task()
 void AttackEvent::Task()
 {
 	int16 roomNum = ServerIocpCore._clients[_sid]->_myRm;
-	bool retVal = ServerIocpCore._rmgr->GetRoom(_sid).ProcessAttackPacket(_wf, _tidx);
+	bool retVal = ServerIocpCore._rmgr->GetRoom(_sid).ProcessAttackEvent(_wf, _tidx);
 
 	SPlayer& emp = ServerIocpCore._rmgr->GetRoom(_sid)._players[_tidx];
 	if (retVal)
 	{
-		emp.AttackedPlayer();
+		emp.ProcessAttack();
 
 		S2C_ANIMPACKET apacket;
 		apacket.size = sizeof(S2C_ANIMPACKET);

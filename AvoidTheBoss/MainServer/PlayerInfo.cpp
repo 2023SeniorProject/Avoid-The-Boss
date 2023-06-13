@@ -47,7 +47,7 @@ void SPlayer::ProcessInput(const int16& input,const XMFLOAT3& lookVec)
 void SPlayer::Move(const int16& dwDirection, float fDistance)
 {
 	XMFLOAT3 xmf3Shift = XMFLOAT3(0, 0, 0);
-	if (m_behavior != (int32)PLAYER_BEHAVIOR::IDLE && m_behavior != (int32)PLAYER_BEHAVIOR::RUN && m_behavior != (int32)PLAYER_BEHAVIOR::RUN_ATTACK)
+	if (GetBehavior() != (int32)PLAYER_BEHAVIOR::IDLE)
 	{
 		SetVelocity(xmf3Shift);
 		return;

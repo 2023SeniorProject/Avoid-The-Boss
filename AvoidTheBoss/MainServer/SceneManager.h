@@ -26,9 +26,6 @@ public:
 	void ChangeToPrevScene() {} // 이전의 씬으로 돌아간다.
 	void ChangeToNextScene() {} // 다음의 씬으로 돌아간다.
 	void UpdateScene() { m_scenes.front()->Update();}
-	void ProcessScenePacket() { m_scenes.front()->PocessPacket();}
-
-
 	
 };
 

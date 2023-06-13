@@ -7,7 +7,7 @@ int8 InputManager::m_keyBuffer[256] = {-1,};
 
 void InputManager::InputStatusUpdate()
 {
-	for (int i = 97; i < 123; ++i)
+	for (int i = 65; i < 90; ++i)
 	{
 		Update(i);
 	}

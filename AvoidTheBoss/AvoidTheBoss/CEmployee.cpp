@@ -90,10 +90,10 @@ uint8 CEmployee::ProcessInput()
 	int8 dir = 0;
 	if (!IsSeMiBehavior())
 	{
-		if (InputManager::GetInstance().GetKeyBuffer(KEY_TYPE::W))  dir |= KEY_FORWARD;
-		if (InputManager::GetInstance().GetKeyBuffer(KEY_TYPE::A))  dir |= KEY_LEFT;
-		if (InputManager::GetInstance().GetKeyBuffer(KEY_TYPE::S))  dir |= KEY_RIGHT;
-		if (InputManager::GetInstance().GetKeyBuffer(KEY_TYPE::D))  dir |= KEY_BACKWARD;
+		if (InputManager::GetInstance().GetKeyBuffer(KEY_TYPE::W) > 0)  dir |= KEY_FORWARD;
+		if (InputManager::GetInstance().GetKeyBuffer(KEY_TYPE::A) > 0)  dir |= KEY_LEFT;
+		if (InputManager::GetInstance().GetKeyBuffer(KEY_TYPE::S) > 0)  dir |= KEY_BACKWARD;
+		if (InputManager::GetInstance().GetKeyBuffer(KEY_TYPE::D) > 0)  dir |= KEY_RIGHT;
 
 		if (dir) SetBehavior(PLAYER_BEHAVIOR::RUN);
 		else	 SetBehavior(PLAYER_BEHAVIOR::IDLE);

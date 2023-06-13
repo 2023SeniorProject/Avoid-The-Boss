@@ -73,8 +73,14 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
             std::cout << "end thread \n";
         }
     );
-
-  
+    GCThreadManager->Launch([=]()
+        {
+            while (true)
+            {
+                clientCore.DoDelaySendTask();
+            }
+        }
+    );
 
    while (true)
    {

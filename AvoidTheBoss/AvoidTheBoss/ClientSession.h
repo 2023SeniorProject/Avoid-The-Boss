@@ -18,7 +18,12 @@ public:
 	// 세션 정보를 얻어 내거나 세팅할 수 있는 함수들
 	SOCKET GetSock() { return _sock; }
 	bool DoSend(void* packet);
-	bool DoDelaySend(void* packet, float afterTick);
+	void DoDelaySend(C2S_ATTACK packet, float afterTick);
+	void DoDelayTask()
+	{
+		std::unique_lock<std::shared_mutex> wl(_DelayQueueLock);
+		_DelayjobQueue->DoTasks();
+	}
 	bool DoRecv();
 	void ProcessPacket(char*);
 public:
@@ -27,8 +32,6 @@ public:
 	int16  _loginOk = -3;
 private:
 	Scheduler* _DelayjobQueue;
-//public:
-//	SOCKET _sock = INVALID_SOCKET;
-//	RecvEvent _rev;
-//	RWLOCK;
+	std::shared_mutex _DelayQueueLock;
+
 };

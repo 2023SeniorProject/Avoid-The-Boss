@@ -25,6 +25,9 @@ public:
 	
 
 	// ============= 애니메이션 트랙 셋팅 관련 ============ // 05-22 추가 함수
+	void AnimationLogicUpdate();
+	void AimationStateUpdate();
+
 	void SetIdleAnimTrack();
 	void SetRunAnimTrack();
 	void SetAttackAnimTrack();

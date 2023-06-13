@@ -25,7 +25,7 @@ static const char *g_pstrCharactorRefernece[5] =
 	"Model/Character4_Idle.bin"
 };
 
-#define BOSS_INTERACTION_TIME 25 //25프레임 (기존 65)
+#define BOSS_INTERACTION_TIME 120 //25프레임 (기존 65)
 #define BOSS_RUNATTACK_TIME 50 //25프레임 (기존 65)
 
 #define EMPLOYEE_ATTACKED_TIME 30 //20프레임 (기존 65)
@@ -127,7 +127,7 @@ public: //04-29 추가함수
 protected: // 06-03 애니메이션 관련 처리인지 아니면 상호작용 관련 처리인건지 명확하게 구별해야함
 	int			m_InteractionType = -1;
 	bool		m_bOnInteraction = false;
-	int			m_InteractionCountTime = -1;;
+	int			m_InteractionCountTime = 0;
 public:
 	virtual void SetInteractionOn(bool value) { m_bOnInteraction = value; }
 	bool GetOnInteraction() { return m_bOnInteraction; }

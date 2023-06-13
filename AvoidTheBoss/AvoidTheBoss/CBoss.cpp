@@ -102,7 +102,7 @@ void CBoss::PrepareAnimate()
 }
 
 void CBoss::Move(const int16& dwDirection, float fDistance)
-{
+{	
 	CPlayer::Move(dwDirection, BOSS_VELOCITY);
 }
 
@@ -128,24 +128,60 @@ void CBoss::Update(float fTimeElapsed, CLIENT_TYPE ptype)
 {
 	CPlayer::Update(fTimeElapsed, ptype);
 
-	
 	if (m_pBullet)
 	{
 		m_pBullet->SetBulletPosition(GetPosition());
 		m_pBullet->Update(fTimeElapsed);
 	}
-	
+
+	AnimationLogicUpdate(); // 쿨타임 계산
+
+	AimationStateUpdate(); // 애니메이션 트랙 상태 결정
+
+	AnimTrackUpdate(); // 애니메이션 트랙 상태 변경
+
 	LateUpdate(fTimeElapsed, ptype);
-	
 }
 
 void CBoss::LateUpdate(float fTimeElapsed, CLIENT_TYPE ptype)
 {
 	if (ptype == CLIENT_TYPE::OWNER) m_xmf3Velocity = XMFLOAT3(0.0f, 0.0f, 0.0f);
 	else if (ptype != CLIENT_TYPE::OTHER_PLAYER && m_pBullet) SetAttackAnimOtherClient();
-	AnimTrackUpdate();
+	//AnimTrackUpdate();
 }
 
+
+void CBoss::AnimationLogicUpdate()
+{
+	if (m_IsAttack)
+	{
+		if (m_InteractionCountTime >= BOSS_INTERACTION_TIME )
+		{
+			m_bOnInteraction = false;
+			m_InteractionCountTime = 0;
+			return;
+		}
+		m_InteractionCountTime++;
+	}
+}
+
+void CBoss::AimationStateUpdate()
+{
+	if (m_bOnInteraction)
+	{
+		if(Vector3::IsZero(m_xmf3Velocity))
+			m_behavior = (int32)PLAYER_BEHAVIOR::ATTACK;
+		else
+			m_behavior = (int32)PLAYER_BEHAVIOR::RUN_ATTACK;
+	}
+	else
+	{
+		if (Vector3::IsZero(m_xmf3Velocity))
+			m_behavior = (int32)PLAYER_BEHAVIOR::IDLE;
+		else
+			m_behavior = (int32)PLAYER_BEHAVIOR::RUN;
+	}
+}
 
 void CBoss::SetIdleAnimTrack()
 {
@@ -210,6 +246,8 @@ void CBoss::SetAttackAnimTrack()
 
 	m_pSkinnedAnimationController1->SetTrackPosition(0, 0.0f);
 	m_pSkinnedAnimationController1->SetTrackPosition(1, 0.0f);
+
+	//m_InteractionCountTime -= 1;
 }
 
 void CBoss::SetRunAttackAnimTrack()
@@ -231,6 +269,8 @@ void CBoss::SetRunAttackAnimTrack()
 
 	m_pSkinnedAnimationController1->SetTrackPosition(0, 0.0f);
 	m_pSkinnedAnimationController1->SetTrackPosition(1, 0.0f);
+
+	//m_InteractionCountTime -= 1;
 }
 
 void CBoss::AnimTrackUpdate()
@@ -280,7 +320,6 @@ void CBoss::AnimTrackUpdate()
 		}
 		break;
 	}
-
 }
 
 
@@ -297,7 +336,7 @@ uint8 CBoss::ProcessInput()
 	else	 SetBehavior(PLAYER_BEHAVIOR::IDLE);
 
 	// 1. 공격 키를 눌렀을 경우 처리 
-	if (InputManager::GetInstance().GetKeyBuffer(KEY_TYPE::SPACE) == (uint8)KEY_STATUS::KEY_PRESS && GetOnAttack())
+	if (InputManager::GetInstance().GetKeyBuffer(KEY_TYPE::SPACE) == (uint8)KEY_STATUS::KEY_PRESS && !GetOnAttack())
 	{
 		SetOnAttack(true);
 		if (GetBehavior() == (int32)PLAYER_BEHAVIOR::IDLE)
@@ -309,6 +348,7 @@ uint8 CBoss::ProcessInput()
 		{
 			SetRunAttackAnimTrack();
 			SetBehavior(PLAYER_BEHAVIOR::RUN_ATTACK);
+			}
 		}
 	}
 	std::cout << (int32)dir << "\n";

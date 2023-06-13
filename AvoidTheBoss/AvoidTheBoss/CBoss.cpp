@@ -288,10 +288,10 @@ uint8 CBoss::ProcessInput()
 {
 	int8 dir = 0;
 
-	if (InputManager::GetInstance().GetKeyBuffer(KEY_TYPE::W))  dir |= KEY_FORWARD;
-	if (InputManager::GetInstance().GetKeyBuffer(KEY_TYPE::A))  dir |= KEY_LEFT;
-	if (InputManager::GetInstance().GetKeyBuffer(KEY_TYPE::S))  dir |= KEY_RIGHT;
-	if (InputManager::GetInstance().GetKeyBuffer(KEY_TYPE::D))  dir |= KEY_BACKWARD;
+	if (InputManager::GetInstance().GetKeyBuffer(KEY_TYPE::W) > 0)  dir |= KEY_FORWARD;
+	if (InputManager::GetInstance().GetKeyBuffer(KEY_TYPE::A) > 0)  dir |= KEY_LEFT;
+	if (InputManager::GetInstance().GetKeyBuffer(KEY_TYPE::S) > 0)  dir |= KEY_BACKWARD;
+	if (InputManager::GetInstance().GetKeyBuffer(KEY_TYPE::D) > 0)  dir |= KEY_RIGHT;
 
 	if (dir) SetBehavior(PLAYER_BEHAVIOR::RUN);
 	else	 SetBehavior(PLAYER_BEHAVIOR::IDLE);
@@ -300,18 +300,18 @@ uint8 CBoss::ProcessInput()
 	if (InputManager::GetInstance().GetKeyBuffer(KEY_TYPE::SPACE) == (uint8)KEY_STATUS::KEY_PRESS && GetOnAttack())
 	{
 		SetOnAttack(true);
-		if (GetPlayerBehavior() == (int32)PLAYER_BEHAVIOR::IDLE)
+		if (GetBehavior() == (int32)PLAYER_BEHAVIOR::IDLE)
 		{
 			SetAttackAnimTrack();
 			SetBehavior(PLAYER_BEHAVIOR::ATTACK);
 		}
-		else if (GetPlayerBehavior() == (int32)PLAYER_BEHAVIOR::RUN)
+		else if (GetBehavior() == (int32)PLAYER_BEHAVIOR::RUN)
 		{
 			SetRunAttackAnimTrack();
 			SetBehavior(PLAYER_BEHAVIOR::RUN_ATTACK);
 		}
 	}
-
+	std::cout << (int32)dir << "\n";
 	Move(dir, BOSS_VELOCITY);
 	return dir;
 }

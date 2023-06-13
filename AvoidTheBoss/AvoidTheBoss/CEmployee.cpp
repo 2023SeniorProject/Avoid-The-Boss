@@ -90,10 +90,10 @@ uint8 CEmployee::ProcessInput()
 	int8 dir = 0;
 	if (!IsSeMiBehavior())
 	{
-		if (InputManager::GetInstance().GetKeyBuffer(KEY_TYPE::W))  dir |= KEY_FORWARD;
-		if (InputManager::GetInstance().GetKeyBuffer(KEY_TYPE::A))  dir |= KEY_LEFT;
-		if (InputManager::GetInstance().GetKeyBuffer(KEY_TYPE::S))  dir |= KEY_RIGHT;
-		if (InputManager::GetInstance().GetKeyBuffer(KEY_TYPE::D))  dir |= KEY_BACKWARD;
+		if (InputManager::GetInstance().GetKeyBuffer(KEY_TYPE::W) > 0)  dir |= KEY_FORWARD;
+		if (InputManager::GetInstance().GetKeyBuffer(KEY_TYPE::A) > 0)  dir |= KEY_LEFT;
+		if (InputManager::GetInstance().GetKeyBuffer(KEY_TYPE::S) > 0)  dir |= KEY_BACKWARD;
+		if (InputManager::GetInstance().GetKeyBuffer(KEY_TYPE::D) > 0)  dir |= KEY_RIGHT;
 
 		if (dir) SetBehavior(PLAYER_BEHAVIOR::RUN);
 		else	 SetBehavior(PLAYER_BEHAVIOR::IDLE);
@@ -109,7 +109,7 @@ uint8 CEmployee::ProcessInput()
 void CEmployee::Move(const int8& dwDirection, float fDistance)
 {
 
-	switch (GetPlayerBehavior())
+	switch (GetBehavior())
 	{
 	case (int32)PLAYER_BEHAVIOR::RESCUE:
 	case (int32)PLAYER_BEHAVIOR::STAND:
@@ -149,8 +149,8 @@ void CEmployee::LateUpdate(float fTimeElapsed, CLIENT_TYPE ptype)
 			m_curGuage = 0;
 			m_hp = 5;
 			m_bIsRescuing = false;
-			m_behavior = (int32)PLAYER_BEHAVIOR::STAND;
-			m_standAnimationCount = EMPLOYEE_STAND_TIME;
+			SetBehavior(PLAYER_BEHAVIOR::IDLE);
+			m_bIsRescuing = false;
 
 			SC_EVENTPACKET packet;
 			packet.type = (uint8)SC_PACKET_TYPE::GAMEEVENT;
@@ -314,6 +314,7 @@ void CEmployee::AnimTrackUpdate()
 {
 	switch (m_behavior)
 	{
+	case (int32)PLAYER_BEHAVIOR::RESCUE:
 	case (int32)PLAYER_BEHAVIOR::IDLE:
 		SetIdleAnimTrack();
 		break;
@@ -405,7 +406,7 @@ int32 CEmployee::GetAvailEMPldx()
 		XMFLOAT3 ppos = p->GetPosition();
 		ppos = Vector3::Subtract(m_xmf3Position, ppos);
 		float dist = Vector3::Length(ppos);
-		if (dist < 1.5 && p->GetPlayerBehavior() == (int32)PLAYER_BEHAVIOR::CRAWL && !p->GetRescueOn()) return i;
+		if (dist < 1.5 && p->GetBehavior() == (int32)PLAYER_BEHAVIOR::CRAWL && !p->GetRescueOn()) return i;
 	}
 	return -1;
 }
@@ -511,6 +512,7 @@ bool CEmployee::RescueTasking()
 			std::cout << pIdx << " Rescuing\n";
 
 		}
+		return true;
 	}
 	else if (!InputManager::GetInstance().GetKeyBuffer(KEY_TYPE::E))
 	{
@@ -534,6 +536,6 @@ bool CEmployee::RescueTasking()
 			}
 		}
 	}
-	return true;
+	return false;
 }
 

@@ -165,6 +165,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="AcceptManager.cpp" />
+    <ClCompile Include="CGameManager.cpp" />
     <ClCompile Include="CollisionDetector.cpp" />
     <ClCompile Include="CSIocpCore.cpp" />
     <ClCompile Include="JobQueue.cpp" />
@@ -179,12 +180,14 @@
     </ClCompile>
     <ClCompile Include="PlayerInfo.cpp" />
     <ClCompile Include="RoomManager.cpp" />
+    <ClCompile Include="SceneManager.cpp" />
     <ClCompile Include="Session.cpp" />
     <ClCompile Include="SwitchInfo.cpp" />
     <ClCompile Include="WorldRewinder.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AcceptManager.h" />
+    <ClInclude Include="CGameManager.h" />
     <ClInclude Include="CollisionDetector.h" />
     <ClInclude Include="CSIocpCore.h" />
     <ClInclude Include="JobQueue.h" />
@@ -193,6 +196,7 @@
     <ClInclude Include="pch.h" />
     <ClInclude Include="PlayerInfo.h" />
     <ClInclude Include="RoomManager.h" />
+    <ClInclude Include="SceneManager.h" />
     <ClInclude Include="Session.h" />
     <ClInclude Include="SwitchInfo.h" />
     <ClInclude Include="WorldRewinder.h" />

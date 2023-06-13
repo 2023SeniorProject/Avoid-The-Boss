@@ -64,7 +64,8 @@ public:
 	}
 
 	void SetBehavior(PLAYER_BEHAVIOR pb) { m_behavior = (int32)pb; }
-	void AttackedPlayer() 
+	int32 GetBehavior()					 { return m_behavior;	   }
+	void ProcessAttack() 
 	{ 
 		if(m_hp > 0) m_hp -= 1;
 		if (m_hp <= 0)
@@ -72,9 +73,15 @@ public:
 			SetBehavior(PLAYER_BEHAVIOR::CRAWL);
 		}
 	}
+	void ProcessAlive()
+	{
+		SetBehavior(PLAYER_BEHAVIOR::IDLE);
+		m_hp = 3;
+	}
+
+
 	void ProcessInput(const int16& input, const XMFLOAT3& lookVec);
 	void Move(const int16& dwDirection, float fDistance);
-	//플레이어의 위치와 회전 정보를 경과 시간에 따라 갱신하는 함수이다.
 	void Update(float fTimeElapsed);
 	void LateUpdate(float fTimeElapsed);
 };

@@ -40,9 +40,9 @@ private:
 	InputManager(const InputManager& ref) {}
 	InputManager& operator=(const InputManager& ref) {}
 	~InputManager() {}
-	static void Update(const KEY_TYPE key);
-	static void SetKeyPress(const KEY_TYPE key);
-	static void SetKeyUp(const KEY_TYPE key);
+	static void Update(const int32 key);
+	static void SetKeyPress(const int32 key);
+	static void SetKeyUp(const int32 key);
 public:	
 static InputManager& GetInstance() 
 {

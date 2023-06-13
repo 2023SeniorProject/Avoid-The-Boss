@@ -93,7 +93,7 @@ public : // SceneInterface 상속 함수
 	virtual void Update(HWND hWnd);
 	virtual void Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera);
 public: // 오승담 작성 함수
-	CPlayer* GetScenePlayer(const int32 sid) 
+	CPlayer* GetScenePlayerBySid(const int32 sid) 
 	{ 
 		for (int i = 0; i < PLAYERNUM; ++i)
 		{
@@ -104,7 +104,12 @@ public: // 오승담 작성 함수
 		}
 		return nullptr;
 	}
-	CGenerator* GetSceneGenerator(const int32 idx)
+	CPlayer* GetScenePlayerByIdx(const int32 idx)
+	{
+		return _players[idx];
+	}
+
+	CGenerator* GetSceneGenByIdx(const int32 idx)
 	{
 		if (idx == -1) return nullptr;
 		return m_ppGenerator[idx];
@@ -156,7 +161,7 @@ private:
 	int							m_nGenerator = 3;
 	CGenerator**				m_ppGenerator = NULL;
 public:
-	Atomic<int32>				m_ActiveGeneratorCnt = 0; // 활성화 된 스위치 카운트;
+	int32				m_ActiveGeneratorCnt = 0; // 활성화 된 스위치 카운트;
 public:
 	bool						m_bEmpExit = false;
 	bool						m_bBossWin = false;

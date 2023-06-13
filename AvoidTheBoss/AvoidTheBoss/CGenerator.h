@@ -5,7 +5,7 @@
 #define GENERATOR_ANIM_FRAM 50
 class CGenerator : public CGameObject
 {
-	
+
 	float radius = 0.0f;
 	int m_nPipe = 3;
 	CGameObject** m_ppPipe = NULL;
@@ -30,11 +30,13 @@ public:
 	CGenerator();
 	virtual ~CGenerator() {};
 	float GetRadius() { return radius; }
-	
+
 	void SetAnimationCount(int value) { m_nGeneratorAnimationCount = value; }
 	bool GetAnimationCount() { return m_nGeneratorAnimationCount; }
 	void SetInteractionOn(bool value) { m_bOnInteraction = value; };
+	bool GetInteractionOn() { return m_bOnInteraction; }
 	void SetAlreadyOn(bool value) { m_bAlreadyOn = value; }
+	bool GetAlreadyOn() { return m_bAlreadyOn; };
 	bool IsAvailable() { return (!m_bAlreadyOn && !m_bGenActive); }
 
 	virtual void Update(float fTimeElapsed);

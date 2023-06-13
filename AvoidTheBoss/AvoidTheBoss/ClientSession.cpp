@@ -122,7 +122,7 @@ void CSession::ProcessPacket(char* packet)
 		S2C_KEY* movePacket = reinterpret_cast<S2C_KEY*>(packet);
 		moveEvent* mev = new moveEvent();
 
-		CPlayer* player = mainGame.m_pScene->GetScenePlayer(movePacket->sid);
+		CPlayer* player = mainGame.m_pScene->GetScenePlayerBySid(movePacket->sid);
 		if (player == nullptr) break;
 
 		mev->player = player;
@@ -137,7 +137,7 @@ void CSession::ProcessPacket(char* packet)
 	case (uint8)S_PACKET_TYPE::SROT:
 	{
 		S2C_ROTATE* rotatePacket = reinterpret_cast<S2C_ROTATE*>(packet);
-		CPlayer* player = mainGame.m_pScene->GetScenePlayer(rotatePacket->sid);
+		CPlayer* player = mainGame.m_pScene->GetScenePlayerBySid(rotatePacket->sid);
 		if (player != nullptr)
 		{
 			//player->Rotate(0, rotatePacket->angle, 0);
@@ -148,7 +148,7 @@ void CSession::ProcessPacket(char* packet)
 	case (uint8)S_PACKET_TYPE::SPOS: // 미리 계산한 좌표값을 보내준다.
 	{
 		S2C_POS* posPacket = reinterpret_cast<S2C_POS*>(packet);
-		CPlayer* player = mainGame.m_pScene->GetScenePlayer(posPacket->sid);		
+		CPlayer* player = mainGame.m_pScene->GetScenePlayerBySid(posPacket->sid);		
 		if (player == nullptr) break;
 		
 		XMFLOAT3 newPos = XMFLOAT3(posPacket->x, player->GetPosition().y, posPacket->z);
@@ -231,7 +231,7 @@ void CSession::ProcessPacket(char* packet)
 	{
 		S2C_ANIMPACKET* sw = (S2C_ANIMPACKET*)packet;
 		uint8 idx = sw->idx;
-		CEmployee* myPlayer = (CEmployee*)mainGame.m_pScene->GetScenePlayer(idx);
+		CEmployee* myPlayer = (CEmployee*)mainGame.m_pScene->GetScenePlayerBySid(idx);
 		if (myPlayer != nullptr)
 		{
 			if (sw->track == (uint8)ANIMTRACK::GEN_ANIM) myPlayer->SetBehavior(PLAYER_BEHAVIOR::SWITCH_INTER);

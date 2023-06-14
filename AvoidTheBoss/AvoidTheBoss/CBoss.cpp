@@ -163,15 +163,13 @@ void CBoss::AnimationLogicUpdate()
 {
 	if (GetOnAttack())
 	{
+		if (m_standAttackAnimTime >= BOSS_ATTACK_TIME)
 		{
-			if (m_standAttackAnimTime >= BOSS_ATTACK_TIME)
-			{
-				SetOnAttack(false);
-				SetAttackAnimTime();
-				return;
-			}
-			m_standAttackAnimTime++;
+			SetOnAttack(false);
+			SetAttackAnimTime();
+			return;
 		}
+		m_standAttackAnimTime++;
 		/*else if (GetBehavior() == (int32)PLAYER_BEHAVIOR::RUN_ATTACK)
 		{
 			if (m_runAttackAnimTime >= BOSS_ATTACK_TIME)
@@ -262,8 +260,6 @@ void CBoss::SetAttackAnimTrack()
 
 	m_pSkinnedAnimationController1->SetTrackPosition(0, 0.0f);
 	m_pSkinnedAnimationController1->SetTrackPosition(1, 0.0f);
-
-	//m_InteractionCountTime -= 1;
 }
 
 void CBoss::SetRunAttackAnimTrack()
@@ -285,8 +281,6 @@ void CBoss::SetRunAttackAnimTrack()
 
 	m_pSkinnedAnimationController1->SetTrackPosition(0, 0.0f);
 	m_pSkinnedAnimationController1->SetTrackPosition(1, 0.0f);
-
-	//m_InteractionCountTime -= 1;
 }
 
 void CBoss::AnimTrackUpdate()
@@ -300,43 +294,11 @@ void CBoss::AnimTrackUpdate()
 			SetRunAnimTrack();
 			break;
 		case (int32)PLAYER_BEHAVIOR::ATTACK:
-		{
 			SetAttackAnimTrack();
-			/*if (m_standAttackAnimTime == BOSS_ATTACK_TIME)
-			{
-				SetAttackAnimTrack();
-				m_standAttackAnimTime -= 1;
-			}
-			else
-			{
-				m_standAttackAnimTime -= 1;
-				if (m_standAttackAnimTime <= 0)
-				{
-					SetOnAttack(false);
-					SetBehavior(PLAYER_BEHAVIOR::IDLE);
-				}
-			}*/
-		}
-		break;
+			break;
 		case (int32)PLAYER_BEHAVIOR::RUN_ATTACK:
-		{
 			SetRunAttackAnimTrack();
-			/*if (m_runAttackAnimTime == BOSS_RUNATTACK_TIME)
-			{
-				SetRunAttackAnimTrack();
-				m_runAttackAnimTime -= 1;
-			}
-			else
-			{
-				m_runAttackAnimTime -= 1;
-				if (m_runAttackAnimTime <= 0)
-				{
-					SetOnAttack(false);
-					SetBehavior(PLAYER_BEHAVIOR::RUN);
-				}
-			}*/
-		}
-		break;
+			break;
 	}
 }
 
@@ -357,16 +319,6 @@ uint8 CBoss::ProcessInput()
 	if (InputManager::GetInstance().GetKeyBuffer(KEY_TYPE::SPACE) == (uint8)KEY_STATUS::KEY_PRESS && !GetOnAttack())
 	{
 		SetOnAttack(true);
-		if (GetBehavior() == (int32)PLAYER_BEHAVIOR::IDLE)
-		{
-			//SetAttackAnimTime();
-			//SetBehavior(PLAYER_BEHAVIOR::ATTACK);
-		}
-		else if (GetBehavior() == (int32)PLAYER_BEHAVIOR::RUN)
-		{
-			//SetRunAttackAnimTime();
-			//SetBehavior(PLAYER_BEHAVIOR::RUN_ATTACK);
-		}
 	}
 	
 	Move(dir, BOSS_VELOCITY);

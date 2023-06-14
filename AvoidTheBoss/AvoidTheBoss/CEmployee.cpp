@@ -106,7 +106,6 @@ uint8 CEmployee::ProcessInput()
 }
 void CEmployee::Move(const int8& dwDirection, float fDistance)
 {
-
 	switch (GetBehavior())
 	{
 	case (int32)PLAYER_BEHAVIOR::RESCUE:

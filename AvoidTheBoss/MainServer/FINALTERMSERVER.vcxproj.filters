@@ -44,6 +44,12 @@
     <Filter Include="ForServer\JobQueue">
       <UniqueIdentifier>{fea46be6-8a5c-4e26-b4a5-ce621bf41dc5}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ForServer\GameManager">
+      <UniqueIdentifier>{b3547dbd-1f8e-4e98-97cb-de1c129f353f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ForServer\SceneManager">
+      <UniqueIdentifier>{93bde331-dabb-4396-b893-40bb16a5eecd}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
@@ -85,6 +91,12 @@
     <ClCompile Include="JobQueue.cpp">
       <Filter>ForServer\JobQueue</Filter>
     </ClCompile>
+    <ClCompile Include="CGameManager.cpp">
+      <Filter>ForServer\GameManager</Filter>
+    </ClCompile>
+    <ClCompile Include="SceneManager.cpp">
+      <Filter>ForServer\SceneManager</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h">
@@ -122,6 +134,12 @@
     </ClInclude>
     <ClInclude Include="JobQueue.h">
       <Filter>ForServer\JobQueue</Filter>
+    </ClInclude>
+    <ClInclude Include="CGameManager.h">
+      <Filter>ForServer\GameManager</Filter>
+    </ClInclude>
+    <ClInclude Include="SceneManager.h">
+      <Filter>ForServer\SceneManager</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

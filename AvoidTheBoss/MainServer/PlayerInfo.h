@@ -21,7 +21,7 @@ public:
 	XMFLOAT3 m_xmf3Velocity;
 
 	// 05-24 추가 변수
-	bool m_bIsAwaking = false;
+	bool m_bIsRescue = false;
 	
 public:
 	BoundingSphere m_playerBV;
@@ -63,9 +63,25 @@ public:
 		std::cout << m_xmf3Position.x << " " << m_xmf3Position.z << "\n";
 	}
 
+	void SetBehavior(PLAYER_BEHAVIOR pb) { m_behavior = (int32)pb; }
+	int32 GetBehavior()					 { return m_behavior;	   }
+	void ProcessAttack() 
+	{ 
+		if(m_hp > 0) m_hp -= 1;
+		if (m_hp <= 0)
+		{
+			SetBehavior(PLAYER_BEHAVIOR::CRAWL);
+		}
+	}
+	void ProcessAlive()
+	{
+		SetBehavior(PLAYER_BEHAVIOR::IDLE);
+		m_hp = 3;
+	}
+
+
 	void ProcessInput(const int16& input, const XMFLOAT3& lookVec);
 	void Move(const int16& dwDirection, float fDistance);
-	//플레이어의 위치와 회전 정보를 경과 시간에 따라 갱신하는 함수이다.
 	void Update(float fTimeElapsed);
 	void LateUpdate(float fTimeElapsed);
 };

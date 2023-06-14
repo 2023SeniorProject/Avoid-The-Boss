@@ -164,7 +164,7 @@ struct C2S_ATTACK
 	uint8 size;
 	uint8 type;
 	int16 tidx; // 타겟
-	int8 wf; // 발생 시점 월드 프레임
+	int32 wf; // 발생 시점 월드 프레임
 };
 
 // =================

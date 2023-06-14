@@ -17,13 +17,13 @@ void CGenerator::Update(float fTimeElapsed)
 	if (m_bOnInteraction && !m_bGenActive) m_curGuage += m_guageSpeed * fTimeElapsed;
 	if (m_curGuage > m_maxGuage && !m_bGenActive)
 	{
-		std::cout << "Active\n";
 		m_bGenActive = true;
 		SC_EVENTPACKET packet;
 		packet.type = (uint8)SC_PACKET_TYPE::GAMEEVENT;
 		packet.size = sizeof(SC_EVENTPACKET);
 		packet.eventId = (uint8)EVENT_TYPE::SWITCH_ONE_ACTIVATE_EVENT + m_idx;
-		clientCore._client->DoSend(&packet);
+		clientCore.DoSend(&packet);
+		std::cout << "Gen Active\n";
 	}
 
 

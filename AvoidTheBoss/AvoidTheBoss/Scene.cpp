@@ -230,21 +230,12 @@ void CGameScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandLis
 
 void CGameScene::ProcessInput(HWND& hWnd)
 {
-	if (::GetActiveWindow() != hWnd)
-	{
-		return;
-	}
-	int16 keyInput = 0;
+	if (::GetActiveWindow() != hWnd) return;
+	
+	uint8 keyInput = 0;
 	InputManager::GetInstance().InputStatusUpdate();
 	InputManager::GetInstance().MouseInputStatusUpdate();
-	//=============== 상호작용 관련 처리 ===============
-	if (InputManager::GetInstance().GetKeyBuffer(KEY_TYPE::W) > 0) keyInput |= KEY_FORWARD;
-	if (InputManager::GetInstance().GetKeyBuffer(KEY_TYPE::A) > 0) keyInput |= KEY_LEFT;
-	if (InputManager::GetInstance().GetKeyBuffer(KEY_TYPE::S) > 0) keyInput |= KEY_BACKWARD;	
-	if (InputManager::GetInstance().GetKeyBuffer(KEY_TYPE::D) > 0) keyInput |= KEY_RIGHT;
-	if (InputManager::GetInstance().GetKeyBuffer(KEY_TYPE::F) > 0) keyInput |= KEY_F;
-	if (InputManager::GetInstance().GetKeyBuffer(KEY_TYPE::E) > 0) keyInput |= KEY_E;
-	if (InputManager::GetInstance().GetKeyBuffer(KEY_TYPE::SPACE) == (int8)KEY_STATUS::KEY_PRESS) keyInput |= KEY_SPACE;
+	
 
 	// ============= 마우스 버튼 관련 처리 ================
 	float cxDelta = 0.0f, cyDelta = 0.0f;
@@ -265,21 +256,21 @@ void CGameScene::ProcessInput(HWND& hWnd)
 
 
 	//============  플레이어에게 최종 키입력 처리 ============
-	_players[_playerIdx]->ProcessInput(keyInput); // 입력된 키를 기반으로 인풋 처리 진행
+	keyInput = _players[_playerIdx]->ProcessInput(); // 입력된 키를 기반으로 인풋 처리 진행
 	
 
 	// ============ 패킷 송신 파트 ===================
 	// 이동 키 입력에 변화가 있거나 키 입력 중 회전을 수행하는 경우에만.. 이동 관련 패킷을 전송한다.
-	if (LOBYTE(m_lastKeyInput) != LOBYTE(keyInput) || (LOBYTE(keyInput) && cxDelta != 0))
+	if (m_lastKeyInput != keyInput || (keyInput && cxDelta != 0))
 	{
 
 		C2S_KEY packet; // 키 입력 + 방향 정보를 보낸다.
 		packet.size = sizeof(C2S_KEY);
 		packet.type = (uint8)C_PACKET_TYPE::CKEY;
-		packet.key = LOBYTE(keyInput);
+		packet.key = keyInput;
 		packet.x = _players[_playerIdx]->GetLook().x;
 		packet.z = _players[_playerIdx]->GetLook().z;
-		clientCore._client->DoSend(&packet);
+		clientCore.DoSend(&packet);
 	}
 	m_lastKeyInput = keyInput;
 }
@@ -728,6 +719,7 @@ void CGameScene::Exit()
 {
 	if (m_bEmpExit) // 탈출 성공 시 , 해야할 일 처리
 	{
+		std::cout << "Exit Ready\n";
 		for (int i = 0; i < m_nShaders; i++)
 		{
 			CStandardObjectsShader* pShaderObjects = (CStandardObjectsShader*)m_ppShaders[i];

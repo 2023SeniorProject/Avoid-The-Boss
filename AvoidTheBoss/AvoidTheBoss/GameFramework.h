@@ -16,9 +16,9 @@
 // #DXR
 struct AccelerationStructureBuffers
 {
-	ComPtr<ID3D12Resource> pScratch; // Scratch memory for AS builder 스크래치 메모리
-	ComPtr<ID3D12Resource> pResult; // Where the AS is 구조 실제 저장소
-	ComPtr<ID3D12Resource> pInstanceDesc; // Hold the matrices of the instances 최상위 가속 구조 인스턴스 매트릭스 
+	ID3D12Resource* pScratch; // Scratch memory for AS builder 스크래치 메모리
+	ID3D12Resource* pResult; // Where the AS is 구조 실제 저장소
+	ID3D12Resource* pInstanceDesc; // Hold the matrices of the instances 최상위 가속 구조 인스턴스 매트릭스 
 };
 
 class CGameFramework
@@ -39,7 +39,7 @@ private:
 	//DXGI 팩토리 인터페이스에 대한 포인터이다. 
 	IDXGISwapChain3*			m_pdxgiSwapChain = NULL;
 	//스왑 체인 인터페이스에 대한 포인터이다. 주로 디스플레이를 제어하기 위하여 필요하다.		
-	ComPtr<ID3D12Device5>				m_pd3dDevice = NULL;								//5.14 광선추적 Device5로 버전 변경
+	ID3D12Device5*				m_pd3dDevice = NULL;								//5.14 광선추적 Device5로 버전 변경
 	//Direct3D 디바이스 인터페이스에 대한 포인터이다. 주로 리소스를 생성하기 위하여 필요하다.
 
 	bool						m_bMsaa4xEnable = false;
@@ -51,26 +51,26 @@ private:
 	UINT						m_nSwapChainBufferIndex = 0;
 	//현재 스왑 체인의 후면 버퍼 인덱스이다.
 
-	ComPtr<ID3D12Resource>				m_ppd3dSwapChainBackBuffers[m_nSwapChainBuffers];
-	ComPtr<ID3D12DescriptorHeap>		m_pd3dRtvDescriptorHeap;
+	ID3D12Resource*				m_ppd3dSwapChainBackBuffers[m_nSwapChainBuffers];
+	ID3D12DescriptorHeap*		m_pd3dRtvDescriptorHeap;
 	UINT						m_nRtvDescriptorIncrementSize;
 	//렌더 타겟 버퍼, 서술자 힙 인터페이스 포인터, 렌더 타겟 서술자 원소의 크기이다.
 
-	ComPtr<ID3D12Resource>				m_pd3dDepthStencilBuffer;
-	ComPtr<ID3D12DescriptorHeap>		m_pd3dDsvDescriptorHeap;
+	ID3D12Resource*				m_pd3dDepthStencilBuffer;
+	ID3D12DescriptorHeap*		m_pd3dDsvDescriptorHeap;
 	UINT						m_nDsvDescriptorIncrementSize;
 	//깊이-스텐실 버퍼, 서술자 힙 인터페이스 포인터, 깊이-스텐실 서술자 원소의 크기이다.
 
-	ComPtr<ID3D12CommandQueue>			m_pd3dCommandQueue;
-	ComPtr<ID3D12CommandAllocator>		m_pd3dCommandAllocator;
-	ComPtr<ID3D12GraphicsCommandList4>	m_pd3dCommandList;		//5.14 광선추적 버전 4로 변경
+	ID3D12CommandQueue*			m_pd3dCommandQueue;
+	ID3D12CommandAllocator*		m_pd3dCommandAllocator;
+	ID3D12GraphicsCommandList4*	m_pd3dCommandList;		//5.14 광선추적 버전 4로 변경
 	//명령 큐, 명령 할당자, 명령 리스트 인터페이스 포인터이다.
 
 #if defined(_DEBUG)
 	ID3D12Debug* m_pd3dDebugController;
 #endif
 
-	ComPtr<ID3D12Fence>					m_pd3dFence;
+	ID3D12Fence*					m_pd3dFence;
 	UINT64						m_nFenceValues[m_nSwapChainBuffers];
 	HANDLE						m_hFenceEvent;
 	//펜스 인터페이스 포인터, 펜스의 값, 이벤트 핸들이다.

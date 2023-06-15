@@ -595,7 +595,7 @@ AccelerationStructureBuffers CGameFramework::CreateBottomLevelAS(std::vector<std
 	nv_helpers_dx12::BottomLevelASGenerator bottomLevelAS;
 
 	// Adding all vertex buffers and not transforming their position. 
-	for (const auto& buffer : vVertexBuffers) { bottomLevelAS.AddVertexBuffer(buffer.first.Get(), 0, buffer.second, sizeof(CMesh), 0, 0); } // 정점+색깔 버퍼 클래스 찾아서 넣어야함
+	for (const auto& buffer : vVertexBuffers) { bottomLevelAS.AddVertexBuffer(buffer.first , 0, buffer.second, sizeof(CMesh), 0, 0); } // 정점+색깔 버퍼 클래스 찾아서 넣어야함
 
 	// The AS build requires some scratch space to store temporary information. 
 	// The amount of scratch memory is dependent on the scene complexity. 
@@ -604,21 +604,21 @@ AccelerationStructureBuffers CGameFramework::CreateBottomLevelAS(std::vector<std
 	// The final AS also needs to be stored in addition to the existing vertex 
 	// buffers. It size is also dependent on the scene complexity. 
 	UINT64 resultSizeInBytes = 0;
-	bottomLevelAS.ComputeASBufferSizes(m_pd3dDevice.Get(), false, &scratchSizeInBytes, &resultSizeInBytes);
+	bottomLevelAS.ComputeASBufferSizes(m_pd3dDevice, false, &scratchSizeInBytes, &resultSizeInBytes);
 
 	// Once the sizes are obtained, the application is responsible for allocating 
 	// the necessary buffers. Since the entire generation will be done on the GPU 
 	// we can directly allocate those on the default heap 
 
 	AccelerationStructureBuffers buffers;
-	buffers.pScratch = nv_helpers_dx12::CreateBuffer(m_pd3dDevice.Get(), scratchSizeInBytes, D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS, D3D12_RESOURCE_STATE_COMMON, nv_helpers_dx12::kDefaultHeapProps);
-	buffers.pResult = nv_helpers_dx12::CreateBuffer(m_pd3dDevice.Get(), resultSizeInBytes, D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS, D3D12_RESOURCE_STATE_RAYTRACING_ACCELERATION_STRUCTURE, nv_helpers_dx12::kDefaultHeapProps);
+	buffers.pScratch = nv_helpers_dx12::CreateBuffer(m_pd3dDevice, scratchSizeInBytes, D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS, D3D12_RESOURCE_STATE_COMMON, nv_helpers_dx12::kDefaultHeapProps);
+	buffers.pResult = nv_helpers_dx12::CreateBuffer(m_pd3dDevice, resultSizeInBytes, D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS, D3D12_RESOURCE_STATE_RAYTRACING_ACCELERATION_STRUCTURE, nv_helpers_dx12::kDefaultHeapProps);
 
 	// Build the acceleration structure. Note that this call integrates a barrier 
 	// on the generated AS, so that it can be used to compute a top-level AS righ 
 	// after this method. 
-	bottomLevelAS.Generate(m_pd3dCommandList.Get(), buffers.pScratch.Get(),
-		buffers.pResult.Get(), false, nullptr);
+	bottomLevelAS.Generate(m_pd3dCommandList, buffers.pScratch,
+		buffers.pResult, false, nullptr);
 	return buffers;
 }
 
@@ -636,7 +636,7 @@ void CGameFramework::CreateTopLevelAS(const std::vector<std::pair<ComPtr<ID3D12R
 	// Gather all the instances into the builder helper 
 	for (size_t i = 0; i < instances.size(); i++)
 	{
-		m_topLevelASGenerator.AddInstance(instances[i].first.Get(), instances[i].second, static_cast<UINT>(i), static_cast<UINT>(0));
+		m_topLevelASGenerator.AddInstance(instances[i].first , instances[i].second, static_cast<UINT>(i), static_cast<UINT>(0));
 	}
 
 	// As for the bottom-level AS, the building the AS requires some scratch space 
@@ -646,18 +646,18 @@ void CGameFramework::CreateTopLevelAS(const std::vector<std::pair<ComPtr<ID3D12R
 	// results, instance descriptors) so that the application can allocate the 
 	// corresponding memory 
 			// 스크래치 및 결과 버퍼의 크기를 제공
-	UINT64 scratchSize, resultSize, instanceDescsSize; m_topLevelASGenerator.ComputeASBufferSizes(m_pd3dDevice.Get(), true, &scratchSize, &resultSize, &instanceDescsSize);
+	UINT64 scratchSize, resultSize, instanceDescsSize; m_topLevelASGenerator.ComputeASBufferSizes(m_pd3dDevice, true, &scratchSize, &resultSize, &instanceDescsSize);
 
 	// Create the scratch and result buffers. Since the build is all done on GPU, 
 	// those can be allocated on the default heap 
 				// 스크래치 및 결과 버퍼는 기본 힙의 GPU 메모리에 직접 할당
-	m_topLevelASBuffers.pScratch = nv_helpers_dx12::CreateBuffer(m_pd3dDevice.Get(), scratchSize, D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS, D3D12_RESOURCE_STATE_UNORDERED_ACCESS, nv_helpers_dx12::kDefaultHeapProps); m_topLevelASBuffers.pResult = nv_helpers_dx12::CreateBuffer(m_pd3dDevice.Get(), resultSize, D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS, D3D12_RESOURCE_STATE_RAYTRACING_ACCELERATION_STRUCTURE, nv_helpers_dx12::kDefaultHeapProps);
+	m_topLevelASBuffers.pScratch = nv_helpers_dx12::CreateBuffer(m_pd3dDevice, scratchSize, D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS, D3D12_RESOURCE_STATE_UNORDERED_ACCESS, nv_helpers_dx12::kDefaultHeapProps); m_topLevelASBuffers.pResult = nv_helpers_dx12::CreateBuffer(m_pd3dDevice , resultSize, D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS, D3D12_RESOURCE_STATE_RAYTRACING_ACCELERATION_STRUCTURE, nv_helpers_dx12::kDefaultHeapProps);
 
 	// The buffer describing the instances: ID, shader binding information, 
 	// matrices ... Those will be copied into the buffer by the helper through 
 	// mapping, so the buffer has to be allocated on the upload heap. 
 		// 인스턴스 설명자 버퍼는 도우미 내에서 매핑되어야 하며 업로드 힙에 할당
-	m_topLevelASBuffers.pInstanceDesc = nv_helpers_dx12::CreateBuffer(m_pd3dDevice.Get(), instanceDescsSize, D3D12_RESOURCE_FLAG_NONE, D3D12_RESOURCE_STATE_GENERIC_READ, nv_helpers_dx12::kUploadHeapProps);
+	m_topLevelASBuffers.pInstanceDesc = nv_helpers_dx12::CreateBuffer(m_pd3dDevice , instanceDescsSize, D3D12_RESOURCE_FLAG_NONE, D3D12_RESOURCE_STATE_GENERIC_READ, nv_helpers_dx12::kUploadHeapProps);
 
 	// After all the buffers are allocated, or if only an update is required, we 
 	// can build the acceleration structure. Note that in the case of the update 
@@ -665,7 +665,7 @@ void CGameFramework::CreateTopLevelAS(const std::vector<std::pair<ComPtr<ID3D12R
 	// refitted in place. 
 	//인스턴스 설명 버퍼와 수행할 빌드 작업의 설명자 채우기
 	// D3D12_RAYTRACING_ACCELERATION_STRUCTURE_TYPE_TOP_LEVEL
-	m_topLevelASGenerator.Generate(m_pd3dCommandList.Get(), m_topLevelASBuffers.pScratch.Get(), m_topLevelASBuffers.pResult.Get(), m_topLevelASBuffers.pInstanceDesc.Get());
+	m_topLevelASGenerator.Generate(m_pd3dCommandList , m_topLevelASBuffers.pScratch , m_topLevelASBuffers.pResult , m_topLevelASBuffers.pInstanceDesc );
 }
 
 //-----------------------------------------------------------------------------
@@ -681,23 +681,23 @@ void CGameFramework::CreateAccelerationStructures()
 		m_pScene->m_ppGameObjects[i]->m_pMesh->GetPositionBuffer();
 	}
 
-	AccelerationStructureBuffers bottomLevelBuffers = CreateBottomLevelAS({ {m_pScene->m_ppGameObjects[0]->m_pMesh->GetPositionBuffer().Get(), 3} });
+	AccelerationStructureBuffers bottomLevelBuffers = CreateBottomLevelAS({ {m_pScene->m_ppGameObjects[0]->m_pMesh->GetPositionBuffer(), 3} });
 
 	// Just one instance for now 
 	m_instances = { {bottomLevelBuffers.pResult, XMMatrixIdentity()} }; CreateTopLevelAS(m_instances);
 
 	// Flush the command list and wait for it to finish 
 	m_pd3dCommandList->Close(); 
-	ID3D12CommandList* ppCommandLists[] = { m_pd3dCommandList.Get() };
+	ID3D12CommandList* ppCommandLists[] = { m_pd3dCommandList };
 	m_pd3dCommandQueue->ExecuteCommandLists(1, ppCommandLists);
 	m_nFenceValues[m_nSwapChainBufferIndex]++;
-	m_pd3dCommandQueue->Signal(m_pd3dFence.Get(), m_nFenceValues[m_nSwapChainBufferIndex]);
+	m_pd3dCommandQueue->Signal(m_pd3dFence , m_nFenceValues[m_nSwapChainBufferIndex]);
 	m_pd3dFence->SetEventOnCompletion(m_nFenceValues[m_nSwapChainBufferIndex], m_hFenceEvent);
 	WaitForSingleObject(m_hFenceEvent, INFINITE);
 
 	// Once the command list is finished executing, reset it to be reused for 
 	// rendering 
-	ThrowIfFailed(m_pd3dCommandList->Reset(m_pd3dCommandAllocator.Get(), m_pd3dPipelineState.Get()));
+	ThrowIfFailed(m_pd3dCommandList->Reset(m_pd3dCommandAllocator, m_pd3dPipelineState));
 
 	// Store the AS buffers. The rest of the buffers will be released once we exit 
 	// the function 

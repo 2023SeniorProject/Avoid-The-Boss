@@ -83,6 +83,9 @@ public:
 	virtual void OnPostRender(ID3D12GraphicsCommandList4  *pd3dCommandList, void *pContext);
 
 	ID3D12Resource* GetPositionBuffer() { return m_pd3dPositionBuffer; }
+	int GetNumVertices() {
+		return m_nVertices;
+	}
 };
 
 class CSkyBoxMesh : public CMesh

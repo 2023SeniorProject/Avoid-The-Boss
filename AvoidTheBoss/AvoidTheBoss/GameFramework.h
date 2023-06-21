@@ -147,7 +147,7 @@ private:
 	///
 	/// \param vVertexBuffers : pair of buffer and vertex count
 	/// \return AccelerationStructureBuffers for TLAS
-	AccelerationStructureBuffers CreateBottomLevelAS(ID3D12Resource** vVertexBuffers, uint32_t* nVertexBuffers); //  GPU 메모리의 정점 버퍼 및 정점 수 하위 레벨 AS를 생성
+	AccelerationStructureBuffers CreateBottomLevelAS(std::vector<std::pair<ComPtr<ID3D12Resource>, uint32_t>> vVertexBuffers); //  GPU 메모리의 정점 버퍼 및 정점 수 하위 레벨 AS를 생성
 
 	/// Create the main acceleration structure that holds
 	/// all instances of the scene

@@ -590,12 +590,12 @@ void CGameFramework::OnKeyUp(UINT8 key)
 	}
 }
 
-AccelerationStructureBuffers CGameFramework::CreateBottomLevelAS(ID3D12Resource** vVertexBuffers, uint32_t* nVertexBuffers)// pair :지오메트리의 정점을 보유하는 리소스에 대한 포인터, 두번쨰 : 정점의 수
+AccelerationStructureBuffers CGameFramework::CreateBottomLevelAS(std::vector<std::pair<ComPtr<ID3D12Resource>, uint32_t>> vVertexBuffers)// pair :지오메트리의 정점을 보유하는 리소스에 대한 포인터, 두번쨰 : 정점의 수
 {
 	nv_helpers_dx12::BottomLevelASGenerator bottomLevelAS;
 
 	// Adding all vertex buffers and not transforming their position. 
-	for (const auto& nBuff : nVertexBuffers) { bottomLevelAS.AddVertexBuffer(vVertexBuffers[nBuff], 0, nVertexBuffers[nBuff], sizeof(CMesh), 0, 0); } // 정점+색깔 버퍼 클래스 찾아서 넣어야함
+	for (const auto& buffer : vVertexBuffers) { bottomLevelAS.AddVertexBuffer(buffer.first.Get(), 0, buffer.second, sizeof(CMesh), 0, 0); } // 정점+색깔 버퍼 클래스 찾아서 넣어야함
 
 	// The AS build requires some scratch space to store temporary information. 
 	// The amount of scratch memory is dependent on the scene complexity. 
@@ -675,16 +675,19 @@ void CGameFramework::CreateTopLevelAS(const std::vector<std::pair<ComPtr<ID3D12R
 //
 void CGameFramework::CreateAccelerationStructures()
 {
-	std::vector<std::pair<ID3D12Resource*>, uint32_t >> vVertexBuffers;
+	std::vector<std::pair<ComPtr<ID3D12Resource>, uint32_t>> vVertexBuffers;
 
 	// Build the bottom AS from the Triangle vertex buffer 
 	for (int i = 0; i < m_pScene->m_nGameObjects; i++)
 	{
-		vVertexBuffers.push_back({ m_pScene->m_ppGameObjects[i]->m_pMesh->GetPositionBuffer(),
-		vVertexBuffers.second = m_pScene->m_ppGameObjects[i]->m_pMesh->GetNumVertices() });
+		vVertexBuffers.push_back(
+			{ m_pScene->m_ppGameObjects[i]->m_pMesh->GetPositionBuffer(),
+				(uint32_t)
+				(m_pScene->m_ppGameObjects[i]->m_pMesh->GetNumVertices()) }
+			);
 	}
 
-	AccelerationStructureBuffers bottomLevelBuffers = CreateBottomLevelAS(m_pScene->m_ppGameObjects[0]->m_pMesh->GetPositionBuffer(), m_pScene->m_ppGameObjects[0]->m_pMesh->GetNumVertices());
+	AccelerationStructureBuffers bottomLevelBuffers = CreateBottomLevelAS({ vVertexBuffers }); //{{m_vertexBuffer.Get(), 3}}
 
 	// Just one instance for now 
 	m_instances = { {bottomLevelBuffers.pResult, XMMatrixIdentity()} }; 

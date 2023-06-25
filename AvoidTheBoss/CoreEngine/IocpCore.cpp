@@ -3,7 +3,6 @@
 #include "ASession.h"
 #include "SocketUtil.h"
 
-//SIocpCore ServerIocpCore;
 
 IocpCore::IocpCore()
 {

@@ -19,10 +19,10 @@ enum class CHARACTER_TYPE: int32
 static const char *g_pstrCharactorRefernece[5] =
 {
 	"Model/Boss_Idle(2).bin",
-	"Model/Character1_Idle.bin",
-	"Model/Character2_Idle.bin",
-	"Model/Character3_Idle.bin",
-	"Model/Character4_Idle.bin"
+	"Model/Character/Character1_Idle.bin",
+	"Model/Character/Character2_Idle.bin",
+	"Model/Character/Character3_Idle.bin",
+	"Model/Character/Character4_Idle.bin"
 };
 
 #define BOSS_ATTACK_TIME 25 //25프레임 (기존 65)

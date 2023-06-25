@@ -215,11 +215,6 @@
   </ItemGroup>
   <ItemGroup>
     <Image Include="AvoidTheBoss.ico" />
-    <Image Include="Floor.dds" />
-    <Image Include="Lava(Diffuse).dds" />
-    <Image Include="Lava(Emissive).dds" />
-    <Image Include="Metal01.dds" />
-    <Image Include="Metal02.dds" />
     <Image Include="Model\Textures\Boss_Texture.dds" />
     <Image Include="Model\Textures\Boxs_Metallic.dds" />
     <Image Include="Model\Textures\Boxs_Normal.dds" />
@@ -260,11 +255,7 @@
     <Image Include="Model\Textures\Wood_Pallet_Wood_Pallet_Main_Metallic.dds" />
     <Image Include="Model\Textures\Wood_Pallet_Wood_Pallet_Main_Normal.dds" />
     <Image Include="Model\Textures\Wood_Pallet_Wood_Pallet_Main_Roughness.dds" />
-    <Image Include="plane.dds" />
-    <Image Include="Rock01.dds" />
     <Image Include="small.ico" />
-    <Image Include="Stone.dds" />
-    <Image Include="Stone01.dds" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Light.hlsl">

@@ -453,19 +453,19 @@ void CMapObjectsShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCom
 	m_nObjects = 3;
 	m_ppObjects = new CGameObject * [m_nObjects];
 
-	CGameObject* pMap = CGameObject::LoadGeometryFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "Model/Industry_Map(6).bin", NULL,Layout::MAP);
+	CGameObject* pMap = CGameObject::LoadGeometryFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "Model/Map/Industry_Map(6).bin", NULL,Layout::MAP);
 
 	m_ppObjects[0] = new CGameObject();
 	m_ppObjects[0]->SetChild(pMap);
 	m_ppObjects[0]->SetPosition(XMFLOAT3(0.0f, 0.0f, 0.0f));
 
-	CGameObject* pTile = CGameObject::LoadGeometryFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "Model/Industry_Field2(1).bin", NULL, Layout::MAP);
+	CGameObject* pTile = CGameObject::LoadGeometryFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "Model/Map/Industry_Field2(1).bin", NULL, Layout::MAP);
 
 	m_ppObjects[1] = new CGameObject();
 	m_ppObjects[1]->SetChild(pTile);
 	m_ppObjects[1]->SetPosition(XMFLOAT3(0.0f, 0.0f, 0.0f));
 
-	CGameObject* pCrane = CGameObject::LoadGeometryFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "Model/Crane.bin", NULL, Layout::MAP);
+	CGameObject* pCrane = CGameObject::LoadGeometryFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "Model/Map/Crane.bin", NULL, Layout::MAP);
 
 	m_ppObjects[2] = new CGameObject();
 	m_ppObjects[2]->SetChild(pCrane);
@@ -552,9 +552,9 @@ void CDoorObjectsShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCo
 	m_nObjects = 5;
 	m_ppObjects = new CGameObject * [m_nObjects];
 
-	CGameObject* pFrontDoor = CGameObject::LoadGeometryFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "Model/Front_Hanger_Door_Open.bin", NULL, Layout::DOOR);
-	CGameObject* pEmergencyDoor = CGameObject::LoadGeometryFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "Model/Emergency_Door_Open.bin", NULL, Layout::DOOR);
-	CGameObject* pShutterDoor = CGameObject::LoadGeometryFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "Model/Shutter_Door_Side.bin", NULL, Layout::DOOR);
+	CGameObject* pFrontDoor = CGameObject::LoadGeometryFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "Model/Map/Front_Hanger_Door_Open.bin", NULL, Layout::DOOR);
+	CGameObject* pEmergencyDoor = CGameObject::LoadGeometryFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "Model/Map/Emergency_Door_Open.bin", NULL, Layout::DOOR);
+	CGameObject* pShutterDoor = CGameObject::LoadGeometryFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "Model/Map/Shutter_Door_Side.bin", NULL, Layout::DOOR);
 
 	m_ppObjects[0] = new CFrontDoor();
 	m_ppObjects[0]->SetChild(pFrontDoor);
@@ -606,7 +606,7 @@ void CSirenObjectsShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsC
 	m_nObjects = 16;
 	m_ppObjects = new CGameObject * [m_nObjects];
 
-	CGameObject* pSiren = CGameObject::LoadGeometryFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "Model/Siren_Alarm_One.bin", NULL, Layout::SIREN);
+	CGameObject* pSiren = CGameObject::LoadGeometryFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "Model/Map/Siren_Alarm_One.bin", NULL, Layout::SIREN);
 
 	m_ppObjects[0] = new CSiren();
 	m_ppObjects[0]->SetChild(pSiren);
@@ -741,7 +741,7 @@ void CGeneratorObjectsShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12Graph
 	m_nObjects = 3;
 	m_ppObjects = new CGameObject * [m_nObjects];
 
-	CGameObject* pGenerator = CGameObject::LoadGeometryFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "Model/Generator.bin", NULL, Layout::GENERATOR);
+	CGameObject* pGenerator = CGameObject::LoadGeometryFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "Model/Map/Generator.bin", NULL, Layout::GENERATOR);
 
 	m_ppObjects[0] = new CGenerator();
 	m_ppObjects[0]->SetChild(pGenerator);

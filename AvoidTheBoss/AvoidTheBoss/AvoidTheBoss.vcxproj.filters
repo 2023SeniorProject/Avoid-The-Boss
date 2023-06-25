@@ -173,33 +173,6 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <Image Include="Metal01.dds">
-      <Filter>Resource</Filter>
-    </Image>
-    <Image Include="Lava(Emissive).dds">
-      <Filter>Resource</Filter>
-    </Image>
-    <Image Include="Lava(Diffuse).dds">
-      <Filter>Resource</Filter>
-    </Image>
-    <Image Include="Floor.dds">
-      <Filter>Resource</Filter>
-    </Image>
-    <Image Include="Rock01.dds">
-      <Filter>Resource</Filter>
-    </Image>
-    <Image Include="plane.dds">
-      <Filter>Resource</Filter>
-    </Image>
-    <Image Include="Metal02.dds">
-      <Filter>Resource</Filter>
-    </Image>
-    <Image Include="Stone01.dds">
-      <Filter>Resource</Filter>
-    </Image>
-    <Image Include="Stone.dds">
-      <Filter>Resource</Filter>
-    </Image>
     <Image Include="small.ico">
       <Filter>Resource</Filter>
     </Image>

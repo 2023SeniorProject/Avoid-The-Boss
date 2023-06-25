@@ -159,6 +159,8 @@
     <ClInclude Include="..\..\AvoidTheBoss\CoreEngine\IocpObject.h" />
     <ClInclude Include="..\..\AvoidTheBoss\CoreEngine\protocol.h" />
     <ClInclude Include="..\..\AvoidTheBoss\CoreEngine\ThreadManager.h" />
+    <ClInclude Include="ConnectManager.h" />
+    <ClInclude Include="DummyClientIocpCore.h" />
     <ClInclude Include="DummySession.h" />
     <ClInclude Include="NetworkModule.h" />
     <ClInclude Include="pch.h" />
@@ -180,7 +182,9 @@
     <ClCompile Include="..\..\AvoidTheBoss\CoreEngine\IocpObject.cpp" />
     <ClCompile Include="..\..\AvoidTheBoss\CoreEngine\protocol.cpp" />
     <ClCompile Include="..\..\AvoidTheBoss\CoreEngine\ThreadManager.cpp" />
+    <ClCompile Include="ConnectManager.cpp" />
     <ClCompile Include="DrawModule.cpp" />
+    <ClCompile Include="DummyClientIocpCore.cpp" />
     <ClCompile Include="DummySession.cpp" />
     <ClCompile Include="NetworkModule.cpp" />
     <ClCompile Include="pch.cpp">

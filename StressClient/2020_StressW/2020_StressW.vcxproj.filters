@@ -36,6 +36,12 @@
     <Filter Include="DummySession">
       <UniqueIdentifier>{9fcbc91e-5383-4b36-b642-973ff4990850}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ConnectManager">
+      <UniqueIdentifier>{68a91242-53a0-40ef-aa68-f9ae8aa63004}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="DummyClientIocpCore">
+      <UniqueIdentifier>{93baa5cb-d678-452a-a407-3c2f1b76b767}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\AvoidTheBoss\CoreEngine\IocpCore.h">
@@ -73,6 +79,12 @@
     </ClInclude>
     <ClInclude Include="DummySession.h">
       <Filter>DummySession</Filter>
+    </ClInclude>
+    <ClInclude Include="ConnectManager.h">
+      <Filter>ConnectManager</Filter>
+    </ClInclude>
+    <ClInclude Include="DummyClientIocpCore.h">
+      <Filter>DummyClientIocpCore</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -127,6 +139,12 @@
     </ClCompile>
     <ClCompile Include="DummySession.cpp">
       <Filter>DummySession</Filter>
+    </ClCompile>
+    <ClCompile Include="ConnectManager.cpp">
+      <Filter>ConnectManager</Filter>
+    </ClCompile>
+    <ClCompile Include="DummyClientIocpCore.cpp">
+      <Filter>DummyClientIocpCore</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

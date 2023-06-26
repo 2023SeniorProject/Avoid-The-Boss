@@ -130,38 +130,7 @@ void CGameScene::BuildDefaultLightsAndMaterials()
 
 void CGameScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList)
 {
-	m_pd3dGraphicsRootSignature = CreateGraphicsRootSignature(pd3dDevice);
-
-	CreateCbvSrvDescriptorHeaps(pd3dDevice, 0, 52+1+1+12+3+12+3);//Albedomap 52 / player 1 / skybox 1 / box subTexture 3 * 4/ tile subTexture 3 * 1/ woodPallet 3 * 4 / pillar2 3 * 1
-
-	CMaterial::PrepareShaders(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature);
-
-	BuildDefaultLightsAndMaterials();
-
-	m_pSkyBox = new CSkyBox(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature);
-	m_pSkyBox->SetScale(50.0f, 50.0f, 50.0f);
-
-	XMFLOAT3 xmf3Scale(8.0f, 2.0f, 8.0f);
-	XMFLOAT4 xmf4Color(0.0f, 0.3f, 0.0f, 0.0f);
-
-	m_nShaders = 1;
-	m_ppShaders = new CShader * [m_nShaders];
-
-	CMapObjectsShader* pMapShader = new CMapObjectsShader();
-	pMapShader->CreateShader(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature);
-	pMapShader->BuildObjects(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, NULL, NULL);
-
-	m_ppShaders[0] = pMapShader;
-
-
-	CreateShaderVariables(pd3dDevice, pd3dCommandList);
-
-
-	for (int i = 0; i < PLAYERNUM; ++i)
-	{
-		_players[i] = new CWorker(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature);
-	}
-	m_pCamera = _players[0]->GetCamera();
+	
 }
 
 void CGameScene::ProcessInput(HWND hWnd)
@@ -249,7 +218,7 @@ void CGameScene::ProcessInput(HWND hWnd)
 	//카메라를 갱신한다. 중력과 마찰력의 영향을 속도 벡터에 적용한다.
 	for (int k = 0; k < PLAYERNUM; ++k)
 	{	
-		if (k == _playerIdx) _players[k]->Update(m_Timer.GetTimeElapsed());
+		//if (k == _playerIdx) _players[k]->Update(m_Timer.GetTimeElapsed());
 		//else _players[k]->OtherUpdate(m_Timer.GetTimeElapsed());
 	}
 }
@@ -622,10 +591,11 @@ void CGameScene::AnimateObjects()
 	for (int i = 0; i < m_nGameObjects; i++) if (m_ppGameObjects[i]) m_ppGameObjects[i]->Animate(m_Timer.GetTimeElapsed());//>>>>
 	for (int i = 0; i < m_nShaders; i++) if (m_ppShaders[i]) m_ppShaders[i]->AnimateObjects(m_Timer.GetTimeElapsed());//<<<<
 
-	for (int i = 0; i < PLAYERNUM; i++)
-	{
-		_players[i]->Animate(m_Timer.GetTimeElapsed());
-	}
+		for (int i = 0; i < PLAYERNUM; i++)
+		{
+			if(_players[i])
+				_players[i]->Animate(m_Timer.GetTimeElapsed());
+		}
 	if (m_pLights)
 	{
 		m_pLights[1].m_xmf3Position = _players[_playerIdx]->GetPosition();
@@ -662,4 +632,162 @@ void CGameScene::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCa
 	}
 	for (int i = 0; i < PLAYERNUM; ++i) _players[i]->Render(pd3dCommandList, pCamera);
 
+}
+
+void CMainScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList
+	* pd3dCommandList)
+{
+	m_pd3dGraphicsRootSignature = CreateGraphicsRootSignature(pd3dDevice);
+
+	CreateCbvSrvDescriptorHeaps(pd3dDevice, 0, 52 + 1 + 1 + 12 + 3 + 12 + 3);//Albedomap 52 / player 1 / skybox 1 / box subTexture 3 * 4/ tile subTexture 3 * 1/ woodPallet 3 * 4 / pillar2 3 * 1
+
+	CMaterial::PrepareShaders(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature);
+
+	BuildDefaultLightsAndMaterials();
+
+	m_pSkyBox = new CSkyBox(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature);
+	m_pSkyBox->SetScale(50.0f, 50.0f, 50.0f);
+
+	XMFLOAT3 xmf3Scale(8.0f, 2.0f, 8.0f);
+	XMFLOAT4 xmf4Color(0.0f, 0.3f, 0.0f, 0.0f);
+
+	m_nShaders = 1;
+	m_ppShaders = new CShader * [m_nShaders];
+
+	CMapObjectsShader* pMapShader = new CMapObjectsShader();
+	pMapShader->CreateShader(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature);
+	pMapShader->BuildObjects(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, NULL, NULL);
+
+	m_ppShaders[0] = pMapShader;
+
+
+	CreateShaderVariables(pd3dDevice, pd3dCommandList);
+
+
+	for (int i = 0; i < PLAYERNUM; ++i)
+	{
+		_players[i] = new CWorker(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature);
+	}
+	m_pCamera = _players[0]->GetCamera();
+}
+
+void CLobbyScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList
+	* pd3dCommandList)
+{
+	m_pd3dGraphicsRootSignature = CreateGraphicsRootSignature(pd3dDevice);
+
+	CreateCbvSrvDescriptorHeaps(pd3dDevice, 0, 52 + 1 + 1 + 12 + 3 + 12 + 3);//Albedomap 52 / player 1 / skybox 1 / box subTexture 3 * 4/ tile subTexture 3 * 1/ woodPallet 3 * 4 / pillar2 3 * 1
+
+	CMaterial::PrepareShaders(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature);
+
+	BuildDefaultLightsAndMaterials();
+
+
+	CreateShaderVariables(pd3dDevice, pd3dCommandList);
+	for (int i = 0; i < PLAYERNUM; ++i)
+	{
+		_players[i] = new CWorker(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature);
+	}
+	m_pCamera = _players[0]->GetCamera();
+}
+
+void CLobbyScene::OnProcessingMouseMessage(HWND hWnd, UINT nMessageID, WPARAM wParam, LPARAM lParam)
+{
+	switch (nMessageID)
+	{
+	case WM_LBUTTONDOWN:
+	case WM_RBUTTONDOWN:
+		//마우스 캡쳐를 하고 현재 마우스 위치를 가져온다. 
+		::SetCapture(hWnd);
+		::GetCursorPos(&m_ptOldCursorPos);
+		break;
+	case WM_LBUTTONUP:
+	case WM_RBUTTONUP:
+		//마우스 캡쳐를 해제한다. 
+		::ReleaseCapture();
+		break;
+	case WM_MOUSEMOVE:
+		break;
+	default:
+		break;
+	}
+}
+
+void CLobbyScene::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPARAM wParam, LPARAM lParam)
+{
+	switch (nMessageID)
+	{
+	case WM_KEYUP:
+		switch (wParam)
+		{
+		case VK_ESCAPE:
+			::PostQuitMessage(0);
+			break;
+		case VK_RETURN:
+			break;
+			/*‘F1’ 키를 누르면 1인칭 카메라, ‘F3’ 키를 누르면 3인칭 카메라로 변경한다.*/
+		case VK_SPACE:
+		{
+			mainGame.m_nSceneIndex = 1;
+		}
+			break;
+		case VK_F9:
+			//“F9” 키가 눌려지면 윈도우 모드와 전체화면 모드의 전환을 처리한다. 
+			mainGame.ChangeSwapChainState();
+			break;
+		default:
+			break;
+		}
+		break;
+	default:
+		break;
+	}
+}
+
+void CMainScene::OnProcessingMouseMessage(HWND hWnd, UINT nMessageID, WPARAM wParam, LPARAM lParam)
+{
+	switch (nMessageID)
+	{
+	case WM_LBUTTONDOWN:
+	case WM_RBUTTONDOWN:
+		//마우스 캡쳐를 하고 현재 마우스 위치를 가져온다. 
+		::SetCapture(hWnd);
+		::GetCursorPos(&m_ptOldCursorPos);
+		break;
+	case WM_LBUTTONUP:
+	case WM_RBUTTONUP:
+		//마우스 캡쳐를 해제한다. 
+		::ReleaseCapture();
+		break;
+	case WM_MOUSEMOVE:
+		break;
+	default:
+		break;
+	}
+}
+
+void CMainScene::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPARAM wParam, LPARAM lParam)
+{
+	switch (nMessageID)
+	{
+	case WM_KEYUP:
+		switch (wParam)
+		{
+		case VK_ESCAPE:
+			::PostQuitMessage(0);
+			break;
+		case VK_RETURN:
+			break;
+			/*‘F1’ 키를 누르면 1인칭 카메라, ‘F3’ 키를 누르면 3인칭 카메라로 변경한다.*/
+		case VK_F9:
+			//“F9” 키가 눌려지면 윈도우 모드와 전체화면 모드의 전환을 처리한다. 
+			mainGame.ChangeSwapChainState();
+			break;
+		default:
+			break;
+		}
+		break;
+	default:
+		break;
+	}
 }

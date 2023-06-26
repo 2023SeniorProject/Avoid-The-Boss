@@ -61,8 +61,10 @@ private:
 	//다음은 프레임 레이트를 주 윈도우의 캡션에 출력하기 위한 문자열이다. 
 	WCHAR					m_pszFrameRate[500];
 	
-protected:
-	CGameScene*				m_pScene;
+public:
+	static const int							m_nScene = 2;
+	int							m_nSceneIndex = 0;
+	CGameScene*				m_ppScene[m_nScene];
 	Atomic<int8>			_curScene = 0;
 public:
 

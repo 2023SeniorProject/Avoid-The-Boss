@@ -114,7 +114,7 @@ void CSession::ProcessPacket(char* packet)
 	case S_PACKET_TYPE::SMOVE:
 	{
 		S2C_MOVE* movePacket = reinterpret_cast<S2C_MOVE*>(packet);
-		CPlayer* player = mainGame.m_pScene->GetScenePlayer(movePacket->sid);
+		CPlayer* player = mainGame.m_ppScene[mainGame.m_nSceneIndex]->GetScenePlayer(movePacket->sid);
 		if (player != nullptr  && movePacket->sid != _sid)
 		{
 			player->m_lock.lock();
@@ -127,7 +127,7 @@ void CSession::ProcessPacket(char* packet)
 	case S_PACKET_TYPE::SROTATE:
 	{
 		S2C_ROTATE* rotatePacket = reinterpret_cast<S2C_ROTATE*>(packet);	
-		CPlayer* player = mainGame.m_pScene->GetScenePlayer(rotatePacket->sid);
+		CPlayer* player = mainGame.m_ppScene[mainGame.m_nSceneIndex]->GetScenePlayer(rotatePacket->sid);
 		if (player != nullptr  && rotatePacket->sid != _sid)
 		{
 			player->m_lock.lock();
@@ -140,7 +140,7 @@ void CSession::ProcessPacket(char* packet)
 	case S_PACKET_TYPE::POSITION:
 	{
 		S2C_POSITION* posPacket = reinterpret_cast<S2C_POSITION*>(packet);
-		CPlayer* player = mainGame.m_pScene->GetScenePlayer(posPacket->sid);
+		CPlayer* player = mainGame.m_ppScene[mainGame.m_nSceneIndex]->GetScenePlayer(posPacket->sid);
 		if (player != nullptr && mainGame._curScene == SceneInfo::GAMEROOM)
 		{
 			player->m_lock.lock();
@@ -159,11 +159,11 @@ void CSession::ProcessPacket(char* packet)
 		S2C_GAMESTART* gsp = reinterpret_cast<S2C_GAMESTART*>(packet);
 		for (int i = 0; i < PLAYERNUM; ++i)
 		{
-			if (gsp->sids[i] == _sid) mainGame.m_pScene->_playerIdx = i;
-			mainGame.m_pScene->_players[i]->SetPlayerSid(gsp->sids[i]);
+			if (gsp->sids[i] == _sid) mainGame.m_ppScene[mainGame.m_nSceneIndex]->_playerIdx = i;
+			mainGame.m_ppScene[mainGame.m_nSceneIndex]->_players[i]->SetPlayerSid(gsp->sids[i]);
 		}
-		std::cout << mainGame.m_pScene->_playerIdx << "\n";
-		mainGame.m_pScene->m_pCamera = mainGame.m_pScene->_players[mainGame.m_pScene->_playerIdx]->GetCamera();
+		std::cout << mainGame.m_ppScene[mainGame.m_nSceneIndex]->_playerIdx << "\n";
+		mainGame.m_ppScene[mainGame.m_nSceneIndex]->m_pCamera = mainGame.m_ppScene[mainGame.m_nSceneIndex]->_players[mainGame.m_ppScene[mainGame.m_nSceneIndex]->_playerIdx]->GetCamera();
 		mainGame._curScene.store(SceneInfo::GAMEROOM);
 	}
 	break;

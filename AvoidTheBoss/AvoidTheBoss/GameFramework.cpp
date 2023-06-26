@@ -33,7 +33,11 @@ CGameFramework::CGameFramework()
 	m_nWndClientWidth = FRAME_BUFFER_WIDTH;
 	m_nWndClientHeight = FRAME_BUFFER_HEIGHT;
 
-	m_pScene = NULL;
+	for (int i = 0; i < m_nScene; i++)
+	{
+		m_ppScene[i] = NULL;
+	}
+
 	
 	_tcscpy_s(m_pszFrameRate, _T("FPS : "));
 
@@ -338,8 +342,11 @@ void CGameFramework::BuildObjects()
 	m_pd3dCommandList->Reset(m_pd3dCommandAllocator, NULL);
 
 		//씬 객체를 생성하고 씬에 포함될 게임 객체들을 생성한다. 
-	m_pScene = new CGameScene();
-	if (m_pScene) m_pScene->BuildObjects(m_pd3dDevice, m_pd3dCommandList);
+	m_ppScene[0] = new CLobbyScene();
+	if (m_ppScene[0]) m_ppScene[0]->BuildObjects(m_pd3dDevice, m_pd3dCommandList);
+
+	m_ppScene[1] = new CMainScene();
+	if (m_ppScene[1]) m_ppScene[1]->BuildObjects(m_pd3dDevice, m_pd3dCommandList);
 
 
 	//씬 객체를 생성하기 위하여 필요한 그래픽 명령 리스트들을 명령 큐에 추가한다. 
@@ -351,24 +358,24 @@ void CGameFramework::BuildObjects()
 	WaitForGpuComplete();
 
 	//그래픽 리소스들을 생성하는 과정에 생성된 업로드 버퍼들을 소멸시킨다. 
-	if (m_pScene) m_pScene->ReleaseUploadBuffers();
-	m_pScene->InitScene();
+	if (m_ppScene[m_nSceneIndex]) m_ppScene[m_nSceneIndex]->ReleaseUploadBuffers();
+	m_ppScene[m_nSceneIndex]->InitScene();
 }
 
 void CGameFramework::ReleaseObjects()
 {
-	if (m_pScene) m_pScene->ReleaseObjects();
-	if (m_pScene) delete m_pScene;
+	if (m_ppScene[m_nSceneIndex]) m_ppScene[m_nSceneIndex]->ReleaseObjects();
+	if (m_ppScene[m_nSceneIndex]) delete m_ppScene[m_nSceneIndex];
 }
 
 void CGameFramework::ProcessInput()
 {
-	m_pScene->ProcessInput(m_hWnd);
+	m_ppScene[m_nSceneIndex]->ProcessInput(m_hWnd);
 }
 
 void CGameFramework::AnimateObjects()
 {
-	if (m_pScene) m_pScene->AnimateObjects();
+	if (m_ppScene[m_nSceneIndex]) m_ppScene[m_nSceneIndex]->AnimateObjects();
 }
 
 void CGameFramework::FrameAdvance() // 여기서 업데이트랑 렌더링 동시에 진행하는 곳
@@ -416,7 +423,7 @@ void CGameFramework::FrameAdvance() // 여기서 업데이트랑 렌더링 동시에 진행하는 
 	//렌더 타겟 뷰(서술자)와 깊이-스텐실 뷰(서술자)를 출력-병합 단계(OM)에 연결한다.
 
 	//=======렌더링 코드는 여기에 추가될 것이다
-	if (m_pScene) m_pScene->Render(m_pd3dCommandList, m_pScene->m_pCamera);
+	if (m_ppScene) m_ppScene[m_nSceneIndex]->Render(m_pd3dCommandList, m_ppScene[m_nSceneIndex]->m_pCamera);
 
 	//3인칭 카메라일 때 플레이어가 항상 보이도록 렌더링한다. 
 #ifdef _WITH_PLAYER_TOP
@@ -462,9 +469,9 @@ void CGameFramework::FrameAdvance() // 여기서 업데이트랑 렌더링 동시에 진행하는 
 	//	/*현재의 프레임 레이트를 문자열로 가져와서 주 윈도우의 타이틀로 출력한다. m_pszBuffer 문자열이
 	//	"LapProject ("으로 초기화되었으므로 (m_pszFrameRate+12)에서부터 프레임 레이트를 문자열로 출력
 	//	하여 “ FPS)” 문자열과 합친다.
-	std::wstring str = std::to_wstring(m_pScene->_players[m_pScene->_playerIdx]->GetPosition().x);
+	std::wstring str = std::to_wstring(m_ppScene[m_nSceneIndex]->_players[m_ppScene[m_nSceneIndex]->_playerIdx]->GetPosition().x);
 	str.append(L" ");
-	str.append(std::to_wstring(m_pScene->_players[m_pScene->_playerIdx]->GetPosition().z));
+	str.append(std::to_wstring(m_ppScene[m_nSceneIndex]->_players[m_ppScene[m_nSceneIndex]->_playerIdx]->GetPosition().z));
 	_tcscpy_s(m_pszFrameRate,500,str.c_str());
 	//	*/
 	::SetWindowText(m_hWnd, m_pszFrameRate);
@@ -504,14 +511,14 @@ void CGameFramework::MoveToNextFrame()
 void CGameFramework::OnProcessingMouseMessage(HWND hWnd, UINT nMessageID, WPARAM wParam, LPARAM lParam)
 {
 
-	m_pScene->OnProcessingMouseMessage(hWnd, nMessageID, wParam, lParam);
+	m_ppScene[m_nSceneIndex]->OnProcessingMouseMessage(hWnd, nMessageID, wParam, lParam);
 }
 
 bool CGameFramework::CollisionCheck()
 {
-	if (m_pScene)
+	if (m_ppScene[m_nSceneIndex])
 	{
-		if (m_pScene->CollisionCheck())
+		if (m_ppScene[m_nSceneIndex]->CollisionCheck())
 			return true;
 	}
 	return false;
@@ -520,7 +527,7 @@ bool CGameFramework::CollisionCheck()
 void CGameFramework::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPARAM wParam, LPARAM lParam)
 {
 	
-	m_pScene->OnProcessingKeyboardMessage(hWnd, nMessageID, wParam, lParam);
+	m_ppScene[m_nSceneIndex]->OnProcessingKeyboardMessage(hWnd, nMessageID, wParam, lParam);
 }
 
 LRESULT CGameFramework::OnProcessingWindowMessage(HWND hWnd, UINT nMessageID, WPARAM wParam, LPARAM lParam)
@@ -530,9 +537,9 @@ LRESULT CGameFramework::OnProcessingWindowMessage(HWND hWnd, UINT nMessageID, WP
 	case WM_ACTIVATE:
 	{
 		if (LOWORD(wParam) == WA_INACTIVE)
-			m_pScene->m_Timer.Stop();
+			m_ppScene[m_nSceneIndex]->m_Timer.Stop();
 		else
-			m_pScene->m_Timer.Start();
+			m_ppScene[m_nSceneIndex]->m_Timer.Start();
 		break;
 	}
 	case WM_SIZE:

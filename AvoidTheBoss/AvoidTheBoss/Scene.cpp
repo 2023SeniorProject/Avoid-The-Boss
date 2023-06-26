@@ -779,6 +779,11 @@ void CMainScene::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPARAM 
 		case VK_RETURN:
 			break;
 			/*‘F1’ 키를 누르면 1인칭 카메라, ‘F3’ 키를 누르면 3인칭 카메라로 변경한다.*/
+		case VK_SPACE:
+		{
+			mainGame.m_nSceneIndex = 0;
+		}
+		break;
 		case VK_F9:
 			//“F9” 키가 눌려지면 윈도우 모드와 전체화면 모드의 전환을 처리한다. 
 			mainGame.ChangeSwapChainState();

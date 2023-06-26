@@ -148,84 +148,7 @@ void CGameScene::BuildDefaultLightsAndMaterials()
 
 void CGameScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList)
 {
-	//그래픽 루트 시그너쳐를 생성한다. 
-	m_pd3dGraphicsRootSignature = CreateGraphicsRootSignature(pd3dDevice);
 
-	CreateCbvSrvDescriptorHeaps(pd3dDevice, 0, 52+1+1+12+3+12+3 + 89 + 5 + 5*4 + 6*17 + 2*50+ 3*2 + 14 + 1 + 12);//Albedomap 52 / player 1 / skybox 1 / box subTexture 3 * 4/ tile subTexture 3 * 1/ woodPallet 3 * 4 / pillar2 3 * 1 / BoundsMap 89 / 스위치 2 + 3 / 문 / 사이렌 6 / 총알 100 / 사이드 문 3*2 / 14
-
-	CMaterial::PrepareShaders(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature);
-
-	BuildDefaultLightsAndMaterials();
-
-	m_pSkyBox = new CSkyBox(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature);
-	m_pSkyBox->SetScale(50.0f, 50.0f, 50.0f);
-
-	XMFLOAT3 xmf3Scale(8.0f, 2.0f, 8.0f);
-	XMFLOAT4 xmf4Color(0.0f, 0.3f, 0.0f, 0.0f);
-
-	m_nShaders = 5;
-	m_ppShaders = new CShader * [m_nShaders];
-
-	CMapObjectsShader* pMapShader = new CMapObjectsShader();
-	pMapShader->CreateShader(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature);
-	pMapShader->BuildObjects(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature,NULL,NULL);
-	m_ppShaders[0] = pMapShader;
-
-	CBulletObjectsShader* pBulletObjectShader = new CBulletObjectsShader();
-	pBulletObjectShader->CreateShader(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature);
-	pBulletObjectShader->BuildObjects(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, NULL, NULL);
-	m_ppShaders[1] = pBulletObjectShader;
-
-	CDoorObjectsShader* pDoorObjectShader = new CDoorObjectsShader();
-	pDoorObjectShader->CreateShader(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature);
-	pDoorObjectShader->BuildObjects(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, NULL, NULL);
-	m_ppShaders[2] = pDoorObjectShader;
-
-	CSirenObjectsShader* pSirenObjectShader = new CSirenObjectsShader();
-	pSirenObjectShader->CreateShader(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature);
-	pSirenObjectShader->BuildObjects(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, NULL, NULL);
-	m_ppShaders[3] = pSirenObjectShader;
-
-	CGeneratorObjectsShader* pGeneratorObjectsShader = new CGeneratorObjectsShader();
-	pGeneratorObjectsShader->CreateShader(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature);
-	pGeneratorObjectsShader->BuildObjects(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, NULL, NULL);
-	m_ppShaders[4] = pGeneratorObjectsShader;
-
-	CBoundsObjectsShader* pBoundsMapShader = new CBoundsObjectsShader();
-	pBoundsMapShader->CreateShader(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature);
-	pBoundsMapShader->BuildObjects(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature,NULL,NULL);
-
-	m_ppGenerator = new CGenerator * [m_nGenerator];
-	for (int i = 0; i < m_nGenerator; ++i)
-	{
-		m_ppGenerator[i] = ((CGenerator*)pGeneratorObjectsShader->m_ppObjects[i]);
-		m_ppGenerator[i]->m_idx = i;
-	}
-	for (int i = 0; i < PLAYERNUM; ++i)
-	{
-		if (i == (int)CHARACTER_TYPE::BOSS)
-		{
-			_players[i] = new CBoss(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature);
-			if (m_ppShaders[1])
-			{
-				((CBoss*)_players[i])->m_pBullet = (CBullet*)pBulletObjectShader->m_ppObjects[0];
-			}
-		}
-		else
-		{
-			_players[i] = new CEmployee(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, (CHARACTER_TYPE)(i));
-			((CEmployee*)_players[i])->m_pSwitches[0].position = XMFLOAT3(-23.12724, 1.146619, 1.814123);
-			((CEmployee*)_players[i])->m_pSwitches[0].radius = 0.2f;
-			((CEmployee*)_players[i])->m_pSwitches[1].position = XMFLOAT3(23.08867, 1.083242, 3.155997);
-			((CEmployee*)_players[i])->m_pSwitches[1].radius = 0.2f;
-			((CEmployee*)_players[i])->m_pSwitches[2].position = XMFLOAT3(0.6774719, 1.083242, -23.05909);
-			((CEmployee*)_players[i])->m_pSwitches[2].radius = 0.2f;
-					
-		}
-	}
-	m_pCamera = _players[0]->GetCamera();
-
-	CreateShaderVariables(pd3dDevice, pd3dCommandList);
 }
 
 void CGameScene::ProcessInput(HWND& hWnd)
@@ -290,7 +213,7 @@ void CGameScene::Update(HWND hWnd)
 		if (k == _playerIdx) _players[k]->Update(_timer.GetTimeElapsed(), CLIENT_TYPE::OWNER);
 		else _players[k]->Update(_timer.GetTimeElapsed(), CLIENT_TYPE::OTHER_PLAYER);
 	}
-	for (int k = 0; k < m_nGenerator; ++k) m_ppGenerator[k]->Update(_timer.GetTimeElapsed());
+	//for (int k = 0; k < m_nGenerator; ++k) m_ppGenerator[k]->Update(_timer.GetTimeElapsed());
 
 	
 
@@ -733,4 +656,114 @@ void CGameScene::Exit()
 			}
 		}
 	}
+}
+
+void CMainScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList)
+{
+	//그래픽 루트 시그너쳐를 생성한다. 
+	m_pd3dGraphicsRootSignature = CreateGraphicsRootSignature(pd3dDevice);
+
+	CreateCbvSrvDescriptorHeaps(pd3dDevice, 0, 52 + 1 + 1 + 12 + 3 + 12 + 3 + 89 + 5 + 5 * 4 + 6 * 17 + 2 * 50 + 3 * 2 + 14 + 1 + 12);//Albedomap 52 / player 1 / skybox 1 / box subTexture 3 * 4/ tile subTexture 3 * 1/ woodPallet 3 * 4 / pillar2 3 * 1 / BoundsMap 89 / 스위치 2 + 3 / 문 / 사이렌 6 / 총알 100 / 사이드 문 3*2 / 14
+
+	CMaterial::PrepareShaders(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature);
+
+	BuildDefaultLightsAndMaterials();
+
+	m_pSkyBox = new CSkyBox(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature);
+	m_pSkyBox->SetScale(50.0f, 50.0f, 50.0f);
+
+	XMFLOAT3 xmf3Scale(8.0f, 2.0f, 8.0f);
+	XMFLOAT4 xmf4Color(0.0f, 0.3f, 0.0f, 0.0f);
+
+	m_nShaders = 5;
+	m_ppShaders = new CShader * [m_nShaders];
+
+	CMapObjectsShader* pMapShader = new CMapObjectsShader();
+	pMapShader->CreateShader(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature);
+	pMapShader->BuildObjects(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, NULL, NULL);
+	m_ppShaders[0] = pMapShader;
+
+	CBulletObjectsShader* pBulletObjectShader = new CBulletObjectsShader();
+	pBulletObjectShader->CreateShader(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature);
+	pBulletObjectShader->BuildObjects(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, NULL, NULL);
+	m_ppShaders[1] = pBulletObjectShader;
+
+	CDoorObjectsShader* pDoorObjectShader = new CDoorObjectsShader();
+	pDoorObjectShader->CreateShader(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature);
+	pDoorObjectShader->BuildObjects(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, NULL, NULL);
+	m_ppShaders[2] = pDoorObjectShader;
+
+	CSirenObjectsShader* pSirenObjectShader = new CSirenObjectsShader();
+	pSirenObjectShader->CreateShader(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature);
+	pSirenObjectShader->BuildObjects(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, NULL, NULL);
+	m_ppShaders[3] = pSirenObjectShader;
+
+	CGeneratorObjectsShader* pGeneratorObjectsShader = new CGeneratorObjectsShader();
+	pGeneratorObjectsShader->CreateShader(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature);
+	pGeneratorObjectsShader->BuildObjects(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, NULL, NULL);
+	m_ppShaders[4] = pGeneratorObjectsShader;
+
+	CBoundsObjectsShader* pBoundsMapShader = new CBoundsObjectsShader();
+	pBoundsMapShader->CreateShader(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature);
+	pBoundsMapShader->BuildObjects(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, NULL, NULL);
+
+	m_ppGenerator = new CGenerator * [m_nGenerator];
+	for (int i = 0; i < m_nGenerator; ++i)
+	{
+		m_ppGenerator[i] = ((CGenerator*)pGeneratorObjectsShader->m_ppObjects[i]);
+		m_ppGenerator[i]->m_idx = i;
+	}
+	for (int i = 0; i < PLAYERNUM; ++i)
+	{
+		if (i == (int)CHARACTER_TYPE::BOSS)
+		{
+			_players[i] = new CBoss(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature);
+			if (m_ppShaders[1])
+			{
+				((CBoss*)_players[i])->m_pBullet = (CBullet*)pBulletObjectShader->m_ppObjects[0];
+			}
+		}
+		else
+		{
+			_players[i] = new CEmployee(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, (CHARACTER_TYPE)(i));
+			((CEmployee*)_players[i])->m_pSwitches[0].position = XMFLOAT3(-23.12724, 1.146619, 1.814123);
+			((CEmployee*)_players[i])->m_pSwitches[0].radius = 0.2f;
+			((CEmployee*)_players[i])->m_pSwitches[1].position = XMFLOAT3(23.08867, 1.083242, 3.155997);
+			((CEmployee*)_players[i])->m_pSwitches[1].radius = 0.2f;
+			((CEmployee*)_players[i])->m_pSwitches[2].position = XMFLOAT3(0.6774719, 1.083242, -23.05909);
+			((CEmployee*)_players[i])->m_pSwitches[2].radius = 0.2f;
+
+		}
+	}
+	m_pCamera = _players[0]->GetCamera();
+
+	CreateShaderVariables(pd3dDevice, pd3dCommandList);
+}
+
+void CLobbyScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList)
+{
+	//그래픽 루트 시그너쳐를 생성한다. 
+	m_pd3dGraphicsRootSignature = CreateGraphicsRootSignature(pd3dDevice);
+
+	CreateCbvSrvDescriptorHeaps(pd3dDevice, 0, 2);//Albedomap 52 / player 1 / skybox 1 / box subTexture 3 * 4/ tile subTexture 3 * 1/ woodPallet 3 * 4 / pillar2 3 * 1 / BoundsMap 89 / 스위치 2 + 3 / 문 / 사이렌 6 / 총알 100 / 사이드 문 3*2 / 14
+
+	CMaterial::PrepareShaders(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature);
+
+	BuildDefaultLightsAndMaterials();
+
+	for (int i = 0; i < PLAYERNUM; ++i)
+	{
+		if (i == (int)CHARACTER_TYPE::BOSS)
+		{
+			_players[i] = new CBoss(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature);
+		}
+		else
+		{
+			_players[i] = new CEmployee(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, (CHARACTER_TYPE)(i));
+		}
+	}
+	if(_players)
+		m_pCamera = _players[0]->GetCamera();
+
+	CreateShaderVariables(pd3dDevice, pd3dCommandList);
 }

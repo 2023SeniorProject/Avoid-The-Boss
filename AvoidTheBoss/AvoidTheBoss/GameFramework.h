@@ -4,6 +4,7 @@
 //----2 화면 출력을 위한 처리 - 게임 객체 생성과 관리, 사용자 입력, 애니메이션 작업
 #include "Scene.h"
 #include "Camera.h"
+#include <queue> 
 
 class CGameFramework
 {
@@ -15,7 +16,8 @@ class CGameFramework
 	friend class CSession;
 	friend class CEmployee;
 	friend class CBoss;
-	friend class CGameScene;
+	//friend class CGameScene;
+	friend class CMainScene;
 private:
 	HINSTANCE m_hInstance;
 	HWND m_hWnd;
@@ -70,7 +72,10 @@ private:
 	WCHAR					m_pszFrameRate[500];
 	
 protected:
-	CGameScene*				m_pScene;
+	
+	CLobbyScene* m_pScene;
+	CMainScene* m_pMainScene;
+	//queue<CGameScene> m_Scene;
 public:
 	Atomic<int8>			_curScene = 0;
 public:

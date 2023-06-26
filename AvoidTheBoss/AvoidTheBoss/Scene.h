@@ -72,7 +72,7 @@ public:
 	virtual void ReleaseShaderVariables();
 
 	void BuildDefaultLightsAndMaterials();
-	void BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList
+	virtual void BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList
 		* pd3dCommandList);
 	void ReleaseObjects();
 
@@ -156,7 +156,7 @@ public: // 씬에 있는 오브젝트 관련 변수
 	int16						_playerIdx = 0;
 	int16						m_lastKeyInput = 0;
 
-private:
+
 	// 발전기
 	int							m_nGenerator = 3;
 	CGenerator**				m_ppGenerator = NULL;
@@ -189,3 +189,20 @@ protected:
 	static D3D12_GPU_DESCRIPTOR_HANDLE	m_d3dSrvGPUDescriptorNextHandle;
 };
 
+class CMainScene : public CGameScene
+{
+public:
+	CMainScene() {}
+	~CMainScene() {}
+	virtual void BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList
+		* pd3dCommandList);
+};
+
+class CLobbyScene : public CGameScene
+{
+public:
+	CLobbyScene() {}
+	~CLobbyScene() {}
+	virtual void BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList
+		* pd3dCommandList);
+};

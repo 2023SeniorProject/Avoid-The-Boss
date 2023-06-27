@@ -321,10 +321,10 @@ CWorker::CWorker(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dComman
 	m_pSkinnedAnimationController->SetTrackAnimationSet(3, 2);//RunningShoot
 	m_pSkinnedAnimationController->SetTrackAnimationSet(1, 3);//Run
 
-	//m_pSkinnedAnimationController->SetTrackEnable(0, true);
-	//m_pSkinnedAnimationController->SetTrackEnable(1, false);
-	//m_pSkinnedAnimationController->SetTrackEnable(2, false);
-	//m_pSkinnedAnimationController->SetTrackEnable(3, false);
+	m_pSkinnedAnimationController->SetTrackEnable(0, true);
+	m_pSkinnedAnimationController->SetTrackEnable(1, false);
+	m_pSkinnedAnimationController->SetTrackEnable(2, false);
+	m_pSkinnedAnimationController->SetTrackEnable(3, false);
 
 	//	m_pSkinnedAnimationController->SetCallbackKeys(1, 2);
 	//#ifdef _WITH_SOUND_RESOURCE
@@ -440,6 +440,11 @@ void CWorker::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList
 	m_pSkinnedAnimationController->SetTrackAnimationSet(3, 2);//RunningShoot
 	m_pSkinnedAnimationController->SetTrackAnimationSet(1, 3);//Run
 
+
+	m_pSkinnedAnimationController->SetTrackEnable(0, true);
+	m_pSkinnedAnimationController->SetTrackEnable(1, false);
+	m_pSkinnedAnimationController->SetTrackEnable(2, false);
+	m_pSkinnedAnimationController->SetTrackEnable(3, false);
 	//m_pSkinnedAnimationController->SetTrackEnable(0, true);
 	//m_pSkinnedAnimationController->SetTrackEnable(1, false);
 	//m_pSkinnedAnimationController->SetTrackEnable(2, false);
@@ -460,10 +465,7 @@ void CWorker::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList
 
 	CreateShaderVariables(pd3dDevice, pd3dCommandList);
 
-	//SetPlayerUpdatedContext();
-	//SetCameraUpdatedContext();
-
-	SetScale(XMFLOAT3(1.f, 1.f, 1.f));
+	//SetScale(XMFLOAT3(1.f, 1.f, 1.f));
 	SetPosition(XMFLOAT3(0.0f, 0.0f, 0.0f));
 
 	if (pBossModel) delete pBossModel;
@@ -479,7 +481,7 @@ CVirtualPlayer::CVirtualPlayer()
 
 CVirtualPlayer::CVirtualPlayer(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature)
 {
-	m_pCamera = ChangeCamera(THIRD_PERSON_CAMERA, 0.0f);
+	m_pCamera = ChangeCamera(FIRST_PERSON_CAMERA, 0.0f);
 
 	CLoadedModelInfo* pBossModel = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "Model/Plane.bin", NULL);
 	SetChild(pBossModel->m_pModelRootObject, true);
@@ -489,33 +491,16 @@ CVirtualPlayer::CVirtualPlayer(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandLi
 	//m_pSkinnedAnimationController->SetTrackAnimationSet(0, 1);//Shoot
 	//m_pSkinnedAnimationController->SetTrackAnimationSet(3, 2);//RunningShoot
 	//m_pSkinnedAnimationController->SetTrackAnimationSet(1, 3);//Run
-
+	//
 	//m_pSkinnedAnimationController->SetTrackEnable(0, true);
 	//m_pSkinnedAnimationController->SetTrackEnable(1, false);
 	//m_pSkinnedAnimationController->SetTrackEnable(2, false);
 	//m_pSkinnedAnimationController->SetTrackEnable(3, false);
 
-	//	m_pSkinnedAnimationController->SetCallbackKeys(1, 2);
-	//#ifdef _WITH_SOUND_RESOURCE
-	//	m_pSkinnedAnimationController->SetCallbackKey(0, 0.1f, _T("Footstep01"));
-	//	m_pSkinnedAnimationController->SetCallbackKey(1, 0.5f, _T("Footstep02"));
-	//	m_pSkinnedAnimationController->SetCallbackKey(2, 0.9f, _T("Footstep03"));
-	//#else
-	//	m_pSkinnedAnimationController->SetCallbackKey(1, 0, 0.001f, _T("Sound/Footstep01.wav"));
-	//	m_pSkinnedAnimationController->SetCallbackKey(1, 1, 0.125f, _T("Sound/Footstep02.wav"));
-	//	m_pSkinnedAnimationController->SetCallbackKey(1, 2, 0.39f, _T("Sound/Footstep03.wav"));
-	//#endif
-		//CAnimationCallbackHandler *pAnimationCallbackHandler = new CSoundCallbackHandler();
-		//m_pSkinnedAnimationController->SetAnimationCallbackHandler(1, pAnimationCallbackHandler);
-
 	CreateShaderVariables(pd3dDevice, pd3dCommandList);
 
-	//SetPlayerUpdatedContext();
-	//SetCameraUpdatedContext();
-
-
-	//SetScale(XMFLOAT3(1.f, 1.f, 1.f));
-	//SetPosition(XMFLOAT3(0.0f, 0.0f, 0.0f));
+	SetScale(XMFLOAT3(1.f, 1.f, 1.f));
+	SetPosition(XMFLOAT3(0.0f, 0.0f, 0.0f));
 
 	if (pBossModel) delete pBossModel;
 }
@@ -599,7 +584,7 @@ void CVirtualPlayer::Update(float fTimeElapsed)
 void CVirtualPlayer::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList
 	* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature)
 {
-	CLoadedModelInfo* pBossModel = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "Model/Plane.bin", NULL);
+	CLoadedModelInfo* pBossModel = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "Model/Boss_Run.bin", NULL);
 
 	SetChild(pBossModel->m_pModelRootObject, true);
 
@@ -609,10 +594,10 @@ void CVirtualPlayer::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsComman
 	m_pSkinnedAnimationController->SetTrackAnimationSet(3, 2);//RunningShoot
 	m_pSkinnedAnimationController->SetTrackAnimationSet(1, 3);//Run
 
-	//m_pSkinnedAnimationController->SetTrackEnable(0, true);
-	//m_pSkinnedAnimationController->SetTrackEnable(1, false);
-	//m_pSkinnedAnimationController->SetTrackEnable(2, false);
-	//m_pSkinnedAnimationController->SetTrackEnable(3, false);
+	m_pSkinnedAnimationController->SetTrackEnable(0, true);
+	m_pSkinnedAnimationController->SetTrackEnable(1, false);
+	m_pSkinnedAnimationController->SetTrackEnable(2, false);
+	m_pSkinnedAnimationController->SetTrackEnable(3, false);
 
 	//	m_pSkinnedAnimationController->SetCallbackKeys(1, 2);
 	//#ifdef _WITH_SOUND_RESOURCE

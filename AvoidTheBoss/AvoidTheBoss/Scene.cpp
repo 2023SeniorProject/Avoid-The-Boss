@@ -660,13 +660,13 @@ void CMainScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandLis
 
 	m_ppShaders[0] = pMapShader;
 
-
 	CreateShaderVariables(pd3dDevice, pd3dCommandList);
-
 
 	for (int i = 0; i < PLAYERNUM; ++i)
 	{
-		_players[i] = new CWorker(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature);
+		_players[i] = new CWorker(pd3dDevice, pd3dCommandList,m_pd3dGraphicsRootSignature);
+		//_players[i] = new CWorker();
+		//_players[i]->BuildObjects(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature);
 	}
 	m_pCamera = _players[0]->GetCamera();
 }
@@ -682,12 +682,14 @@ void CLobbyScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandLi
 
 	BuildDefaultLightsAndMaterials();
 
-
 	CreateShaderVariables(pd3dDevice, pd3dCommandList);
 	for (int i = 0; i < PLAYERNUM; ++i)
 	{
-		_players[i] = new CWorker(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature);
+		_players[i] = new CVirtualPlayer(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature);
+
+		//_players[i]->BuildObjects(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature);
 	}
+
 	m_pCamera = _players[0]->GetCamera();
 }
 

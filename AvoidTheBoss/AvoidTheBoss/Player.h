@@ -107,12 +107,15 @@ public:
 	virtual void OnPrepareRender();
 	//플레이어의 카메라가 3인칭 카메라일 때 플레이어(메쉬)를 렌더링한다. 
 	virtual void Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera =NULL);
-};
 
+	virtual void BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList
+		* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature);
+};
 
 class CWorker : public CPlayer
 {
 public:
+	CWorker();
 	CWorker(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature);
 	virtual ~CWorker();
 public:
@@ -123,9 +126,27 @@ public:
 	virtual void Move(DWORD dwDirection, float fDistance);
 
 	virtual void Update(float fTimeElapsed);
-
+	virtual void BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList
+		* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature);
 };
 
+class CVirtualPlayer : public CPlayer
+{
+public:
+	CVirtualPlayer();
+	CVirtualPlayer(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature);
+	virtual ~CVirtualPlayer();
+public:
+	virtual CCamera* ChangeCamera(DWORD nNewCameraMode, float fTimeElapsed);
+	virtual void OnPlayerUpdateCallback(float fTimeElapsed);
+	virtual void OnCameraUpdateCallback(float fTimeElapsed);
+
+	virtual void Move(DWORD dwDirection, float fDistance);
+
+	virtual void Update(float fTimeElapsed);
+	virtual void BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList
+		* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature);
+};
 
 class CSoundCallbackHandler : public CAnimationCallbackHandler
 {

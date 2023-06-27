@@ -591,11 +591,11 @@ void CGameScene::AnimateObjects()
 	for (int i = 0; i < m_nGameObjects; i++) if (m_ppGameObjects[i]) m_ppGameObjects[i]->Animate(m_Timer.GetTimeElapsed());//>>>>
 	for (int i = 0; i < m_nShaders; i++) if (m_ppShaders[i]) m_ppShaders[i]->AnimateObjects(m_Timer.GetTimeElapsed());//<<<<
 
-		for (int i = 0; i < PLAYERNUM; i++)
-		{
-			if(_players[i])
-				_players[i]->Animate(m_Timer.GetTimeElapsed());
-		}
+	for (int i = 0; i < PLAYERNUM; i++)
+	{
+		if(_players[i])
+			_players[i]->Animate(m_Timer.GetTimeElapsed());
+	}
 	if (m_pLights)
 	{
 		m_pLights[1].m_xmf3Position = _players[_playerIdx]->GetPosition();

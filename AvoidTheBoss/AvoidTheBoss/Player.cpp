@@ -475,40 +475,29 @@ void CWorker::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList
 
 CVirtualPlayer::CVirtualPlayer()
 {
-	m_pCamera = ChangeCamera(FIRST_PERSON_CAMERA, 0.0f);
+	m_pCamera = ChangeCamera(THIRD_PERSON_CAMERA, 0.0f);
 	SetPosition(XMFLOAT3(0.0f, 0.0f, 0.0f));
 }
 
 CVirtualPlayer::CVirtualPlayer(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature)
 {
-	m_pCamera = ChangeCamera(FIRST_PERSON_CAMERA, 0.0f);
+	m_pCamera = ChangeCamera(THIRD_PERSON_CAMERA, 0.0f);
 
-	CLoadedModelInfo* pBossModel = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "Model/Boss_Run.bin"/*"Model/Plane.bin"*/, NULL);
-	SetChild(pBossModel->m_pModelRootObject, true);
-
-	m_pSkinnedAnimationController = new CAnimationController(pd3dDevice, pd3dCommandList, 4, pBossModel);
-	m_pSkinnedAnimationController->SetTrackAnimationSet(2, 0);//Idle
-	m_pSkinnedAnimationController->SetTrackAnimationSet(0, 1);//Shoot
-	m_pSkinnedAnimationController->SetTrackAnimationSet(3, 2);//RunningShoot
-	m_pSkinnedAnimationController->SetTrackAnimationSet(1, 3);//Run
-	
-	m_pSkinnedAnimationController->SetTrackEnable(0, true);
-	m_pSkinnedAnimationController->SetTrackEnable(1, false);
-	m_pSkinnedAnimationController->SetTrackEnable(2, false);
-	m_pSkinnedAnimationController->SetTrackEnable(3, false);
+	//CGameObject* pVirtualModel = CGameObject::LoadGeometryFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, /*"Model/Boss_Run.bin"*/"Model///Plane.bin", NULL);
+	//SetChild(pVirtualModel, true);
 
 	CreateShaderVariables(pd3dDevice, pd3dCommandList);
-
-	SetScale(XMFLOAT3(1.f, 1.f, 1.f));
-	SetPosition(XMFLOAT3(0.0f, 0.0f, 0.0f));
-
-	if (pBossModel) delete pBossModel;
+	
+	//if (pVirtualModel) delete pVirtualModel;
 }
 
 CVirtualPlayer::~CVirtualPlayer()
 {
 }
 
+void CVirtualPlayer::Animate(float fTimeElapsed)
+{
+}
 CCamera* CVirtualPlayer::ChangeCamera(DWORD nNewCameraMode, float fTimeElapsed)
 {
 	DWORD nCurrentCameraMode = (m_pCamera) ? m_pCamera->GetMode() : 0x00;
@@ -554,30 +543,11 @@ void CVirtualPlayer::OnCameraUpdateCallback(float fTimeElapsed)
 
 void CVirtualPlayer::Move(DWORD dwDirection, float fDistance)
 {
-	if (dwDirection)
-	{
-		m_pSkinnedAnimationController->SetTrackEnable(0, false);
-		m_pSkinnedAnimationController->SetTrackEnable(1, true);
-	}
 
-	CPlayer::Move(dwDirection, fDistance);
 }
 
 void CVirtualPlayer::Update(float fTimeElapsed)
 {
-	CPlayer::Update(fTimeElapsed);
-
-	if (m_pSkinnedAnimationController)
-	{
-		float fLength = sqrtf(m_xmf3Velocity.x * m_xmf3Velocity.x + m_xmf3Velocity.z * m_xmf3Velocity.z);
-		if (::IsZero(fLength))
-		{
-			m_pSkinnedAnimationController->SetTrackEnable(0, true);
-			m_pSkinnedAnimationController->SetTrackEnable(1, false);
-			m_pSkinnedAnimationController->SetTrackPosition(0, 0.0f);
-		}
-	}
-	m_xmf3Velocity = XMFLOAT3(0.0f, 0.0f, 0.0f);
 
 }
 

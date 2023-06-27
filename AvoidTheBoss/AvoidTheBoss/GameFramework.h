@@ -5,6 +5,12 @@
 #include "Scene.h"
 #include "Camera.h"
 
+#include <d2d1.h>
+#include <d3d11.h>
+#include <dwrite.h>
+
+#pragma comment(lib, "d2d1")
+
 class CGameFramework
 {
 	friend class queueEvent;
@@ -23,6 +29,7 @@ private:
 	int	m_nWndClientWidth = FRAME_BUFFER_WIDTH;
 	int	m_nWndClientHeight = FRAME_BUFFER_HEIGHT;
 
+	
 	IDXGIFactory4*				m_pdxgiFactory = NULL;
 	//DXGI 팩토리 인터페이스에 대한 포인터이다. 
 	IDXGISwapChain3*			m_pdxgiSwapChain = NULL;
@@ -68,7 +75,9 @@ private:
 
 	//다음은 프레임 레이트를 주 윈도우의 캡션에 출력하기 위한 문자열이다. 
 	WCHAR					m_pszFrameRate[500];
-	
+public:
+	Microsoft::WRL::ComPtr<ID3D11DeviceContext>  m_d3d11DeviceContext;
+	Microsoft::WRL::ComPtr<ID3D11On12Device> m_d3d11On12Device;
 protected:
 	CGameScene*				m_pScene;
 public:
@@ -85,7 +94,8 @@ public:
 	void CreateDirect3DDevice();	//createDirect3DDisplay()
 	void CreateCommandQueueAndList();
 	//스왑 체인, 디바이스, 서술자 힙, 명령 큐/할당자/리스트를 생성하는 함수이다. 
-
+	
+	
 	void CreateRtvAndDsvDescriptorHeaps();
 
 	void CreateRenderTargetViews();
@@ -109,6 +119,10 @@ public:
 	void Render();
 	void MoveToNextFrame();
 
+public:
+	void CreateD2D11On12Device();
+	void CreateD2DDevice();
+public:
 	void OnProcessingMouseMessage(HWND hWnd, UINT nMessageID, WPARAM wParam, LPARAM
 		lParam);
 	void OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPARAM wParam, LPARAM

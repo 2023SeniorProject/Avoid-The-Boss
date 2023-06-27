@@ -72,11 +72,9 @@ private:
 	WCHAR					m_pszFrameRate[500];
 	
 protected:
-	
-	CLobbyScene* m_pScene;
-	CMainScene* m_pMainScene;
-	//queue<CGameScene> m_Scene;
-public:
+	static const int							m_nScene = 2;
+	int							m_nSceneIndex = 0;
+	CGameScene*				m_ppScene[m_nScene];
 	Atomic<int8>			_curScene = 0;
 public:
 	CGameFramework();

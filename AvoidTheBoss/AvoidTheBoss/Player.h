@@ -123,21 +123,56 @@ public: //04-29 추가함수
 	virtual void Move(const int8& dwDirection, float fDistance);
 	virtual void Update(float fTimeElapsed, CLIENT_TYPE ptype);
 	virtual void LateUpdate() {};
-	virtual void Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera = NULL);
 	// 05-22 추가 함수
 	virtual void AnimTrackUpdate(float ,CLIENT_TYPE) {};
 	virtual void SetBehavior(PLAYER_BEHAVIOR b) { m_behavior = (int32)b; };
 	virtual int32 GetBehavior() { return m_behavior; }
+	virtual void Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera =NULL);
+
+	virtual void BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList
+		* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature);
 };
 
+class CWorker : public CPlayer
+{
+public:
+	CWorker();
+	CWorker(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature);
+	virtual ~CWorker();
+public:
+	virtual CCamera* ChangeCamera(DWORD nNewCameraMode, float fTimeElapsed);
+	virtual void OnPlayerUpdateCallback(float fTimeElapsed);
+	virtual void OnCameraUpdateCallback(float fTimeElapsed);
 
 
+	virtual void Update(float fTimeElapsed);
+	virtual void BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList
+		* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature);
+};
+
+class CVirtualPlayer : public CPlayer
+{
+public:
+	CVirtualPlayer();
+	CVirtualPlayer(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature);
+	virtual ~CVirtualPlayer();
+public:
+	virtual CCamera* ChangeCamera(DWORD nNewCameraMode, float fTimeElapsed);
+	virtual void OnPlayerUpdateCallback(float fTimeElapsed);
+	virtual void OnCameraUpdateCallback(float fTimeElapsed);
+
+	virtual void Move(DWORD dwDirection, float fDistance);
+
+	virtual void Animate(float fTimeElapsed);
+
+	virtual void Update(float fTimeElapsed);
+	virtual void BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList
+		* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature);
 struct SwitchInformation
 {
 	XMFLOAT3 position;
 	float radius; //raderArea
 };
-
 
 class CSoundCallbackHandler : public CAnimationCallbackHandler
 {

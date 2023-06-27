@@ -206,3 +206,38 @@ public:
 	virtual void BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList
 		* pd3dCommandList);
 };
+
+
+class CMainScene : public CGameScene
+{
+public:
+	CMainScene() {}
+	~CMainScene() {}
+	virtual void BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList
+		* pd3dCommandList);
+
+	//씬에서 마우스와 키보드 메시지를 처리한다.
+	virtual void OnProcessingMouseMessage(HWND hWnd, UINT nMessageID, WPARAM wParam, LPARAM
+		lParam);
+	virtual void OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPARAM wParam, LPARAM
+		lParam);
+
+	virtual void ProcessInput(HWND hWnd);
+};
+
+class CLobbyScene : public CGameScene
+{
+public:
+	CLobbyScene() {}
+	~CLobbyScene() {}
+	virtual void BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList
+		* pd3dCommandList);
+
+	//씬에서 마우스와 키보드 메시지를 처리한다.
+	virtual void OnProcessingMouseMessage(HWND hWnd, UINT nMessageID, WPARAM wParam, LPARAM
+		lParam);
+	virtual void OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPARAM wParam, LPARAM
+		lParam);
+
+	virtual void ProcessInput(HWND hWnd);
+};

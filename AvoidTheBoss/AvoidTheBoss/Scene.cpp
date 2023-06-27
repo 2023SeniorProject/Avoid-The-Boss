@@ -571,7 +571,8 @@ void CGameScene::AnimateObjects()
 
 	for (int i = 0; i < PLAYERNUM; i++)
 	{
-		_players[i]->Animate(_timer.GetTimeElapsed());
+		if(_players[i])
+			_players[i]->Animate(m_Timer.GetTimeElapsed());
 	}
 	if (m_pLights)
 	{
@@ -765,5 +766,345 @@ void CLobbyScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandLi
 	if(_players)
 		m_pCamera = _players[0]->GetCamera();
 
+}
+
+void CMainScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList
+	* pd3dCommandList)
+{
+	m_pd3dGraphicsRootSignature = CreateGraphicsRootSignature(pd3dDevice);
+
+	CreateCbvSrvDescriptorHeaps(pd3dDevice, 0, 52 + 1 + 1 + 12 + 3 + 12 + 3);//Albedomap 52 / player 1 / skybox 1 / box subTexture 3 * 4/ tile subTexture 3 * 1/ woodPallet 3 * 4 / pillar2 3 * 1
+
+	CMaterial::PrepareShaders(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature);
+
+	BuildDefaultLightsAndMaterials();
+
+	m_pSkyBox = new CSkyBox(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature);
+	m_pSkyBox->SetScale(50.0f, 50.0f, 50.0f);
+
+	XMFLOAT3 xmf3Scale(8.0f, 2.0f, 8.0f);
+	XMFLOAT4 xmf4Color(0.0f, 0.3f, 0.0f, 0.0f);
+
+	m_nShaders = 1;
+	m_ppShaders = new CShader * [m_nShaders];
+
+	CMapObjectsShader* pMapShader = new CMapObjectsShader();
+	pMapShader->CreateShader(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature);
+	pMapShader->BuildObjects(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, NULL, NULL);
+
+	m_ppShaders[0] = pMapShader;
+
 	CreateShaderVariables(pd3dDevice, pd3dCommandList);
+
+	for (int i = 0; i < PLAYERNUM; ++i)
+	{
+		_players[i] = new CWorker(pd3dDevice, pd3dCommandList,m_pd3dGraphicsRootSignature);
+		//_players[i] = new CWorker();
+		//_players[i]->BuildObjects(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature);
+	}
+	m_pCamera = _players[0]->GetCamera();
+}
+
+void CLobbyScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList
+	* pd3dCommandList)
+{
+	m_pd3dGraphicsRootSignature = CreateGraphicsRootSignature(pd3dDevice);
+
+	CreateCbvSrvDescriptorHeaps(pd3dDevice, 0, 3);
+
+	CMaterial::PrepareShaders(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature);
+
+	BuildDefaultLightsAndMaterials();
+
+	CreateShaderVariables(pd3dDevice, pd3dCommandList);
+	for (int i = 0; i < PLAYERNUM; ++i)
+	{
+		_players[i] = new CVirtualPlayer(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature);
+		//_players[i]->BuildObjects(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature);
+	}
+	m_pCamera = _players[0]->GetCamera();
+}
+
+void CLobbyScene::OnProcessingMouseMessage(HWND hWnd, UINT nMessageID, WPARAM wParam, LPARAM lParam)
+{
+	switch (nMessageID)
+	{
+	case WM_LBUTTONDOWN:
+	case WM_RBUTTONDOWN:
+		//마우스 캡쳐를 하고 현재 마우스 위치를 가져온다. 
+		::SetCapture(hWnd);
+		::GetCursorPos(&m_ptOldCursorPos);
+		break;
+	case WM_LBUTTONUP:
+	case WM_RBUTTONUP:
+		//마우스 캡쳐를 해제한다. 
+		::ReleaseCapture();
+		break;
+	case WM_MOUSEMOVE:
+		break;
+	default:
+		break;
+	}
+}
+
+void CLobbyScene::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPARAM wParam, LPARAM lParam)
+{
+	switch (nMessageID)
+	{
+	case WM_KEYUP:
+		switch (wParam)
+		{
+		case VK_ESCAPE:
+			::PostQuitMessage(0);
+			break;
+		case VK_RETURN:
+			break;
+			/*‘F1’ 키를 누르면 1인칭 카메라, ‘F3’ 키를 누르면 3인칭 카메라로 변경한다.*/
+		case VK_SPACE:
+		{
+			mainGame.m_nSceneIndex = 1;
+		}
+			break;
+		case VK_F9:
+			//“F9” 키가 눌려지면 윈도우 모드와 전체화면 모드의 전환을 처리한다. 
+			mainGame.ChangeSwapChainState();
+			break;
+		default:
+			break;
+		}
+		break;
+	default:
+		break;
+	}
+}
+
+void CMainScene::ProcessInput(HWND hWnd)
+{
+	m_Timer.Tick(30.0f);
+	static UCHAR pKeyBuffer[256];
+	// 방향키를 바이트로 처리한다.
+
+
+	uint8 dwDirection = 0;
+	if (::GetKeyboardState(pKeyBuffer))
+	{
+		if (pKeyBuffer[0x57] & 0xF0) dwDirection |= DIR_FORWARD;
+		else if (pKeyBuffer[0x77] & 0xF0) dwDirection |= DIR_FORWARD;
+
+		if (pKeyBuffer[0x53] & 0xF0) dwDirection |= DIR_BACKWARD;
+		else if (pKeyBuffer[0x73] & 0xF0) dwDirection |= DIR_BACKWARD;
+
+		if (pKeyBuffer[0x61] & 0xF0) dwDirection |= DIR_LEFT;
+		else if (pKeyBuffer[0x41] & 0xF0) dwDirection |= DIR_LEFT;
+
+		if (pKeyBuffer[0x44] & 0xF0) dwDirection |= DIR_RIGHT;
+		else if (pKeyBuffer[0x64] & 0xF0) dwDirection |= DIR_RIGHT;
+
+		//if (pKeyBuffer[0x46] & 0xF0) _players[0]->SetOnInteraction(true);
+		//else if (pKeyBuffer[0x66] & 0xF0) _players[0]->SetOnInteraction(true);
+	}
+
+	float cxDelta = 0.0f, cyDelta = 0.0f;
+	POINT ptCursorPos;
+	if (::GetCapture() == hWnd)
+	{
+		//마우스 커서를 화면에서 없앤다(보이지 않게 한다).
+		::SetCursor(NULL);
+		//현재 마우스 커서의 위치를 가져온다. 
+		::GetCursorPos(&ptCursorPos);
+		//마우스 버튼이 눌린 상태에서 마우스가 움직인 양을 구한다. 
+		cxDelta = (float)(ptCursorPos.x - m_ptOldCursorPos.x) / 3.0f;
+		cyDelta = (float)(ptCursorPos.y - m_ptOldCursorPos.y) / 3.0f;
+		//마우스 커서의 위치를 마우스가 눌려졌던 위치로 설정한다. 
+		::SetCursorPos(m_ptOldCursorPos.x, m_ptOldCursorPos.y);
+	}
+	{
+		//std::lock_guard<std::mutex> lg(_players[_playerIdx]->m_lock);
+		if ((dwDirection != 0) || (cxDelta != 0.0f) || (cyDelta != 0.0f))
+		{
+			if (cxDelta || cyDelta)
+			{
+
+				/*cxDelta는 y-축의 회전을 나타내고 cyDelta는 x-축의 회전을 나타낸다. 오른쪽 마우스 버튼이 눌려진 경우
+				cxDelta는 z-축의 회전을 나타낸다.*/
+				if (pKeyBuffer[VK_RBUTTON] & 0xF0) _players[_playerIdx]->Rotate(cyDelta, 0.0f, -cxDelta);
+				else if (pKeyBuffer[VK_LBUTTON] & 0xF0) _players[_playerIdx]->Rotate(cyDelta, cxDelta, 0.0f);
+
+				if (pKeyBuffer[VK_LBUTTON] & 0xF0)
+				{
+					C2S_ROTATE packet;
+					packet.size = sizeof(C2S_ROTATE);
+					packet.type = C_PACKET_TYPE::ROTATE;
+					packet.angle = cxDelta;
+					//clientCore._client->DoSend(&packet);
+				}
+			}
+
+			/*플레이어를 dwDirection 방향으로 이동한다(실제로는 속도 벡터를 변경한다). 이동 거리는 시간에 비례하도록 한다. 플레이어의 이동 속력은 (1.3UNIT/초)로 가정한다.*/
+			if (dwDirection)
+				_players[_playerIdx]->Move(dwDirection, PLAYER_VELOCITY);
+		}
+	}
+
+
+	if (m_lastKeyInput != dwDirection || (cxDelta != 0.0f) || (cyDelta != 0.0f)) // 이전과 방향(키입력이 다른 경우에만 무브 이벤트 패킷을 보낸다)
+	{
+
+		C2S_MOVE packet;
+		packet.size = sizeof(C2S_MOVE);
+		packet.type = C_PACKET_TYPE::MOVE;
+		packet.key = dwDirection;
+
+		//clientCore._client->DoSend(&packet);
+	}
+	m_lastKeyInput = dwDirection;
+
+
+	//카메라를 갱신한다. 중력과 마찰력의 영향을 속도 벡터에 적용한다.
+	for (int k = 0; k < PLAYERNUM; ++k)
+	{
+		if (k == _playerIdx) _players[k]->Update(m_Timer.GetTimeElapsed());
+		else _players[k]->OtherUpdate(m_Timer.GetTimeElapsed());
+	}
+}
+void CMainScene::OnProcessingMouseMessage(HWND hWnd, UINT nMessageID, WPARAM wParam, LPARAM lParam)
+{
+	switch (nMessageID)
+	{
+	case WM_LBUTTONDOWN:
+	case WM_RBUTTONDOWN:
+		//마우스 캡쳐를 하고 현재 마우스 위치를 가져온다. 
+		::SetCapture(hWnd);
+		::GetCursorPos(&m_ptOldCursorPos);
+		break;
+	case WM_LBUTTONUP:
+	case WM_RBUTTONUP:
+		//마우스 캡쳐를 해제한다. 
+		::ReleaseCapture();
+		break;
+	case WM_MOUSEMOVE:
+		break;
+	default:
+		break;
+	}
+}
+
+void CMainScene::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPARAM wParam, LPARAM lParam)
+{
+	switch (nMessageID)
+	{
+	case WM_KEYUP:
+		switch (wParam)
+		{
+		case VK_ESCAPE:
+			::PostQuitMessage(0);
+			break;
+		case VK_RETURN:
+			break;
+			/*‘F1’ 키를 누르면 1인칭 카메라, ‘F3’ 키를 누르면 3인칭 카메라로 변경한다.*/
+		case VK_SPACE:
+		{
+			mainGame.m_nSceneIndex = 0;
+		}
+		break;
+		case VK_F9:
+			//“F9” 키가 눌려지면 윈도우 모드와 전체화면 모드의 전환을 처리한다. 
+			mainGame.ChangeSwapChainState();
+			break;
+		default:
+			break;
+		}
+		break;
+	default:
+		break;
+	}
+}
+
+void CLobbyScene::ProcessInput(HWND hWnd)
+{
+	m_Timer.Tick(30.0f);
+	//static UCHAR pKeyBuffer[256];
+	// 방향키를 바이트로 처리한다.
+
+	//uint8 dwDirection = 0;
+	//if (::GetKeyboardState(pKeyBuffer))
+	//{
+	//	if (pKeyBuffer[0x57] & 0xF0) dwDirection |= DIR_FORWARD;
+	//	else if (pKeyBuffer[0x77] & 0xF0) dwDirection |= DIR_FORWARD;
+
+	//	if (pKeyBuffer[0x53] & 0xF0) dwDirection |= DIR_BACKWARD;
+	//	else if (pKeyBuffer[0x73] & 0xF0) dwDirection |= DIR_BACKWARD;
+
+	//	if (pKeyBuffer[0x61] & 0xF0) dwDirection |= DIR_LEFT;
+	//	else if (pKeyBuffer[0x41] & 0xF0) dwDirection |= DIR_LEFT;
+
+	//	if (pKeyBuffer[0x44] & 0xF0) dwDirection |= DIR_RIGHT;
+	//	else if (pKeyBuffer[0x64] & 0xF0) dwDirection |= DIR_RIGHT;
+
+	//	//if (pKeyBuffer[0x46] & 0xF0) _players[0]->SetOnInteraction(true);
+	//	//else if (pKeyBuffer[0x66] & 0xF0) _players[0]->SetOnInteraction(true);
+	//}
+
+	float cxDelta = 0.0f, cyDelta = 0.0f;
+	POINT ptCursorPos;
+	if (::GetCapture() == hWnd)
+	{
+		//마우스 커서를 화면에서 없앤다(보이지 않게 한다).
+		::SetCursor(NULL);
+		//현재 마우스 커서의 위치를 가져온다. 
+		::GetCursorPos(&ptCursorPos);
+		//마우스 버튼이 눌린 상태에서 마우스가 움직인 양을 구한다. 
+		cxDelta = (float)(ptCursorPos.x - m_ptOldCursorPos.x) / 3.0f;
+		cyDelta = (float)(ptCursorPos.y - m_ptOldCursorPos.y) / 3.0f;
+		//마우스 커서의 위치를 마우스가 눌려졌던 위치로 설정한다. 
+		::SetCursorPos(m_ptOldCursorPos.x, m_ptOldCursorPos.y);
+	}
+	//{
+	//	//std::lock_guard<std::mutex> lg(_players[_playerIdx]->m_lock);
+	//	if ((dwDirection != 0) || (cxDelta != 0.0f) || (cyDelta != 0.0f))
+	//	{
+	//		if (cxDelta || cyDelta)
+	//		{
+
+	//			/*cxDelta는 y-축의 회전을 나타내고 cyDelta는 x-축의 회전을 나타낸다. 오른쪽 마우스 버튼이 눌려진 경우
+	//			cxDelta는 z-축의 회전을 나타낸다.*/
+	//			if (pKeyBuffer[VK_RBUTTON] & 0xF0) _players[_playerIdx]->Rotate(cyDelta, 0.0f, -cxDelta);
+	//			else if (pKeyBuffer[VK_LBUTTON] & 0xF0) _players[_playerIdx]->Rotate(cyDelta, cxDelta, 0.0f);
+
+	//			if (pKeyBuffer[VK_LBUTTON] & 0xF0)
+	//			{
+	//				C2S_ROTATE packet;
+	//				packet.size = sizeof(C2S_ROTATE);
+	//				packet.type = C_PACKET_TYPE::ROTATE;
+	//				packet.angle = cxDelta;
+	//				//clientCore._client->DoSend(&packet);
+	//			}
+	//		}
+
+	//		/*플레이어를 dwDirection 방향으로 이동한다(실제로는 속도 벡터를 변경한다). 이동 거리는 시간에 비례하도록 한다. 플레이어의 이동 속력은 (1.3UNIT/초)로 가정한다.*/
+	//		if (dwDirection)
+	//			_players[_playerIdx]->Move(dwDirection, PLAYER_VELOCITY);
+	//	}
+	//}
+
+
+	//if (m_lastKeyInput != dwDirection || (cxDelta != 0.0f) || (cyDelta != 0.0f)) // 이전과 방향(키입력이 다른 경우에만 무브 이벤트 패킷을 보낸다)
+	//{
+
+	//	C2S_MOVE packet;
+	//	packet.size = sizeof(C2S_MOVE);
+	//	packet.type = C_PACKET_TYPE::MOVE;
+	//	packet.key = dwDirection;
+
+	//	//clientCore._client->DoSend(&packet);
+	//}
+	//m_lastKeyInput = dwDirection;
+
+
+	////카메라를 갱신한다. 중력과 마찰력의 영향을 속도 벡터에 적용한다.
+	//for (int k = 0; k < PLAYERNUM; ++k)
+	//{
+	//	if (k == _playerIdx) _players[k]->Update(m_Timer.GetTimeElapsed());
+	//	else _players[k]->OtherUpdate(m_Timer.GetTimeElapsed());
+	//}
 }

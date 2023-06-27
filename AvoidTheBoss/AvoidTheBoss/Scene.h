@@ -159,6 +159,8 @@ public:
 		lParam);
 	virtual void OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPARAM wParam, LPARAM
 		lParam);
+
+	virtual void ProcessInput(HWND hWnd);
 };
 
 class CLobbyScene : public CGameScene
@@ -174,4 +176,6 @@ public:
 		lParam);
 	virtual void OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPARAM wParam, LPARAM
 		lParam);
+
+	virtual void ProcessInput(HWND hWnd);
 };

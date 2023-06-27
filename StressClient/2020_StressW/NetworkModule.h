@@ -4,7 +4,7 @@
 #include "Asession.h"
 #include "DummySession.h"
 
-void InitializeNetwork();
+//void InitializeNetwork();
 void GetPointCloud(int* size, float** points);
 
 

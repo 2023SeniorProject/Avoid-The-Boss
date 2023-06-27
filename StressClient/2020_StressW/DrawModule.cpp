@@ -450,7 +450,7 @@ int WINAPI WinMain(HINSTANCE	hInstance,			// Instance
 		return 0;									// Quit If Window Was Not Created
 	}
 
-	InitializeNetwork();
+	//InitializeNetwork();
 
 	while (!done)									// Loop That Runs While done=FALSE
 	{

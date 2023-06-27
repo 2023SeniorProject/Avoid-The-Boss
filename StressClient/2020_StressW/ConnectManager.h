@@ -5,10 +5,10 @@ class DummyConnectEvent : public IocpEvent
 {	
 	
 public:
-	DummyConnectEvent() : IocpEvent(EventType::Connect)
+	DummyConnectEvent(DummySession* ds) : IocpEvent(EventType::Connect)
 	{
 		Init();
-		_client = new DummySession();
+		_client = ds;
 	}
 public:
 	char _buf[BUFSIZE / 2] = {};

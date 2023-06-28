@@ -130,24 +130,7 @@ public: //04-29 추가함수
 	virtual void Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera =NULL);
 
 	virtual void BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList
-		* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature);
-};
-
-class CWorker : public CPlayer
-{
-public:
-	CWorker();
-	CWorker(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature);
-	virtual ~CWorker();
-public:
-	virtual CCamera* ChangeCamera(DWORD nNewCameraMode, float fTimeElapsed);
-	virtual void OnPlayerUpdateCallback(float fTimeElapsed);
-	virtual void OnCameraUpdateCallback(float fTimeElapsed);
-
-
-	virtual void Update(float fTimeElapsed);
-	virtual void BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList
-		* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature);
+		* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature) {}
 };
 
 class CVirtualPlayer : public CPlayer
@@ -158,16 +141,15 @@ public:
 	virtual ~CVirtualPlayer();
 public:
 	virtual CCamera* ChangeCamera(DWORD nNewCameraMode, float fTimeElapsed);
-	virtual void OnPlayerUpdateCallback(float fTimeElapsed);
-	virtual void OnCameraUpdateCallback(float fTimeElapsed);
 
 	virtual void Move(DWORD dwDirection, float fDistance);
-
 	virtual void Animate(float fTimeElapsed);
-
 	virtual void Update(float fTimeElapsed);
 	virtual void BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList
 		* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature);
+	virtual uint8 ProcessInput();
+};
+
 struct SwitchInformation
 {
 	XMFLOAT3 position;

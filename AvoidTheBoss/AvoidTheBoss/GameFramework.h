@@ -16,8 +16,7 @@ class CGameFramework
 	friend class CSession;
 	friend class CEmployee;
 	friend class CBoss;
-	//friend class CGameScene;
-	friend class CMainScene;
+	friend class CGameScene;
 private:
 	HINSTANCE m_hInstance;
 	HWND m_hWnd;
@@ -73,10 +72,11 @@ private:
 	
 protected:
 	static const int							m_nScene = 2;
-	int							m_nSceneIndex = 0;
+
 	CGameScene*				m_ppScene[m_nScene];
 	Atomic<int8>			_curScene = 0;
 public:
+	int							m_nSceneIndex = 0;
 	CGameFramework();
 	~CGameFramework();
 

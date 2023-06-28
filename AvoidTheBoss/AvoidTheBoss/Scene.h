@@ -189,23 +189,6 @@ protected:
 	static D3D12_GPU_DESCRIPTOR_HANDLE	m_d3dSrvGPUDescriptorNextHandle;
 };
 
-class CMainScene : public CGameScene
-{
-public:
-	CMainScene() {}
-	~CMainScene() {}
-	virtual void BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList
-		* pd3dCommandList);
-};
-
-class CLobbyScene : public CGameScene
-{
-public:
-	CLobbyScene() {}
-	~CLobbyScene() {}
-	virtual void BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList
-		* pd3dCommandList);
-};
 
 
 class CMainScene : public CGameScene

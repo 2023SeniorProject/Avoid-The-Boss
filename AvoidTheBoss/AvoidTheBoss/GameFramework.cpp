@@ -376,7 +376,7 @@ void CGameFramework::ProcessInput()
 
 void CGameFramework::UpdateObject()
 {
-	m_pScene[m_nSceneIndex]->Update(m_hWnd);
+	m_ppScene[m_nSceneIndex]->Update(m_hWnd);
 }
 
 void CGameFramework::AnimateObjects()
@@ -536,9 +536,9 @@ LRESULT CGameFramework::OnProcessingWindowMessage(HWND hWnd, UINT nMessageID, WP
 	case WM_ACTIVATE:
 	{
 		if (LOWORD(wParam) == WA_INACTIVE)
-			m_ppScene[m_nSceneIndex]->m_Timer.Stop();
+			m_ppScene[m_nSceneIndex]->StopTimer();
 		else
-			m_ppScene[m_nSceneIndex]->m_Timer.Start();
+			m_ppScene[m_nSceneIndex]->StartTimer();
 		break;
 	}
 	case WM_SIZE:

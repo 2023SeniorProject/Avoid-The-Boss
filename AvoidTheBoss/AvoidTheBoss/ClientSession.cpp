@@ -122,7 +122,7 @@ void CSession::ProcessPacket(char* packet)
 		S2C_KEY* movePacket = reinterpret_cast<S2C_KEY*>(packet);
 		moveEvent* mev = new moveEvent();
 
-		CPlayer* player = mainGame.m_pScene->GetScenePlayerBySid(movePacket->sid);
+		CPlayer* player = mainGame.m_ppScene[mainGame.m_nSceneIndex]->GetScenePlayerBySid(movePacket->sid);
 		if (player == nullptr) break;
 
 		mev->player = player;
@@ -130,14 +130,14 @@ void CSession::ProcessPacket(char* packet)
 		mev->_dir.y = 0;
 		mev->_dir.z = movePacket->z;
 		mev->_key = movePacket->key;
-		mainGame.m_pScene->AddEvent(static_cast<queueEvent*>(mev), 0);
+		mainGame.m_ppScene[mainGame.m_nSceneIndex]->AddEvent(static_cast<queueEvent*>(mev), 0);
 	}
 	break;
 
 	case (uint8)S_PACKET_TYPE::SROT:
 	{
 		S2C_ROTATE* rotatePacket = reinterpret_cast<S2C_ROTATE*>(packet);
-		CPlayer* player = mainGame.m_pScene->GetScenePlayerBySid(rotatePacket->sid);
+		CPlayer* player = mainGame.m_ppScene[mainGame.m_nSceneIndex]->GetScenePlayerBySid(rotatePacket->sid);
 		if (player != nullptr)
 		{
 			//player->Rotate(0, rotatePacket->angle, 0);
@@ -148,7 +148,7 @@ void CSession::ProcessPacket(char* packet)
 	case (uint8)S_PACKET_TYPE::SPOS: // 미리 계산한 좌표값을 보내준다.
 	{
 		S2C_POS* posPacket = reinterpret_cast<S2C_POS*>(packet);
-		CPlayer* player = mainGame.m_pScene->GetScenePlayerBySid(posPacket->sid);		
+		CPlayer* player = mainGame.m_ppScene[mainGame.m_nSceneIndex]->GetScenePlayerBySid(posPacket->sid);		
 		if (player == nullptr) break;
 		
 		XMFLOAT3 newPos = XMFLOAT3(posPacket->x, player->GetPosition().y, posPacket->z);
@@ -156,7 +156,7 @@ void CSession::ProcessPacket(char* packet)
 		pe->player = player;
 		pe->_pos = newPos;
 	
-		mainGame.m_pScene->AddEvent(static_cast<queueEvent*>(pe), 0.f);
+		mainGame.m_ppScene[mainGame.m_nSceneIndex]->AddEvent(static_cast<queueEvent*>(pe), 0.f);
 		
 	}
 	break;
@@ -169,21 +169,21 @@ void CSession::ProcessPacket(char* packet)
 		S2C_GAMESTART* gsp = reinterpret_cast<S2C_GAMESTART*>(packet);
 		
 		// ================= 플레이어 초기 위치 초기화 ==================
-		mainGame.m_pScene->InitGame(gsp, _sid);
+		mainGame.m_ppScene[mainGame.m_nSceneIndex]->InitGame(gsp, _sid);
 
 		// ================= 자신의 클라이언트 IDX 확인 =================
-		std::cout << "MYPLAYER IDX : " << mainGame.m_pScene->_playerIdx << "\n";
+		std::cout << "MYPLAYER IDX : " << mainGame.m_ppScene[mainGame.m_nSceneIndex]->_playerIdx << "\n";
 		
 		// ================= 카메라 셋팅 ================================
-		CPlayer* myPlayer = mainGame.m_pScene->_players[mainGame.m_pScene->_playerIdx];
+		CPlayer* myPlayer = mainGame.m_ppScene[mainGame.m_nSceneIndex]->_players[mainGame.m_ppScene[mainGame.m_nSceneIndex]->_playerIdx];
 		std::wstring str = L"Client";
-		str.append(std::to_wstring(mainGame.m_pScene->_playerIdx));
+		str.append(std::to_wstring(mainGame.m_ppScene[mainGame.m_nSceneIndex]->_playerIdx));
 		::SetConsoleTitle(str.c_str());
-		mainGame.m_pScene->m_pCamera = myPlayer->GetCamera();
-		mainGame.m_pScene->m_cid = _cid;
-		mainGame.m_pScene->m_sid = _sid;
+		mainGame.m_ppScene[mainGame.m_nSceneIndex]->m_pCamera = myPlayer->GetCamera();
+		mainGame.m_ppScene[mainGame.m_nSceneIndex]->m_cid = _cid;
+		mainGame.m_ppScene[mainGame.m_nSceneIndex]->m_sid = _sid;
 		mainGame._curScene.store(SceneInfo::GAMEROOM);
-		mainGame.m_pScene->InitScene();
+		mainGame.m_ppScene[mainGame.m_nSceneIndex]->InitScene();
 	}
 	break;
 	// ================ 로그인 관련 처리 ================
@@ -222,7 +222,7 @@ void CSession::ProcessPacket(char* packet)
 		SC_EVENTPACKET* ev = (SC_EVENTPACKET*)packet;
 		InteractionEvent* gev = new InteractionEvent();
 		gev->eventId = ev->eventId;
-		mainGame.m_pScene->AddEvent(static_cast<queueEvent*>(gev), 0.f);
+		mainGame.m_ppScene[mainGame.m_nSceneIndex]->AddEvent(static_cast<queueEvent*>(gev), 0.f);
 
 	}
 	break;
@@ -231,7 +231,7 @@ void CSession::ProcessPacket(char* packet)
 	{
 		S2C_ANIMPACKET* sw = (S2C_ANIMPACKET*)packet;
 		uint8 idx = sw->idx;
-		CEmployee* myPlayer = (CEmployee*)mainGame.m_pScene->GetScenePlayerBySid(idx);
+		CEmployee* myPlayer = (CEmployee*)mainGame.m_ppScene[mainGame.m_nSceneIndex]->GetScenePlayerBySid(idx);
 		if (myPlayer != nullptr)
 		{
 			if (sw->track == (uint8)ANIMTRACK::GEN_ANIM) myPlayer->SetBehavior(PLAYER_BEHAVIOR::SWITCH_INTER);
@@ -243,7 +243,7 @@ void CSession::ProcessPacket(char* packet)
 	{
 		S2C_FRAMEPACKET* fp = (S2C_FRAMEPACKET*)packet;
 		FrameEvent* fe = new FrameEvent(fp->wf);
-		mainGame.m_pScene->AddEvent(static_cast<queueEvent*>(fe),0);
+		mainGame.m_ppScene[mainGame.m_nSceneIndex]->AddEvent(static_cast<queueEvent*>(fe),0);
 	}
 	break;
 	}

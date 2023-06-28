@@ -8,7 +8,7 @@
 CBoss::CBoss(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature)
 {
 	m_type = 0;
-	m_pCamera = ChangeCamera(THIRD_PERSON_CAMERA, 0.0f);
+	m_pCamera = ChangeCamera(FIRST_PERSON_CAMERA, 0.0f);
 	m_ctype = (uint8)PLAYER_TYPE::BOSS;
 	m_nCharacterType = CHARACTER_TYPE::BOSS;
 
@@ -48,8 +48,12 @@ CBoss::CBoss(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandLis
 	m_pSkinnedAnimationController1->SetTrackEnable(2, false);
 	m_pSkinnedAnimationController1->SetTrackEnable(3, false);
 
-	SetScale(XMFLOAT3(1.f, 1.f, 1.f));
-	SetPosition(XMFLOAT3(0.0f, 0.25f, -30.0f));
+	if (m_pCamera->m_nMode == (DWORD)FIRST_PERSON_CAMERA)
+		SetPosition(XMFLOAT3(0.0f, 1.57f, 0.0f));
+
+	if(m_pCamera->m_nMode == (DWORD)THIRD_PERSON_CAMERA)
+		SetPosition(XMFLOAT3(0.0f, 0.25f, -30.0f));
+
 	CreateShaderVariables(pd3dDevice, pd3dCommandList);
 	
 
@@ -74,7 +78,7 @@ CCamera* CBoss::ChangeCamera(DWORD nNewCameraMode, float fTimeElapsed)
 	case FIRST_PERSON_CAMERA:
 		m_pCamera = OnChangeCamera(FIRST_PERSON_CAMERA, nCurrentCameraMode);
 		m_pCamera->SetTimeLag(0.0f);
-		m_pCamera->SetOffset(XMFLOAT3(0.0f, 1.4f, 0.0f));
+		m_pCamera->SetOffset(XMFLOAT3(0.0f, 0.0f, 0.0f));
 		m_pCamera->GenerateProjectionMatrix(1.01f, MaxDepthofMap, ASPECT_RATIO, 60.0f); //5000.f
 		m_pCamera->SetViewport(0, 0, FRAME_BUFFER_WIDTH, FRAME_BUFFER_HEIGHT, 0.0f, 1.0f);
 		m_pCamera->SetScissorRect(0, 0, FRAME_BUFFER_WIDTH, FRAME_BUFFER_HEIGHT);
@@ -149,6 +153,8 @@ void CBoss::Update(float fTimeElapsed, CLIENT_TYPE ptype)
 	AnimTrackUpdate(); // 애니메이션 트랙 상태 변경
 
 	LateUpdate(fTimeElapsed, ptype);
+
+	//std::cout << GetPosition().y << std::endl;
 }
 
 void CBoss::LateUpdate(float fTimeElapsed, CLIENT_TYPE ptype)
@@ -311,6 +317,13 @@ uint8 CBoss::ProcessInput()
 	if (InputManager::GetInstance().GetKeyBuffer(KEY_TYPE::A) > 0)  dir |= KEY_LEFT;
 	if (InputManager::GetInstance().GetKeyBuffer(KEY_TYPE::S) > 0)  dir |= KEY_BACKWARD;
 	if (InputManager::GetInstance().GetKeyBuffer(KEY_TYPE::D) > 0)  dir |= KEY_RIGHT;
+
+	//if (InputManager::GetInstance().GetKeyBuffer(KEY_TYPE::D) > 0)
+	//{
+	//	m_pCamera = ChangeCamera(THIRD_PERSON_CAMERA, 0.0f);
+	//	//m_pCamera = _players[_playerIdx]->m_pCamera;
+	//}
+	//if (InputManager::GetInstance().GetKeyBuffer(VK_F1) > 0)
 
 	if (dir) SetBehavior(PLAYER_BEHAVIOR::RUN);
 	else	 SetBehavior(PLAYER_BEHAVIOR::IDLE);

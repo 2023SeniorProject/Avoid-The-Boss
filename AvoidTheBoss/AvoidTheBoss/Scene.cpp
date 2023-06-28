@@ -938,9 +938,15 @@ void CMainScene::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPARAM 
 		case VK_ESCAPE:
 			::PostQuitMessage(0);
 			break;
-		case VK_F1:
-			break;
-			/*‘F1’ 키를 누르면 1인칭 카메라, ‘F3’ 키를 누르면 3인칭 카메라로 변경한다.*/
+		//case VK_F1:
+		//	_players[_playerIdx]->m_pCamera = _players[_playerIdx]->ChangeCamera(FIRST_PERSON_CAMERA, 0.0f);
+		//	m_pCamera = _players[_playerIdx]->m_pCamera;
+		//	break;
+		//case VK_F3:
+		//	_players[_playerIdx]->m_pCamera = _players[_playerIdx]->ChangeCamera(THIRD_PERSON_CAMERA, 0.0f);
+		//	m_pCamera = _players[_playerIdx]->m_pCamera;
+		//	break;
+		//	/*‘F1’ 키를 누르면 1인칭 카메라, ‘F3’ 키를 누르면 3인칭 카메라로 변경한다.*/
 		case VK_RETURN:
 		{
 			mainGame.m_nSceneIndex = 0;

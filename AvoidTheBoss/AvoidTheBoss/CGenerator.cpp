@@ -16,14 +16,13 @@ CGenerator::CGenerator()
 void CGenerator::LogicUpdate()
 {
 	//if (m_bOnInteraction || m_bAlreadyOn)
-	{
-			//if (m_nGeneratorAnimationCount == 1)	   
-				m_nPipeStartAnimation[0] = true;
-			//if (m_nGeneratorAnimationCount == 1) 
-				m_nPipeStartAnimation[1] = true;
-			//if (m_nGeneratorAnimationCount == 1) 
-				m_nPipeStartAnimation[2] = true;
+	{  
+		m_nPipeStartAnimation[0] = true;
 	}
+	if (m_nGeneratorAnimationCount[0] == 4)
+		m_nPipeStartAnimation[1] = true;
+	if (m_nGeneratorAnimationCount[1] == 4)
+		m_nPipeStartAnimation[2] = true;
 	//else
 	//{
 	//	for (int i = 0; i < m_nPipe; i++)
@@ -34,7 +33,8 @@ void CGenerator::LogicUpdate()
 	//}
 	for (int i = 0; i < m_nPipe; i++)
 	{
-		m_nGeneratorAnimationCount[i] += 1;
+		if(m_nPipeStartAnimation[i])
+			m_nGeneratorAnimationCount[i] += 1;
 
 	}
 }

@@ -1,2 +1,0 @@
-﻿  stdafx.cpp
-C:\SeniorProject\Avoid-The-Boss\Senior_project_ver2\stdafx.cpp(4,10): fatal  error C1083: 포함 파일을 열 수 없습니다. 'DDSTextureLoader12.h': No such file or directory

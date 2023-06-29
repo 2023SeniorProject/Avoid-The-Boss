@@ -56,6 +56,14 @@
 #include <D3d12SDKLayers.h>
 
 #include "d3dx12.h"
+
+#include <d2d1.h>
+#include <d3d11.h>
+#include <dwrite.h>
+#include <d3d11on12.h>
+#include <dxgi1_6.h>
+#include <d2d1_3.h>
+
 #include <array>
 #include <cassert>
 #include <memory>

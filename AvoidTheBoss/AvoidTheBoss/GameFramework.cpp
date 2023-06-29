@@ -1,8 +1,6 @@
 #include "pch.h"
 #include "GameFramework.h"
 #include "clientIocpCore.h"
-#include <d3d11on12.h>
-#include <wrl.h>
 #include <string>
 
 CGameFramework mainGame;
@@ -509,34 +507,6 @@ void CGameFramework::MoveToNextFrame()
 		hResult = m_pd3dFence->SetEventOnCompletion(nFenceValue, m_hFenceEvent);
 		::WaitForSingleObject(m_hFenceEvent, INFINITE);
 	}
-}
-
-void CGameFramework::CreateD2D11On12Device()
-{
-	Microsoft::WRL::ComPtr<ID3D11Device> d3d11Device;
-	
-	
-	D3D11On12CreateDevice(m_pd3dDevice,
-		D3D11_CREATE_DEVICE_BGRA_SUPPORT,
-		nullptr,
-		0,
-		reinterpret_cast<IUnknown**>(m_pd3dCommandQueue),
-		1,
-		0,
-		&d3d11Device,
-		&m_d3d11DeviceContext,
-		nullptr
-	);
-
-	// Query the 11On12 device from the 11 device.
-	d3d11Device.As(&m_d3d11On12Device);
-
-}
-
-void CGameFramework::CreateD2DDevice()
-{
-	// Create D2D/DWrite components.
-	
 }
 
 void CGameFramework::OnProcessingMouseMessage(HWND hWnd, UINT nMessageID, WPARAM wParam, LPARAM lParam)

@@ -5,9 +5,7 @@
 #include "Scene.h"
 #include "Camera.h"
 
-#include <d2d1.h>
-#include <d3d11.h>
-#include <dwrite.h>
+
 
 #pragma comment(lib, "d2d1")
 

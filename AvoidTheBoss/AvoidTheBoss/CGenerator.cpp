@@ -84,7 +84,7 @@ void CGenerator::Animate(float fTimeElapsed)
 				{
 					if (	m_nGeneratorAnimationCount[i] == GENERATOR_ANIM_FRAM)
 					{
-							m_nGeneratorAnimationCount[i] = 0;
+							m_nGeneratorAnimationCount[i] = -20;
 						std::cout << m_ppPipe[i]->GetPosition().y << std::endl;
 					}
 					XMMATRIX xmmtxTranslate = DirectX::XMMatrixTranslation(0.0f, delta, 0.0f);

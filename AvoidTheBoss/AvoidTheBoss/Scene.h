@@ -39,7 +39,7 @@ struct LIGHTS
 	int						m_nLights;
 };
 
-class CGameScene : public SceneInterface
+class CGameScene : public CScene
 {
 	friend class CSession;
 	friend class queueEvent;

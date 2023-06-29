@@ -3,14 +3,14 @@ enum SceneInfo : int8 { LOGIN = 77,LOBBY = 78,ROOM = 79,GAMEROOM = 80};
 
 class CCamera;
 
-class SceneInterface
+class CScene
 {
 	friend class ClientIocpCore;
 public:
 	Atomic<int8> _curSceneStatus = -1;
 public:
-	SceneInterface() {}
-	virtual ~SceneInterface() {}
+	CScene() {}
+	virtual ~CScene() {}
 	//씬에서 마우스와 키보드 메시지를 처리한다.
 	virtual void OnProcessingMouseMessage(HWND hWnd, UINT nMessageID, WPARAM wParam, LPARAM
 		lParam) 

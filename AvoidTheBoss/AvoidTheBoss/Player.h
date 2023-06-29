@@ -151,7 +151,7 @@ public:
 	virtual uint8 ProcessInput();
 };
 
-struct SwitchInformation
+struct GEN_INFO
 {
 	XMFLOAT3 position;
 	float radius; //raderArea

@@ -64,6 +64,9 @@
     <ClCompile Include="clientIocpCore.cpp">
       <Filter>ForClient\IocpCore</Filter>
     </ClCompile>
+    <ClCompile Include="UIManager.cpp">
+      <Filter>Mananger\UIManager</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameObject.h">
@@ -135,6 +138,9 @@
     </ClInclude>
     <ClInclude Include="CEmployee.h">
       <Filter>Player\EMPLOYEE</Filter>
+    </ClInclude>
+    <ClInclude Include="UIManager.h">
+      <Filter>Mananger\UIManager</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -390,6 +396,9 @@
     </Filter>
     <Filter Include="Mananger">
       <UniqueIdentifier>{f06f0dab-99ab-423e-b1d6-855d105af5a6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Mananger\UIManager">
+      <UniqueIdentifier>{32b6f4e7-38ad-421b-937c-749e73848ab7}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

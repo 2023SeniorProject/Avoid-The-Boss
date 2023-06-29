@@ -2,7 +2,7 @@
 #include "GameObject.h"
 
 #define BUTTON_ANIM_FRAME 50
-#define GENERATOR_ANIM_FRAM 50
+#define GENERATOR_ANIM_FRAM 16
 class CGenerator : public CGameObject
 {
 
@@ -10,9 +10,7 @@ class CGenerator : public CGameObject
 	int m_nPipe = 3;
 	CGameObject** m_ppPipe = NULL;
 	CGameObject* m_pButton = NULL;
-	int m_fPipeDistanceCount[3];
 	bool m_nPipeStartAnimation[3];
-	bool m_bPipeMoveUp[3];
 public: //06-03 Ãß°¡
 	int m_idx = -1;
 	float m_maxGuage = 100;
@@ -25,14 +23,15 @@ public:
 	bool m_bAlreadyOn = false;
 public:
 	int  m_nButtonAnimationCount = BUTTON_ANIM_FRAME;
-	int  m_nGeneratorAnimationCount = GENERATOR_ANIM_FRAM;
+	int  m_nGeneratorAnimationCount[3];
 public:
 	CGenerator();
 	virtual ~CGenerator() {};
 	float GetRadius() { return radius; }
 
-	void SetAnimationCount(int value) { m_nGeneratorAnimationCount = value; }
-	bool GetAnimationCount() { return m_nGeneratorAnimationCount; }
+	void LogicUpdate();
+	//void SetAnimationCount(int value) { m_nGeneratorAnimationCount[0] = value; }
+	//bool GetAnimationCount() { return m_nGeneratorAnimationCount[0]; }
 	void SetInteractionOn(bool value) { m_bOnInteraction = value; };
 	bool GetInteractionOn() { return m_bOnInteraction; }
 	void SetAlreadyOn(bool value) { m_bAlreadyOn = value; }

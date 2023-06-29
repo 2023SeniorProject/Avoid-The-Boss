@@ -64,7 +64,7 @@ void CPlayer::Update(float fTimeElapsed, CLIENT_TYPE ptype)
 	if (m_pCamera) m_pCamera->Move(vel);
 	m_pCamera->Update(m_xmf3Position,fTimeElapsed);
 	if (nCameraMode == THIRD_PERSON_CAMERA) m_pCamera->SetLookAt(m_xmf3Position);
-	else m_pCamera->SetPosition(m_xmf3Position);
+	else m_pCamera->SetPosition(m_xmf3Position); //Ä«¸Þ¶ó offset
 	m_pCamera->RegenerateViewMatrix();
 }
 
@@ -211,7 +211,7 @@ CCamera* CVirtualPlayer::ChangeCamera(DWORD nNewCameraMode, float fTimeElapsed)
 	case FIRST_PERSON_CAMERA:
 		m_pCamera = OnChangeCamera(FIRST_PERSON_CAMERA, nCurrentCameraMode);
 		m_pCamera->SetTimeLag(0.0f);
-		m_pCamera->SetOffset(XMFLOAT3(0.0f, 1.7f, 0.0f));
+		m_pCamera->SetOffset(XMFLOAT3(0.0f, 0.0f, 0.0f));
 		m_pCamera->GenerateProjectionMatrix(1.01f, MaxDepthofMap, ASPECT_RATIO, 60.0f); //5000.f
 		m_pCamera->SetViewport(0, 0, FRAME_BUFFER_WIDTH, FRAME_BUFFER_HEIGHT, 0.0f, 1.0f);
 		m_pCamera->SetScissorRect(0, 0, FRAME_BUFFER_WIDTH, FRAME_BUFFER_HEIGHT);

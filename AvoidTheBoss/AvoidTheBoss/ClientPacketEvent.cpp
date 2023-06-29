@@ -16,7 +16,7 @@ void InteractionEvent::Task()
 		CGenerator* targetGen = mainGame.m_ppScene[mainGame.m_nSceneIndex]->GetSceneGenByIdx(eventId - (uint8)EVENT_TYPE::SWITCH_ONE_START_EVENT);
 		if (targetGen == nullptr) break;
 		targetGen->SetAlreadyOn(true);
-		targetGen->SetAnimationCount(BUTTON_ANIM_FRAME);
+		//targetGen->SetAnimationCount(0);
 	}
 	break;
 	case EVENT_TYPE::SWITCH_ONE_END_EVENT:
@@ -27,7 +27,7 @@ void InteractionEvent::Task()
 		CGenerator* targetGen = mainGame.m_ppScene[mainGame.m_nSceneIndex]->GetSceneGenByIdx(eventId - (uint8)EVENT_TYPE::SWITCH_ONE_END_EVENT);
 		if (targetGen == nullptr) break;
 		targetGen->SetAlreadyOn(false);
-		targetGen->SetAnimationCount(0);
+		//targetGen->SetAnimationCount(0);
 	}
 	break;
 	// 만약 스위치 활성화가 됐다는 패킷이 전송 되었을 때,

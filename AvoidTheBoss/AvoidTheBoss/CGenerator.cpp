@@ -8,13 +8,41 @@ CGenerator::CGenerator()
 	for (int i = 0; i < m_nPipe; i++)
 	{
 		m_nPipeStartAnimation[i] = false;
+		m_nGeneratorAnimationCount[i] = 0;
 	}
 	
+}
+
+void CGenerator::LogicUpdate()
+{
+	//if (m_bOnInteraction || m_bAlreadyOn)
+	{
+			//if (m_nGeneratorAnimationCount == 1)	   
+				m_nPipeStartAnimation[0] = true;
+			//if (m_nGeneratorAnimationCount == 1) 
+				m_nPipeStartAnimation[1] = true;
+			//if (m_nGeneratorAnimationCount == 1) 
+				m_nPipeStartAnimation[2] = true;
+	}
+	//else
+	//{
+	//	for (int i = 0; i < m_nPipe; i++)
+	//	{
+	//		m_nPipeStartAnimation[i] = false;
+	//	}
+	// 
+	//}
+	for (int i = 0; i < m_nPipe; i++)
+	{
+		m_nGeneratorAnimationCount[i] += 1;
+
+	}
 }
 
 void CGenerator::Update(float fTimeElapsed)
 {
 	if (m_bOnInteraction && !m_bGenActive) m_curGuage += m_guageSpeed * fTimeElapsed;
+
 	if (m_curGuage > m_maxGuage && !m_bGenActive)
 	{
 		m_bGenActive = true;
@@ -25,9 +53,6 @@ void CGenerator::Update(float fTimeElapsed)
 		clientCore.DoSend(&packet);
 		std::cout << "Gen Active\n";
 	}
-
-
-	
 }
 
 void CGenerator::OnPrepareAnimate()
@@ -45,34 +70,40 @@ void CGenerator::OnPrepareAnimate()
 
 void CGenerator::Animate(float fTimeElapsed)
 {
-	if (m_bOnInteraction || m_bAlreadyOn)
+	LogicUpdate();
+
+	float delta = 0.01f;
+	//if (m_bOnInteraction)
 	{
-		float delta = 0.3f;
 		for (int i = 0; i < m_nPipe; i++) //1.8 ->1.7    ̵  10.f
 		{
-			if (m_nGeneratorAnimationCount == GENERATOR_ANIM_FRAM)	   m_nPipeStartAnimation[0] = true;
-			if (m_nGeneratorAnimationCount <= GENERATOR_ANIM_FRAM - 4) m_nPipeStartAnimation[1] = true;
-			if (m_nGeneratorAnimationCount <= GENERATOR_ANIM_FRAM - 8) m_nPipeStartAnimation[2] = true;
-		
 			if (m_nPipeStartAnimation[i])
 			{
-				if (m_nGeneratorAnimationCount < 0)
+				if (	m_nGeneratorAnimationCount[i] > 8
+					&& 	m_nGeneratorAnimationCount[i] <= GENERATOR_ANIM_FRAM)
 				{
-					m_nGeneratorAnimationCount = GENERATOR_ANIM_FRAM;
-				}
-				else if (m_nGeneratorAnimationCount > 25 && m_nGeneratorAnimationCount <= GENERATOR_ANIM_FRAM)
-				{
-					XMMATRIX xmmtxTranslate = DirectX::XMMatrixTranslation(0.0f, -delta * fTimeElapsed, 0.0f);
+					if (	m_nGeneratorAnimationCount[i] == GENERATOR_ANIM_FRAM)
+					{
+							m_nGeneratorAnimationCount[i] = 0;
+						std::cout << m_ppPipe[i]->GetPosition().y << std::endl;
+					}
+					XMMATRIX xmmtxTranslate = DirectX::XMMatrixTranslation(0.0f, delta, 0.0f);
 					m_ppPipe[i]->m_xmf4x4ToParent = Matrix4x4::Multiply(xmmtxTranslate, m_ppPipe[i]->m_xmf4x4ToParent);
 				}
-				else if (m_nGeneratorAnimationCount <= 25 && m_nGeneratorAnimationCount > 0)
+				else if (	m_nGeneratorAnimationCount[i] <= 8 
+					&& 	m_nGeneratorAnimationCount[i] > 0)
 				{
-					XMMATRIX xmmtxTranslate = DirectX::XMMatrixTranslation(0.0f, +delta * fTimeElapsed, 0.0f);
+					XMMATRIX xmmtxTranslate = DirectX::XMMatrixTranslation(0.0f, -delta, 0.0f);
 					m_ppPipe[i]->m_xmf4x4ToParent = Matrix4x4::Multiply(xmmtxTranslate, m_ppPipe[i]->m_xmf4x4ToParent);
+
+					if(	m_nGeneratorAnimationCount[i]==1)
+						std::cout << m_ppPipe[i]->GetPosition().y << std::endl;
 				}
 			}
 		}
-		m_nGeneratorAnimationCount -= delta * fTimeElapsed;
+
 	}
+
+
 	CGameObject::Animate(fTimeElapsed);
 }

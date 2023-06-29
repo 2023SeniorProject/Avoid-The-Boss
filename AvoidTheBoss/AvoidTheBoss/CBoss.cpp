@@ -49,10 +49,11 @@ CBoss::CBoss(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandLis
 	m_pSkinnedAnimationController1->SetTrackEnable(3, false);
 
 	if (m_pCamera->m_nMode == (DWORD)FIRST_PERSON_CAMERA)
-		SetPosition(XMFLOAT3(0.0f, 1.57f, 0.0f));
+		SetPosition(XMFLOAT3(-22.55f, 1.57f, -1.04f));
 
 	if(m_pCamera->m_nMode == (DWORD)THIRD_PERSON_CAMERA)
-		SetPosition(XMFLOAT3(0.0f, 0.25f, -30.0f));
+		SetPosition(XMFLOAT3(23.0f, 0.25f, -30.0f));
+	//Rotate(0.0f, 180.0f, 0.0f);
 
 	CreateShaderVariables(pd3dDevice, pd3dCommandList);
 	
@@ -78,7 +79,7 @@ CCamera* CBoss::ChangeCamera(DWORD nNewCameraMode, float fTimeElapsed)
 	case FIRST_PERSON_CAMERA:
 		m_pCamera = OnChangeCamera(FIRST_PERSON_CAMERA, nCurrentCameraMode);
 		m_pCamera->SetTimeLag(0.0f);
-		m_pCamera->SetOffset(XMFLOAT3(0.0f, 0.0f, 0.0f));
+		m_pCamera->SetOffset(XMFLOAT3(0.0f, 1.57f * UNIT, 0.1f));
 		m_pCamera->GenerateProjectionMatrix(1.01f, MaxDepthofMap, ASPECT_RATIO, 60.0f); //5000.f
 		m_pCamera->SetViewport(0, 0, FRAME_BUFFER_WIDTH, FRAME_BUFFER_HEIGHT, 0.0f, 1.0f);
 		m_pCamera->SetScissorRect(0, 0, FRAME_BUFFER_WIDTH, FRAME_BUFFER_HEIGHT);

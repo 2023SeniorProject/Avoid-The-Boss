@@ -81,5 +81,5 @@ public: // 05-23 추가 함수
 	int32 GetAvailGenIdx();
 	int32 GetAvailEMPldx();
 public: // 05-24 추가함수
-	SwitchInformation m_pSwitches[3];
+	GEN_INFO m_pSwitches[3];
 };

@@ -41,7 +41,7 @@ void CPlayer::Move(const int8& dwDirection, float fDistance)
 	XMFLOAT3 xmf3Shift = XMFLOAT3(0, 0, 0);
 	if (LOBYTE(dwDirection))
 	{	
-		//화살표 키 ‘↑’를 누르면 로컬 z-축 방향으로 이동(전진)한다. ‘↓’를 누르면 반대 방향으로 이동한다. 
+		//화살표 키 ‘↑’를 누르면 로컬 z-축 방향으로 이동(전진)한다. ‘↓’를 누르면 반대 방향으로 이동한다.
 		
 		if (LOBYTE(dwDirection) & KEY_FORWARD) xmf3Shift = Vector3::Add(xmf3Shift, m_xmf3Look, fDistance);
 		if (LOBYTE(dwDirection) & KEY_BACKWARD) xmf3Shift = Vector3::Add(xmf3Shift, m_xmf3Look, -fDistance);
@@ -60,14 +60,12 @@ void CPlayer::Update(float fTimeElapsed, CLIENT_TYPE ptype)
 	m_xmf3Position = Vector3::Add(m_xmf3Position, vel);
 	m_playerBV.Center = GetPosition();
 
-
 	DWORD nCameraMode = m_pCamera->GetMode();
 	if (m_pCamera) m_pCamera->Move(vel);
 	m_pCamera->Update(m_xmf3Position,fTimeElapsed);
 	if (nCameraMode == THIRD_PERSON_CAMERA) m_pCamera->SetLookAt(m_xmf3Position);
-	else m_pCamera->SetPosition(m_xmf3Position);
+	else m_pCamera->SetPosition(m_xmf3Position); //카메라 offset
 	m_pCamera->RegenerateViewMatrix();
-	
 }
 
 //플레이어를 로컬 x-축, y-축, z-축을 중심으로 회전한다.
@@ -123,7 +121,6 @@ void CPlayer::Rotate(float x, float y, float z)
 void CPlayer::CreateShaderVariables(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList)
 {
 	if (m_pCamera) m_pCamera->CreateShaderVariables(pd3dDevice, pd3dCommandList);
-
 }
 
 void CPlayer::ReleaseShaderVariables()
@@ -175,13 +172,87 @@ void CPlayer::OnPrepareRender()
 void CPlayer::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera)
 {
 	DWORD nCameraMode = (pCamera) ? pCamera->GetMode() : 0x03;
-	CGameObject::Render(pd3dCommandList, pCamera);
-	
+	CGameObject::Render(pd3dCommandList, pCamera);	
 }
 
+CVirtualPlayer::CVirtualPlayer()
+{
+	m_pCamera = ChangeCamera(FIRST_PERSON_CAMERA, 0.0f);
+	SetPosition(XMFLOAT3(0.0f, 0.0f, 0.0f));
+}
 
+CVirtualPlayer::CVirtualPlayer(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature)
+{
+	m_pCamera = ChangeCamera(FIRST_PERSON_CAMERA, 0.0f);
 
+	//CGameObject* pVirtualModel = CGameObject::LoadGeometryFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, /*"Model/Boss_Run.bin"*/"Model///Plane.bin", NULL);
+	//SetChild(pVirtualModel, true);
 
+	CreateShaderVariables(pd3dDevice, pd3dCommandList);	
+	//if (pVirtualModel) delete pVirtualModel;
+}
+
+CVirtualPlayer::~CVirtualPlayer()
+{
+}
+
+void CVirtualPlayer::Animate(float fTimeElapsed)
+{
+}
+CCamera* CVirtualPlayer::ChangeCamera(DWORD nNewCameraMode, float fTimeElapsed)
+{
+	DWORD nCurrentCameraMode = (m_pCamera) ? m_pCamera->GetMode() : 0x00;
+	if (nCurrentCameraMode == nNewCameraMode)
+		return(m_pCamera);
+
+	float MaxDepthofMap = 5000.0f;//sqrt(2) * 50 * UNIT + 2 * UNIT;
+	switch (nNewCameraMode)
+	{
+	case FIRST_PERSON_CAMERA:
+		m_pCamera = OnChangeCamera(FIRST_PERSON_CAMERA, nCurrentCameraMode);
+		m_pCamera->SetTimeLag(0.0f);
+		m_pCamera->SetOffset(XMFLOAT3(0.0f, 0.0f, 0.0f));
+		m_pCamera->GenerateProjectionMatrix(1.01f, MaxDepthofMap, ASPECT_RATIO, 60.0f); //5000.f
+		m_pCamera->SetViewport(0, 0, FRAME_BUFFER_WIDTH, FRAME_BUFFER_HEIGHT, 0.0f, 1.0f);
+		m_pCamera->SetScissorRect(0, 0, FRAME_BUFFER_WIDTH, FRAME_BUFFER_HEIGHT);
+		break;
+	case THIRD_PERSON_CAMERA:
+		m_pCamera = OnChangeCamera(THIRD_PERSON_CAMERA, nCurrentCameraMode);
+		m_pCamera->SetTimeLag(0.0f);
+		m_pCamera->SetOffset(XMFLOAT3(0.0f, 1.7f * UNIT, -5 * UNIT));
+		m_pCamera->GenerateProjectionMatrix(1.01f, MaxDepthofMap, ASPECT_RATIO, 60.0f);
+		m_pCamera->SetViewport(0, 0, FRAME_BUFFER_WIDTH, FRAME_BUFFER_HEIGHT, 0.0f, 1.0f);
+		m_pCamera->SetScissorRect(0, 0, FRAME_BUFFER_WIDTH, FRAME_BUFFER_HEIGHT);
+		break;
+	default:
+		break;
+	}
+	m_pCamera->SetPosition(Vector3::Add(m_xmf3Position, m_pCamera->GetOffset()));
+
+	Update(fTimeElapsed);
+
+	return(m_pCamera);
+}
+
+void CVirtualPlayer::Move(DWORD dwDirection, float fDistance)
+{
+
+}
+
+void CVirtualPlayer::Update(float fTimeElapsed)
+{
+
+}
+
+void CVirtualPlayer::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList
+	* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature)
+{
+
+}
+uint8 CVirtualPlayer::ProcessInput()
+{
+	return uint8();
+}
 #define _WITH_DEBUG_CALLBACK_DATA
 
 void CSoundCallbackHandler::HandleCallback(void* pCallbackData, float fTrackPosition)

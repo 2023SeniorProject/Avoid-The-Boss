@@ -8,15 +8,17 @@
 CBoss::CBoss(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature)
 {
 	m_type = 0;
-	m_pCamera = ChangeCamera(THIRD_PERSON_CAMERA, 0.0f);
+	m_pCamera = ChangeCamera(FIRST_PERSON_CAMERA, 0.0f);
 	m_ctype = (uint8)PLAYER_TYPE::BOSS;
 	m_nCharacterType = CHARACTER_TYPE::BOSS;
 
-	
-	CLoadedModelInfo* pBossUpperModel = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "Model/Boss_Shooting_Run_UpperBody(3).bin", NULL, Layout::PLAYER);
+	//CLoadedModelInfo* pBossModel = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, g_pstrCharactorRefernece[(int)m_nCharacterType], NULL, Layout::PLAYER);
+	//SetChild(pBossModel->m_pModelRootObject, true);
+
+	CLoadedModelInfo* pBossUpperModel = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "Model/Character/Boss_Shooting_Run_UpperBody(1).bin", NULL, Layout::PLAYER);
 	SetChild(pBossUpperModel->m_pModelRootObject, true);
 	
-	CLoadedModelInfo* pBossLowerModel = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "Model/Boss_Shooting_Run_LowerBody(3).bin", NULL, Layout::PLAYER);
+	CLoadedModelInfo* pBossLowerModel = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "Model/Character/Boss_Shooting_Run_LowerBody.bin", NULL, Layout::PLAYER);
 	SetChild(pBossLowerModel->m_pModelRootObject, true);
 		
 	m_pSkinnedAnimationController = new CAnimationController(pd3dDevice, pd3dCommandList, 4, pBossUpperModel);
@@ -25,12 +27,20 @@ CBoss::CBoss(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandLis
 	m_pSkinnedAnimationController->SetTrackAnimationSet(3, 0);//RunningShoot 
 	m_pSkinnedAnimationController->SetTrackAnimationSet(0, 1);//Idle
 	m_pSkinnedAnimationController->SetTrackAnimationSet(1, 2);//Run
-	m_pSkinnedAnimationController->SetTrackAnimationSet(2, 3);//Shoot
+	m_pSkinnedAnimationController->SetTrackAnimationSet(2, 3);//Shoot 2
 
 	m_pSkinnedAnimationController1->SetTrackAnimationSet(1, 0);//Run
 	m_pSkinnedAnimationController1->SetTrackAnimationSet(0, 1);//Idle
 	m_pSkinnedAnimationController1->SetTrackAnimationSet(2, 2);//Run
 	m_pSkinnedAnimationController1->SetTrackAnimationSet(3, 3);//Run
+
+	/*m_pSkinnedAnimationController->SetTrackSpeed(0, 1.875);
+	m_pSkinnedAnimationController->SetTrackSpeed(1, 1.875);
+	m_pSkinnedAnimationController->SetTrackSpeed(2, 1.875);
+	m_pSkinnedAnimationController->SetTrackSpeed(3, 1.875);
+
+	m_pSkinnedAnimationController1->SetTrackSpeed(0, 1.875);
+	m_pSkinnedAnimationController1->SetTrackSpeed(1, 1.875);*/
 
 	m_pSkinnedAnimationController->SetTrackEnable(0, true);
 	m_pSkinnedAnimationController1->SetTrackEnable(0, true);
@@ -38,8 +48,13 @@ CBoss::CBoss(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandLis
 	m_pSkinnedAnimationController1->SetTrackEnable(2, false);
 	m_pSkinnedAnimationController1->SetTrackEnable(3, false);
 
-	SetScale(XMFLOAT3(1.f, 1.f, 1.f));
-	SetPosition(XMFLOAT3(0.0f, 0.25f, -30.0f));
+	if (m_pCamera->m_nMode == (DWORD)FIRST_PERSON_CAMERA)
+		SetPosition(XMFLOAT3(-22.55f, 1.57f, -1.04f));
+
+	if(m_pCamera->m_nMode == (DWORD)THIRD_PERSON_CAMERA)
+		SetPosition(XMFLOAT3(23.0f, 0.25f, -30.0f));
+	//Rotate(0.0f, 180.0f, 0.0f);
+
 	CreateShaderVariables(pd3dDevice, pd3dCommandList);
 	
 
@@ -64,7 +79,7 @@ CCamera* CBoss::ChangeCamera(DWORD nNewCameraMode, float fTimeElapsed)
 	case FIRST_PERSON_CAMERA:
 		m_pCamera = OnChangeCamera(FIRST_PERSON_CAMERA, nCurrentCameraMode);
 		m_pCamera->SetTimeLag(0.0f);
-		m_pCamera->SetOffset(XMFLOAT3(0.0f, 1.4f, 0.0f));
+		m_pCamera->SetOffset(XMFLOAT3(0.0f, 1.57f * UNIT, 0.1f));
 		m_pCamera->GenerateProjectionMatrix(1.01f, MaxDepthofMap, ASPECT_RATIO, 60.0f); //5000.f
 		m_pCamera->SetViewport(0, 0, FRAME_BUFFER_WIDTH, FRAME_BUFFER_HEIGHT, 0.0f, 1.0f);
 		m_pCamera->SetScissorRect(0, 0, FRAME_BUFFER_WIDTH, FRAME_BUFFER_HEIGHT);
@@ -100,7 +115,7 @@ void CBoss::PrepareAnimate()
 }
 
 void CBoss::Move(const int16& dwDirection, float fDistance)
-{
+{	
 	CPlayer::Move(dwDirection, BOSS_VELOCITY);
 }
 
@@ -126,24 +141,68 @@ void CBoss::Update(float fTimeElapsed, CLIENT_TYPE ptype)
 {
 	CPlayer::Update(fTimeElapsed, ptype);
 
-	
 	if (m_pBullet)
 	{
 		m_pBullet->SetBulletPosition(GetPosition());
 		m_pBullet->Update(fTimeElapsed);
 	}
-	
+
+	AnimationLogicUpdate(); // 쿨타임 계산
+
+	AimationStateUpdate(); // 애니메이션 트랙 상태 결정
+
+	AnimTrackUpdate(); // 애니메이션 트랙 상태 변경
+
 	LateUpdate(fTimeElapsed, ptype);
-	
+
+	//std::cout << GetPosition().y << std::endl;
 }
 
 void CBoss::LateUpdate(float fTimeElapsed, CLIENT_TYPE ptype)
 {
 	if (ptype == CLIENT_TYPE::OWNER) m_xmf3Velocity = XMFLOAT3(0.0f, 0.0f, 0.0f);
 	else if (ptype != CLIENT_TYPE::OTHER_PLAYER && m_pBullet) SetAttackAnimOtherClient();
-	AnimTrackUpdate();
+	//AnimTrackUpdate();
 }
 
+
+void CBoss::AnimationLogicUpdate()
+{
+	if (GetOnAttack())
+	{
+		if (m_standAttackAnimTime >= BOSS_ATTACK_TIME)
+		{
+			SetOnAttack(false);
+			SetAttackAnimTime();
+			return;
+		}
+		m_standAttackAnimTime++;
+		/*else if (GetBehavior() == (int32)PLAYER_BEHAVIOR::RUN_ATTACK)
+		{
+			if (m_runAttackAnimTime >= BOSS_ATTACK_TIME)
+			{
+				SetOnAttack(false);
+				SetRunAttackAnimTime();
+				return;
+			}
+			m_runAttackAnimTime++;
+		}*/
+	}
+}
+
+void CBoss::AimationStateUpdate()
+{
+	if (GetOnAttack())
+	{
+		if(Vector3::IsZero(m_xmf3Velocity)) SetBehavior(PLAYER_BEHAVIOR::ATTACK);
+		else SetBehavior(PLAYER_BEHAVIOR::RUN_ATTACK);
+	}
+	else
+	{
+		if (Vector3::IsZero(m_xmf3Velocity)) SetBehavior(PLAYER_BEHAVIOR::IDLE);
+		else SetBehavior(PLAYER_BEHAVIOR::RUN);
+	}
+}
 
 void CBoss::SetIdleAnimTrack()
 {
@@ -242,74 +301,40 @@ void CBoss::AnimTrackUpdate()
 			SetRunAnimTrack();
 			break;
 		case (int32)PLAYER_BEHAVIOR::ATTACK:
-		{
-			if (m_standAttackAnimTime == BOSS_ATTACK_TIME)
-			{
-				SetAttackAnimTrack();
-				m_standAttackAnimTime -= 1;
-			}
-			else
-			{
-				m_standAttackAnimTime -= 1;
-				if (m_standAttackAnimTime <= 0)
-				{
-					SetOnAttack(false);
-					SetBehavior(PLAYER_BEHAVIOR::IDLE);
-				}
-			}
-		}
-		break;
+			SetAttackAnimTrack();
+			break;
 		case (int32)PLAYER_BEHAVIOR::RUN_ATTACK:
-		{
-			if (m_runAttackAnimTime == BOSS_RUNATTACK_TIME)
-			{
-				SetRunAttackAnimTrack();
-				m_runAttackAnimTime -= 1;
-			}
-			else
-			{
-				m_runAttackAnimTime -= 1;
-				if (m_runAttackAnimTime <= 0)
-				{
-					SetOnAttack(false);
-					SetBehavior(PLAYER_BEHAVIOR::RUN);
-				}
-			}
-		}
-		break;
+			SetRunAttackAnimTrack();
+			break;
 	}
-
 }
 
 
 uint8 CBoss::ProcessInput()
 {
-	int8 dir = 0;
+	uint8 dir = 0;
 
 	if (InputManager::GetInstance().GetKeyBuffer(KEY_TYPE::W) > 0)  dir |= KEY_FORWARD;
 	if (InputManager::GetInstance().GetKeyBuffer(KEY_TYPE::A) > 0)  dir |= KEY_LEFT;
 	if (InputManager::GetInstance().GetKeyBuffer(KEY_TYPE::S) > 0)  dir |= KEY_BACKWARD;
 	if (InputManager::GetInstance().GetKeyBuffer(KEY_TYPE::D) > 0)  dir |= KEY_RIGHT;
 
+	//if (InputManager::GetInstance().GetKeyBuffer(KEY_TYPE::D) > 0)
+	//{
+	//	m_pCamera = ChangeCamera(THIRD_PERSON_CAMERA, 0.0f);
+	//	//m_pCamera = _players[_playerIdx]->m_pCamera;
+	//}
+	//if (InputManager::GetInstance().GetKeyBuffer(VK_F1) > 0)
+
 	if (dir) SetBehavior(PLAYER_BEHAVIOR::RUN);
 	else	 SetBehavior(PLAYER_BEHAVIOR::IDLE);
 
 	// 1. 공격 키를 눌렀을 경우 처리 
-	if (InputManager::GetInstance().GetKeyBuffer(KEY_TYPE::SPACE) == (uint8)KEY_STATUS::KEY_PRESS && GetOnAttack())
+	if (InputManager::GetInstance().GetKeyBuffer(KEY_TYPE::SPACE) == (uint8)KEY_STATUS::KEY_PRESS && !GetOnAttack())
 	{
 		SetOnAttack(true);
-		if (GetBehavior() == (int32)PLAYER_BEHAVIOR::IDLE)
-		{
-			SetAttackAnimTrack();
-			SetBehavior(PLAYER_BEHAVIOR::ATTACK);
-		}
-		else if (GetBehavior() == (int32)PLAYER_BEHAVIOR::RUN)
-		{
-			SetRunAttackAnimTrack();
-			SetBehavior(PLAYER_BEHAVIOR::RUN_ATTACK);
-		}
 	}
-	std::cout << (int32)dir << "\n";
+	
 	Move(dir, BOSS_VELOCITY);
 	return dir;
 }

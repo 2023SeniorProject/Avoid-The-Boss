@@ -10,7 +10,7 @@ CEmployee::CEmployee(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCo
 	m_ctype = (uint8)PLAYER_TYPE::EMPLOYEE;
 	m_nCharacterType = nType;
 
-	m_pCamera = ChangeCamera(THIRD_PERSON_CAMERA, 0.0f);
+	m_pCamera = ChangeCamera(FIRST_PERSON_CAMERA, 0.0f);
 
 	CLoadedModelInfo* pEmployeeModel = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, g_pstrCharactorRefernece[(int)m_nCharacterType], NULL, Layout::PLAYER);
 	SetChild(pEmployeeModel->m_pModelRootObject, true);
@@ -35,7 +35,13 @@ CEmployee::CEmployee(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCo
 	//m_pSkinnedAnimationController->SetTrackEnable(7, false);
 
 	CreateShaderVariables(pd3dDevice, pd3dCommandList);
-	SetPosition(XMFLOAT3(0.0f, 0.25f, -30.0f));
+
+	if (m_pCamera->m_nMode == (DWORD)FIRST_PERSON_CAMERA)
+		SetPosition(XMFLOAT3(0.0f, 1.57f, 0.0f));
+
+	if (m_pCamera->m_nMode == (DWORD)THIRD_PERSON_CAMERA)
+		SetPosition(XMFLOAT3(0.0f, 0.25f, -30.0f));
+
 	if (pEmployeeModel) delete pEmployeeModel;
 }
 
@@ -55,7 +61,7 @@ CCamera* CEmployee::ChangeCamera(DWORD nNewCameraMode, float fTimeElapsed)
 	case FIRST_PERSON_CAMERA:
 		m_pCamera = OnChangeCamera(FIRST_PERSON_CAMERA, nCurrentCameraMode);
 		m_pCamera->SetTimeLag(0.0f);
-		m_pCamera->SetOffset(XMFLOAT3(0.0f, 1.4f, 0.0f));
+		m_pCamera->SetOffset(XMFLOAT3(0.0f, 0.0f, 0.0f));
 		m_pCamera->GenerateProjectionMatrix(1.01f, MaxDepthofMap, ASPECT_RATIO, 60.0f); //5000.f
 		m_pCamera->SetViewport(0, 0, FRAME_BUFFER_WIDTH, FRAME_BUFFER_HEIGHT, 0.0f, 1.0f);
 		m_pCamera->SetScissorRect(0, 0, FRAME_BUFFER_WIDTH, FRAME_BUFFER_HEIGHT);
@@ -83,8 +89,6 @@ CCamera* CEmployee::ChangeCamera(DWORD nNewCameraMode, float fTimeElapsed)
 // 입력 처리 및 플레이어의 행동을 미리 셋팅한다.
 uint8 CEmployee::ProcessInput()
 {
-
-	
 	// 발전기 상호작용 관련 인풋 처리
 
 	int8 dir = 0;
@@ -108,7 +112,6 @@ uint8 CEmployee::ProcessInput()
 }
 void CEmployee::Move(const int8& dwDirection, float fDistance)
 {
-
 	switch (GetBehavior())
 	{
 	case (int32)PLAYER_BEHAVIOR::RESCUE:
@@ -385,7 +388,7 @@ int32 CEmployee::GetAvailGenIdx()
 		float sumRange = m_playerBV.Radius + m_pSwitches[i].radius;
 		if (distance <= sumRange)
 		{
-			CGenerator* targetGenerator = mainGame.m_pScene->GetSceneGenByIdx(i);
+			CGenerator* targetGenerator = mainGame.m_ppScene[mainGame.m_nSceneIndex]->GetSceneGenByIdx(i);
 			if (targetGenerator)
 			{
 				if (targetGenerator->IsAvailable()) return i;
@@ -401,7 +404,7 @@ int32 CEmployee::GetAvailEMPldx()
 	for (int i = 1; i < PLAYERNUM; ++i)
 	{
 
-		CEmployee* p = static_cast<CEmployee*>(mainGame.m_pScene->GetScenePlayerByIdx(i));
+		CEmployee* p = static_cast<CEmployee*>(mainGame.m_ppScene[mainGame.m_nSceneIndex]->GetScenePlayerByIdx(i));
 		if (p == nullptr || i == m_idx) continue;
 		XMFLOAT3 ppos = p->GetPosition();
 		ppos = Vector3::Subtract(m_xmf3Position, ppos);
@@ -442,7 +445,7 @@ bool CEmployee::GenTasking()
 
 	int genIdx = GetAvailGenIdx();
 	CGenerator* targetGen = nullptr;
-	if (genIdx >= 0) mainGame.m_pScene->GetSceneGenByIdx(genIdx); // 반환된 idx가 0보다 클 때만 처리
+	if (genIdx >= 0) mainGame.m_ppScene[mainGame.m_nSceneIndex]->GetSceneGenByIdx(genIdx); // 반환된 idx가 0보다 클 때만 처리
 
 	//  F키를 눌렀고, 구하기 상호작용 중이 아닐 때
 	if (InputManager::GetInstance().GetKeyBuffer(KEY_TYPE::F) && !GetIsPlayerOnRescueInter())
@@ -454,7 +457,7 @@ bool CEmployee::GenTasking()
 			SetBehavior(PLAYER_BEHAVIOR::SWITCH_INTER);
 
 			targetGen->SetInteractionOn(true); // 발전기 애니메이션 재생을 시작한다.
-			targetGen->SetAnimationCount(BUTTON_ANIM_FRAME);
+			//targetGen->SetAnimationCount(BUTTON_ANIM_FRAME);
 
 			if (InputManager::GetInstance().GetKeyBuffer(KEY_TYPE::F) == (int8)KEY_STATUS::KEY_PRESS)
 			{
@@ -508,7 +511,7 @@ bool CEmployee::RescueTasking()
 			packet.type = (uint8)SC_PACKET_TYPE::GAMEEVENT;
 			clientCore.DoSend(&packet);
 
-			static_cast<CEmployee*>(mainGame.m_pScene->GetScenePlayerByIdx(pIdx))->RescueOn(true);
+			static_cast<CEmployee*>(mainGame.m_ppScene[mainGame.m_nSceneIndex]->GetScenePlayerByIdx(pIdx))->RescueOn(true);
 			std::cout << pIdx << " Rescuing\n";
 
 		}
@@ -522,8 +525,8 @@ bool CEmployee::RescueTasking()
 			{
 				SetBehavior(PLAYER_BEHAVIOR::IDLE);
 				SetRescueInteraction(false);
-				static_cast<CEmployee*>(mainGame.m_pScene->GetScenePlayerByIdx(pIdx))->RescueOn(false);
-				static_cast<CEmployee*>(mainGame.m_pScene->GetScenePlayerByIdx(pIdx))->ResetRescueGuage();
+				static_cast<CEmployee*>(mainGame.m_ppScene[mainGame.m_nSceneIndex]->GetScenePlayerByIdx(pIdx))->RescueOn(false);
+				static_cast<CEmployee*>(mainGame.m_ppScene[mainGame.m_nSceneIndex]->GetScenePlayerByIdx(pIdx))->ResetRescueGuage();
 
 
 				SC_EVENTPACKET packet;

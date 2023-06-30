@@ -19,13 +19,13 @@ enum class CHARACTER_TYPE: int32
 static const char *g_pstrCharactorRefernece[5] =
 {
 	"Model/Boss_Idle(2).bin",
-	"Model/Character1_Idle.bin",
-	"Model/Character2_Idle.bin",
-	"Model/Character3_Idle.bin",
-	"Model/Character4_Idle.bin"
+	"Model/Character/Character1_Idle.bin",
+	"Model/Character/Character2_Idle.bin",
+	"Model/Character/Character3_Idle.bin",
+	"Model/Character/Character4_Idle.bin"
 };
 
-#define BOSS_ATTACK_TIME 25 //25프레임 (기존 65)
+#define BOSS_ATTACK_TIME 60 //25프레임 (기존 65)
 #define BOSS_RUNATTACK_TIME 50 //25프레임 (기존 65)
 
 #define EMPLOYEE_ATTACKED_TIME 30 //20프레임 (기존 65)
@@ -54,9 +54,12 @@ protected:
 	float m_fFriction;       // 마찰력
 
 	// 플레이어 카메라
-	CCamera* m_pCamera = nullptr;
+	//CCamera* m_pCamera = nullptr;
 
 public:
+	// 플레이어 카메라
+	CCamera* m_pCamera = nullptr;
+
 	uint8 m_ctype = -1; // 자신의 캐릭터 타입을 구현
 	int16 m_sid = -1; // 자신으 Session Id
 	std::mutex m_lock; // 자신의 Lock
@@ -101,8 +104,6 @@ public:
 
 	//플레이어를 회전하는 함수이다. 
 	virtual void Rotate(float x, float y, float z);
-	
-
 	virtual void CreateShaderVariables(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList
 		* pd3dCommandList);
 	virtual void ReleaseShaderVariables();
@@ -123,21 +124,38 @@ public: //04-29 추가함수
 	virtual void Move(const int8& dwDirection, float fDistance);
 	virtual void Update(float fTimeElapsed, CLIENT_TYPE ptype);
 	virtual void LateUpdate() {};
-	virtual void Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera = NULL);
 	// 05-22 추가 함수
 	virtual void AnimTrackUpdate(float ,CLIENT_TYPE) {};
 	virtual void SetBehavior(PLAYER_BEHAVIOR b) { m_behavior = (int32)b; };
 	virtual int32 GetBehavior() { return m_behavior; }
+	virtual void Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera =NULL);
+
+	virtual void BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList
+		* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature) {}
 };
 
+class CVirtualPlayer : public CPlayer
+{
+public:
+	CVirtualPlayer();
+	CVirtualPlayer(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature);
+	virtual ~CVirtualPlayer();
+public:
+	virtual CCamera* ChangeCamera(DWORD nNewCameraMode, float fTimeElapsed);
 
+	virtual void Move(DWORD dwDirection, float fDistance);
+	virtual void Animate(float fTimeElapsed);
+	virtual void Update(float fTimeElapsed);
+	virtual void BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList
+		* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature);
+	virtual uint8 ProcessInput();
+};
 
-struct SwitchInformation
+struct GEN_INFO
 {
 	XMFLOAT3 position;
 	float radius; //raderArea
 };
-
 
 class CSoundCallbackHandler : public CAnimationCallbackHandler
 {

@@ -1,0 +1,51 @@
+<Frame>: 0 <Textures>: 12 Crane
+	<Children>: 6
+		<Frame>: 1 <Textures>: 0 Crain_Rebar
+			<Materials>: 1
+				<Material>: 0
+					<AlbedoMap>:Crane_Rail_BaseColor
+					<NormalMap>:Crane_Rail_Normal
+			</Materials>
+			<Children>: 0
+		</Frame>
+		<Frame>: 2 <Textures>: 0 Crane_Floor
+			<Materials>: 1
+				<Material>: 0
+					<AlbedoMap>:Crane_Floor_BaseColor
+					<NormalMap>:Crane_Floor_Normal
+			</Materials>
+			<Children>: 0
+		</Frame>
+		<Frame>: 3 <Textures>: 0 Crane_HandRail
+			<Materials>: 1
+				<Material>: 0
+					<AlbedoMap>:Crane_Handrail_BaseColor
+					<NormalMap>:Crane_Handrail_Normal
+			</Materials>
+			<Children>: 0
+		</Frame>
+		<Frame>: 4 <Textures>: 0 Crane_Panel_Room
+			<Materials>: 1
+				<Material>: 0
+					<AlbedoMap>:Crane_Room_BaseColor
+					<NormalMap>:Crane_Room__Normal
+			</Materials>
+			<Children>: 0
+		</Frame>
+		<Frame>: 5 <Textures>: 0 Crane_Panel_Room_Window
+			<Materials>: 1
+				<Material>: 0
+					<AlbedoMap>:Crane_Panel_Room_BaseColor
+					<NormalMap>:Crane_Panel_Room_Normal
+			</Materials>
+			<Children>: 0
+		</Frame>
+		<Frame>: 6 <Textures>: 0 Crane_Trolly
+			<Materials>: 1
+				<Material>: 0
+					<AlbedoMap>:Crane_Trolly_BaseColor
+					<NormalMap>:Crane_Trolly_Normal
+			</Materials>
+			<Children>: 0
+		</Frame>
+</Frame>

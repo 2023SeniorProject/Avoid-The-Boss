@@ -20,6 +20,9 @@ class CPlayer;
 
 class CCamera
 {
+public:
+	//카메라의 종류(1인칭 카메라, 스페이스-쉽 카메라, 3인칭 카메라)를 나타낸다. 
+	DWORD m_nMode;
 protected:
 	//카메라의 위치(월드좌표계) 벡터이다. 
 	XMFLOAT3 m_xmf3Position;
@@ -33,9 +36,6 @@ protected:
 	float m_fPitch;
 	float m_fRoll;
 	float m_fYaw;
-
-	//카메라의 종류(1인칭 카메라, 스페이스-쉽 카메라, 3인칭 카메라)를 나타낸다. 
-	DWORD m_nMode;
 
 	//플레이어가 바라볼 위치 벡터이다. 주로 3인칭 카메라에서 사용된다. 
 	XMFLOAT3 m_xmf3LookAtWorld;

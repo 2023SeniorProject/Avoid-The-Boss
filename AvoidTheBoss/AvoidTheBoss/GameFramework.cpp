@@ -1,7 +1,9 @@
 #include "pch.h"
 #include "GameFramework.h"
 #include "clientIocpCore.h"
+#include "UIManager.h"
 #include <string>
+
 
 CGameFramework mainGame;
 // #define _WITH_PLAYER_TOP // 플레이어 깊이 버퍼값 1.0f
@@ -342,6 +344,8 @@ void CGameFramework::BuildScenes()
 	m_pd3dCommandList->Reset(m_pd3dCommandAllocator, NULL);
 
 		//씬 객체를 생성하고 씬에 포함될 게임 객체들을 생성한다. 
+
+	m_UIRenderer = new UIManager(m_nSwapChainBuffers, 0, m_pd3dDevice, m_pd3dCommandQueue, m_ppd3dSwapChainBackBuffers, m_nWndClientWidth, m_nWndClientHeight);
 	m_ppScene[0] = new CLobbyScene();
 	if (m_ppScene[0]) m_ppScene[0]->BuildObjects(m_pd3dDevice, m_pd3dCommandList);
 
@@ -398,7 +402,7 @@ void CGameFramework::FrameAdvance() // 여기서 업데이트랑 렌더링 동시에 진행하는 
 	Render();
 	WaitForGpuComplete();
 	//GPU가 모든 명령 리스트를 실행할 때 까지 기다린다.
-
+	m_UIRenderer->Render2D(m_nSwapChainBufferIndex);
 #ifdef _WITH_PRESENT_PARAMETERS
 	DXGI_PRESENT_PARAMETERS dxgiPresentParameters;
 	dxgiPresentParameters.DirtyRectsCount = 0;
@@ -485,7 +489,7 @@ void CGameFramework::Render()
 	m_pd3dCommandList->ClearDepthStencilView(d3dDsvCPUDescriptorHandle,
 		D3D12_CLEAR_FLAG_DEPTH | D3D12_CLEAR_FLAG_STENCIL, 1.0f, 0, 0, NULL);
 #endif
-	//if (m_pPlayer) m_pPlayer->Render(m_pd3dCommandList, m_pCamera);
+	
 
 	d3dResourceBarrier.Transition.StateBefore = D3D12_RESOURCE_STATE_RENDER_TARGET;
 	d3dResourceBarrier.Transition.StateAfter = D3D12_RESOURCE_STATE_PRESENT;

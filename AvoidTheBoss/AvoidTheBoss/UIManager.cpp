@@ -1,5 +1,8 @@
 #include "pch.h"
 #include "UIManager.h"
+#include <wincodec.h>
+
+#pragma comment(lib,"windowscodecs.lib")
 
 UIManager::UIManager(UINT nFrames, UINT nTextBlocks, ID3D12Device* pd3dDevice, ID3D12CommandQueue* pd3dCommandQueue, ID3D12Resource** ppd3dRenderTargets, UINT nWidth, UINT nHeight)
 {
@@ -61,6 +64,55 @@ void UIManager::CreateD2DDevice() // d3d11on12디바이스를 활용해 d2ddevice랑 d2dF
     pdxgiDevice->Release();
 }
 
+int32 UIManager::LoadPngFromFile(const wchar_t* filePath, int32 idx)
+{
+    if (m_bitmaps != NULL)
+    {
+        m_bitmaps->Release();
+        m_bitmaps = NULL;
+    }
+
+    // WIC Factory 객체 생성
+    IWICImagingFactory* pWicFactory;
+    CoCreateInstance(CLSID_WICImagingFactory, NULL, CLSCTX_INPROC_SERVER,
+        IID_PPV_ARGS(&pWicFactory));
+    // 이미지 해체를 위한 객체 생성
+    IWICBitmapDecoder* pDecoder;
+    IWICBitmapFrameDecode* pFrame; // 이미지를 선택하기 위한 객체
+    IWICFormatConverter* pConverter; // 이미지 변환 객체
+    
+    int32 result = 0;
+    if (S_OK == pWicFactory->CreateDecoderFromFilename(filePath, NULL, GENERIC_READ, WICDecodeMetadataCacheOnDemand, &pDecoder)) 
+    {
+        // 파일을 구성하는 이미지 중에서 첫번째 이미지를 선택한다.
+        if (S_OK == pDecoder->GetFrame(0, &pFrame))
+        {
+            // IWICBitmap형식의 비트맵을 ID2D1Bitmap. 형식으로 변환하기 위한 객체 생성
+            if (S_OK == pWicFactory->CreateFormatConverter(&pConverter))
+            {
+                // 선택된 그림을 어떤 형식의 비트맵으로 변환할 것인지 설정
+                if (S_OK == pConverter->Initialize(pFrame, GUID_WICPixelFormat32bppPBGRA, WICBitmapDitherTypeNone, NULL, 0.0f, WICBitmapPaletteTypeCustom))
+                {
+                    
+                    // IWICBitmap 형식의 비트맵으로 ID2D1Bitmap 객체를 생성
+                    if (S_OK == m_pd2dDeviceContext->CreateBitmapFromWicBitmap(pConverter, NULL, &m_bitmaps)) result = 1;  // 성공적으로 생성한 경우
+                }
+                // 이미지 변환 객체 제거
+                pConverter->Release();
+            }
+            // 그림파일에 있는 이미지를 선택하기 위해 사용한 객체 제거
+            pFrame->Release();
+        }
+        // 압축을 해제하기 위해 생성한 객체 제거
+        pDecoder->Release();
+    }
+    // WIC를 사용하기 위해 만들었던 Factory 객체 제거
+    pWicFactory->Release();
+
+    return result;  // PNG 파일을 읽은 결과를 반환한다.
+
+}
+
 
 void UIManager::CreateRenderTarget(ID3D12Resource** ppd3dRenderTargets)
 {
@@ -97,6 +149,9 @@ void UIManager::Render2D(UINT nFrame)
     {
         m_pd2dDeviceContext->DrawText(m_pTextBlocks[i].m_pstrText, (UINT)wcslen(m_pTextBlocks[i].m_pstrText), m_pTextBlocks[i].m_pdwFormat, m_pTextBlocks[i].m_d2dLayoutRect, m_pTextBlocks[i].m_pd2dTextBrush);
     }*/
+    D2D_POINT_2F d2f{0,0};
+    D2D_RECT_F d2rf{ 100,100,200,200 };
+    m_pd2dDeviceContext->DrawBitmap(m_bitmaps,(D2D1_RECT_F*)0, 1.0f, D2D1_BITMAP_INTERPOLATION_MODE_LINEAR,(D2D1_RECT_F*)0);
     m_pd2dDeviceContext->EndDraw();
 
     m_pd3d11On12Device->ReleaseWrappedResources(ppResources, _countof(ppResources));
@@ -133,5 +188,5 @@ void UIManager::InitializeDevice(ID3D12Device* pd3dDevice, ID3D12CommandQueue* p
     CreateD3D11On12Device(pd3dDevice,pd3dCommandQueue);
     CreateD2DDevice();
     CreateRenderTarget(ppd3dRenderTargets);
-   
+    LoadPngFromFile(L"UI/temp.png",0);
 }

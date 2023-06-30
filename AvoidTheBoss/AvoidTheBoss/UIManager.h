@@ -18,6 +18,7 @@ public:
         UIManager(UINT nFrames, UINT nTextBlocks, ID3D12Device* pd3dDevice, ID3D12CommandQueue* pd3dCommandQueue, ID3D12Resource** ppd3dRenderTargets, UINT nWidth, UINT nHeight);
 
         void CreateD2DDevice();
+        int32 LoadPngFromFile(const wchar_t* filePath, int32 idx);
         void CreateD3D11On12Device(ID3D12Device* pd3dDevice, ID3D12CommandQueue* pd3dCommandQueue);
         void CreateRenderTarget(ID3D12Resource** ppd3dRenderTargets);
     
@@ -30,30 +31,34 @@ public:
 public:
         void InitializeDevice(ID3D12Device* pd3dDevice, ID3D12CommandQueue* pd3dCommandQueue, ID3D12Resource** ppd3dRenderTargets);
 
+        // WindowInfo
         float                           m_fWidth = 0.0f;
         float                           m_fHeight = 0.0f;
 
         // Direct3D11on12
         ComPtr<ID3D11DeviceContext> m_pd3d11DeviceContext = NULL;
         ComPtr<ID3D11On12Device>    m_pd3d11On12Device = NULL;
-        ID3D11Resource**     m_ppd3d11WrappedRenderTargets = NULL;
+       
 
         //DirectX2d Write
         ComPtr<IDWriteFactory>      m_pd2dWriteFactory = NULL;
       
-
+        // RenderTarget
+        ID3D11Resource** m_ppd3d11WrappedRenderTargets = NULL;
         UINT                            m_nRenderTargets = 0;
-        
         
         //DirectX2D
         ID2D1Bitmap1**                  m_ppd2dRenderTargets = NULL;
-        ID2D1Factory3* m_pd2dFactory = NULL;
-        ID2D1Device2* m_pd2dDevice = NULL;
-        ID2D1DeviceContext2* m_pd2dDeviceContext = NULL;
+        ID2D1Factory3*                  m_pd2dFactory = NULL;
+        ID2D1Device2*                   m_pd2dDevice = NULL;
+        ID2D1DeviceContext2*            m_pd2dDeviceContext = NULL;
 
         // TextBlock
         UINT                            m_nTextBlocks = 0;
         UITextBlock*                    m_pTextBlocks = NULL;
- 
+        // BitmapResource
+        UINT m_nBitmaps = 20;
+        ID2D1Bitmap* m_bitmaps = NULL;
+        ComPtr<ID2D1Effect> m_bitmapsResource[20];
 };
 

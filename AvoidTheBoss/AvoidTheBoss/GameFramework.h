@@ -6,9 +6,7 @@
 #include "Camera.h"
 #include <queue> 
 
-
-
-#pragma comment(lib, "d2d1")
+class UIManager;
 
 class CGameFramework
 {
@@ -60,6 +58,7 @@ private:
 	ID3D12GraphicsCommandList*	m_pd3dCommandList;
 	//명령 큐, 명령 할당자, 명령 리스트 인터페이스 포인터이다.
 
+	UIManager* m_UIRenderer = nullptr;
 #if defined(_DEBUG)
 	ID3D12Debug* m_pd3dDebugController;
 #endif

@@ -209,5 +209,5 @@ void UIManager::InitializeDevice(ID3D12Device* pd3dDevice, ID3D12CommandQueue* p
     CreateD3D11On12Device(pd3dDevice,pd3dCommandQueue);
     CreateD2DDevice();
     CreateRenderTarget(ppd3dRenderTargets);
-    LoadPngFromFile(L"UI/temp.png",0);
+    LoadPngFromFile(L"UI/Same.png",0);
 }

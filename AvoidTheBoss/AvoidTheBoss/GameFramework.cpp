@@ -11,7 +11,7 @@ CGameFramework::CGameFramework()
 	m_pdxgiFactory = NULL;
 	m_pdxgiSwapChain = NULL;
 	m_pd3dDevice = NULL;
-	_curScene = SceneInfo::LOBBY;
+	_curScene = (int8)SCENE_TYPE::LOBBY;
 	for (int i = 0; i < m_nSwapChainBuffers; i++) 
 		m_ppd3dSwapChainBackBuffers[i] = NULL;
 	m_nSwapChainBufferIndex = 0;
@@ -386,7 +386,7 @@ void CGameFramework::AnimateObjects()
 void CGameFramework::FrameAdvance() // 여기서 업데이트랑 렌더링 동시에 진행하는 곳
 {
 	//타이머의 시간이 갱신되도록 하고 프레임 레이트를 계산한다. 
-	if (_curScene.load() != SceneInfo::GAMEROOM) return;
+	if (_curScene.load() != (int8)SCENE_TYPE::INGAME) return;
 	
 	//1 인풋 처리
 	ProcessInput();

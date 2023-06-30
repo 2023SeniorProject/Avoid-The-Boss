@@ -96,6 +96,12 @@ void CSession::DoDelaySend(C2S_ATTACK packet, float afterTick)
 	_DelayjobQueue->PushTask(static_cast<queueEvent*>(de), afterTick);
 }
 
+void CSession::DoDelayTask()
+{
+	std::unique_lock<std::shared_mutex> wl(_DelayQueueLock);
+	_DelayjobQueue->DoTasks();
+}
+
 bool CSession::DoRecv()
 {
 
@@ -189,7 +195,7 @@ void CSession::ProcessPacket(char* packet)
 		mainGame.m_ppScene[mainGame.m_nSceneIndex]->m_pCamera = myPlayer->GetCamera();
 		mainGame.m_ppScene[mainGame.m_nSceneIndex]->m_cid = _cid;
 		mainGame.m_ppScene[mainGame.m_nSceneIndex]->m_sid = _sid;
-		mainGame._curScene.store(SceneInfo::GAMEROOM);
+		mainGame._curScene.store((int8)SCENE_TYPE::INGAME);
 		mainGame.m_ppScene[mainGame.m_nSceneIndex]->InitScene();
 	}
 	break;

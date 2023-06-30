@@ -1,12 +1,14 @@
 #pragma once
 #include "CTimer.h"
-#include "SceneInterface.h"
 #include "Shader.h"
 #include "Player.h"
 #include "CEmployee.h"
 #include "CBoss.h"
 #include "CGenerator.h" // 스위치 분리
 #include "ClientPacketEvent.h"
+
+enum class SCENE_TYPE { LOBBY, ROOM, INGAME};
+
 
 #define MAX_LIGHTS			16 
 
@@ -39,7 +41,7 @@ struct LIGHTS
 	int						m_nLights;
 };
 
-class CGameScene : public CScene
+class CGameScene 
 {
 	friend class CSession;
 	friend class queueEvent;

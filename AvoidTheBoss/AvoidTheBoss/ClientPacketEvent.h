@@ -71,7 +71,7 @@ public:
 public:
 	virtual void Task()
 	{
-		clientCore.DoSend(&_packet);
+		//clientCore.DoSend(&_packet);
 	};
 };
 

@@ -31,9 +31,6 @@
     <ClCompile Include="pch.cpp">
       <Filter>AvoidTheBoss</Filter>
     </ClCompile>
-    <ClCompile Include="SceneInterface.cpp">
-      <Filter>SceneInterface</Filter>
-    </ClCompile>
     <ClCompile Include="CBullet.cpp">
       <Filter>GameObject</Filter>
     </ClCompile>
@@ -61,11 +58,11 @@
     <ClCompile Include="InputManager.cpp">
       <Filter>Mananger</Filter>
     </ClCompile>
-    <ClCompile Include="clientIocpCore.cpp">
-      <Filter>ForClient\IocpCore</Filter>
-    </ClCompile>
     <ClCompile Include="UIManager.cpp">
       <Filter>Mananger\UIManager</Filter>
+    </ClCompile>
+    <ClCompile Include="clientIocpCore.cpp">
+      <Filter>ForClient\IocpCore</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -102,9 +99,6 @@
     <ClInclude Include="AvoidTheBoss.h" />
     <ClInclude Include="AvoidTheBoss.h">
       <Filter>AvoidTheBoss</Filter>
-    </ClInclude>
-    <ClInclude Include="SceneInterface.h">
-      <Filter>SceneInterface</Filter>
     </ClInclude>
     <ClInclude Include="Scene.h">
       <Filter>GameScene</Filter>
@@ -336,9 +330,6 @@
     </Filter>
     <Filter Include="Texture">
       <UniqueIdentifier>{ba2c4739-1739-4582-b450-0442272e3d24}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="SceneInterface">
-      <UniqueIdentifier>{694d1a9b-e9a4-4322-89ea-27279e5f83ec}</UniqueIdentifier>
     </Filter>
     <Filter Include="Textures">
       <UniqueIdentifier>{f34dc00f-c3c5-46e0-9b02-019005ed489b}</UniqueIdentifier>

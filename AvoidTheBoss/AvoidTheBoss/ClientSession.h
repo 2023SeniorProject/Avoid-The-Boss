@@ -19,11 +19,7 @@ public:
 	SOCKET GetSock() { return _sock; }
 	bool DoSend(void* packet);
 	void DoDelaySend(C2S_ATTACK packet, float afterTick);
-	void DoDelayTask()
-	{
-		std::unique_lock<std::shared_mutex> wl(_DelayQueueLock);
-		_DelayjobQueue->DoTasks();
-	}
+	void DoDelayTask();
 	bool DoRecv();
 	void ProcessPacket(char*);
 public:

@@ -1,12 +1,15 @@
 #pragma once
 
+// UI매니저 개요
+// 게임 프레임워크 시작 시, 각 화면에 필요한 모든 UI 이미지를 로드한다. WCI 컨버터를 활용
+// D2D를 활용해서 이미지를 그린다.
 
 struct UITextBlock
 {
     WCHAR                           m_pstrText[256]; // 출력할 텍스처
     D2D1_RECT_F                     m_d2dLayoutRect; // 출력할 레이아웃 영역
-    IDWriteTextFormat* m_pdwFormat; // 입력 포맷
-    ID2D1SolidColorBrush* m_pd2dTextBrush; // 텍스처를 출력할 브러쉬
+    IDWriteTextFormat*              m_pdwFormat; // 입력 포맷
+    ID2D1SolidColorBrush*           m_pd2dTextBrush; // 텍스처를 출력할 브러쉬
 };
 
 class UIManager

@@ -160,6 +160,27 @@ void UIManager::Render2D(UINT nFrame)
 
 void UIManager::ReleaseResources()
 {
+    for (UINT i = 0; i < m_nRenderTargets; i++)
+    {
+        ID3D11Resource* ppResources[] = { m_ppd3d11WrappedRenderTargets[i] };
+        m_pd3d11On12Device->ReleaseWrappedResources(ppResources, _countof(ppResources));
+    }
+
+    m_pd2dDeviceContext->SetTarget(nullptr);
+    m_pd3d11DeviceContext->Flush();
+
+    for (UINT i = 0; i < m_nRenderTargets; i++)
+    {
+        m_ppd2dRenderTargets[i]->Release();
+        m_ppd3d11WrappedRenderTargets[i]->Release();
+    }
+
+    m_pd2dDeviceContext->Release();
+    m_pd2dWriteFactory->Release();
+    m_pd2dDevice->Release();
+    m_pd2dFactory->Release();
+    m_pd3d11DeviceContext->Release();
+    m_pd3d11On12Device->Release();
 }
 
 ID2D1SolidColorBrush* UIManager::CreateBrush(D2D1::ColorF d2dColor)

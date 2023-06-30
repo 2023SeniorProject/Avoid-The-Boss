@@ -49,7 +49,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
    //std::cin.getline(ipaddress, 20);
    clientCore.InitConnect("127.0.0.1");
    clientCore.DoConnect(&loginPacket);
-   
+   CoInitializeEx(nullptr, COINIT_APARTMENTTHREADED);
    // 전역 문자열을 초기화합니다.
     ::LoadString(hInstance, IDS_APP_TITLE, szTitle, MAX_LOADSTRING);
     ::LoadString(hInstance, IDC_AVOIDTHEBOSS, szWindowClass, MAX_LOADSTRING);
@@ -77,7 +77,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
         {
             while (true)
             {
-                clientCore.DoDelaySendTask();
+               // clientCore.DoDelaySendTask();
             }
         }
     );

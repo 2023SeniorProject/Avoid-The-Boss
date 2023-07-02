@@ -1279,7 +1279,7 @@ void CSiren::OnPrepareAnimate()
 
 void CSiren::Animate(float fTimeElapsed)
 {
-	//if (m_bEmpExit)
+	if (m_bEmpExit)
 	{
 		float delta = 100.0f;
 		if (m_AnimationDegree > 0.0f)
@@ -1293,12 +1293,7 @@ void CSiren::Animate(float fTimeElapsed)
 			{
 				float radius = 0.000471f / 2.0f;
 				XMMATRIX xmmtxRotate = DirectX::XMMatrixRotationZ(XMConvertToRadians(delta * fTimeElapsed));
-				//XMMATRIX xmmtxTranslate = DirectX::XMMatrixTranslation(radius * cos(XMConvertToRadians(delta * fTimeElapsed)), 0.0f, radius * sin(XMConvertToRadians(delta * fTimeElapsed)));
-				//XMMATRIX xmf4x4Result = DirectX::XMMatrixMultiply(xmmtxTranslate, xmmtxRotate);
-
 				m_ppSirenCap->m_xmf4x4ToParent = Matrix4x4::Multiply(xmmtxRotate, m_ppSirenCap->m_xmf4x4ToParent);
-
-				//std::cout <<"m_ppSirenCap : " << m_ppSirenCap->GetPosition().x << " " << m_ppSirenCap->GetPosition().y << " " << m_ppSirenCap->GetPosition().z << std::endl;
 			}
 			m_AnimationDegree -= delta * fTimeElapsed;
 		}

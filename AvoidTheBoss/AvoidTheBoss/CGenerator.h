@@ -2,17 +2,19 @@
 #include "GameObject.h"
 
 #define BUTTON_ANIM_FRAME 50
-#define GENERATOR_ANIM_FRAM 50
+#define GENERATOR_PIPE_ANIM_FRAM 16
+#define GENERATOR_BODY_ANIM_FRAM 16
 class CGenerator : public CGameObject
 {
-
+public:
 	float radius = 0.0f;
 	int m_nPipe = 3;
+	XMFLOAT4 	xmf4NormalVector;
+
 	CGameObject** m_ppPipe = NULL;
 	CGameObject* m_pButton = NULL;
-	int m_fPipeDistanceCount[3];
-	bool m_nPipeStartAnimation[3];
-	bool m_bPipeMoveUp[3];
+	CGameObject* m_pBody = NULL;
+
 public: //06-03 추가
 	int m_idx = -1;
 	float m_maxGuage = 100;
@@ -23,16 +25,21 @@ public:
 	bool m_bGenActive = false; // --> 발전기가 활성화 되었는가
 	bool m_bOnInteraction = false; // --> 발전기가 상호작용 중인가?
 	bool m_bAlreadyOn = false;
+	bool m_nPipeStartAnimation[3];
 public:
 	int  m_nButtonAnimationCount = BUTTON_ANIM_FRAME;
-	int  m_nGeneratorAnimationCount = GENERATOR_ANIM_FRAM;
+	int  m_nGenerPipeAnimationCount[3];
+	int  m_nGenerBodyAnimationCount = 0;
+	float m_AnimationDegree = 0.0f;
 public:
 	CGenerator();
 	virtual ~CGenerator() {};
 	float GetRadius() { return radius; }
 
-	void SetAnimationCount(int value) { m_nGeneratorAnimationCount = value; }
-	bool GetAnimationCount() { return m_nGeneratorAnimationCount; }
+	virtual void SetNormalVector();
+	void LogicUpdate();
+	//void SetAnimationCount(int value) { m_nGenerPipeAnimationCount[0] = value; }
+	//bool GetAnimationCount() { return m_nGenerPipeAnimationCount[0]; }
 	void SetInteractionOn(bool value) { m_bOnInteraction = value; };
 	bool GetInteractionOn() { return m_bOnInteraction; }
 	void SetAlreadyOn(bool value) { m_bAlreadyOn = value; }
@@ -42,6 +49,9 @@ public:
 	virtual void Update(float fTimeElapsed);
 	virtual void OnPrepareAnimate();
 	virtual void Animate(float fTimeElapsed);
+
+	void PipelineAnimate(float fTimeElapsed);
+	void BodyAnimate(float fTimeElapsed);
 };
 
 

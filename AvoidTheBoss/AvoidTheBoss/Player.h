@@ -54,9 +54,12 @@ protected:
 	float m_fFriction;       // 마찰력
 
 	// 플레이어 카메라
-	CCamera* m_pCamera = nullptr;
+	//CCamera* m_pCamera = nullptr;
 
 public:
+	// 플레이어 카메라
+	CCamera* m_pCamera = nullptr;
+
 	uint8 m_ctype = -1; // 자신의 캐릭터 타입을 구현
 	int16 m_sid = -1; // 자신으 Session Id
 	std::mutex m_lock; // 자신의 Lock
@@ -101,8 +104,6 @@ public:
 
 	//플레이어를 회전하는 함수이다. 
 	virtual void Rotate(float x, float y, float z);
-	
-
 	virtual void CreateShaderVariables(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList
 		* pd3dCommandList);
 	virtual void ReleaseShaderVariables();

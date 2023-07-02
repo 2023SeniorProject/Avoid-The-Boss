@@ -373,11 +373,15 @@ public:
 	virtual void UpdateShaderVariable(ID3D12GraphicsCommandList *pd3dCommandList, CMaterial *pMaterial);
 
 	virtual void ReleaseUploadBuffers();
+	virtual void SetNormalVector(){}
 
 	const XMFLOAT3 GetPosition();
 	XMFLOAT3 GetLook();
 	XMFLOAT3 GetUp();
 	XMFLOAT3 GetRight();
+
+	XMFLOAT3 GetParentUp();
+
 
 	void SetPosition(float x, float y, float z);
 	void SetPosition(XMFLOAT3 xmf3Position);

@@ -748,6 +748,7 @@ void CGeneratorObjectsShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12Graph
 	m_ppObjects[0]->SetPosition(XMFLOAT3(0.0f, 0.0f, -22.82f));
 	m_ppObjects[0]->Rotate(0.0f, 0.0f, 0.0f);
 	m_ppObjects[0]->OnPrepareAnimate();
+	m_ppObjects[0]->SetNormalVector();
 	m_ppObjects[0]->objLayer = Layout::GENERATOR;
 
 	m_ppObjects[1] = new CGenerator();
@@ -755,6 +756,7 @@ void CGeneratorObjectsShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12Graph
 	m_ppObjects[1]->SetPosition(XMFLOAT3(-22.884f, 0.0f, 2.46665f));
 	m_ppObjects[1]->Rotate(0.0f, 90.0f, 0.0f);
 	m_ppObjects[1]->OnPrepareAnimate();
+	m_ppObjects[1]->SetNormalVector();
 	m_ppObjects[1]->objLayer = Layout::GENERATOR;
 
 	m_ppObjects[2] = new CGenerator();
@@ -762,6 +764,7 @@ void CGeneratorObjectsShader::BuildObjects(ID3D12Device* pd3dDevice, ID3D12Graph
 	m_ppObjects[2]->SetPosition(XMFLOAT3(22.95006f, 0.0f, 2.506552f));
 	m_ppObjects[2]->Rotate(0.0f, -90.0f, 0.0f);
 	m_ppObjects[2]->OnPrepareAnimate();
+	m_ppObjects[2]->SetNormalVector();
 	m_ppObjects[2]->objLayer = Layout::GENERATOR;
 
 	CreateShaderVariables(pd3dDevice, pd3dCommandList);

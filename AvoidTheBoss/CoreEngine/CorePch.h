@@ -89,6 +89,7 @@ using namespace DirectX;
 using namespace DirectX::PackedVector;
 
 #include "protocol.h"
+#include "CTimer.h"
 
 
 

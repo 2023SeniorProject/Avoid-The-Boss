@@ -66,9 +66,9 @@ public:
     UINT                            m_nTextBlocks = 0;
    
     // BitmapResource
-    UINT m_nBitmaps = 20;
-    ID2D1Bitmap* m_bitmaps = NULL;
-    ComPtr<ID2D1Effect> m_bitmapsResource[20];
+    UINT                            m_nBitmaps = 20;
+    ID2D1Bitmap*                    m_bitmaps = NULL;
+    ComPtr<ID2D1Effect>             m_bitmapsResource[20];
 
     UIButton* m_buttons = NULL;
     UITextBlock* m_pTextBlocks = NULL;

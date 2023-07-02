@@ -2,8 +2,10 @@
 #include "GameFramework.h"
 #include "clientIocpCore.h"
 #include "UIManager.h"
-#include <string>
 
+// 씬관련 헤더파일
+#include "Scene.h"
+#include "CLobbyScene.h"
 
 CGameFramework mainGame;
 // #define _WITH_PLAYER_TOP // 플레이어 깊이 버퍼값 1.0f
@@ -13,7 +15,7 @@ CGameFramework::CGameFramework()
 	m_pdxgiFactory = NULL;
 	m_pdxgiSwapChain = NULL;
 	m_pd3dDevice = NULL;
-	_curScene = (int8)SCENE_TYPE::LOBBY;
+	m_curScene = (int32)SCENESTATE::LOBBY;
 	for (int i = 0; i < m_nSwapChainBuffers; i++) 
 		m_ppd3dSwapChainBackBuffers[i] = NULL;
 	m_nSwapChainBufferIndex = 0;
@@ -346,11 +348,13 @@ void CGameFramework::BuildScenes()
 		//씬 객체를 생성하고 씬에 포함될 게임 객체들을 생성한다. 
 
 	m_UIRenderer = new UIManager(m_nSwapChainBuffers, 0, m_pd3dDevice, m_pd3dCommandQueue, m_ppd3dSwapChainBackBuffers, m_nWndClientWidth, m_nWndClientHeight);
-	m_ppScene[0] = new CLobbyScene();
-	if (m_ppScene[0]) m_ppScene[0]->BuildObjects(m_pd3dDevice, m_pd3dCommandList);
+	
+	
+	m_ppScene[(int32)SCENESTATE::LOBBY] = new CLobbyScene();
+	if (m_ppScene[(int32)SCENESTATE::LOBBY]) m_ppScene[0]->BuildObjects(m_pd3dDevice, m_pd3dCommandList);
 
-	m_ppScene[1] = new CMainScene();
-	if (m_ppScene[1]) m_ppScene[1]->BuildObjects(m_pd3dDevice, m_pd3dCommandList);
+	m_ppScene[(int32)SCENESTATE::INGAME] = new CGameScene();
+	if (m_ppScene[(int32)SCENESTATE::INGAME]) m_ppScene[1]->BuildObjects(m_pd3dDevice, m_pd3dCommandList);
 
 
 	//씬 객체를 생성하기 위하여 필요한 그래픽 명령 리스트들을 명령 큐에 추가한다. 
@@ -362,8 +366,7 @@ void CGameFramework::BuildScenes()
 	WaitForGpuComplete();
 
 	//그래픽 리소스들을 생성하는 과정에 생성된 업로드 버퍼들을 소멸시킨다. 
-	if (m_ppScene[m_nSceneIndex]) m_ppScene[m_nSceneIndex]->ReleaseUploadBuffers();
-	m_ppScene[m_nSceneIndex]->InitScene();
+	for (int i = 0; i < m_nSceneIndex; ++i) m_ppScene[i]->ReleaseUploadBuffers();
 }
 
 void CGameFramework::ReleaseScenes()
@@ -376,24 +379,23 @@ void CGameFramework::ReleaseScenes()
 
 void CGameFramework::ProcessInput()
 {
-	m_ppScene[m_nSceneIndex]->ProcessInput(m_hWnd);
+	m_ppScene[m_curScene]->ProcessInput(m_hWnd);
 }
 
 void CGameFramework::UpdateObject()
 {
-	m_ppScene[m_nSceneIndex]->Update(m_hWnd);
+	m_ppScene[m_curScene]->Update(m_hWnd);
 }
 
 void CGameFramework::AnimateObjects()
 {
-	if (m_ppScene[m_nSceneIndex]) m_ppScene[m_nSceneIndex]->AnimateObjects();
+	if (m_ppScene[m_curScene]) m_ppScene[m_curScene]->AnimateObjects();
 }
 
 void CGameFramework::FrameAdvance() // 여기서 업데이트랑 렌더링 동시에 진행하는 곳
 {
 	//타이머의 시간이 갱신되도록 하고 프레임 레이트를 계산한다. 
-	if (_curScene.load() != (int8)SCENE_TYPE::INGAME) return;
-	
+
 	//1 인풋 처리
 	ProcessInput();
 	//2 업데이트 처리
@@ -483,7 +485,7 @@ void CGameFramework::Render()
 	//렌더 타겟 뷰(서술자)와 깊이-스텐실 뷰(서술자)를 출력-병합 단계(OM)에 연결한다.
 
 	//=======렌더링 코드는 여기에 추가될 것이다
-	if (m_ppScene) m_ppScene[m_nSceneIndex]->Render(m_pd3dCommandList, m_ppScene[m_nSceneIndex]->m_pCamera);
+	if (m_ppScene[m_curScene]) m_ppScene[m_curScene]->Render(m_pd3dCommandList, m_ppScene[m_nSceneIndex]->m_pCamera);
 
 	//3인칭 카메라일 때 플레이어가 항상 보이도록 렌더링한다. 
 #ifdef _WITH_PLAYER_TOP
@@ -541,9 +543,9 @@ LRESULT CGameFramework::OnProcessingWindowMessage(HWND hWnd, UINT nMessageID, WP
 	case WM_ACTIVATE:
 	{
 		if (LOWORD(wParam) == WA_INACTIVE)
-			m_ppScene[m_nSceneIndex]->StopTimer();
+			static_cast<CGameScene*>(m_ppScene[m_nSceneIndex])->StopTimer();
 		else
-			m_ppScene[m_nSceneIndex]->StartTimer();
+			static_cast<CGameScene*>(m_ppScene[m_nSceneIndex])->StartTimer();
 		break;
 	}
 	case WM_SIZE:

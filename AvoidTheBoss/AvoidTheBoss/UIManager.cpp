@@ -64,12 +64,12 @@ void UIManager::CreateD2DDevice() // d3d11on12디바이스를 활용해 d2ddevice랑 d2dF
     pdxgiDevice->Release();
 }
 
-int32 UIManager::LoadPngFromFile(const wchar_t* filePath, int32 idx)
+int32 UIManager::LoadPngFromFile(const wchar_t* filePath, ID2D1Bitmap* bit)
 {
-    if (m_bitmaps != NULL)
+    if (bit != NULL)
     {
-        m_bitmaps->Release();
-        m_bitmaps = NULL;
+        bit->Release();
+        bit = NULL;
     }
 
     // WIC Factory 객체 생성
@@ -95,7 +95,7 @@ int32 UIManager::LoadPngFromFile(const wchar_t* filePath, int32 idx)
                 {
                     
                     // IWICBitmap 형식의 비트맵으로 ID2D1Bitmap 객체를 생성
-                    if (S_OK == m_pd2dDeviceContext->CreateBitmapFromWicBitmap(pConverter, NULL, &m_bitmaps)) result = 1;  // 성공적으로 생성한 경우
+                    if (S_OK == m_pd2dDeviceContext->CreateBitmapFromWicBitmap(pConverter, NULL, &bit)) result = 1;  // 성공적으로 생성한 경우
                 }
                 // 이미지 변환 객체 제거
                 pConverter->Release();

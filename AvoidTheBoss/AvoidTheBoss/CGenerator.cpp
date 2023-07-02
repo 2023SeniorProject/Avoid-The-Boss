@@ -8,20 +8,22 @@ CGenerator::CGenerator()
 	for (int i = 0; i < m_nPipe; i++)
 	{
 		m_nPipeStartAnimation[i] = false;
-		m_nGeneratorAnimationCount[i] = 0;
+		m_nGenerPipeAnimationCount[i] = 0;
 	}
-	
 }
-
+void CGenerator::SetNormalVector()
+{
+	xmf4NormalVector = XMFLOAT4(m_pBody->GetParentUp().x, m_pBody->GetParentUp().y, m_pBody->GetParentUp().z, 0.0f);
+}
 void CGenerator::LogicUpdate()
 {
 	//if (m_bOnInteraction || m_bAlreadyOn)
 	{  
 		m_nPipeStartAnimation[0] = true;
 	}
-	if (m_nGeneratorAnimationCount[0] == 4)
+	if (m_nGenerPipeAnimationCount[0] == 4)
 		m_nPipeStartAnimation[1] = true;
-	if (m_nGeneratorAnimationCount[1] == 4)
+	if (m_nGenerPipeAnimationCount[1] == 4)
 		m_nPipeStartAnimation[2] = true;
 	//else
 	//{
@@ -34,9 +36,9 @@ void CGenerator::LogicUpdate()
 	for (int i = 0; i < m_nPipe; i++)
 	{
 		if(m_nPipeStartAnimation[i])
-			m_nGeneratorAnimationCount[i] += 1;
-
+			m_nGenerPipeAnimationCount[i] += 1;
 	}
+	m_nGenerBodyAnimationCount++;
 }
 
 void CGenerator::Update(float fTimeElapsed)
@@ -66,12 +68,42 @@ void CGenerator::OnPrepareAnimate()
 		m_ppPipe[2] = FindFrame("Generator_Pipe3");
 	}
 	m_pButton = FindFrame("Button001"); //Button -> 통짜 이름
+	m_pBody = FindFrame("Generator"); 
+
 }
 
-void CGenerator::Animate(float fTimeElapsed)
+void CGenerator::BodyAnimate(float fTimeElapsed)
 {
-	LogicUpdate();
+	XMMATRIX xmmtxTranslate;
+	int changeFrame = 8;
+	//if (m_bOnInteraction)
+	{
+			if (m_nGenerBodyAnimationCount > changeFrame && m_nGenerBodyAnimationCount <= GENERATOR_BODY_ANIM_FRAM)
+			{
+				if (m_nGenerBodyAnimationCount <= GENERATOR_BODY_ANIM_FRAM && m_nGenerBodyAnimationCount > changeFrame + changeFrame / 2)
+					xmmtxTranslate = DirectX::XMMatrixTranslation(-0.001f, -0.001f, 0.0f);
+				else if (m_nGenerBodyAnimationCount <= changeFrame + changeFrame / 2 && m_nGenerBodyAnimationCount > changeFrame / 2)
+					xmmtxTranslate = DirectX::XMMatrixTranslation(0.001f, 0.001f, 0.0f);
 
+				if (m_nGenerBodyAnimationCount == GENERATOR_BODY_ANIM_FRAM)
+				{
+					m_nGenerBodyAnimationCount = 0;
+				}
+			}
+			else if (m_nGenerBodyAnimationCount <= changeFrame && m_nGenerBodyAnimationCount > 0)
+			{
+				if(m_nGenerBodyAnimationCount > 0 && m_nGenerBodyAnimationCount<= changeFrame /2)
+					xmmtxTranslate = DirectX::XMMatrixTranslation(0.0f, 0.001f, 0.001f);
+				else if (m_nGenerBodyAnimationCount <= changeFrame && m_nGenerBodyAnimationCount > changeFrame / 2)
+					xmmtxTranslate = DirectX::XMMatrixTranslation(0.0f, -0.001f, -0.001f);
+			}
+			m_pBody->m_xmf4x4ToParent = Matrix4x4::Multiply(xmmtxTranslate, m_pBody->m_xmf4x4ToParent);
+	}
+}
+
+
+void CGenerator::PipelineAnimate(float fTimeElapsed)
+{
 	float delta = 0.01f;
 	//if (m_bOnInteraction)
 	{
@@ -79,31 +111,37 @@ void CGenerator::Animate(float fTimeElapsed)
 		{
 			if (m_nPipeStartAnimation[i])
 			{
-				if (	m_nGeneratorAnimationCount[i] > 8
-					&& 	m_nGeneratorAnimationCount[i] <= GENERATOR_ANIM_FRAM)
+				if (m_nGenerPipeAnimationCount[i] > 8 && m_nGenerPipeAnimationCount[i] <= GENERATOR_PIPE_ANIM_FRAM)
 				{
-					if (	m_nGeneratorAnimationCount[i] == GENERATOR_ANIM_FRAM)
+					if (m_nGenerPipeAnimationCount[i] == GENERATOR_PIPE_ANIM_FRAM)
 					{
-							m_nGeneratorAnimationCount[i] = -20;
-						std::cout << m_ppPipe[i]->GetPosition().y << std::endl;
+						m_nGenerPipeAnimationCount[i] = -20;
+						//std::cout << m_ppPipe[i]->GetPosition().y << std::endl;
 					}
+
 					XMMATRIX xmmtxTranslate = DirectX::XMMatrixTranslation(0.0f, delta, 0.0f);
 					m_ppPipe[i]->m_xmf4x4ToParent = Matrix4x4::Multiply(xmmtxTranslate, m_ppPipe[i]->m_xmf4x4ToParent);
 				}
-				else if (	m_nGeneratorAnimationCount[i] <= 8 
-					&& 	m_nGeneratorAnimationCount[i] > 0)
+				else if (m_nGenerPipeAnimationCount[i] <= 8 && m_nGenerPipeAnimationCount[i] > 0)
 				{
 					XMMATRIX xmmtxTranslate = DirectX::XMMatrixTranslation(0.0f, -delta, 0.0f);
 					m_ppPipe[i]->m_xmf4x4ToParent = Matrix4x4::Multiply(xmmtxTranslate, m_ppPipe[i]->m_xmf4x4ToParent);
 
-					if(	m_nGeneratorAnimationCount[i]==1)
-						std::cout << m_ppPipe[i]->GetPosition().y << std::endl;
+					//if(	m_nGenerPipeAnimationCount[i]==1)
+					//	std::cout << m_ppPipe[i]->GetPosition().y << std::endl;
 				}
 			}
 		}
-
 	}
+}
 
+void CGenerator::Animate(float fTimeElapsed)
+{
+	LogicUpdate();
+
+	PipelineAnimate(fTimeElapsed);
+
+	BodyAnimate(fTimeElapsed);
 
 	CGameObject::Animate(fTimeElapsed);
 }

@@ -25,9 +25,6 @@
     <ClCompile Include="AvoidTheBoss.cpp">
       <Filter>AvoidTheBoss</Filter>
     </ClCompile>
-    <ClCompile Include="Scene.cpp">
-      <Filter>GameScene</Filter>
-    </ClCompile>
     <ClCompile Include="pch.cpp">
       <Filter>AvoidTheBoss</Filter>
     </ClCompile>
@@ -63,6 +60,15 @@
     </ClCompile>
     <ClCompile Include="clientIocpCore.cpp">
       <Filter>ForClient\IocpCore</Filter>
+    </ClCompile>
+    <ClCompile Include="CGameScene.cpp">
+      <Filter>Scene\CScene</Filter>
+    </ClCompile>
+    <ClCompile Include="Scene.cpp">
+      <Filter>Scene\GameScene</Filter>
+    </ClCompile>
+    <ClCompile Include="CLobbyScene.cpp">
+      <Filter>Scene\LobbyScene</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -100,9 +106,6 @@
     <ClInclude Include="AvoidTheBoss.h">
       <Filter>AvoidTheBoss</Filter>
     </ClInclude>
-    <ClInclude Include="Scene.h">
-      <Filter>GameScene</Filter>
-    </ClInclude>
     <ClInclude Include="CBullet.h">
       <Filter>GameObject</Filter>
     </ClInclude>
@@ -136,6 +139,15 @@
     <ClInclude Include="UIManager.h">
       <Filter>Mananger\UIManager</Filter>
     </ClInclude>
+    <ClInclude Include="CGameScene.h">
+      <Filter>Scene\CScene</Filter>
+    </ClInclude>
+    <ClInclude Include="Scene.h">
+      <Filter>Scene\GameScene</Filter>
+    </ClInclude>
+    <ClInclude Include="CLobbyScene.h">
+      <Filter>Scene\LobbyScene</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AvoidTheBoss.cpp">
@@ -167,9 +179,6 @@
     </ClCompile>
     <ClCompile Include="clientIocpCore.cpp">
       <Filter>ForClient/IocpCore</Filter>
-    </ClCompile>
-    <ClCompile Include="SceneInterface.cpp">
-      <Filter>SceneInterface</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -310,9 +319,6 @@
     <Filter Include="GameObject">
       <UniqueIdentifier>{05a326a8-f411-4096-844f-12c3de82e26f}</UniqueIdentifier>
     </Filter>
-    <Filter Include="GameScene">
-      <UniqueIdentifier>{e4ce9da3-bd68-4bfc-9cb8-45f800d6cd51}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Camera">
       <UniqueIdentifier>{a881eff2-ecf9-4c10-930d-7777d38b72f0}</UniqueIdentifier>
     </Filter>
@@ -363,6 +369,18 @@
     </Filter>
     <Filter Include="Mananger\UIManager">
       <UniqueIdentifier>{32b6f4e7-38ad-421b-937c-749e73848ab7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Scene">
+      <UniqueIdentifier>{e4ce9da3-bd68-4bfc-9cb8-45f800d6cd51}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Scene\CScene">
+      <UniqueIdentifier>{70f0b6f9-a5e9-4055-a8fd-fab7037eeecc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Scene\GameScene">
+      <UniqueIdentifier>{cea74b32-c09f-4b03-90af-caa574f6c935}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Scene\LobbyScene">
+      <UniqueIdentifier>{98120687-c313-4fbf-985e-4dbdaabab215}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

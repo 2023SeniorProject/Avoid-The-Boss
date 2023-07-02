@@ -166,7 +166,9 @@
     <ClInclude Include="CGenerator.h" />
     <ClInclude Include="ClientPacketEvent.h" />
     <ClInclude Include="ClientSession.h" />
+    <ClInclude Include="CLobbyScene.h" />
     <ClInclude Include="CollisionDetector.h" />
+    <ClInclude Include="CGameScene.h" />
     <ClInclude Include="DDSTextureLoader12.h" />
     <ClInclude Include="clientIocpCore.h" />
     <ClInclude Include="GameFramework.h" />
@@ -192,7 +194,9 @@
     <ClCompile Include="clientIocpCore.cpp" />
     <ClCompile Include="ClientPacketEvent.cpp" />
     <ClCompile Include="ClientSession.cpp" />
+    <ClCompile Include="CLobbyScene.cpp" />
     <ClCompile Include="CollisionDetector.cpp" />
+    <ClCompile Include="CGameScene.cpp" />
     <ClCompile Include="DDSTextureLoader12.cpp" />
     <ClCompile Include="GameFramework.cpp" />
     <ClCompile Include="GameObject.cpp" />

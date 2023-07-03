@@ -186,7 +186,7 @@ CVirtualPlayer::CVirtualPlayer()
 	SetPosition(XMFLOAT3(0.0f, 0.0f, 0.0f));
 }
 
-CVirtualPlayer::CVirtualPlayer(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature)
+CVirtualPlayer::CVirtualPlayer(ID3D12Device5* pd3dDevice, ID3D12GraphicsCommandList4* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature)
 {
 	m_pCamera = ChangeCamera(FIRST_PERSON_CAMERA, 0.0f);
 
@@ -250,7 +250,7 @@ void CVirtualPlayer::Update(float fTimeElapsed)
 
 }
 
-void CVirtualPlayer::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList
+void CVirtualPlayer::BuildObjects(ID3D12Device5* pd3dDevice, ID3D12GraphicsCommandList4
 	* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature)
 {
 

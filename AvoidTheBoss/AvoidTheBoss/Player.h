@@ -104,10 +104,11 @@ public:
 
 	//플레이어를 회전하는 함수이다. 
 	virtual void Rotate(float x, float y, float z);
-	virtual void CreateShaderVariables(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList
+	virtual void CreateShaderVariables(ID3D12Device5* pd3dDevice, ID3D12GraphicsCommandList4
 		* pd3dCommandList);
 	virtual void ReleaseShaderVariables();
-	virtual void UpdateShaderVariables(ID3D12GraphicsCommandList* pd3dCommandList);
+	virtual void UpdateShaderVariables(
+		ID3D12GraphicsCommandList4* pd3dCommandList);
 
 	//카메라를 변경하기 위하여 호출하는 함수이다. 
 	CCamera* OnChangeCamera(DWORD nNewCameraMode, DWORD nCurrentCameraMode);
@@ -116,7 +117,7 @@ public:
 	//플레이어의 위치와 회전축으로부터 월드 변환 행렬을 생성하는 함수이다. 
 	virtual void OnPrepareRender();
 	//플레이어의 카메라가 3인칭 카메라일 때 플레이어(메쉬)를 렌더링한다. 
-	
+	virtual void Render(ID3D12GraphicsCommandList4  * pd3dCommandList, CCamera* pCamera, bool bRaster);
 
 public: //04-29 추가함수 
 	virtual uint8 ProcessInput() { return 0; };
@@ -128,7 +129,7 @@ public: //04-29 추가함수
 	virtual void AnimTrackUpdate(float ,CLIENT_TYPE) {};
 	virtual void SetBehavior(PLAYER_BEHAVIOR b) { m_behavior = (int32)b; };
 	virtual int32 GetBehavior() { return m_behavior; }
-	virtual void Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera =NULL);
+	//virtual void Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera =NULL);
 
 	virtual void BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList
 		* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature) {}

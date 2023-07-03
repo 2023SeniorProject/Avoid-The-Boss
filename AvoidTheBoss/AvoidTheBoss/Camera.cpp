@@ -55,7 +55,7 @@ CCamera::~CCamera()
 {
 }
 
-void CCamera::CreateShaderVariables(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList)
+void CCamera::CreateShaderVariables(ID3D12Device5* pd3dDevice, ID3D12GraphicsCommandList4* pd3dCommandList)
 {
 	UINT ncbElementBytes = ((sizeof(VS_CB_CAMERA_INFO) + 255) & ~255); //256의 배수
 	m_pd3dcbCamera = ::CreateBufferResource(pd3dDevice, pd3dCommandList, NULL, ncbElementBytes, D3D12_HEAP_TYPE_UPLOAD, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER, NULL);
@@ -72,7 +72,7 @@ void CCamera::ReleaseShaderVariables()
 	}
 }
 
-void CCamera::UpdateShaderVariables(ID3D12GraphicsCommandList* pd3dCommandList)
+void CCamera::UpdateShaderVariables(ID3D12GraphicsCommandList4* pd3dCommandList)
 {
 	XMFLOAT4X4 xmf4x4View;
 	XMStoreFloat4x4(&xmf4x4View, XMMatrixTranspose(XMLoadFloat4x4(&m_xmf4x4View)));
@@ -149,7 +149,7 @@ void CCamera::SetScissorRect(LONG xLeft, LONG yTop, LONG xRight, LONG yBottom)
 	m_d3dScissorRect.bottom = yBottom;
 }
 
-void CCamera::SetViewportsAndScissorRects(ID3D12GraphicsCommandList* pd3dCommandList)
+void CCamera::SetViewportsAndScissorRects(ID3D12GraphicsCommandList4 * pd3dCommandList)
 {
 	//뷰포트와 씨저 사각형을 설정한다.
 	pd3dCommandList->RSSetViewports(1, &m_d3dViewport);

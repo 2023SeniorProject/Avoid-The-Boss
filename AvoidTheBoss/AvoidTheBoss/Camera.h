@@ -66,10 +66,10 @@ public:
 	virtual ~CCamera();
 
 	//카메라의 정보를 셰이더 프로그램에게 전달하기 위한 상수 버퍼를 생성하고 갱신한다.
-	virtual void CreateShaderVariables(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList
-		* pd3dCommandList);
+	virtual void CreateShaderVariables(ID3D12Device5* pd3dDevice, ID3D12GraphicsCommandList4* pd3dCommandList);
 	virtual void ReleaseShaderVariables();
-	virtual void UpdateShaderVariables(ID3D12GraphicsCommandList* pd3dCommandList);
+	virtual void UpdateShaderVariables(
+		ID3D12GraphicsCommandList4* pd3dCommandList);
 
 	//카메라 변환 행렬을 생성한다.
 	void GenerateViewMatrix();
@@ -86,7 +86,7 @@ public:
 		0.0f, float fMaxZ = 1.0f);
 	void SetScissorRect(LONG xLeft, LONG yTop, LONG xRight, LONG yBottom);
 
-	virtual void SetViewportsAndScissorRects(ID3D12GraphicsCommandList* pd3dCommandList);
+	virtual void SetViewportsAndScissorRects(ID3D12GraphicsCommandList4 * pd3dCommandList);
 
 	void SetPlayer(CPlayer* pPlayer) { m_pPlayer = pPlayer; }
 	CPlayer* GetPlayer() { return(m_pPlayer); }

@@ -58,11 +58,11 @@ public:
 	void SetRootArgument(int nIndex, UINT nRootParameterIndex, D3D12_GPU_DESCRIPTOR_HANDLE d3dsrvGpuDescriptorHandle);
 	void SetSampler(int nIndex, D3D12_GPU_DESCRIPTOR_HANDLE d3dSamplerGpuDescriptorHandle);
 
-	void UpdateShaderVariables(ID3D12GraphicsCommandList *pd3dCommandList);
-	void UpdateShaderVariable(ID3D12GraphicsCommandList *pd3dCommandList, int nIndex);
+	void UpdateShaderVariables(ID3D12GraphicsCommandList4   *pd3dCommandList);
+	void UpdateShaderVariable(ID3D12GraphicsCommandList4   *pd3dCommandList, int nIndex);
 	void ReleaseShaderVariables();
 
-	void LoadTextureFromFile(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList, const wchar_t *pszFileName, UINT nIndex, bool bIsDDSFile=true);
+	void LoadTextureFromFile(ID3D12Device5 *pd3dDevice, ID3D12GraphicsCommandList4   *pd3dCommandList, const wchar_t *pszFileName, UINT nIndex, bool bIsDDSFile=true);
 
 	int GetTextures() { return(m_nTextures); }
 	ID3D12Resource *GetTexture(int nIndex) { return(m_ppd3dTextures[nIndex]); }
@@ -108,7 +108,7 @@ public:
 	void SetMaterialType(UINT nType) { m_nType |= nType; }
 	void SetTexture(CTexture *pTexture, UINT nTexture = 0);
 
-	virtual void UpdateShaderVariable(ID3D12GraphicsCommandList *pd3dCommandList);
+	virtual void UpdateShaderVariable(ID3D12GraphicsCommandList4   *pd3dCommandList);
 
 	virtual void ReleaseUploadBuffers();
 
@@ -126,13 +126,13 @@ public:
 	_TCHAR							(*m_ppstrTextureNames)[64] = NULL;
 	CTexture						**m_ppTextures = NULL; //0:Albedo, 1:Specular, 2:Metallic, 3:Normal, 4:Emission, 5:DetailAlbedo, 6:DetailNormal
 
-	void LoadTextureFromFile(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList, UINT nType, UINT nRootParameter, _TCHAR *pwstrTextureName, CTexture **ppTexture, CGameObject *pParent, FILE *pInFile, CShader *pShader);
+	void LoadTextureFromFile(ID3D12Device5 *pd3dDevice, ID3D12GraphicsCommandList4  *pd3dCommandList, UINT nType, UINT nRootParameter, _TCHAR *pwstrTextureName, CTexture **ppTexture, CGameObject *pParent, FILE *pInFile, CShader *pShader);
 
 public:
 	static CShader					*m_pStandardShader;
 	static CShader					*m_pSkinnedAnimationShader;
 
-	static void PrepareShaders(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList, ID3D12RootSignature *pd3dGraphicsRootSignature);
+	static void PrepareShaders(ID3D12Device5 *pd3dDevice, ID3D12GraphicsCommandList4  *pd3dCommandList, ID3D12RootSignature *pd3dGraphicsRootSignature);
 
 	void SetStandardShader() { CMaterial::SetShader(m_pStandardShader); }
 	void SetSkinnedAnimationShader() { CMaterial::SetShader(m_pSkinnedAnimationShader); }
@@ -276,7 +276,7 @@ public:
 class CAnimationController //애니메이션 블렌딩 / 애니메이션 집합 전체 옵션의 자료구조
 {
 public:
-	CAnimationController(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList, int nAnimationTracks, CLoadedModelInfo *pModel);
+	CAnimationController(ID3D12Device5 *pd3dDevice, ID3D12GraphicsCommandList4  *pd3dCommandList, int nAnimationTracks, CLoadedModelInfo *pModel);
 	~CAnimationController();
 
 public:
@@ -294,7 +294,7 @@ public:
 	XMFLOAT4X4						**m_ppcbxmf4x4MappedSkinningBoneTransforms = NULL; //[SkinnedMeshes]
 
 public:
-	void UpdateShaderVariables(ID3D12GraphicsCommandList *pd3dCommandList);
+	void UpdateShaderVariables(ID3D12GraphicsCommandList4  *pd3dCommandList);
 
 	void SetTrackAnimationSet(int nAnimationTrack, int nAnimationSet);
 
@@ -356,21 +356,21 @@ public:
 
 	void SetChild(CGameObject *pChild, bool bReferenceUpdate=false);
 
-	virtual void BuildMaterials(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList) { }
+	virtual void BuildMaterials(ID3D12Device5 *pd3dDevice, ID3D12GraphicsCommandList4  *pd3dCommandList) { }
 
 	virtual void OnPrepareAnimate() { }
 	virtual void Animate(float fTimeElapsed);
-	virtual void Update(float fTimeElapsed){ }
+	virtual void Update(float fTimeElapsed) { }
 
 	virtual void OnPrepareRender() { }
-	virtual void Render(ID3D12GraphicsCommandList *pd3dCommandList, CCamera *pCamera=NULL);
+	virtual void Render(ID3D12GraphicsCommandList4 *pd3dCommandList, CCamera* pCamera, bool bRaster);
 
-	virtual void CreateShaderVariables(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList);
-	virtual void UpdateShaderVariables(ID3D12GraphicsCommandList *pd3dCommandList);
+	virtual void CreateShaderVariables(ID3D12Device5 *pd3dDevice, ID3D12GraphicsCommandList4  *pd3dCommandList);
+	virtual void UpdateShaderVariables(ID3D12GraphicsCommandList4  *pd3dCommandList);
 	virtual void ReleaseShaderVariables();
 
-	virtual void UpdateShaderVariable(ID3D12GraphicsCommandList *pd3dCommandList, XMFLOAT4X4 *pxmf4x4World);
-	virtual void UpdateShaderVariable(ID3D12GraphicsCommandList *pd3dCommandList, CMaterial *pMaterial);
+	virtual void UpdateShaderVariable(ID3D12GraphicsCommandList4  *pd3dCommandList, XMFLOAT4X4 *pxmf4x4World);
+	virtual void UpdateShaderVariable(ID3D12GraphicsCommandList4  *pd3dCommandList, CMaterial *pMaterial);
 
 	virtual void ReleaseUploadBuffers();
 	virtual void SetNormalVector(){}
@@ -411,14 +411,14 @@ public:
 	void SetTrackAnimationSet(int nAnimationTrack, int nAnimationSet);
 	void SetTrackAnimationPosition(int nAnimationTrack, float fPosition);
 
-	void LoadMaterialsFromFile(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList, CGameObject *pParent, FILE *pInFile, CShader *pShader);
+	void LoadMaterialsFromFile(ID3D12Device5 *pd3dDevice, ID3D12GraphicsCommandList4  *pd3dCommandList, CGameObject *pParent, FILE *pInFile, CShader *pShader);
 
 	static void LoadAnimationFromFile(FILE *pInFile, CLoadedModelInfo *pLoadedModel);
-	static CGameObject *LoadFrameHierarchyFromFile(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList, ID3D12RootSignature *pd3dGraphicsRootSignature, CGameObject *pParent, FILE *pInFile, CShader *pShader, int *pnSkinnedMeshes, Layout objType);
+	static CGameObject *LoadFrameHierarchyFromFile(ID3D12Device5 *pd3dDevice, ID3D12GraphicsCommandList4  *pd3dCommandList, ID3D12RootSignature *pd3dGraphicsRootSignature, CGameObject *pParent, FILE *pInFile, CShader *pShader, int *pnSkinnedMeshes, Layout objType);
 
-	static CLoadedModelInfo *LoadGeometryAndAnimationFromFile(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList, ID3D12RootSignature *pd3dGraphicsRootSignature, const char *pstrFileName, CShader *pShader, Layout objType);
+	static CLoadedModelInfo *LoadGeometryAndAnimationFromFile(ID3D12Device5 *pd3dDevice, ID3D12GraphicsCommandList4  *pd3dCommandList, ID3D12RootSignature *pd3dGraphicsRootSignature, const char *pstrFileName, CShader *pShader, Layout objType);
 
-	static CGameObject* LoadGeometryFromFile(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, const char* pstrFileName, CShader* pShader, Layout objType);
+	static CGameObject* LoadGeometryFromFile(ID3D12Device5* pd3dDevice, ID3D12GraphicsCommandList4 * pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, const char* pstrFileName, CShader* pShader, Layout objType);
 
 	static void PrintFrameInfo(CGameObject *pGameObject, CGameObject *pParent);
 };
@@ -429,10 +429,11 @@ public:
 class CSkyBox : public CGameObject
 {
 public:
-	CSkyBox(ID3D12Device *pd3dDevice, ID3D12GraphicsCommandList *pd3dCommandList, ID3D12RootSignature *pd3dGraphicsRootSignature);
+	CSkyBox(ID3D12Device5 *pd3dDevice, 
+		ID3D12GraphicsCommandList4   *pd3dCommandList, ID3D12RootSignature *pd3dGraphicsRootSignature);
 	virtual ~CSkyBox();
 
-	virtual void Render(ID3D12GraphicsCommandList *pd3dCommandList, CCamera *pCamera = NULL);
+	virtual void Render(ID3D12GraphicsCommandList4    *pd3dCommandList, CCamera *pCamera, bool bRaster);
 };
 
 

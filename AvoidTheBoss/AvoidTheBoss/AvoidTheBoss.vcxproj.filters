@@ -64,6 +64,12 @@
     <ClCompile Include="clientIocpCore.cpp">
       <Filter>ForClient\IocpCore</Filter>
     </ClCompile>
+    <ClCompile Include="DXRHelpers\nv_helpers_dx12\BottomLevelASGenerator.cpp" />
+    <ClCompile Include="DXRHelpers\nv_helpers_dx12\RaytracingPipelineGenerator.cpp" />
+    <ClCompile Include="DXRHelpers\nv_helpers_dx12\RootSignatureGenerator.cpp" />
+    <ClCompile Include="DXRHelpers\nv_helpers_dx12\ShaderBindingTableGenerator.cpp" />
+    <ClCompile Include="DXRHelpers\nv_helpers_dx12\TopLevelASGenerator.cpp" />
+    <ClCompile Include="DXSampleHelper.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameObject.h">
@@ -136,6 +142,13 @@
     <ClInclude Include="CEmployee.h">
       <Filter>Player\EMPLOYEE</Filter>
     </ClInclude>
+    <ClInclude Include="DXRHelpers\nv_helpers_dx12\BottomLevelASGenerator.h" />
+    <ClInclude Include="DXRHelpers\nv_helpers_dx12\RaytracingPipelineGenerator.h" />
+    <ClInclude Include="DXRHelpers\nv_helpers_dx12\RootSignatureGenerator.h" />
+    <ClInclude Include="DXRHelpers\nv_helpers_dx12\ShaderBindingTableGenerator.h" />
+    <ClInclude Include="DXRHelpers\nv_helpers_dx12\TopLevelASGenerator.h" />
+    <ClInclude Include="DXRHelper.h" />
+    <ClInclude Include="DXSampleHelper.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AvoidTheBoss.cpp">

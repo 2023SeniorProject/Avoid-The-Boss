@@ -169,6 +169,13 @@
     <ClInclude Include="CollisionDetector.h" />
     <ClInclude Include="DDSTextureLoader12.h" />
     <ClInclude Include="clientIocpCore.h" />
+    <ClInclude Include="DXRHelper.h" />
+    <ClInclude Include="DXRHelpers\nv_helpers_dx12\BottomLevelASGenerator.h" />
+    <ClInclude Include="DXRHelpers\nv_helpers_dx12\RaytracingPipelineGenerator.h" />
+    <ClInclude Include="DXRHelpers\nv_helpers_dx12\RootSignatureGenerator.h" />
+    <ClInclude Include="DXRHelpers\nv_helpers_dx12\ShaderBindingTableGenerator.h" />
+    <ClInclude Include="DXRHelpers\nv_helpers_dx12\TopLevelASGenerator.h" />
+    <ClInclude Include="DXSampleHelper.h" />
     <ClInclude Include="GameFramework.h" />
     <ClInclude Include="GameObject.h" />
     <ClInclude Include="CJobQueue.h" />
@@ -194,6 +201,22 @@
     <ClCompile Include="ClientSession.cpp" />
     <ClCompile Include="CollisionDetector.cpp" />
     <ClCompile Include="DDSTextureLoader12.cpp" />
+    <ClCompile Include="DXRHelpers\nv_helpers_dx12\BottomLevelASGenerator.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="DXRHelpers\nv_helpers_dx12\RaytracingPipelineGenerator.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="DXRHelpers\nv_helpers_dx12\RootSignatureGenerator.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="DXRHelpers\nv_helpers_dx12\ShaderBindingTableGenerator.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="DXRHelpers\nv_helpers_dx12\TopLevelASGenerator.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="DXSampleHelper.cpp" />
     <ClCompile Include="GameFramework.cpp" />
     <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="CJobQueue.cpp" />

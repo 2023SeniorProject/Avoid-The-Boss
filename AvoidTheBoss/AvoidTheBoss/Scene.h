@@ -45,10 +45,10 @@ class CGameScene : public CScene
 	friend class queueEvent;
 	friend class FrameEvent;
 public:
-	static void CreateCbvSrvDescriptorHeaps(ID3D12Device* pd3dDevice, int nConstantBufferViews, int nShaderResourceViews);
+	static void CreateCbvSrvDescriptorHeaps(ID3D12Device5* pd3dDevice, int nConstantBufferViews, int nShaderResourceViews);
 
-	static D3D12_GPU_DESCRIPTOR_HANDLE CreateConstantBufferViews(ID3D12Device* pd3dDevice, int nConstantBufferViews, ID3D12Resource* pd3dConstantBuffers, UINT nStride);
-	static D3D12_GPU_DESCRIPTOR_HANDLE CreateShaderResourceViews(ID3D12Device* pd3dDevice, CTexture* pTexture, UINT nRootParameter, bool bAutoIncrement);
+	static D3D12_GPU_DESCRIPTOR_HANDLE CreateConstantBufferViews(ID3D12Device5* pd3dDevice, int nConstantBufferViews, ID3D12Resource* pd3dConstantBuffers, UINT nStride);
+	static D3D12_GPU_DESCRIPTOR_HANDLE CreateShaderResourceViews(ID3D12Device5* pd3dDevice, CTexture* pTexture, UINT nRootParameter, bool bAutoIncrement);
 
 	D3D12_CPU_DESCRIPTOR_HANDLE GetCPUCbvDescriptorStartHandle() { return(m_d3dCbvCPUDescriptorStartHandle); }
 	D3D12_GPU_DESCRIPTOR_HANDLE GetGPUCbvDescriptorStartHandle() { return(m_d3dCbvGPUDescriptorStartHandle); }
@@ -67,20 +67,26 @@ public:
 	virtual void OnProcessingMouseMessage(HWND hWnd, UINT nMessageID, WPARAM wParam, LPARAM	lParam);
 	virtual void OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPARAM wParam, LPARAM lParam);
 
-	virtual void CreateShaderVariables(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList);
-	virtual void UpdateShaderVariables(ID3D12GraphicsCommandList* pd3dCommandList);
+	virtual void CreateShaderVariables(ID3D12Device5* pd3dDevice, 
+		ID3D12GraphicsCommandList4* pd3dCommandList);
+	virtual void UpdateShaderVariables(
+		
+		
+		ID3D12GraphicsCommandList4  * pd3dCommandList);
 	virtual void ReleaseShaderVariables();
 
 	void BuildDefaultLightsAndMaterials();
-	virtual void BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList
+	virtual void BuildObjects(ID3D12Device5* pd3dDevice, ID3D12GraphicsCommandList4
 		* pd3dCommandList);
 	void ReleaseObjects();
 
 	//그래픽 루트 시그너쳐를 생성한다. 
-	ID3D12RootSignature* CreateGraphicsRootSignature(ID3D12Device* pd3dDevice);
+	ID3D12RootSignature* CreateGraphicsRootSignature(ID3D12Device5* pd3dDevice);
 	ID3D12RootSignature* GetGraphicsRootSignature() { return(m_pd3dGraphicsRootSignature); }
 
 	void AnimateObjects();
+	virtual void Render(ID3D12GraphicsCommandList4  * pd3dCommandList, CCamera* pCamera, bool bRaster);
+
 	void ReleaseUploadBuffers();
 	void ChangeMyPlayerCamera() 
 	{
@@ -91,7 +97,7 @@ public:
 public : // SceneInterface 상속 함수
 	virtual void ProcessInput(HWND& hWnd);
 	virtual void Update(HWND hWnd);
-	virtual void Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera);
+	//virtual void Render(ID3D12GraphicsCommandList5* pd3dCommandList, CCamera* pCamera);
 public: // 오승담 작성 함수
 	CPlayer* GetScenePlayerBySid(const int32 sid) 
 	{ 
@@ -189,14 +195,12 @@ protected:
 	static D3D12_GPU_DESCRIPTOR_HANDLE	m_d3dSrvGPUDescriptorNextHandle;
 };
 
-
-
 class CMainScene : public CGameScene
 {
 public:
 	CMainScene() {}
 	~CMainScene() {}
-	virtual void BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList
+	virtual void BuildObjects(ID3D12Device5* pd3dDevice, ID3D12GraphicsCommandList4
 		* pd3dCommandList);
 
 	//씬에서 마우스와 키보드 메시지를 처리한다.
@@ -213,7 +217,7 @@ class CLobbyScene : public CGameScene
 public:
 	CLobbyScene() {}
 	~CLobbyScene() {}
-	virtual void BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList
+	virtual void BuildObjects(ID3D12Device5* pd3dDevice, ID3D12GraphicsCommandList4
 		* pd3dCommandList);
 
 	//씬에서 마우스와 키보드 메시지를 처리한다.

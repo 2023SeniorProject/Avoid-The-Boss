@@ -118,7 +118,7 @@ void CPlayer::Rotate(float x, float y, float z)
 }
 
 
-void CPlayer::CreateShaderVariables(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList)
+void CPlayer::CreateShaderVariables(ID3D12Device5* pd3dDevice, ID3D12GraphicsCommandList4* pd3dCommandList)
 {
 	if (m_pCamera) m_pCamera->CreateShaderVariables(pd3dDevice, pd3dCommandList);
 }
@@ -128,7 +128,8 @@ void CPlayer::ReleaseShaderVariables()
 	if (m_pCamera) m_pCamera->ReleaseShaderVariables();
 }
 
-void CPlayer::UpdateShaderVariables(ID3D12GraphicsCommandList* pd3dCommandList)
+void CPlayer::UpdateShaderVariables(
+	ID3D12GraphicsCommandList4* pd3dCommandList)
 {
 }
 
@@ -169,10 +170,14 @@ void CPlayer::OnPrepareRender()
 	m_xmf4x4ToParent = Matrix4x4::Multiply(XMMatrixScaling(m_xmf3Scale.x, m_xmf3Scale.y, m_xmf3Scale.z), m_xmf4x4ToParent);
 }
 
-void CPlayer::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera)
+void CPlayer::Render(ID3D12GraphicsCommandList4 * pd3dCommandList, CCamera* pCamera,bool bRaster)
 {
 	DWORD nCameraMode = (pCamera) ? pCamera->GetMode() : 0x03;
-	CGameObject::Render(pd3dCommandList, pCamera);	
+
+	//카메라 모드가 3인칭이면 플레이어 객체를 렌더링한다. 
+
+	CGameObject::Render(pd3dCommandList, pCamera, bRaster); 
+	//CGameObject::Render(pd3dCommandList, pCamera);
 }
 
 CVirtualPlayer::CVirtualPlayer()
@@ -181,7 +186,7 @@ CVirtualPlayer::CVirtualPlayer()
 	SetPosition(XMFLOAT3(0.0f, 0.0f, 0.0f));
 }
 
-CVirtualPlayer::CVirtualPlayer(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature)
+CVirtualPlayer::CVirtualPlayer(ID3D12Device5* pd3dDevice, ID3D12GraphicsCommandList4* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature)
 {
 	m_pCamera = ChangeCamera(FIRST_PERSON_CAMERA, 0.0f);
 
@@ -205,6 +210,7 @@ CCamera* CVirtualPlayer::ChangeCamera(DWORD nNewCameraMode, float fTimeElapsed)
 	if (nCurrentCameraMode == nNewCameraMode)
 		return(m_pCamera);
 
+	
 	float MaxDepthofMap = 5000.0f;//sqrt(2) * 50 * UNIT + 2 * UNIT;
 	switch (nNewCameraMode)
 	{
@@ -244,7 +250,7 @@ void CVirtualPlayer::Update(float fTimeElapsed)
 
 }
 
-void CVirtualPlayer::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList
+void CVirtualPlayer::BuildObjects(ID3D12Device5* pd3dDevice, ID3D12GraphicsCommandList4
 	* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature)
 {
 

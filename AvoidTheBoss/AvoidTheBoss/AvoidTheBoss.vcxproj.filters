@@ -52,9 +52,6 @@
     <ClCompile Include="CJobQueue.cpp">
       <Filter>JobQueue</Filter>
     </ClCompile>
-    <ClCompile Include="InputManager.cpp">
-      <Filter>Mananger</Filter>
-    </ClCompile>
     <ClCompile Include="UIManager.cpp">
       <Filter>Mananger\UIManager</Filter>
     </ClCompile>
@@ -64,11 +61,17 @@
     <ClCompile Include="CGameScene.cpp">
       <Filter>Scene\CScene</Filter>
     </ClCompile>
-    <ClCompile Include="Scene.cpp">
-      <Filter>Scene\GameScene</Filter>
-    </ClCompile>
     <ClCompile Include="CLobbyScene.cpp">
       <Filter>Scene\LobbyScene</Filter>
+    </ClCompile>
+    <ClCompile Include="InputManager.cpp">
+      <Filter>Mananger\InputManager</Filter>
+    </ClCompile>
+    <ClCompile Include="SceneManager.cpp">
+      <Filter>Mananger\SceneManager</Filter>
+    </ClCompile>
+    <ClCompile Include="Scene.cpp">
+      <Filter>Scene\GameScene</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -130,9 +133,6 @@
     <ClInclude Include="CJobQueue.h">
       <Filter>JobQueue</Filter>
     </ClInclude>
-    <ClInclude Include="InputManager.h">
-      <Filter>Mananger</Filter>
-    </ClInclude>
     <ClInclude Include="CEmployee.h">
       <Filter>Player\EMPLOYEE</Filter>
     </ClInclude>
@@ -147,6 +147,12 @@
     </ClInclude>
     <ClInclude Include="CLobbyScene.h">
       <Filter>Scene\LobbyScene</Filter>
+    </ClInclude>
+    <ClInclude Include="InputManager.h">
+      <Filter>Mananger\InputManager</Filter>
+    </ClInclude>
+    <ClInclude Include="SceneManager.h">
+      <Filter>Mananger\SceneManager</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -381,6 +387,12 @@
     </Filter>
     <Filter Include="Scene\LobbyScene">
       <UniqueIdentifier>{98120687-c313-4fbf-985e-4dbdaabab215}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Mananger\InputManager">
+      <UniqueIdentifier>{4995d2e3-e6c7-45c9-8410-b50303b09397}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Mananger\SceneManager">
+      <UniqueIdentifier>{4c3590f3-4370-4604-be4f-1178f0c9b3a2}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

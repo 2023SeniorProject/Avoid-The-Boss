@@ -9,7 +9,7 @@
 // 씬관련 헤더파일
 #include "Scene.h"
 #include "CGameScene.h"
-#include "CLobbyScene.h"
+#include "OtherScenes.h"
 
 CGameFramework mainGame;
 // #define _WITH_PLAYER_TOP // 플레이어 깊이 버퍼값 1.0f
@@ -72,6 +72,7 @@ bool CGameFramework::OnCreate(HINSTANCE hInstance, HWND hMainWnd)
 	CreateDepthStencilView();
 	
 	//렌더링할 게임 객체를 생성한다.
+
 
 	BuildScenes();
 	return(true);
@@ -369,7 +370,7 @@ void CGameFramework::BuildScenes()
 	if (m_ppScene[(int32)SCENESTATE::INGAME]) m_ppScene[(int32)SCENESTATE::INGAME]->BuildObjects(m_pd3dDevice, m_pd3dCommandList);*/
 
 	m_SceneManager->BuildScene(m_pd3dDevice, m_pd3dCommandList);
-
+	m_SceneManager->ChangeScene((int32)SceneManager::SCENESTATE::LOBBY);
 	//씬 객체를 생성하기 위하여 필요한 그래픽 명령 리스트들을 명령 큐에 추가한다. 
 
 	m_pd3dCommandList->Close();
@@ -380,7 +381,8 @@ void CGameFramework::BuildScenes()
 	WaitForGpuComplete();
 
 	//그래픽 리소스들을 생성하는 과정에 생성된 업로드 버퍼들을 소멸시킨다. 
-	for (int i = 0; i < m_nScene; ++i) if(m_ppScene[i]) m_ppScene[i]->ReleaseUploadBuffers();
+	//for (int i = 0; i < m_nScene; ++i) if(m_ppScene[i]) m_ppScene[i]->ReleaseUploadBuffers();
+	m_SceneManager->ReleaseUpBuffers();
 }
 
 void CGameFramework::ReleaseScenes()
@@ -405,7 +407,8 @@ void CGameFramework::UpdateObject()
 
 void CGameFramework::AnimateObjects()
 {
-	if (m_ppScene[m_curScene]) m_ppScene[m_curScene]->AnimateObjects();
+	//if (m_ppScene[m_curScene]) m_ppScene[m_curScene]->AnimateObjects();
+	m_SceneManager->Animate();
 }
 
 void CGameFramework::FrameAdvance() // 여기서 업데이트랑 렌더링 동시에 진행하는 곳
@@ -422,7 +425,7 @@ void CGameFramework::FrameAdvance() // 여기서 업데이트랑 렌더링 동시에 진행하는 
 	Render();
 	WaitForGpuComplete();
 	//GPU가 모든 명령 리스트를 실행할 때 까지 기다린다.
-	m_UIRenderer->Render2D(m_nSwapChainBufferIndex, m_curScene);
+	m_UIRenderer->Render2D(m_nSwapChainBufferIndex,1);
 #ifdef _WITH_PRESENT_PARAMETERS
 	DXGI_PRESENT_PARAMETERS dxgiPresentParameters;
 	dxgiPresentParameters.DirtyRectsCount = 0;
@@ -538,6 +541,11 @@ void CGameFramework::MoveToNextFrame()
 		hResult = m_pd3dFence->SetEventOnCompletion(nFenceValue, m_hFenceEvent);
 		::WaitForSingleObject(m_hFenceEvent, INFINITE);
 	}
+}
+
+void CGameFramework::ChangeScene(SCENESTATE ss)
+{
+	m_SceneManager->ChangeScene((int32)ss);
 }
 
 void CGameFramework::OnProcessingMouseMessage(HWND hWnd, UINT nMessageID, WPARAM wParam, LPARAM lParam)

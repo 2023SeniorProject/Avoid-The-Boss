@@ -126,8 +126,7 @@ public:
 	void MoveToNextFrame();
 
 	// 씬 관련 함수 추가 07-03~ 07-04
-	CScene* GetCurrentScene() { return m_ppScene[m_curScene]; }
-
+	void ChangeScene(SCENESTATE ss);
 public:
 	void OnProcessingMouseMessage(HWND hWnd, UINT nMessageID, WPARAM wParam, LPARAM
 		lParam);

@@ -1,14 +1,20 @@
 #include "pch.h"
+// 네트워크 관련 헤더
 #include "SocketUtil.h"
 #include "ClientSession.h"
+// 프레임 워크 헤더
 #include "GameFramework.h"
+// 이벤트 처리관련 헤더
 #include "IocpEvent.h"
 #include "ClientPacketEvent.h"
+#include "CJobQueue.h"
+// 객체 관련 헤더
 #include "CBullet.h"
 #include "CBoss.h"
 #include "CEmployee.h"
+// 씬관련 헤더
+#include "CGameScene.h"
 
-#include "CJobQueue.h"
 
 
 
@@ -133,7 +139,75 @@ void CSession::ProcessPacket(char* packet)
 {
 	switch ((uint8)packet[1])
 	{
+	
+	// ================ 로그인 관련 처리 ================
+#pragma region Title
+	case (uint8)S_PACKET_TYPE::LOGIN_OK:
+	{
+		S2C_LOGIN_OK* lo = (S2C_LOGIN_OK*)packet;
+		_cid = lo->cid;
+		_sid = lo->sid;
 
+		CScene::m_sid = lo->sid;
+		CScene::m_cid = lo->cid;
+	}
+	break;
+	case (uint8)S_PACKET_TYPE::LOGIN_FAIL:
+	{
+		S2C_LOGIN_FAIL* lo = (S2C_LOGIN_FAIL*)packet;
+		std::cout << "Login Fail" << std::endl;
+		::SendMessage(mainGame.m_hWnd, WM_QUIT, 0, 0);
+	}
+	break;
+#pragma endregion
+	// ================ 로비씬 패킷      ===============
+#pragma region  Lobby
+	// ============= 방 관련 패킷 ============
+	case (uint8)S_ROOM_PACKET_TYPE::REP_ENTER_RM:
+	{
+		S2C_ROOM_ENTER* re = (S2C_ROOM_ENTER*)packet;
+		if (re->success)
+		{
+			//::system("cls");
+		}
+		else std::cout << "FAIL TO ENTER ROOM" << std::endl;
+	}
+	break;
+	case (uint8)S_ROOM_PACKET_TYPE::MK_RM_FAIL:
+	{
+		std::cout << "Fail to Create Room!!(MAX_CAPACITY)" << std::endl;
+	}
+	break;
+	case (uint8)S_PACKET_TYPE::SCHAT:
+	{
+		break;
+	}
+#pragma endregion
+#pragma region Room
+	case (uint8)S_PACKET_TYPE::GAME_START:
+	{
+		S2C_GAMESTART* gsp = reinterpret_cast<S2C_GAMESTART*>(packet);
+
+		// ================= 플레이어 초기 위치 초기화 ==================
+		//mainGame.m_ppScene[mainGame.m_nSceneIndex]->InitGame(gsp, _sid);
+		// ================= 자신의 클라이언트 IDX 확인 =================
+		//std::cout << "MYPLAYER IDX : " << mainGame.m_ppScene[mainGame.m_nSceneIndex]->m_playerIdx << "\n";
+
+		// ================= 카메라 셋팅 ================================
+		//CPlayer* myPlayer = mainGame.m_ppScene[mainGame.m_nSceneIndex]->m_players[mainGame.m_ppScene[mainGame.m_nSceneIndex]->m_playerIdx];
+		std::wstring str = L"Client";
+		//str.append(std::to_wstring(mainGame.m_ppScene[mainGame.m_nSceneIndex]->m_playerIdx));
+		::SetConsoleTitle(str.c_str());
+		//mainGame.m_ppScene[mainGame.m_nSceneIndex]->m_pCamera = myPlayer->GetCamera();
+		//mainGame.m_ppScene[mainGame.m_nSceneIndex]->m_cid = _cid;
+		//mainGame.m_ppScene[mainGame.m_nSceneIndex]->m_sid = _sid;
+		//mainGame.m_curScene.store((int8)SCENE_TYPE::INGAME);
+		//mainGame.m_ppScene[mainGame.m_nSceneIndex]->InitScene();
+	}
+	break;
+#pragma endregion
+	// ============== 인게임 관련 패킷 =============
+#pragma region InGameRoom
 	case (uint8)S_PACKET_TYPE::SKEY:
 	{
 		S2C_KEY* movePacket = reinterpret_cast<S2C_KEY*>(packet);
@@ -167,71 +241,14 @@ void CSession::ProcessPacket(char* packet)
 		S2C_POS* posPacket = reinterpret_cast<S2C_POS*>(packet);
 		//CPlayer* player = mainGame.m_ppScene[mainGame.m_nSceneIndex]->GetScenePlayerBySid(posPacket->sid);		
 		//if (player == nullptr) break;
-		
+
 		//XMFLOAT3 newPos = XMFLOAT3(posPacket->x, player->GetPosition().y, posPacket->z);
 		posEvent* pe = new posEvent();
 		//pe->player = player;
 		//pe->_pos = newPos;
-	
-		//mainGame.m_ppScene[mainGame.m_nSceneIndex]->AddEvent(static_cast<queueEvent*>(pe), 0.f);
-		
-	}
-	break;
-	case (uint8)S_PACKET_TYPE::SCHAT:
-	{
-		break;
-	}
-	case (uint8)S_PACKET_TYPE::GAME_START:
-	{
-		S2C_GAMESTART* gsp = reinterpret_cast<S2C_GAMESTART*>(packet);
-		
-		// ================= 플레이어 초기 위치 초기화 ==================
-		//mainGame.m_ppScene[mainGame.m_nSceneIndex]->InitGame(gsp, _sid);
 
-		// ================= 자신의 클라이언트 IDX 확인 =================
-		//std::cout << "MYPLAYER IDX : " << mainGame.m_ppScene[mainGame.m_nSceneIndex]->m_playerIdx << "\n";
-		
-		// ================= 카메라 셋팅 ================================
-		//CPlayer* myPlayer = mainGame.m_ppScene[mainGame.m_nSceneIndex]->m_players[mainGame.m_ppScene[mainGame.m_nSceneIndex]->m_playerIdx];
-		std::wstring str = L"Client";
-		//str.append(std::to_wstring(mainGame.m_ppScene[mainGame.m_nSceneIndex]->m_playerIdx));
-		::SetConsoleTitle(str.c_str());
-		//mainGame.m_ppScene[mainGame.m_nSceneIndex]->m_pCamera = myPlayer->GetCamera();
-		//mainGame.m_ppScene[mainGame.m_nSceneIndex]->m_cid = _cid;
-		//mainGame.m_ppScene[mainGame.m_nSceneIndex]->m_sid = _sid;
-		//mainGame.m_curScene.store((int8)SCENE_TYPE::INGAME);
-		//mainGame.m_ppScene[mainGame.m_nSceneIndex]->InitScene();
-	}
-	break;
-	// ================ 로그인 관련 처리 ================
-	case (uint8)S_PACKET_TYPE::LOGIN_OK:
-	{
-		S2C_LOGIN_OK* lo = (S2C_LOGIN_OK*)packet;
-		_cid = lo->cid;
-		_sid = lo->sid;
-	}
-	break;
-	case (uint8)S_PACKET_TYPE::LOGIN_FAIL:
-	{
-		S2C_LOGIN_FAIL* lo = (S2C_LOGIN_FAIL*)packet;
-		std::cout << "Login Fail" << std::endl;
-		::SendMessage(mainGame.m_hWnd, WM_QUIT, 0, 0);
-	}
-	break;
-	// ============= 방 관련 패킷 ============
-	case (uint8)S_ROOM_PACKET_TYPE::REP_ENTER_RM:
-	{
-		S2C_ROOM_ENTER* re = (S2C_ROOM_ENTER*)packet;
-		if (re->success)
-		{
-			//::system("cls");
-		}
-		else std::cout << "FAIL TO ENTER ROOM" << std::endl;
-	}
-	break;
-	case (uint8)S_ROOM_PACKET_TYPE::MK_RM_FAIL:
-	{
-		std::cout << "Fail to Create Room!!(MAX_CAPACITY)" << std::endl;
+		//mainGame.m_ppScene[mainGame.m_nSceneIndex]->AddEvent(static_cast<queueEvent*>(pe), 0.f);
+
 	}
 	break;
 	case (uint8)SC_PACKET_TYPE::GAMEEVENT:
@@ -263,5 +280,7 @@ void CSession::ProcessPacket(char* packet)
 		//mainGame.m_ppScene[mainGame.m_nSceneIndex]->AddEvent(static_cast<queueEvent*>(fe),0);
 	}
 	break;
+#pragma endregion
 	}
+
 }

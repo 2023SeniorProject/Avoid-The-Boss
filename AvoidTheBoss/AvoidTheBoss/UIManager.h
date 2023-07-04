@@ -4,24 +4,28 @@
 // 게임 프레임워크 시작 시, 각 화면에 필요한 모든 UI 이미지를 로드한다. WCI 컨버터를 활용
 // D2D를 활용해서 이미지를 그린다.
 
-
+struct UITextBlock
+{
+    WCHAR                           m_pstrText[256]; // 출력할 텍스처
+    D2D1_RECT_F                     m_d2dLayoutRect; // 출력할 레이아웃 영역
+    IDWriteTextFormat*              m_pdwFormat; // 입력 포맷
+    ID2D1SolidColorBrush*           m_pd2dTextBrush; // 텍스처를 출력할 브러쉬
+};
+struct UIButton
+{
+    D2D1_RECT_F                     d2dLayoutRect; // 출력할 레이아웃 영역
+    ID2D1Bitmap*                    resource = NULL;
+    int32 type; // 버튼 타입
+};
+struct UIBackGround
+{
+    D2D1_RECT_F                     d2dLayoutRect; // 출력할 레이아웃 영역
+    ID2D1Bitmap*                    resource = NULL;
+};
 
 class UIManager
 {
     enum class ButtonType { MAKE_ROOM, ENTER_ROOM, EXIT_GAME, };
-    struct UITextBlock
-    {
-        WCHAR                           m_pstrText[256]; // 출력할 텍스처
-        D2D1_RECT_F                     m_d2dLayoutRect; // 출력할 레이아웃 영역
-        IDWriteTextFormat* m_pdwFormat; // 입력 포맷
-        ID2D1SolidColorBrush* m_pd2dTextBrush; // 텍스처를 출력할 브러쉬
-    };
-    struct UIButton
-    {
-        D2D1_RECT_F                     d2dLayoutRect; // 출력할 레이아웃 영역
-        ID2D1Bitmap* resource = NULL;
-        int32 type; // 버튼 타입
-    };
 
 public:
     UIManager(UINT nFrames, UINT nTextBlocks, ID3D12Device* pd3dDevice, ID3D12CommandQueue* pd3dCommandQueue, ID3D12Resource** ppd3dRenderTargets, UINT nWidth, UINT nHeight);
@@ -34,6 +38,15 @@ public:
     void UpdateTextOutputs(UINT nIndex, WCHAR* pstrUIText, D2D1_RECT_F* pd2dLayoutRect, IDWriteTextFormat* pdwFormat, ID2D1SolidColorBrush* pd2dTextBrush);
     void Render2D(UINT nFrame,int32 curScene);
     void ReleaseResources();
+
+    void CreateBackGroundLayer(UIBackGround&,const wchar_t* filepath, const D2D1_RECT_F& rLayout);
+    void CreateTextBoxLayer(UITextBlock&, const wchar_t* text,const D2D1_RECT_F& rLayout);
+    void CreateButtonLayer(UIButton&, const wchar_t* filepath,const D2D1_RECT_F& rLayout);
+
+    void DrawTitleBitmap();
+    void DrawLobbyBitmap();
+    void DrawInGameBitmap();
+ 
 
     ID2D1SolidColorBrush* CreateBrush(D2D1::ColorF d2dColor);
     IDWriteTextFormat* CreateTextFormat(WCHAR* pszFontName, float fFontSize);
@@ -68,9 +81,14 @@ public:
     // BitmapResource
     UINT                            m_nBitmaps = 20;
     ID2D1Bitmap*                    m_bitmaps = NULL;
-    ComPtr<ID2D1Effect>             m_bitmapsResource[20];
+    // 배경 레이어 비트맵들
+    UIBackGround                         m_TitleBitmaps; 
+    UIBackGround                         m_LobbyBitmaps; 
+    UIBackGround                         m_InGameBitmaps;
 
+    // 버튼 비트맵들
     UIButton* m_buttons = NULL;
+    // 동적으로 바뀌는 텍스트 버튼들
     UITextBlock* m_pTextBlocks = NULL;
 };
 

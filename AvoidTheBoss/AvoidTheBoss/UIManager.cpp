@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "GameFramework.h"
 #include "UIManager.h"
+#include <d2d1_1.h>
 #include <wincodec.h>
 
 #pragma comment(lib,"windowscodecs.lib")
@@ -65,12 +66,13 @@ void UIManager::CreateD2DDevice() // d3d11on12디바이스를 활용해 d2ddevice랑 d2dF
     pdxgiDevice->Release();
 }
 
-int32 UIManager::LoadPngFromFile(const wchar_t* filePath, ID2D1Bitmap* bit)
+int32 UIManager::LoadPngFromFile(const wchar_t* filePath, int32 idx)
 {
-    if (bit != NULL)
+    if (m_bitmaps[idx] != NULL)
     {
-        bit->Release();
-        bit = NULL;
+        std::cout << "NULL";
+        m_bitmaps[idx]->Release();
+        m_bitmaps[idx] = NULL;
     }
 
     // WIC Factory 객체 생성
@@ -94,10 +96,8 @@ int32 UIManager::LoadPngFromFile(const wchar_t* filePath, ID2D1Bitmap* bit)
                 // 선택된 그림을 어떤 형식의 비트맵으로 변환할 것인지 설정
                 if (S_OK == pConverter->Initialize(pFrame, GUID_WICPixelFormat32bppPBGRA, WICBitmapDitherTypeNone, NULL, 0.0f, WICBitmapPaletteTypeCustom))
                 {
-                    ID2D1Bitmap* mbit;
                     // IWICBitmap 형식의 비트맵으로 ID2D1Bitmap 객체를 생성
-                    if (S_OK == m_pd2dDeviceContext->CreateBitmapFromWicBitmap(pConverter, NULL, &m_bitmaps)) result = 1;  // 성공적으로 생성한 경우
-                   
+                    if (S_OK == m_pd2dDeviceContext->CreateBitmapFromWicBitmap(pConverter, NULL, &m_bitmaps[idx])) result = 1;  // 성공적으로 생성한 경우 
                 }
                 // 이미지 변환 객체 제거
                 pConverter->Release();
@@ -136,25 +136,7 @@ void UIManager::UpdateTextOutputs(UINT nIndex, WCHAR* pstrUIText, D2D1_RECT_F* p
 {
 }
 
-void UIManager::Render2D(UINT nFrame, int32 curScene)
-{
 
-    ID3D11Resource* ppResources[] = { m_ppd3d11WrappedRenderTargets[nFrame] };
-
-    m_pd2dDeviceContext->SetTarget(m_ppd2dRenderTargets[nFrame]);
-    m_pd3d11On12Device->AcquireWrappedResources(ppResources, _countof(ppResources));
-
-    m_pd2dDeviceContext->BeginDraw();
-
-    //if (curScene == (int32)CGameFramework::SCENESTATE::INGAME) DrawInGameBitmap();
-    //if (curScene == (int32)CGameFramework::SCENESTATE::TITLE) DrawTitleBitmap();
-    //if (curScene == (int32)CGameFramework::SCENESTATE::LOBBY) DrawLobbyBitmap();
-    m_pd2dDeviceContext->DrawBitmap(m_bitmaps, (D2D1_RECT_F*)0, 1.0, D2D1_BITMAP_INTERPOLATION_MODE_LINEAR, (D2D1_RECT_F*)0);
-    m_pd2dDeviceContext->EndDraw();
-
-    m_pd3d11On12Device->ReleaseWrappedResources(ppResources, _countof(ppResources));
-    m_pd3d11DeviceContext->Flush();
-}
 
 void UIManager::ReleaseResources()
 {
@@ -181,44 +163,6 @@ void UIManager::ReleaseResources()
     m_pd3d11On12Device->Release();
 }
 
-void UIManager::CreateBackGroundLayer(UIBackGround& ui, const wchar_t* filepath, const D2D1_RECT_F& rLayout)
-{
-    LoadPngFromFile(filepath, ui.resource);
-    ui.d2dLayoutRect = rLayout;
-}
-
-void UIManager::CreateTextBoxLayer(UITextBlock& ui, const wchar_t* text, const D2D1_RECT_F& rLayout)
-{
-    wcsncpy_s(ui.m_pstrText, text, sizeof(text));
-    
-}
-
-void UIManager::CreateButtonLayer(UIButton& ui, const wchar_t* filepath, const D2D1_RECT_F& rLayout)
-{
-    LoadPngFromFile(filepath, ui.resource);
-    ui.d2dLayoutRect = rLayout;
-}
-
-void UIManager::DrawTitleBitmap()
-{
-    m_pd2dDeviceContext->DrawBitmap(m_TitleBitmaps.resource,
-        D2D1::RectF(0.0f, 0.0f, m_TitleBitmaps.resource->GetSize().width, m_TitleBitmaps.resource->GetSize().height)
-        , 1.0f, D2D1_BITMAP_INTERPOLATION_MODE_LINEAR, m_TitleBitmaps.d2dLayoutRect);
-}
-
-void UIManager::DrawLobbyBitmap()
-{
-   if(m_LobbyBitmaps.resource) m_pd2dDeviceContext->DrawBitmap(m_LobbyBitmaps.resource,
-        D2D1::RectF(0.0f, 0.0f, m_LobbyBitmaps.resource->GetSize().width, m_LobbyBitmaps.resource->GetSize().height)
-        , 1.0f, D2D1_BITMAP_INTERPOLATION_MODE_LINEAR, m_LobbyBitmaps.d2dLayoutRect);
-}
-
-void UIManager::DrawInGameBitmap()
-{
-    m_pd2dDeviceContext->DrawBitmap(m_InGameBitmaps.resource,
-        D2D1::RectF(0.0f, 0.0f, m_InGameBitmaps.resource->GetSize().width, m_InGameBitmaps.resource->GetSize().height)
-        , 1.0f, D2D1_BITMAP_INTERPOLATION_MODE_LINEAR, m_InGameBitmaps.d2dLayoutRect);
-}
 
 ID2D1SolidColorBrush* UIManager::CreateBrush(D2D1::ColorF d2dColor)
 {
@@ -244,9 +188,25 @@ void UIManager::InitializeDevice(ID3D12Device* pd3dDevice, ID3D12CommandQueue* p
 {    
     CreateD3D11On12Device(pd3dDevice,pd3dCommandQueue);
     CreateD2DDevice();
-    CreateRenderTarget(ppd3dRenderTargets);
-    //CreateBackGroundLayer(m_TitleBitmaps, L"UI/Title.png", { 0,0,m_fWidth,m_fHeight });
-    //CreateBackGroundLayer(m_LobbyBitmaps, L"UI/Lobby.png", { 0,0,m_fWidth,m_fHeight });
-    LoadPngFromFile(L"UI/Same.png", m_LobbyBitmaps.resource);
-    //LoadPngFromFile(L"UI/Same.png", m_bitmaps);
+    CreateRenderTarget(ppd3dRenderTargets);;
+    LoadPngFromFile(L"UI/Title.png", 0);
+    LoadPngFromFile(L"UI/Lobby.png", 1);
+    
+}
+
+void UIManager::Render2D(UINT nFrame, int32 curScene)
+{
+
+    ID3D11Resource* ppResources[] = { m_ppd3d11WrappedRenderTargets[nFrame] };
+
+    m_pd2dDeviceContext->SetTarget(m_ppd2dRenderTargets[nFrame]);
+    m_pd3d11On12Device->AcquireWrappedResources(ppResources, _countof(ppResources));
+
+    m_pd2dDeviceContext->BeginDraw();
+    if (curScene == (int32)CGameFramework::SCENESTATE::LOBBY) m_pd2dDeviceContext->DrawBitmap(m_bitmaps[1], D2D1_RECT_F{0,0,m_fWidth,m_fHeight}, 1.0,   D2D1_BITMAP_INTERPOLATION_MODE_LINEAR, (D2D1_RECT_F*)0);
+    if(curScene == (int32)CGameFramework::SCENESTATE::TITLE)  m_pd2dDeviceContext->DrawBitmap(m_bitmaps[0], D2D1_RECT_F{0,0,m_fWidth,m_fHeight}, 1.0,   D2D1_BITMAP_INTERPOLATION_MODE_LINEAR, (D2D1_RECT_F*)0);
+    m_pd2dDeviceContext->EndDraw();
+
+    m_pd3d11On12Device->ReleaseWrappedResources(ppResources, _countof(ppResources));
+    m_pd3d11DeviceContext->Flush();
 }

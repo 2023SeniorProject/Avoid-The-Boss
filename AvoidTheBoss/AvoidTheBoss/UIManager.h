@@ -31,22 +31,13 @@ public:
     UIManager(UINT nFrames, UINT nTextBlocks, ID3D12Device* pd3dDevice, ID3D12CommandQueue* pd3dCommandQueue, ID3D12Resource** ppd3dRenderTargets, UINT nWidth, UINT nHeight);
 
     void CreateD2DDevice();
-    int32 LoadPngFromFile(const wchar_t* filePath, ID2D1Bitmap* bit);
+    int32 LoadPngFromFile(const wchar_t* filePath, int32 idx);
     void CreateD3D11On12Device(ID3D12Device* pd3dDevice, ID3D12CommandQueue* pd3dCommandQueue);
     void CreateRenderTarget(ID3D12Resource** ppd3dRenderTargets);
 
     void UpdateTextOutputs(UINT nIndex, WCHAR* pstrUIText, D2D1_RECT_F* pd2dLayoutRect, IDWriteTextFormat* pdwFormat, ID2D1SolidColorBrush* pd2dTextBrush);
     void Render2D(UINT nFrame,int32 curScene);
     void ReleaseResources();
-
-    void CreateBackGroundLayer(UIBackGround&,const wchar_t* filepath, const D2D1_RECT_F& rLayout);
-    void CreateTextBoxLayer(UITextBlock&, const wchar_t* text,const D2D1_RECT_F& rLayout);
-    void CreateButtonLayer(UIButton&, const wchar_t* filepath,const D2D1_RECT_F& rLayout);
-
-    void DrawTitleBitmap();
-    void DrawLobbyBitmap();
-    void DrawInGameBitmap();
- 
 
     ID2D1SolidColorBrush* CreateBrush(D2D1::ColorF d2dColor);
     IDWriteTextFormat* CreateTextFormat(WCHAR* pszFontName, float fFontSize);
@@ -80,7 +71,9 @@ public:
    
     // BitmapResource
     UINT                            m_nBitmaps = 20;
-    ID2D1Bitmap*                    m_bitmaps = NULL;
+    ID2D1Bitmap*                   m_bitmaps[20];
+    
+
     // 배경 레이어 비트맵들
     UIBackGround                         m_TitleBitmaps; 
     UIBackGround                         m_LobbyBitmaps; 

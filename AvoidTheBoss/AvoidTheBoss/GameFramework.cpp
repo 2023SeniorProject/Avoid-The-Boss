@@ -1,10 +1,14 @@
 #include "pch.h"
 #include "GameFramework.h"
 #include "clientIocpCore.h"
+
+// 매니저 관련 헤더파일
 #include "UIManager.h"
+#include "SceneManager.h"
 
 // 씬관련 헤더파일
 #include "Scene.h"
+#include "CGameScene.h"
 #include "CLobbyScene.h"
 
 CGameFramework mainGame;
@@ -68,6 +72,7 @@ bool CGameFramework::OnCreate(HINSTANCE hInstance, HWND hMainWnd)
 	CreateDepthStencilView();
 	
 	//렌더링할 게임 객체를 생성한다.
+
 	BuildScenes();
 	return(true);
 }
@@ -348,10 +353,10 @@ void CGameFramework::BuildScenes()
 		//씬 객체를 생성하고 씬에 포함될 게임 객체들을 생성한다. 
 
 	m_UIRenderer = new UIManager(m_nSwapChainBuffers, 0, m_pd3dDevice, m_pd3dCommandQueue, m_ppd3dSwapChainBackBuffers, m_nWndClientWidth, m_nWndClientHeight);
-	
+	m_SceneManager = new SceneManager();
 	
 
-	m_ppScene[(int32)SCENESTATE::TITLE] = new CTitleScene();
+	/*m_ppScene[(int32)SCENESTATE::TITLE] = new CTitleScene();
 	if (m_ppScene[(int32)SCENESTATE::TITLE]) m_ppScene[(int32)SCENESTATE::TITLE]->BuildObjects(m_pd3dDevice, m_pd3dCommandList);
 
 	m_ppScene[(int32)SCENESTATE::LOBBY] = new CLobbyScene();
@@ -361,10 +366,12 @@ void CGameFramework::BuildScenes()
 	if (m_ppScene[(int32)SCENESTATE::ROOM]) m_ppScene[(int32)SCENESTATE::ROOM]->BuildObjects(m_pd3dDevice, m_pd3dCommandList);
 
 	m_ppScene[(int32)SCENESTATE::INGAME] = new CGameScene();
-	if (m_ppScene[(int32)SCENESTATE::INGAME]) m_ppScene[(int32)SCENESTATE::INGAME]->BuildObjects(m_pd3dDevice, m_pd3dCommandList);
+	if (m_ppScene[(int32)SCENESTATE::INGAME]) m_ppScene[(int32)SCENESTATE::INGAME]->BuildObjects(m_pd3dDevice, m_pd3dCommandList);*/
 
+	m_SceneManager->BuildScene(m_pd3dDevice, m_pd3dCommandList);
 
 	//씬 객체를 생성하기 위하여 필요한 그래픽 명령 리스트들을 명령 큐에 추가한다. 
+
 	m_pd3dCommandList->Close();
 	ID3D12CommandList* ppd3dCommandLists[] = { m_pd3dCommandList };
 	m_pd3dCommandQueue->ExecuteCommandLists(1, ppd3dCommandLists);
@@ -378,19 +385,22 @@ void CGameFramework::BuildScenes()
 
 void CGameFramework::ReleaseScenes()
 {
-	for (int i = 0; i < m_nScene; ++i) if (m_ppScene[i]) m_ppScene[m_curScene]->ReleaseObjects();
+	//for (int i = 0; i < m_nScene; ++i) if (m_ppScene[i]) m_ppScene[m_curScene]->ReleaseObjects();
+	m_SceneManager->ReleaseScene();
 	if (m_UIRenderer) m_UIRenderer->ReleaseResources();
 	if (m_UIRenderer) delete m_UIRenderer;
 }
 
 void CGameFramework::ProcessInput()
 {
-	m_ppScene[m_curScene]->ProcessInput(m_hWnd);
+	m_SceneManager->ProcessInput(m_hWnd);
+	//m_ppScene[m_curScene]->ProcessInput(m_hWnd);
 }
 
 void CGameFramework::UpdateObject()
 {
-	m_ppScene[m_curScene]->Update(m_hWnd);
+	m_SceneManager->Update(m_hWnd);
+	//m_ppScene[m_curScene]->Update(m_hWnd);
 }
 
 void CGameFramework::AnimateObjects()
@@ -491,8 +501,8 @@ void CGameFramework::Render()
 	//렌더 타겟 뷰(서술자)와 깊이-스텐실 뷰(서술자)를 출력-병합 단계(OM)에 연결한다.
 
 	//=======렌더링 코드는 여기에 추가될 것이다
-	if (m_ppScene[m_curScene]) m_ppScene[m_curScene]->Render(m_pd3dCommandList, m_ppScene[m_nScene]->m_pCamera);
-
+	//if (m_ppScene[m_curScene]) m_ppScene[m_curScene]->Render(m_pd3dCommandList, m_ppScene[m_curScene]->m_pCamera);
+	m_SceneManager->Render(m_pd3dCommandList);
 	//3인칭 카메라일 때 플레이어가 항상 보이도록 렌더링한다. 
 #ifdef _WITH_PLAYER_TOP
 	//렌더 타겟은 그대로 두고 깊이 버퍼를 1.0으로 지우고 플레이어를 렌더링하면 플레이어는 무조건 그려질 것이다. 
@@ -532,14 +542,14 @@ void CGameFramework::MoveToNextFrame()
 
 void CGameFramework::OnProcessingMouseMessage(HWND hWnd, UINT nMessageID, WPARAM wParam, LPARAM lParam)
 {
-
-	m_ppScene[m_curScene]->OnProcessingMouseMessage(hWnd, nMessageID, wParam, lParam);
+	m_SceneManager->GetCurScene()->OnProcessingMouseMessage(hWnd, nMessageID, wParam, lParam);
+	//m_ppScene[m_curScene]->OnProcessingMouseMessage(hWnd, nMessageID, wParam, lParam);
 }
 
 void CGameFramework::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPARAM wParam, LPARAM lParam)
 {
-	
-	m_ppScene[m_curScene]->OnProcessingKeyboardMessage(hWnd, nMessageID, wParam, lParam);
+	m_SceneManager->GetCurScene()->OnProcessingKeyboardMessage(hWnd, nMessageID, wParam, lParam);
+	//m_ppScene[m_curScene]->OnProcessingKeyboardMessage(hWnd, nMessageID, wParam, lParam);
 }
 
 LRESULT CGameFramework::OnProcessingWindowMessage(HWND hWnd, UINT nMessageID, WPARAM wParam, LPARAM lParam)
@@ -548,10 +558,10 @@ LRESULT CGameFramework::OnProcessingWindowMessage(HWND hWnd, UINT nMessageID, WP
 	{
 	case WM_ACTIVATE:
 	{
-		if (LOWORD(wParam) == WA_INACTIVE)
+		/*if (LOWORD(wParam) == WA_INACTIVE)
 			static_cast<CGameScene*>(m_ppScene[m_curScene])->StopTimer();
 		else
-			static_cast<CGameScene*>(m_ppScene[m_curScene])->StartTimer();
+			static_cast<CGameScene*>(m_ppScene[m_curScene])->StartTimer();*/
 		break;
 	}
 	case WM_SIZE:

@@ -2,11 +2,13 @@
 //----CGameFramework 클래스
 //----1 Direct3D 디바이스 생성과 관리 
 //----2 화면 출력을 위한 처리 - 게임 객체 생성과 관리, 사용자 입력, 애니메이션 작업
-#include "CGameScene.h"
+
 #include "Camera.h"
 #include <queue> 
 
+class CScene;
 class UIManager;
+class SceneManager;
 
 class CGameFramework
 {
@@ -60,7 +62,9 @@ private:
 	ID3D12GraphicsCommandList*	m_pd3dCommandList;
 	//명령 큐, 명령 할당자, 명령 리스트 인터페이스 포인터이다.
 
-	UIManager* m_UIRenderer = nullptr;
+	// 게임 프레임워크에 필요한 각종 매니저들
+	SceneManager*				m_SceneManager = nullptr;
+	UIManager*					m_UIRenderer   = nullptr;
 #if defined(_DEBUG)
 	ID3D12Debug* m_pd3dDebugController;
 #endif
@@ -82,6 +86,7 @@ protected:
 	static const int							m_nScene = 4;
 
 	CScene*										m_ppScene[m_nScene];
+	
 	Atomic<int32>								m_curScene = 1;
 public:
 	CGameFramework();
@@ -119,6 +124,9 @@ public:
 	//CPU와 GPU를 동기화하는 함수이다.
 	void Render();
 	void MoveToNextFrame();
+
+	// 씬 관련 함수 추가 07-03~ 07-04
+	CScene* GetCurrentScene() { return m_ppScene[m_curScene]; }
 
 public:
 	void OnProcessingMouseMessage(HWND hWnd, UINT nMessageID, WPARAM wParam, LPARAM

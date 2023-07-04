@@ -51,11 +51,9 @@ void CLobbyScene::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pC
 			m_ppHierarchicalGameObjects[i]->Render(pd3dCommandList, pCamera);
 		}
 	}
+	
+	if (m_player) m_player->Render(pd3dCommandList, pCamera);
 
-	for (int i = 0; i < PLAYERNUM; ++i)
-	{
-		if (!m_player) m_player->Render(pd3dCommandList, pCamera);
-	}
 }
 
 void CLobbyScene::BuildDefaultLightsAndMaterials()
@@ -124,4 +122,56 @@ void CLobbyScene::BuildDefaultLightsAndMaterials()
 	m_pLights[4].m_xmf4Specular = XMFLOAT4(0.5f, 0.5f, 0.5f, 0.0f);
 	m_pLights[4].m_xmf3Position = XMFLOAT3(600.0f, 250.0f, 700.0f);
 	m_pLights[4].m_xmf3Attenuation = XMFLOAT3(1.0f, 0.001f, 0.0001f);
+}
+
+void CTitleScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList)
+{
+	m_pd3dGraphicsRootSignature = CreateGraphicsRootSignature(pd3dDevice);
+
+	CreateCbvSrvDescriptorHeaps(pd3dDevice, 0, 3);
+
+	CMaterial::PrepareShaders(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature);
+
+	BuildDefaultLightsAndMaterials();
+
+	CreateShaderVariables(pd3dDevice, pd3dCommandList);
+	
+	m_player = new CVirtualPlayer(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature);
+	m_pCamera = m_player->GetCamera();
+}
+
+void CTitleScene::ProcessInput(HWND& hWnd)
+{
+}
+
+void CTitleScene::Update(HWND hWnd)
+{
+}
+
+void CTitleScene::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera)
+{
+}
+
+void CTitleScene::BuildDefaultLightsAndMaterials()
+{
+}
+
+void CRoomScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList)
+{
+}
+
+void CRoomScene::ProcessInput(HWND& hWnd)
+{
+}
+
+void CRoomScene::Update(HWND hWnd)
+{
+}
+
+void CRoomScene::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera)
+{
+}
+
+void CRoomScene::BuildDefaultLightsAndMaterials()
+{
 }

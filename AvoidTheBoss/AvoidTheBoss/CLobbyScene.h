@@ -12,15 +12,30 @@ public:
 	virtual void Update(HWND hWnd);
 	virtual void Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera);
 	void		 BuildDefaultLightsAndMaterials();
-	
-	
 };
 
-class TitleScene : public CScene
+class CTitleScene : public CScene
 {
+	CPlayer* m_player = NULL;
+public:
+	CTitleScene() {}
+	~CTitleScene() {}
+	virtual void BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList);
+	virtual void ProcessInput(HWND& hWnd);
+	virtual void Update(HWND hWnd);
+	virtual void Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera);
+	void		 BuildDefaultLightsAndMaterials();
 };
 
-class RoomScene : public CScene
+class CRoomScene : public CScene
 {
-
+	CPlayer* m_player = NULL;
+public:
+	CRoomScene() {}
+	~CRoomScene() {}
+	virtual void BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList);
+	virtual void ProcessInput(HWND& hWnd);
+	virtual void Update(HWND hWnd);
+	virtual void Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera);
+	void		 BuildDefaultLightsAndMaterials();
 };

@@ -32,16 +32,15 @@ void SceneManager::ResetScene()
 
 void SceneManager::ReleaseUpBuffers()
 {
-	for (auto& i : m_pScenes) i->ReleaseUploadBuffers();
+	for (int i = 0; i < 4; ++i)  m_pScenes[i]->ReleaseUploadBuffers();
 }
 void SceneManager::ReleaseScene()
 {
-	for (auto& i : m_pScenes) i->ReleaseObjects();
+	for (int i = 0; i < 4; ++i)  m_pScenes[i]->ReleaseObjects();
 }
-
 void SceneManager::Animate()
 {
-	m_pScenes[m_curScene]->AnimateObjects();
+	for (int i = 0; i < 4; ++i)  m_pScenes[i]->AnimateObjects();
 }
 
 void SceneManager::BuildScene(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList)

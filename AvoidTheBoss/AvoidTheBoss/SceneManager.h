@@ -12,7 +12,6 @@ public:
 	SceneManager() 
 	{
 		m_curScene = 0;
-		for (auto& i : m_pScenes) i = nullptr; 
 	}
 	~SceneManager(){}
 	

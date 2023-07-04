@@ -370,7 +370,7 @@ void CGameFramework::BuildScenes()
 	if (m_ppScene[(int32)SCENESTATE::INGAME]) m_ppScene[(int32)SCENESTATE::INGAME]->BuildObjects(m_pd3dDevice, m_pd3dCommandList);*/
 
 	m_SceneManager->BuildScene(m_pd3dDevice, m_pd3dCommandList);
-	m_SceneManager->ChangeScene((int32)SceneManager::SCENESTATE::LOBBY);
+	
 	//씬 객체를 생성하기 위하여 필요한 그래픽 명령 리스트들을 명령 큐에 추가한다. 
 
 	m_pd3dCommandList->Close();
@@ -382,7 +382,8 @@ void CGameFramework::BuildScenes()
 
 	//그래픽 리소스들을 생성하는 과정에 생성된 업로드 버퍼들을 소멸시킨다. 
 	//for (int i = 0; i < m_nScene; ++i) if(m_ppScene[i]) m_ppScene[i]->ReleaseUploadBuffers();
-	m_SceneManager->ReleaseUpBuffers();
+	//m_SceneManager->ReleaseUpBuffers();
+	//m_SceneManager->ChangeScene((int32)SceneManager::SCENESTATE::LOBBY);
 }
 
 void CGameFramework::ReleaseScenes()
@@ -425,7 +426,7 @@ void CGameFramework::FrameAdvance() // 여기서 업데이트랑 렌더링 동시에 진행하는 
 	Render();
 	WaitForGpuComplete();
 	//GPU가 모든 명령 리스트를 실행할 때 까지 기다린다.
-	m_UIRenderer->Render2D(m_nSwapChainBufferIndex,1);
+	m_UIRenderer->Render2D(m_nSwapChainBufferIndex, m_curScene);
 #ifdef _WITH_PRESENT_PARAMETERS
 	DXGI_PRESENT_PARAMETERS dxgiPresentParameters;
 	dxgiPresentParameters.DirtyRectsCount = 0;

@@ -1,6 +1,6 @@
 #include "pch.h"
 #include "Player.h"
-#include "CLobbyScene.h"
+#include "OtherScenes.h"
 
 void CLobbyScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList)
 {

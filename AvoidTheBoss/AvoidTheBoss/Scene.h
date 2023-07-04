@@ -50,33 +50,9 @@ public: // 오승담 작성 함수
 	void AddEvent(queueEvent*, float);
 	void Exit();
 public:
-	
-	CCamera*							m_pCamera;
 	WCHAR								txtFrameBuf[20];
-
-	
 	//마지막으로 마우스 버튼을 클릭할 때의 마우스 커서의 위치이다. 
 	POINT								m_ptOldCursorPos;
-
-
-
-	//int									m_nGameObjects = 0;
-	//CGameObject**						m_ppGameObjects = NULL;
-
-	//int									m_nHierarchicalGameObjects = 0;
-	//CGameObject**						m_ppHierarchicalGameObjects = NULL;
-
-	//int									m_nShaders = 0;
-	//CShader**							m_ppShaders = NULL;
-	//CSkyBox*							m_pSkyBox = NULL;
-
-	//LIGHT*								m_pLights = NULL;
-	//int									m_nLights = 0;
-	//XMFLOAT4							m_xmf4GlobalAmbient;
-	//ID3D12Resource*						m_pd3dcbLights = NULL;
-	//LIGHTS*								m_pcbMappedLights = NULL;
-
-
 private:
 	Timer m_timer;
 // ========== 서버 처리를 위해 사용하는 변수들 ==============

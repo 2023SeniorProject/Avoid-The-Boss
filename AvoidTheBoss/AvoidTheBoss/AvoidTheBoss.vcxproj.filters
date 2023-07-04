@@ -61,7 +61,7 @@
     <ClCompile Include="CGameScene.cpp">
       <Filter>Scene\CScene</Filter>
     </ClCompile>
-    <ClCompile Include="CLobbyScene.cpp">
+    <ClCompile Include="OtherScenes.cpp">
       <Filter>Scene\LobbyScene</Filter>
     </ClCompile>
     <ClCompile Include="InputManager.cpp">
@@ -145,7 +145,7 @@
     <ClInclude Include="Scene.h">
       <Filter>Scene\GameScene</Filter>
     </ClInclude>
-    <ClInclude Include="CLobbyScene.h">
+    <ClInclude Include="OtherScenes.h">
       <Filter>Scene\LobbyScene</Filter>
     </ClInclude>
     <ClInclude Include="InputManager.h">

@@ -2,7 +2,7 @@
 #include "CGameScene.h"
 #include "Scene.h"
 #include "SceneManager.h"
-#include "CLobbyScene.h"
+#include "OtherScenes.h"
 
 void SceneManager::Render(ID3D12GraphicsCommandList* pd3dCommandList)
 {
@@ -37,6 +37,11 @@ void SceneManager::ReleaseUpBuffers()
 void SceneManager::ReleaseScene()
 {
 	for (auto& i : m_pScenes) i->ReleaseObjects();
+}
+
+void SceneManager::Animate()
+{
+	m_pScenes[m_curScene]->AnimateObjects();
 }
 
 void SceneManager::BuildScene(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList)

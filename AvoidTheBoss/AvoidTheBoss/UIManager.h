@@ -32,7 +32,7 @@ public:
     void CreateRenderTarget(ID3D12Resource** ppd3dRenderTargets);
 
     void UpdateTextOutputs(UINT nIndex, WCHAR* pstrUIText, D2D1_RECT_F* pd2dLayoutRect, IDWriteTextFormat* pdwFormat, ID2D1SolidColorBrush* pd2dTextBrush);
-    void Render2D(UINT nFrame);
+    void Render2D(UINT nFrame,int32 curScene);
     void ReleaseResources();
 
     ID2D1SolidColorBrush* CreateBrush(D2D1::ColorF d2dColor);

@@ -1,4 +1,5 @@
 #include "pch.h"
+#include "GameFramework.h"
 #include "UIManager.h"
 #include <wincodec.h>
 
@@ -134,7 +135,7 @@ void UIManager::UpdateTextOutputs(UINT nIndex, WCHAR* pstrUIText, D2D1_RECT_F* p
 {
 }
 
-void UIManager::Render2D(UINT nFrame)
+void UIManager::Render2D(UINT nFrame, int32 curScene)
 {
 
     ID3D11Resource* ppResources[] = { m_ppd3d11WrappedRenderTargets[nFrame] };
@@ -144,14 +145,12 @@ void UIManager::Render2D(UINT nFrame)
 
     m_pd2dDeviceContext->BeginDraw();
 
-    // 렌더링 공간 특정씬이 있는 경우..~
-    /*for (UINT i = 0; i < m_nTextBlocks; i++)
+    if (curScene == (int32)CGameFramework::SCENESTATE::INGAME)
     {
-        m_pd2dDeviceContext->DrawText(m_pTextBlocks[i].m_pstrText, (UINT)wcslen(m_pTextBlocks[i].m_pstrText), m_pTextBlocks[i].m_pdwFormat, m_pTextBlocks[i].m_d2dLayoutRect, m_pTextBlocks[i].m_pd2dTextBrush);
-    }*/
-    D2D_POINT_2F d2f{0,0};
-    D2D_RECT_F d2rf{ 100,100,200,200 };
-    m_pd2dDeviceContext->DrawBitmap(m_bitmaps,(D2D1_RECT_F*)0, 1.0f, D2D1_BITMAP_INTERPOLATION_MODE_LINEAR,(D2D1_RECT_F*)0);
+        m_pd2dDeviceContext->DrawBitmap(m_bitmaps, 
+            D2D1::RectF(0.0f, 0.0f, m_bitmaps->GetSize().width, m_bitmaps->GetSize().height)
+            , 1.0f, D2D1_BITMAP_INTERPOLATION_MODE_LINEAR, (D2D1_RECT_F*)0);
+    }
     m_pd2dDeviceContext->EndDraw();
 
     m_pd3d11On12Device->ReleaseWrappedResources(ppResources, _countof(ppResources));

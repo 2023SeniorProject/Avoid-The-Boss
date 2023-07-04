@@ -350,11 +350,18 @@ void CGameFramework::BuildScenes()
 	m_UIRenderer = new UIManager(m_nSwapChainBuffers, 0, m_pd3dDevice, m_pd3dCommandQueue, m_ppd3dSwapChainBackBuffers, m_nWndClientWidth, m_nWndClientHeight);
 	
 	
+
+	m_ppScene[(int32)SCENESTATE::TITLE] = new CTitleScene();
+	if (m_ppScene[(int32)SCENESTATE::TITLE]) m_ppScene[(int32)SCENESTATE::TITLE]->BuildObjects(m_pd3dDevice, m_pd3dCommandList);
+
 	m_ppScene[(int32)SCENESTATE::LOBBY] = new CLobbyScene();
-	if (m_ppScene[(int32)SCENESTATE::LOBBY]) m_ppScene[0]->BuildObjects(m_pd3dDevice, m_pd3dCommandList);
+	if (m_ppScene[(int32)SCENESTATE::LOBBY]) m_ppScene[(int32)SCENESTATE::LOBBY]->BuildObjects(m_pd3dDevice, m_pd3dCommandList);
+
+	m_ppScene[(int32)SCENESTATE::ROOM] = new CRoomScene();
+	if (m_ppScene[(int32)SCENESTATE::ROOM]) m_ppScene[(int32)SCENESTATE::ROOM]->BuildObjects(m_pd3dDevice, m_pd3dCommandList);
 
 	m_ppScene[(int32)SCENESTATE::INGAME] = new CGameScene();
-	if (m_ppScene[(int32)SCENESTATE::INGAME]) m_ppScene[1]->BuildObjects(m_pd3dDevice, m_pd3dCommandList);
+	if (m_ppScene[(int32)SCENESTATE::INGAME]) m_ppScene[(int32)SCENESTATE::INGAME]->BuildObjects(m_pd3dDevice, m_pd3dCommandList);
 
 
 	//씬 객체를 생성하기 위하여 필요한 그래픽 명령 리스트들을 명령 큐에 추가한다. 
@@ -366,13 +373,12 @@ void CGameFramework::BuildScenes()
 	WaitForGpuComplete();
 
 	//그래픽 리소스들을 생성하는 과정에 생성된 업로드 버퍼들을 소멸시킨다. 
-	for (int i = 0; i < m_nSceneIndex; ++i) m_ppScene[i]->ReleaseUploadBuffers();
+	for (int i = 0; i < m_nScene; ++i) if(m_ppScene[i]) m_ppScene[i]->ReleaseUploadBuffers();
 }
 
 void CGameFramework::ReleaseScenes()
 {
-	if (m_ppScene[m_nSceneIndex]) m_ppScene[m_nSceneIndex]->ReleaseObjects();
-	if (m_ppScene[m_nSceneIndex]) delete m_ppScene[m_nSceneIndex];
+	for (int i = 0; i < m_nScene; ++i) if (m_ppScene[i]) m_ppScene[m_curScene]->ReleaseObjects();
 	if (m_UIRenderer) m_UIRenderer->ReleaseResources();
 	if (m_UIRenderer) delete m_UIRenderer;
 }
@@ -406,7 +412,7 @@ void CGameFramework::FrameAdvance() // 여기서 업데이트랑 렌더링 동시에 진행하는 
 	Render();
 	WaitForGpuComplete();
 	//GPU가 모든 명령 리스트를 실행할 때 까지 기다린다.
-	m_UIRenderer->Render2D(m_nSwapChainBufferIndex);
+	m_UIRenderer->Render2D(m_nSwapChainBufferIndex, m_curScene);
 #ifdef _WITH_PRESENT_PARAMETERS
 	DXGI_PRESENT_PARAMETERS dxgiPresentParameters;
 	dxgiPresentParameters.DirtyRectsCount = 0;
@@ -485,7 +491,7 @@ void CGameFramework::Render()
 	//렌더 타겟 뷰(서술자)와 깊이-스텐실 뷰(서술자)를 출력-병합 단계(OM)에 연결한다.
 
 	//=======렌더링 코드는 여기에 추가될 것이다
-	if (m_ppScene[m_curScene]) m_ppScene[m_curScene]->Render(m_pd3dCommandList, m_ppScene[m_nSceneIndex]->m_pCamera);
+	if (m_ppScene[m_curScene]) m_ppScene[m_curScene]->Render(m_pd3dCommandList, m_ppScene[m_nScene]->m_pCamera);
 
 	//3인칭 카메라일 때 플레이어가 항상 보이도록 렌더링한다. 
 #ifdef _WITH_PLAYER_TOP
@@ -527,13 +533,13 @@ void CGameFramework::MoveToNextFrame()
 void CGameFramework::OnProcessingMouseMessage(HWND hWnd, UINT nMessageID, WPARAM wParam, LPARAM lParam)
 {
 
-	m_ppScene[m_nSceneIndex]->OnProcessingMouseMessage(hWnd, nMessageID, wParam, lParam);
+	m_ppScene[m_curScene]->OnProcessingMouseMessage(hWnd, nMessageID, wParam, lParam);
 }
 
 void CGameFramework::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPARAM wParam, LPARAM lParam)
 {
 	
-	m_ppScene[m_nSceneIndex]->OnProcessingKeyboardMessage(hWnd, nMessageID, wParam, lParam);
+	m_ppScene[m_curScene]->OnProcessingKeyboardMessage(hWnd, nMessageID, wParam, lParam);
 }
 
 LRESULT CGameFramework::OnProcessingWindowMessage(HWND hWnd, UINT nMessageID, WPARAM wParam, LPARAM lParam)
@@ -543,9 +549,9 @@ LRESULT CGameFramework::OnProcessingWindowMessage(HWND hWnd, UINT nMessageID, WP
 	case WM_ACTIVATE:
 	{
 		if (LOWORD(wParam) == WA_INACTIVE)
-			static_cast<CGameScene*>(m_ppScene[m_nSceneIndex])->StopTimer();
+			static_cast<CGameScene*>(m_ppScene[m_curScene])->StopTimer();
 		else
-			static_cast<CGameScene*>(m_ppScene[m_nSceneIndex])->StartTimer();
+			static_cast<CGameScene*>(m_ppScene[m_curScene])->StartTimer();
 		break;
 	}
 	case WM_SIZE:

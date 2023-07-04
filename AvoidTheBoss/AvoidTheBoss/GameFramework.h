@@ -10,7 +10,8 @@ class UIManager;
 
 class CGameFramework
 {
-	enum class SCENESTATE {TITLE = 0,LOBBY = 1,ROOM = 2, INGAME = 3 };
+
+public:	enum class SCENESTATE { TITLE = 0, LOBBY = 1, ROOM = 2, INGAME = 3 };
 	friend class queueEvent;
 	friend class moveEvnet;
 	friend class posEvent;
@@ -81,9 +82,8 @@ protected:
 	static const int							m_nScene = 4;
 
 	CScene*										m_ppScene[m_nScene];
-	Atomic<int32>								m_curScene = -1;
+	Atomic<int32>								m_curScene = 1;
 public:
-	int											m_nSceneIndex = 0;
 	CGameFramework();
 	~CGameFramework();
 
@@ -120,9 +120,6 @@ public:
 	void Render();
 	void MoveToNextFrame();
 
-public:
-	void CreateD2D11On12Device();
-	void CreateD2DDevice();
 public:
 	void OnProcessingMouseMessage(HWND hWnd, UINT nMessageID, WPARAM wParam, LPARAM
 		lParam);

@@ -36,7 +36,6 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     UNREFERENCED_PARAMETER(lpCmdLine);
    SocketUtil::Init();
    GCThreadManager = new ThreadManager;
-   //DialogBox(hInstance, MAKEINTRESOURCE(IDD_LOGINDIALOG), NULL, reinterpret_cast<DLGPROC>(MyDialogBox));
    C2S_LOGIN loginPacket;
    loginPacket.size = sizeof(C2S_LOGIN);
    loginPacket.type = (uint8)C_PACKET_TYPE::ACQ_LOGIN;
@@ -47,8 +46,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
    // std::cout << "IP Address: ";
    //char ipaddress[20];
    //std::cin.getline(ipaddress, 20);
-   clientCore.InitConnect("127.0.0.1");
-   clientCore.DoConnect(&loginPacket);
+
    CoInitializeEx(nullptr, COINIT_APARTMENTTHREADED);
    // 전역 문자열을 초기화합니다.
     ::LoadString(hInstance, IDS_APP_TITLE, szTitle, MAX_LOADSTRING);
@@ -61,6 +59,10 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
         return FALSE;
     }
 
+    //clientCore.InitConnect("127.0.0.1");
+    //clientCore.DoConnect(&loginPacket);
+    
+    
     HACCEL hAccelTable = LoadAccelerators(hInstance, MAKEINTRESOURCE(IDC_AVOIDTHEBOSS));
 
     // 기본 메시지 루프입니다:

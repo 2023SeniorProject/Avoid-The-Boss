@@ -19,7 +19,7 @@ CGameFramework::CGameFramework()
 	m_pdxgiFactory = NULL;
 	m_pdxgiSwapChain = NULL;
 	m_pd3dDevice = NULL;
-	m_curScene = (int32)SCENESTATE::LOBBY;
+	m_curScene = (int32)SCENESTATE::TITLE;
 	for (int i = 0; i < m_nSwapChainBuffers; i++) 
 		m_ppd3dSwapChainBackBuffers[i] = NULL;
 	m_nSwapChainBufferIndex = 0;

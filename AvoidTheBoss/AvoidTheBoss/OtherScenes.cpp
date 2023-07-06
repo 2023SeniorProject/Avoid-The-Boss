@@ -1,6 +1,9 @@
 #include "pch.h"
 #include "Player.h"
 #include "OtherScenes.h"
+#include "clientIocpCore.h"
+
+#pragma region Lobby
 
 void CLobbyScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList)
 {
@@ -123,7 +126,14 @@ void CLobbyScene::BuildDefaultLightsAndMaterials()
 	m_pLights[4].m_xmf3Position = XMFLOAT3(600.0f, 250.0f, 700.0f);
 	m_pLights[4].m_xmf3Attenuation = XMFLOAT3(1.0f, 0.001f, 0.0001f);
 }
+#pragma endregion
 
+bool IntersectRectByPoint(const D2D1_RECT_F rect, const POINT& mp)
+{
+
+	return ((rect.left <= mp.x <= rect.right) && (rect.top <= mp.y <= rect.bottom));
+}
+#pragma region  Title
 void CTitleScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList)
 {
 	m_pd3dGraphicsRootSignature = CreateGraphicsRootSignature(pd3dDevice);
@@ -135,9 +145,19 @@ void CTitleScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandLi
 	BuildDefaultLightsAndMaterials();
 
 	CreateShaderVariables(pd3dDevice, pd3dCommandList);
-	
+
 	m_player = new CVirtualPlayer(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature);
 	m_pCamera = m_player->GetCamera();
+}
+
+void CTitleScene::MouseAction(const POINT& mp)
+{
+	if (IntersectRectByPoint(D2D1_RECT_F{150,150, 350, 350},mp))
+	{
+		clientCore.InitConnect("127.0.0.1");
+		C2S_LOGIN loginPacket;
+		clientCore.DoConnect(&loginPacket);
+	}
 }
 
 void CTitleScene::BuildDefaultLightsAndMaterials()
@@ -211,7 +231,6 @@ void CTitleScene::BuildDefaultLightsAndMaterials()
 void CTitleScene::ProcessInput(HWND& hWnd)
 {
 }
-
 void CTitleScene::Update(HWND hWnd)
 {
 }
@@ -250,7 +269,38 @@ void CTitleScene::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pC
 	if (m_player) m_player->Render(pd3dCommandList, pCamera);
 }
 
+void CTitleScene::OnProcessingMouseMessage(HWND hWnd, UINT nMessageID, WPARAM wParam, LPARAM lParam)
+{
+	switch (nMessageID)
+	{
+	case WM_LBUTTONDOWN:
+	case WM_RBUTTONDOWN:
+		//마우스 캡쳐를 하고 현재 마우스 위치를 가져온다.
+	{
+		::SetCapture(hWnd);
+		POINT m_mousePos;
+		::GetCursorPos(&m_mousePos);
+		MouseAction(m_mousePos);
+	}
+	break;
+	case WM_LBUTTONUP:
+	case WM_RBUTTONUP:
+		//마우스 캡쳐를 해제한다. 
+		::ReleaseCapture();
+		break;
+	case WM_MOUSEMOVE:
+		break;
+	default:
+		break;
+	}
+}
 
+void CTitleScene::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPARAM wParam, LPARAM lParam)
+{
+}
+#pragma endregion
+
+#pragma region Room
 
 void CRoomScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList)
 {
@@ -271,3 +321,4 @@ void CRoomScene::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCa
 void CRoomScene::BuildDefaultLightsAndMaterials()
 {
 }
+#pragma endregion

@@ -31,13 +31,15 @@ public:
     UIManager(UINT nFrames, UINT nTextBlocks, ID3D12Device* pd3dDevice, ID3D12CommandQueue* pd3dCommandQueue, ID3D12Resource** ppd3dRenderTargets, UINT nWidth, UINT nHeight);
 
     void CreateD2DDevice();
-    int32 LoadPngFromFile(const wchar_t* filePath, int32 idx);
+    ID2D1Bitmap1* LoadPngFromFile(const wchar_t* filePath);
     void CreateD3D11On12Device(ID3D12Device* pd3dDevice, ID3D12CommandQueue* pd3dCommandQueue);
     void CreateRenderTarget(ID3D12Resource** ppd3dRenderTargets);
 
     void UpdateTextOutputs(UINT nIndex, WCHAR* pstrUIText, D2D1_RECT_F* pd2dLayoutRect, IDWriteTextFormat* pdwFormat, ID2D1SolidColorBrush* pd2dTextBrush);
     void Render2D(UINT nFrame,int32 curScene);
     void ReleaseResources();
+    void DrawBackGround(int32 Scene);
+    void DrawButton(int32 idx);
 
     ID2D1SolidColorBrush* CreateBrush(D2D1::ColorF d2dColor);
     IDWriteTextFormat* CreateTextFormat(WCHAR* pszFontName, float fFontSize);
@@ -57,30 +59,30 @@ public:
     ComPtr<IDWriteFactory>      m_pd2dWriteFactory = NULL;
 
     // RenderTarget
-    ID3D11Resource** m_ppd3d11WrappedRenderTargets = NULL;
-    UINT                            m_nRenderTargets = 0;
+    ID3D11Resource**            m_ppd3d11WrappedRenderTargets = NULL;
+    UINT                        m_nRenderTargets = 0;
 
     //DirectX2D
-    ID2D1Bitmap1** m_ppd2dRenderTargets = NULL;
-    ID2D1Factory3* m_pd2dFactory = NULL;
-    ID2D1Device2* m_pd2dDevice = NULL;
+    ID2D1Bitmap1**       m_ppd2dRenderTargets = NULL;
+    ID2D1Factory3*       m_pd2dFactory = NULL;
+    ID2D1Device2*        m_pd2dDevice = NULL;
     ID2D1DeviceContext2* m_pd2dDeviceContext = NULL;
 
     // TextBlock
-    UINT                            m_nTextBlocks = 0;
+    UINT                           m_nTextBlocks = 0;
    
     // BitmapResource
-    UINT                            m_nBitmaps = 20;
+    UINT                           m_nBitmaps = 20;
     ID2D1Bitmap*                   m_bitmaps[20];
     
 
     // 배경 레이어 비트맵들
-    UIBackGround                         m_TitleBitmaps; 
-    UIBackGround                         m_LobbyBitmaps; 
-    UIBackGround                         m_InGameBitmaps;
+    UIBackGround m_backGround[3];
 
     // 버튼 비트맵들
-    UIButton* m_buttons = NULL;
+    UINT m_nButtons = 10;
+    UIButton m_buttons[10];
+
     // 동적으로 바뀌는 텍스트 버튼들
     UITextBlock* m_pTextBlocks = NULL;
 };

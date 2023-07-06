@@ -62,7 +62,7 @@
       <Filter>Scene\CScene</Filter>
     </ClCompile>
     <ClCompile Include="OtherScenes.cpp">
-      <Filter>Scene\LobbyScene</Filter>
+      <Filter>Scene\OtherScene</Filter>
     </ClCompile>
     <ClCompile Include="InputManager.cpp">
       <Filter>Mananger\InputManager</Filter>
@@ -146,7 +146,7 @@
       <Filter>Scene\GameScene</Filter>
     </ClInclude>
     <ClInclude Include="OtherScenes.h">
-      <Filter>Scene\LobbyScene</Filter>
+      <Filter>Scene\OtherScene</Filter>
     </ClInclude>
     <ClInclude Include="InputManager.h">
       <Filter>Mananger\InputManager</Filter>
@@ -385,14 +385,14 @@
     <Filter Include="Scene\GameScene">
       <UniqueIdentifier>{cea74b32-c09f-4b03-90af-caa574f6c935}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Scene\LobbyScene">
-      <UniqueIdentifier>{98120687-c313-4fbf-985e-4dbdaabab215}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Mananger\InputManager">
       <UniqueIdentifier>{4995d2e3-e6c7-45c9-8410-b50303b09397}</UniqueIdentifier>
     </Filter>
     <Filter Include="Mananger\SceneManager">
       <UniqueIdentifier>{4c3590f3-4370-4604-be4f-1178f0c9b3a2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Scene\OtherScene">
+      <UniqueIdentifier>{98120687-c313-4fbf-985e-4dbdaabab215}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

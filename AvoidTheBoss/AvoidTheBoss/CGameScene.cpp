@@ -352,3 +352,4 @@ void CScene::ReleaseObjects()
 
 	if (m_pLights) delete[] m_pLights;
 }
+

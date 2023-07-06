@@ -87,7 +87,7 @@ protected:
 
 	CScene*										m_ppScene[m_nScene];
 	
-	Atomic<int32>								m_curScene = 1;
+	Atomic<int32>								m_curScene = 0;
 public:
 	CGameFramework();
 	~CGameFramework();

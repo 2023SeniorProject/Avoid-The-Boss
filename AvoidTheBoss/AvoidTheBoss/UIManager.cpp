@@ -6,6 +6,11 @@
 
 #pragma comment(lib,"windowscodecs.lib")
 
+D2D1_RECT_F MakeLayoutRect(float cx, float cy , float width, float height)
+{
+    return D2D1_RECT_F{ cx - width / 2.0f , cy - height / 2.0f , cx + width / 2.0f , cy + height / 2.0f };
+}
+
 UIManager::UIManager(UINT nFrames, UINT nTextBlocks, ID3D12Device* pd3dDevice, ID3D12CommandQueue* pd3dCommandQueue, ID3D12Resource** ppd3dRenderTargets, UINT nWidth, UINT nHeight)
 {
 
@@ -66,13 +71,13 @@ void UIManager::CreateD2DDevice() // d3d11on12디바이스를 활용해 d2ddevice랑 d2dF
     pdxgiDevice->Release();
 }
 
-int32 UIManager::LoadPngFromFile(const wchar_t* filePath, int32 idx)
+ID2D1Bitmap1* UIManager::LoadPngFromFile(const wchar_t* filePath)
 {
-    if (m_bitmaps[idx] != NULL)
+    ID2D1Bitmap1* bit = NULL;
+    if (bit != NULL)
     {
-        std::cout << "NULL";
-        m_bitmaps[idx]->Release();
-        m_bitmaps[idx] = NULL;
+       bit->Release();
+       bit = NULL;
     }
 
     // WIC Factory 객체 생성
@@ -96,8 +101,9 @@ int32 UIManager::LoadPngFromFile(const wchar_t* filePath, int32 idx)
                 // 선택된 그림을 어떤 형식의 비트맵으로 변환할 것인지 설정
                 if (S_OK == pConverter->Initialize(pFrame, GUID_WICPixelFormat32bppPBGRA, WICBitmapDitherTypeNone, NULL, 0.0f, WICBitmapPaletteTypeCustom))
                 {
+                    
                     // IWICBitmap 형식의 비트맵으로 ID2D1Bitmap 객체를 생성
-                    if (S_OK == m_pd2dDeviceContext->CreateBitmapFromWicBitmap(pConverter, NULL, &m_bitmaps[idx])) result = 1;  // 성공적으로 생성한 경우 
+                    if (S_OK == m_pd2dDeviceContext->CreateBitmapFromWicBitmap(pConverter, NULL, &bit)) result = 1;  // 성공적으로 생성한 경우 
                 }
                 // 이미지 변환 객체 제거
                 pConverter->Release();
@@ -111,7 +117,9 @@ int32 UIManager::LoadPngFromFile(const wchar_t* filePath, int32 idx)
     // WIC를 사용하기 위해 만들었던 Factory 객체 제거
     pWicFactory->Release();
 
-    return result;  // PNG 파일을 읽은 결과를 반환한다.
+    if(result) return bit;  // PNG 파일을 읽은 결과를 반환한다.
+
+    return nullptr;
 
 }
 
@@ -137,7 +145,6 @@ void UIManager::UpdateTextOutputs(UINT nIndex, WCHAR* pstrUIText, D2D1_RECT_F* p
 }
 
 
-
 void UIManager::ReleaseResources()
 {
     for (UINT i = 0; i < m_nRenderTargets; i++)
@@ -161,6 +168,16 @@ void UIManager::ReleaseResources()
     m_pd2dFactory->Release();
     m_pd3d11DeviceContext->Release();
     m_pd3d11On12Device->Release();
+}
+
+void UIManager::DrawBackGround(int32 Scene)
+{
+    m_pd2dDeviceContext->DrawBitmap(m_backGround[Scene].resource, D2D1_RECT_F{ 0,0,m_fWidth,m_fHeight }, 1.0f, D2D1_INTERPOLATION_MODE_LINEAR,(D2D1_RECT_F*)0);
+}
+
+void UIManager::DrawButton(int32 idx)
+{
+    m_pd2dDeviceContext->DrawBitmap(m_buttons[idx].resource, m_buttons[idx].d2dLayoutRect, 1.0f, D2D1_INTERPOLATION_MODE_LINEAR, (D2D1_RECT_F*)0);
 }
 
 
@@ -189,9 +206,12 @@ void UIManager::InitializeDevice(ID3D12Device* pd3dDevice, ID3D12CommandQueue* p
     CreateD3D11On12Device(pd3dDevice,pd3dCommandQueue);
     CreateD2DDevice();
     CreateRenderTarget(ppd3dRenderTargets);;
-    LoadPngFromFile(L"UI/Title.png", 0);
-    LoadPngFromFile(L"UI/Lobby.png", 1);
-    
+    m_backGround[0].resource = LoadPngFromFile(L"UI/Title.png");
+    m_backGround[1].resource = LoadPngFromFile(L"UI/Lobby.png");
+    m_backGround[2].resource = LoadPngFromFile(L"UI/Room.png");
+
+    m_buttons[0].resource = LoadPngFromFile(L"UI/Start.png");
+    m_buttons[0].d2dLayoutRect = MakeLayoutRect(m_fWidth / 2.0f, m_fHeight / 2.0f, 100, 100);
 }
 
 void UIManager::Render2D(UINT nFrame, int32 curScene)
@@ -203,8 +223,8 @@ void UIManager::Render2D(UINT nFrame, int32 curScene)
     m_pd3d11On12Device->AcquireWrappedResources(ppResources, _countof(ppResources));
 
     m_pd2dDeviceContext->BeginDraw();
-    if (curScene == (int32)CGameFramework::SCENESTATE::LOBBY) m_pd2dDeviceContext->DrawBitmap(m_bitmaps[1], D2D1_RECT_F{0,0,m_fWidth,m_fHeight}, 1.0,   D2D1_BITMAP_INTERPOLATION_MODE_LINEAR, (D2D1_RECT_F*)0);
-    if(curScene == (int32)CGameFramework::SCENESTATE::TITLE)  m_pd2dDeviceContext->DrawBitmap(m_bitmaps[0], D2D1_RECT_F{0,0,m_fWidth,m_fHeight}, 1.0,   D2D1_BITMAP_INTERPOLATION_MODE_LINEAR, (D2D1_RECT_F*)0);
+    DrawBackGround(curScene);
+    DrawButton(0);
     m_pd2dDeviceContext->EndDraw();
 
     m_pd3d11On12Device->ReleaseWrappedResources(ppResources, _countof(ppResources));

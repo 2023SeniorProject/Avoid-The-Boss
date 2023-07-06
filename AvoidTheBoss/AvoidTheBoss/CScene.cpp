@@ -2,7 +2,7 @@
 #include "Camera.h"
 #include "CBoss.h"
 #include "CEmployee.h"
-#include "CGameScene.h"
+#include "CScene.h"
 #include "Shader.h"
 
 int32 CScene::m_sid = -1;

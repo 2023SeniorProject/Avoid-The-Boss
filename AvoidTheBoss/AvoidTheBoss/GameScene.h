@@ -5,7 +5,7 @@
 //#include "CBoss.h"
 //#include "CGenerator.h" // 스위치 분리
 
-#include "CGameScene.h"
+#include "CScene.h"
 #include "ClientPacketEvent.h"
 
 

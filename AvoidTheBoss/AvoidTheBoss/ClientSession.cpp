@@ -13,7 +13,8 @@
 #include "CBoss.h"
 #include "CEmployee.h"
 // ¾À°ü·Ã Çì´õ
-#include "CGameScene.h"
+#include "OtherScenes.h"
+#include "GameScene.h"
 
 
 

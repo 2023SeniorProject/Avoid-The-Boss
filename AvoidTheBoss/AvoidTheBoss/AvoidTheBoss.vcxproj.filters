@@ -58,7 +58,7 @@
     <ClCompile Include="clientIocpCore.cpp">
       <Filter>ForClient\IocpCore</Filter>
     </ClCompile>
-    <ClCompile Include="CGameScene.cpp">
+    <ClCompile Include="CScene.cpp">
       <Filter>Scene\CScene</Filter>
     </ClCompile>
     <ClCompile Include="OtherScenes.cpp">
@@ -70,15 +70,15 @@
     <ClCompile Include="SceneManager.cpp">
       <Filter>Mananger\SceneManager</Filter>
     </ClCompile>
-    <ClCompile Include="Scene.cpp">
-      <Filter>Scene\GameScene</Filter>
-    </ClCompile>
     <ClCompile Include="DXRHelpers\nv_helpers_dx12\BottomLevelASGenerator.cpp" />
     <ClCompile Include="DXRHelpers\nv_helpers_dx12\RaytracingPipelineGenerator.cpp" />
     <ClCompile Include="DXRHelpers\nv_helpers_dx12\RootSignatureGenerator.cpp" />
     <ClCompile Include="DXRHelpers\nv_helpers_dx12\ShaderBindingTableGenerator.cpp" />
     <ClCompile Include="DXRHelpers\nv_helpers_dx12\TopLevelASGenerator.cpp" />
     <ClCompile Include="DXSampleHelper.cpp" />
+    <ClCompile Include="GameScene.cpp">
+      <Filter>Scene\GameScene</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameObject.h">
@@ -145,10 +145,10 @@
     <ClInclude Include="UIManager.h">
       <Filter>Mananger\UIManager</Filter>
     </ClInclude>
-    <ClInclude Include="CGameScene.h">
+    <ClInclude Include="CScene.h">
       <Filter>Scene\CScene</Filter>
     </ClInclude>
-    <ClInclude Include="Scene.h">
+    <ClInclude Include="GameScene.h">
       <Filter>Scene\GameScene</Filter>
     </ClInclude>
     <ClInclude Include="OtherScenes.h">

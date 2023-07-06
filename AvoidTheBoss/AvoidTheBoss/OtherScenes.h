@@ -1,5 +1,5 @@
 #pragma once
-#include "CGameScene.h"
+#include "CScene.h"
 
 class CLobbyScene : public CScene
 {

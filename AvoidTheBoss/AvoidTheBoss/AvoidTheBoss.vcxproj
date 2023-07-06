@@ -168,7 +168,7 @@
     <ClInclude Include="ClientSession.h" />
     <ClInclude Include="OtherScenes.h" />
     <ClInclude Include="CollisionDetector.h" />
-    <ClInclude Include="CGameScene.h" />
+    <ClInclude Include="CScene.h" />
     <ClInclude Include="DDSTextureLoader12.h" />
     <ClInclude Include="clientIocpCore.h" />
     <ClInclude Include="DXRHelper.h" />
@@ -185,7 +185,7 @@
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="Player.h" />
-    <ClInclude Include="Scene.h" />
+    <ClInclude Include="GameScene.h" />
     <ClInclude Include="SceneManager.h" />
     <ClInclude Include="Shader.h" />
     <ClInclude Include="Resource.h" />
@@ -204,7 +204,7 @@
     <ClCompile Include="ClientSession.cpp" />
     <ClCompile Include="OtherScenes.cpp" />
     <ClCompile Include="CollisionDetector.cpp" />
-    <ClCompile Include="CGameScene.cpp" />
+    <ClCompile Include="CScene.cpp" />
     <ClCompile Include="DDSTextureLoader12.cpp" />
     <ClCompile Include="DXRHelpers\nv_helpers_dx12\BottomLevelASGenerator.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
@@ -234,7 +234,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="Player.cpp" />
-    <ClCompile Include="Scene.cpp" />
+    <ClCompile Include="GameScene.cpp" />
     <ClCompile Include="SceneManager.cpp" />
     <ClCompile Include="Shader.cpp" />
     <ClCompile Include="UIManager.cpp" />

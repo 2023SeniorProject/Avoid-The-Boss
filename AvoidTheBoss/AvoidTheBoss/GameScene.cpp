@@ -1,5 +1,5 @@
 #include "pch.h"
-#include "Scene.h"
+#include "GameScene.h"
 #include "GameFramework.h"
 #include "InputManager.h"
 //네트워크 관련
@@ -327,7 +327,7 @@ void CGameScene::AnimateObjects()
 	}
 }
 
-void CGameScene::Render(ID3D12GraphicsCommandList4  * pd3dCommandList, CCamera* pCamera,bool bRaster)
+void CGameScene::Render(ID3D12GraphicsCommandList4* pd3dCommandList, CCamera* pCamera,bool bRaster)
 {
 	if (m_pd3dGraphicsRootSignature) pd3dCommandList->SetGraphicsRootSignature(m_pd3dGraphicsRootSignature);
 	if (m_pd3dCbvSrvDescriptorHeap) pd3dCommandList->SetDescriptorHeaps(1, &m_pd3dCbvSrvDescriptorHeap);
@@ -357,7 +357,7 @@ void CGameScene::Render(ID3D12GraphicsCommandList4  * pd3dCommandList, CCamera* 
 
 	for (int i = 0; i < PLAYERNUM; ++i)
 	{
-		if(!_players[i]->m_hide) _players[i]->Render(pd3dCommandList, pCamera,bRaster);
+		if(!m_players[i]->m_hide) m_players[i]->Render(pd3dCommandList, pCamera,bRaster);
 	}
 }
 

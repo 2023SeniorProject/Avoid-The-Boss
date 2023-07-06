@@ -382,7 +382,7 @@ void CGameFramework::BuildScenes()
 
 	//그래픽 리소스들을 생성하는 과정에 생성된 업로드 버퍼들을 소멸시킨다. 
 	//for (int i = 0; i < m_nScene; ++i) if(m_ppScene[i]) m_ppScene[i]->ReleaseUploadBuffers();
-	//m_SceneManager->ReleaseUpBuffers();
+	m_SceneManager->ReleaseUpBuffers();
 	//m_SceneManager->ChangeScene((int32)SceneManager::SCENESTATE::LOBBY);
 }
 
@@ -396,13 +396,13 @@ void CGameFramework::ReleaseScenes()
 
 void CGameFramework::ProcessInput()
 {
-	m_SceneManager->ProcessInput(m_hWnd);
+	m_SceneManager->ProcessInput(m_hWnd, m_curScene);
 	//m_ppScene[m_curScene]->ProcessInput(m_hWnd);
 }
 
 void CGameFramework::UpdateObject()
 {
-	m_SceneManager->Update(m_hWnd);
+	m_SceneManager->Update(m_hWnd, m_curScene);
 	//m_ppScene[m_curScene]->Update(m_hWnd);
 }
 
@@ -506,7 +506,7 @@ void CGameFramework::Render()
 
 	//=======렌더링 코드는 여기에 추가될 것이다
 	//if (m_ppScene[m_curScene]) m_ppScene[m_curScene]->Render(m_pd3dCommandList, m_ppScene[m_curScene]->m_pCamera);
-	m_SceneManager->Render(m_pd3dCommandList);
+	m_SceneManager->Render(m_pd3dCommandList, m_curScene);
 	//3인칭 카메라일 때 플레이어가 항상 보이도록 렌더링한다. 
 #ifdef _WITH_PLAYER_TOP
 	//렌더 타겟은 그대로 두고 깊이 버퍼를 1.0으로 지우고 플레이어를 렌더링하면 플레이어는 무조건 그려질 것이다. 
@@ -551,13 +551,13 @@ void CGameFramework::ChangeScene(SCENESTATE ss)
 
 void CGameFramework::OnProcessingMouseMessage(HWND hWnd, UINT nMessageID, WPARAM wParam, LPARAM lParam)
 {
-	m_SceneManager->GetCurScene()->OnProcessingMouseMessage(hWnd, nMessageID, wParam, lParam);
+	m_SceneManager->GetSceneByIdx(m_curScene)->OnProcessingMouseMessage(hWnd, nMessageID, wParam, lParam);
 	//m_ppScene[m_curScene]->OnProcessingMouseMessage(hWnd, nMessageID, wParam, lParam);
 }
 
 void CGameFramework::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPARAM wParam, LPARAM lParam)
 {
-	m_SceneManager->GetCurScene()->OnProcessingKeyboardMessage(hWnd, nMessageID, wParam, lParam);
+	m_SceneManager->GetSceneByIdx(m_curScene)->OnProcessingKeyboardMessage(hWnd, nMessageID, wParam, lParam);
 	//m_ppScene[m_curScene]->OnProcessingKeyboardMessage(hWnd, nMessageID, wParam, lParam);
 }
 

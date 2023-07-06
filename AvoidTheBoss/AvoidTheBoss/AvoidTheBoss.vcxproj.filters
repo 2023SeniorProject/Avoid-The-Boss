@@ -25,14 +25,8 @@
     <ClCompile Include="AvoidTheBoss.cpp">
       <Filter>AvoidTheBoss</Filter>
     </ClCompile>
-    <ClCompile Include="Scene.cpp">
-      <Filter>GameScene</Filter>
-    </ClCompile>
     <ClCompile Include="pch.cpp">
       <Filter>AvoidTheBoss</Filter>
-    </ClCompile>
-    <ClCompile Include="SceneInterface.cpp">
-      <Filter>SceneInterface</Filter>
     </ClCompile>
     <ClCompile Include="CBullet.cpp">
       <Filter>GameObject</Filter>
@@ -58,11 +52,26 @@
     <ClCompile Include="CJobQueue.cpp">
       <Filter>JobQueue</Filter>
     </ClCompile>
-    <ClCompile Include="InputManager.cpp">
-      <Filter>Mananger</Filter>
+    <ClCompile Include="UIManager.cpp">
+      <Filter>Mananger\UIManager</Filter>
     </ClCompile>
     <ClCompile Include="clientIocpCore.cpp">
       <Filter>ForClient\IocpCore</Filter>
+    </ClCompile>
+    <ClCompile Include="CGameScene.cpp">
+      <Filter>Scene\CScene</Filter>
+    </ClCompile>
+    <ClCompile Include="OtherScenes.cpp">
+      <Filter>Scene\OtherScene</Filter>
+    </ClCompile>
+    <ClCompile Include="InputManager.cpp">
+      <Filter>Mananger\InputManager</Filter>
+    </ClCompile>
+    <ClCompile Include="SceneManager.cpp">
+      <Filter>Mananger\SceneManager</Filter>
+    </ClCompile>
+    <ClCompile Include="Scene.cpp">
+      <Filter>Scene\GameScene</Filter>
     </ClCompile>
     <ClCompile Include="DXRHelpers\nv_helpers_dx12\BottomLevelASGenerator.cpp" />
     <ClCompile Include="DXRHelpers\nv_helpers_dx12\RaytracingPipelineGenerator.cpp" />
@@ -106,12 +115,6 @@
     <ClInclude Include="AvoidTheBoss.h">
       <Filter>AvoidTheBoss</Filter>
     </ClInclude>
-    <ClInclude Include="SceneInterface.h">
-      <Filter>SceneInterface</Filter>
-    </ClInclude>
-    <ClInclude Include="Scene.h">
-      <Filter>GameScene</Filter>
-    </ClInclude>
     <ClInclude Include="CBullet.h">
       <Filter>GameObject</Filter>
     </ClInclude>
@@ -136,11 +139,26 @@
     <ClInclude Include="CJobQueue.h">
       <Filter>JobQueue</Filter>
     </ClInclude>
-    <ClInclude Include="InputManager.h">
-      <Filter>Mananger</Filter>
-    </ClInclude>
     <ClInclude Include="CEmployee.h">
       <Filter>Player\EMPLOYEE</Filter>
+    </ClInclude>
+    <ClInclude Include="UIManager.h">
+      <Filter>Mananger\UIManager</Filter>
+    </ClInclude>
+    <ClInclude Include="CGameScene.h">
+      <Filter>Scene\CScene</Filter>
+    </ClInclude>
+    <ClInclude Include="Scene.h">
+      <Filter>Scene\GameScene</Filter>
+    </ClInclude>
+    <ClInclude Include="OtherScenes.h">
+      <Filter>Scene\OtherScene</Filter>
+    </ClInclude>
+    <ClInclude Include="InputManager.h">
+      <Filter>Mananger\InputManager</Filter>
+    </ClInclude>
+    <ClInclude Include="SceneManager.h">
+      <Filter>Mananger\SceneManager</Filter>
     </ClInclude>
     <ClInclude Include="DXRHelpers\nv_helpers_dx12\BottomLevelASGenerator.h" />
     <ClInclude Include="DXRHelpers\nv_helpers_dx12\RaytracingPipelineGenerator.h" />
@@ -180,9 +198,6 @@
     </ClCompile>
     <ClCompile Include="clientIocpCore.cpp">
       <Filter>ForClient/IocpCore</Filter>
-    </ClCompile>
-    <ClCompile Include="SceneInterface.cpp">
-      <Filter>SceneInterface</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -323,9 +338,6 @@
     <Filter Include="GameObject">
       <UniqueIdentifier>{05a326a8-f411-4096-844f-12c3de82e26f}</UniqueIdentifier>
     </Filter>
-    <Filter Include="GameScene">
-      <UniqueIdentifier>{e4ce9da3-bd68-4bfc-9cb8-45f800d6cd51}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Camera">
       <UniqueIdentifier>{a881eff2-ecf9-4c10-930d-7777d38b72f0}</UniqueIdentifier>
     </Filter>
@@ -343,9 +355,6 @@
     </Filter>
     <Filter Include="Texture">
       <UniqueIdentifier>{ba2c4739-1739-4582-b450-0442272e3d24}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="SceneInterface">
-      <UniqueIdentifier>{694d1a9b-e9a4-4322-89ea-27279e5f83ec}</UniqueIdentifier>
     </Filter>
     <Filter Include="Textures">
       <UniqueIdentifier>{f34dc00f-c3c5-46e0-9b02-019005ed489b}</UniqueIdentifier>
@@ -376,6 +385,27 @@
     </Filter>
     <Filter Include="Mananger">
       <UniqueIdentifier>{f06f0dab-99ab-423e-b1d6-855d105af5a6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Mananger\UIManager">
+      <UniqueIdentifier>{32b6f4e7-38ad-421b-937c-749e73848ab7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Scene">
+      <UniqueIdentifier>{e4ce9da3-bd68-4bfc-9cb8-45f800d6cd51}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Scene\CScene">
+      <UniqueIdentifier>{70f0b6f9-a5e9-4055-a8fd-fab7037eeecc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Scene\GameScene">
+      <UniqueIdentifier>{cea74b32-c09f-4b03-90af-caa574f6c935}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Mananger\InputManager">
+      <UniqueIdentifier>{4995d2e3-e6c7-45c9-8410-b50303b09397}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Mananger\SceneManager">
+      <UniqueIdentifier>{4c3590f3-4370-4604-be4f-1178f0c9b3a2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Scene\OtherScene">
+      <UniqueIdentifier>{98120687-c313-4fbf-985e-4dbdaabab215}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

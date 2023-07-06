@@ -5,7 +5,7 @@
 
 #pragma region Lobby
 
-void CLobbyScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList)
+void CLobbyScene::BuildObjects(ID3D12Device5* pd3dDevice, ID3D12GraphicsCommandList4* pd3dCommandList)
 {
 	m_pd3dGraphicsRootSignature = CreateGraphicsRootSignature(pd3dDevice);
 	CreateCbvSrvDescriptorHeaps(pd3dDevice, 0, 3);
@@ -25,7 +25,7 @@ void CLobbyScene::Update(HWND hWnd)
 {
 }
 
-void CLobbyScene::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera)
+void CLobbyScene::Render(ID3D12GraphicsCommandList4* pd3dCommandList, CCamera* pCamera, bool Raster)
 {
 	if (m_pd3dGraphicsRootSignature) pd3dCommandList->SetGraphicsRootSignature(m_pd3dGraphicsRootSignature);
 	if (m_pd3dCbvSrvDescriptorHeap) pd3dCommandList->SetDescriptorHeaps(1, &m_pd3dCbvSrvDescriptorHeap);
@@ -38,10 +38,10 @@ void CLobbyScene::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pC
 	D3D12_GPU_VIRTUAL_ADDRESS d3dcbLightsGpuVirtualAddress = m_pd3dcbLights->GetGPUVirtualAddress();
 	pd3dCommandList->SetGraphicsRootConstantBufferView(2, d3dcbLightsGpuVirtualAddress); //Lights
 
-	if (m_pSkyBox) m_pSkyBox->Render(pd3dCommandList, pCamera);
+	if (m_pSkyBox) m_pSkyBox->Render(pd3dCommandList, pCamera, Raster);
 
 	
-	for (int i = 0; i < m_nShaders; i++) if (m_ppShaders[i]) m_ppShaders[i]->Render(pd3dCommandList, pCamera);
+	for (int i = 0; i < m_nShaders; i++) if (m_ppShaders[i]) m_ppShaders[i]->Render(pd3dCommandList, pCamera, Raster);
 
 	for (int i = 0; i < m_nHierarchicalGameObjects; i++)
 	{
@@ -51,11 +51,11 @@ void CLobbyScene::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pC
 			if (!m_ppHierarchicalGameObjects[i]->m_pSkinnedAnimationController) m_ppHierarchicalGameObjects[i]->UpdateTransform(NULL);
 			if (!m_ppHierarchicalGameObjects[i]->m_pSkinnedAnimationController1) m_ppHierarchicalGameObjects[i]->UpdateTransform(NULL);
 
-			m_ppHierarchicalGameObjects[i]->Render(pd3dCommandList, pCamera);
+			m_ppHierarchicalGameObjects[i]->Render(pd3dCommandList, pCamera, Raster);
 		}
 	}
 	
-	if (m_player) m_player->Render(pd3dCommandList, pCamera);
+	if (m_player) m_player->Render(pd3dCommandList, pCamera, Raster);
 
 }
 
@@ -134,7 +134,7 @@ bool IntersectRectByPoint(const D2D1_RECT_F rect, const POINT& mp)
 	return ((rect.left <= mp.x <= rect.right) && (rect.top <= mp.y <= rect.bottom));
 }
 #pragma region  Title
-void CTitleScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList)
+void CTitleScene::BuildObjects(ID3D12Device5* pd3dDevice, ID3D12GraphicsCommandList4* pd3dCommandList)
 {
 	m_pd3dGraphicsRootSignature = CreateGraphicsRootSignature(pd3dDevice);
 
@@ -235,7 +235,7 @@ void CTitleScene::Update(HWND hWnd)
 {
 }
 
-void CTitleScene::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera)
+void CTitleScene::Render(ID3D12GraphicsCommandList4* pd3dCommandList, CCamera* pCamera,bool Raster)
 {
 
 	if (m_pd3dGraphicsRootSignature) pd3dCommandList->SetGraphicsRootSignature(m_pd3dGraphicsRootSignature);
@@ -249,10 +249,10 @@ void CTitleScene::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pC
 	D3D12_GPU_VIRTUAL_ADDRESS d3dcbLightsGpuVirtualAddress = m_pd3dcbLights->GetGPUVirtualAddress();
 	pd3dCommandList->SetGraphicsRootConstantBufferView(2, d3dcbLightsGpuVirtualAddress); //Lights
 
-	if (m_pSkyBox) m_pSkyBox->Render(pd3dCommandList, pCamera);
+	if (m_pSkyBox) m_pSkyBox->Render(pd3dCommandList, pCamera, Raster);
 
 
-	for (int i = 0; i < m_nShaders; i++) if (m_ppShaders[i]) m_ppShaders[i]->Render(pd3dCommandList, pCamera);
+	for (int i = 0; i < m_nShaders; i++) if (m_ppShaders[i]) m_ppShaders[i]->Render(pd3dCommandList, pCamera, Raster);
 
 	for (int i = 0; i < m_nHierarchicalGameObjects; i++)
 	{
@@ -262,11 +262,11 @@ void CTitleScene::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pC
 			if (!m_ppHierarchicalGameObjects[i]->m_pSkinnedAnimationController) m_ppHierarchicalGameObjects[i]->UpdateTransform(NULL);
 			if (!m_ppHierarchicalGameObjects[i]->m_pSkinnedAnimationController1) m_ppHierarchicalGameObjects[i]->UpdateTransform(NULL);
 
-			m_ppHierarchicalGameObjects[i]->Render(pd3dCommandList, pCamera);
+			m_ppHierarchicalGameObjects[i]->Render(pd3dCommandList, pCamera, Raster);
 		}
 	}
 
-	if (m_player) m_player->Render(pd3dCommandList, pCamera);
+	if (m_player) m_player->Render(pd3dCommandList, pCamera, Raster);
 }
 
 void CTitleScene::OnProcessingMouseMessage(HWND hWnd, UINT nMessageID, WPARAM wParam, LPARAM lParam)
@@ -302,7 +302,7 @@ void CTitleScene::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPARAM
 
 #pragma region Room
 
-void CRoomScene::BuildObjects(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList)
+void CRoomScene::BuildObjects(ID3D12Device5* pd3dDevice, ID3D12GraphicsCommandList4* pd3dCommandList)
 {
 }
 
@@ -314,7 +314,7 @@ void CRoomScene::Update(HWND hWnd)
 {
 }
 
-void CRoomScene::Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera)
+void CRoomScene::Render(ID3D12GraphicsCommandList4* pd3dCommandList, CCamera* pCamera, bool Raster)
 {
 }
 

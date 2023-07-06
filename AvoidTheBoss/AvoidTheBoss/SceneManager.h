@@ -15,20 +15,20 @@ public:
 	}
 	~SceneManager(){}
 	
-	void Render(ID3D12GraphicsCommandList* pd3dCommandList, int32);
+	void Render(ID3D12GraphicsCommandList4* pd3dCommandList, int32, bool);
 	void Update(HWND& hWnd, int32);
 	void Animate();
 	void ProcessInput(HWND& hWnd, int32);
 
 
-	void BuildScene(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList);
+	void BuildScene(ID3D12Device5* pd3dDevice, ID3D12GraphicsCommandList4* pd3dCommandList);
 	void ReleaseUpBuffers();
 	void ReleaseScene();
 
 	
 	void ResetScene();
 	CScene* ChangeScene(int32 idx);
-	CScene* GetSceneByIdx(int32 idx) { return m_pScenes[idx]; } // 현재 씬을 반환 받는다.
+	CScene* GetSceneByIdx(int32 idx) { return m_pScenes[idx];   } // 현재 씬을 반환 받는다.
 	CScene* GetSceneByIndex(int32 idx) { return m_pScenes[idx]; }
 };
 

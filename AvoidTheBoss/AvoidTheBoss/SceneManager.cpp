@@ -1,12 +1,12 @@
 #include "pch.h"
-#include "CGameScene.h"
-#include "Scene.h"
 #include "SceneManager.h"
+#include "CScene.h"
+#include "GameScene.h"
 #include "OtherScenes.h"
 
-void SceneManager::Render(ID3D12GraphicsCommandList* pd3dCommandList, int32 idx)
+void SceneManager::Render(ID3D12GraphicsCommandList4* pd3dCommandList, int32 idx, bool Raster)
 {
-	m_pScenes[idx]->Render(pd3dCommandList, m_pScenes[idx]->m_pCamera);
+	m_pScenes[idx]->Render(pd3dCommandList, m_pScenes[idx]->m_pCamera, Raster);
 }
 
 void SceneManager::Update(HWND& hWnd,int32 idx)
@@ -42,7 +42,7 @@ void SceneManager::Animate()
 	for (int i = 0; i < 4; ++i)  m_pScenes[i]->AnimateObjects();
 }
 
-void SceneManager::BuildScene(ID3D12Device* pd3dDevice, ID3D12GraphicsCommandList* pd3dCommandList)
+void SceneManager::BuildScene(ID3D12Device5* pd3dDevice, ID3D12GraphicsCommandList4* pd3dCommandList)
 {
 	m_pScenes[(int32)SCENESTATE::TITLE] = new CTitleScene();
 	m_pScenes[(int32)SCENESTATE::TITLE]->BuildObjects(pd3dDevice, pd3dCommandList);

@@ -11,7 +11,7 @@ D2D1_RECT_F MakeLayoutRect(float cx, float cy , float width, float height)
     return D2D1_RECT_F{ cx - width / 2.0f , cy - height / 2.0f , cx + width / 2.0f , cy + height / 2.0f };
 }
 
-UIManager::UIManager(UINT nFrames, UINT nTextBlocks, ID3D12Device* pd3dDevice, ID3D12CommandQueue* pd3dCommandQueue, ID3D12Resource** ppd3dRenderTargets, UINT nWidth, UINT nHeight)
+UIManager::UIManager(UINT nFrames, UINT nTextBlocks, ID3D12Device5* pd3dDevice, ID3D12CommandQueue* pd3dCommandQueue, ID3D12Resource** ppd3dRenderTargets, UINT nWidth, UINT nHeight)
 {
 
     m_fWidth = static_cast<float>(nWidth);
@@ -29,7 +29,7 @@ UIManager::UIManager(UINT nFrames, UINT nTextBlocks, ID3D12Device* pd3dDevice, I
 
 
 
-void UIManager::CreateD3D11On12Device(ID3D12Device* pd3dDevice, ID3D12CommandQueue* pd3dCommandQueue)
+void UIManager::CreateD3D11On12Device(ID3D12Device5* pd3dDevice, ID3D12CommandQueue* pd3dCommandQueue)
 {
     UINT d3d11DeviceFlags = D3D11_CREATE_DEVICE_BGRA_SUPPORT; // ui 출력을 위해 필요한 플레그
     D2D1_FACTORY_OPTIONS d2dFactoryOptions = { };
@@ -201,7 +201,7 @@ IDWriteTextFormat* UIManager::CreateTextFormat(WCHAR* pszFontName, float fFontSi
     return(pdwDefaultTextFormat);
 }
 
-void UIManager::InitializeDevice(ID3D12Device* pd3dDevice, ID3D12CommandQueue* pd3dCommandQueue, ID3D12Resource** ppd3dRenderTargets)
+void UIManager::InitializeDevice(ID3D12Device5* pd3dDevice, ID3D12CommandQueue* pd3dCommandQueue, ID3D12Resource** ppd3dRenderTargets)
 {    
     CreateD3D11On12Device(pd3dDevice,pd3dCommandQueue);
     CreateD2DDevice();
@@ -210,7 +210,7 @@ void UIManager::InitializeDevice(ID3D12Device* pd3dDevice, ID3D12CommandQueue* p
     m_backGround[1].resource = LoadPngFromFile(L"UI/Lobby.png");
     m_backGround[2].resource = LoadPngFromFile(L"UI/Room.png");
 
-    m_buttons[0].resource = LoadPngFromFile(L"UI/Start.png");
+    m_buttons[0].resource      = LoadPngFromFile(L"UI/Start.png");
     m_buttons[0].d2dLayoutRect = MakeLayoutRect(m_fWidth / 2.0f, m_fHeight / 2.0f, 100, 100);
 }
 

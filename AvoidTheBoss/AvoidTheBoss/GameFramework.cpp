@@ -7,8 +7,8 @@
 #include "SceneManager.h"
 
 // 씬관련 헤더파일
-#include "Scene.h"
-#include "CGameScene.h"
+#include "CScene.h"
+#include "GameScene.h"
 #include "OtherScenes.h"
 
 CGameFramework mainGame;
@@ -426,7 +426,7 @@ void CGameFramework::FrameAdvance() // 여기서 업데이트랑 렌더링 동시에 진행하는 
 	Render();
 	WaitForGpuComplete();
 	//GPU가 모든 명령 리스트를 실행할 때 까지 기다린다.
-	m_UIRenderer->Render2D(m_nSwapChainBufferIndex, m_curScene);
+	//m_UIRenderer->Render2D(m_nSwapChainBufferIndex, m_curScene);
 #ifdef _WITH_PRESENT_PARAMETERS
 	DXGI_PRESENT_PARAMETERS dxgiPresentParameters;
 	dxgiPresentParameters.DirtyRectsCount = 0;
@@ -515,7 +515,7 @@ void CGameFramework::Render()
 
 	//=======렌더링 코드는 여기에 추가될 것이다
 	//if (m_ppScene[m_curScene]) m_ppScene[m_curScene]->Render(m_pd3dCommandList, m_ppScene[m_curScene]->m_pCamera);
-	m_SceneManager->Render(m_pd3dCommandList, m_curScene);
+	m_SceneManager->Render(m_pd3dCommandList, m_curScene, true);
 	//3인칭 카메라일 때 플레이어가 항상 보이도록 렌더링한다. 
 #ifdef _WITH_PLAYER_TOP
 	//렌더 타겟은 그대로 두고 깊이 버퍼를 1.0으로 지우고 플레이어를 렌더링하면 플레이어는 무조건 그려질 것이다. 
@@ -617,7 +617,7 @@ void CGameFramework::CheckRaytracingSupport()
 void CGameFramework::OnKeyUp(UINT8 key)
 {
 	// Alternate between rasterization and raytracing using the F2
-	if (key == VK_SPACE) 
+	if (key == VK_NUMPAD0) 
 	{
 		m_raster = !m_raster; 
 	}

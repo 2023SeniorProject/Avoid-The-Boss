@@ -38,7 +38,7 @@ public:
 public : // SceneInterface 상속 함수
 	virtual void ProcessInput(HWND& hWnd);
 	virtual void Update(HWND hWnd);
-	//virtual void Render(ID3D12GraphicsCommandList5* pd3dCommandList, CCamera* pCamera);
+	virtual void Render(ID3D12GraphicsCommandList4* pd3dCommandList, CCamera* pCamera,bool Raster);
 public: // 오승담 작성 함수
 	CPlayer* GetScenePlayerBySid(const int32 sid);
 	CPlayer* GetScenePlayerByIdx(const int32 idx);
@@ -72,9 +72,6 @@ public:
 	Scheduler* m_jobQueue;
 	std::shared_mutex m_jobQueueLock;
 public:
-
 	int32				m_curFrame;
-	int32				m_cid = -1;
-	int32				m_sid = -1;
 };
 

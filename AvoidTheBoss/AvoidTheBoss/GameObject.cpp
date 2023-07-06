@@ -6,7 +6,7 @@
 #include "GameObject.h"
 #include "Shader.h"
 
-#include "Scene.h"
+#include "CScene.h"
 
 std::vector<BoundingBox> bv;
 
@@ -206,7 +206,7 @@ void CMaterial::LoadTextureFromFile(ID3D12Device5 *pd3dDevice, ID3D12GraphicsCom
 			(*ppTexture)->LoadTextureFromFile(pd3dDevice, pd3dCommandList, pwstrTextureName, 0, true);
 			if (*ppTexture) (*ppTexture)->AddRef();
 
-			CGameScene::CreateShaderResourceViews(pd3dDevice, *ppTexture, nRootParameter, false);
+			CScene::CreateShaderResourceViews(pd3dDevice, *ppTexture, nRootParameter, false);
 		}
 		else
 		{
@@ -1247,7 +1247,7 @@ CSkyBox::CSkyBox(ID3D12Device5 *pd3dDevice, ID3D12GraphicsCommandList4   *pd3dCo
 	pSkyBoxShader->CreateShader(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature);
 	pSkyBoxShader->CreateShaderVariables(pd3dDevice, pd3dCommandList);
 
-	CGameScene::CreateShaderResourceViews(pd3dDevice, pSkyBoxTexture, 10, false);
+	CScene::CreateShaderResourceViews(pd3dDevice, pSkyBoxTexture, 10, false);
 
 	CMaterial *pSkyBoxMaterial = new CMaterial(1);
 	pSkyBoxMaterial->SetTexture(pSkyBoxTexture);

@@ -426,7 +426,7 @@ void CGameFramework::FrameAdvance() // 여기서 업데이트랑 렌더링 동시에 진행하는 
 	Render();
 	WaitForGpuComplete();
 	//GPU가 모든 명령 리스트를 실행할 때 까지 기다린다.
-	//m_UIRenderer->Render2D(m_nSwapChainBufferIndex, m_curScene);
+	m_UIRenderer->Render2D(m_nSwapChainBufferIndex, m_curScene);
 #ifdef _WITH_PRESENT_PARAMETERS
 	DXGI_PRESENT_PARAMETERS dxgiPresentParameters;
 	dxgiPresentParameters.DirtyRectsCount = 0;

@@ -55,9 +55,6 @@
     <ClCompile Include="UIManager.cpp">
       <Filter>Mananger\UIManager</Filter>
     </ClCompile>
-    <ClCompile Include="clientIocpCore.cpp">
-      <Filter>ForClient\IocpCore</Filter>
-    </ClCompile>
     <ClCompile Include="CScene.cpp">
       <Filter>Scene\CScene</Filter>
     </ClCompile>
@@ -78,6 +75,9 @@
     <ClCompile Include="DXSampleHelper.cpp" />
     <ClCompile Include="GameScene.cpp">
       <Filter>Scene\GameScene</Filter>
+    </ClCompile>
+    <ClCompile Include="clientIocpCore.cpp">
+      <Filter>ForClient\IocpCore</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -183,9 +183,6 @@
     </ClCompile>
     <ClCompile Include="Shader.cpp">
       <Filter>Shader</Filter>
-    </ClCompile>
-    <ClCompile Include="Scene.cpp">
-      <Filter>GameScene</Filter>
     </ClCompile>
     <ClCompile Include="Mesh.cpp">
       <Filter>Mesh</Filter>

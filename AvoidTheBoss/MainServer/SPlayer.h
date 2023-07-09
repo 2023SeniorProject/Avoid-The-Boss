@@ -28,7 +28,7 @@ public:
 	int32 m_sid = -1;
 	int32 m_idx = -1;
 	bool m_hide = false;
-	int32 m_hp = 5; // 05-06추가 플레이어 HP
+	int32 m_hp = 3; // 05-06추가 플레이어 HP
 public:
 	int32 m_behavior = (int32)PLAYER_BEHAVIOR::IDLE;
 	int32 m_attackedAnimationCount = 0;

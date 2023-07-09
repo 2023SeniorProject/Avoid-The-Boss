@@ -38,6 +38,12 @@ void Scheduler::DoTasks()
 
 }
 
+void Scheduler::Clear()
+{
+	while (_TaskQueue.empty()) _TaskQueue.pop();
+	while (_normalQueue.empty()) _TaskQueue.pop();
+}
+
 
 void Scheduler::DoNormalTasks()
 {
@@ -52,5 +58,4 @@ void Scheduler::DoNormalTasks()
 			delete jobElem;
 		}
 	}
-
 }

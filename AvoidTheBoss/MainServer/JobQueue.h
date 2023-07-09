@@ -27,6 +27,7 @@ public:
 	void PushTask(QueueEvent*);
 	void DoNormalTasks();
 	void DoTasks();
+	void Clear();
 	int64 GetCurrentTick() const
 	{
 		return std::chrono::duration_cast<std::chrono::milliseconds>(Clock::now() - _BeginTickPoint).count();

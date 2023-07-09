@@ -3,6 +3,17 @@
 #include "jobQueue.h"
 
 
+
+CGameManager::CGameManager()
+{
+	_jobQueue = new Scheduler();
+}
+
+CGameManager::~CGameManager()
+{
+	delete _jobQueue;
+}
+
 void CGameManager::InitGame()
 {
 	// 플레이어 초기 위치 셋팅

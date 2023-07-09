@@ -14,12 +14,10 @@ using namespace std;
 //=============================
 Room::Room()
 {
-	_jobQueue = new Scheduler();
 }
 
 Room::~Room()
 {
-	delete _jobQueue;
 }
 
 void Room::UserOut(int32 sid)
@@ -194,14 +192,12 @@ void Room::Update()
 
 void Room::AddEvent(QueueEvent* qe, float after)
 {
-	std::unique_lock<std::shared_mutex> ql(_jobQueueLock); // Queue Lock 호출
-	_jobQueue->PushTask(qe,after);
+	_gameLogic.AddEventAfterTime(after, qe);
 }
 
 void Room::AddEvent(QueueEvent* qe)
 {
-	std::unique_lock<std::shared_mutex> ql(_jobQueueLock); // Queue Lock 호출
-	_jobQueue->PushTask(qe);
+	_gameLogic.AddEvent(qe);
 }
 // ======= RoomManager ========
 

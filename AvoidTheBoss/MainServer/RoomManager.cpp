@@ -108,6 +108,7 @@ void Room::UserIn(int32 sid)
 			std::cout << " ]\n";
 			BroadCasting(&packet);
 			_status = ROOM_STATUS::FULL;
+			_gameLogic.InitGame();
 			_timer.Reset();
 		}
 	}		
@@ -149,13 +150,7 @@ void Room::Update()
 {
 	_timer.Tick(60.f);
 	
-	//{
-	//	std::unique_lock<std::shared_mutex> ql(_jobQueueLock); // Queue Lock 호출
-	//	_jobQueue->DoTasks();
-	//}
-	//for (int i = 0; i < PLAYERNUM; ++i) if(!_players[i].m_hide)_players[i].Update(_timer.GetTimeElapsed());
-	//
-
+	
 	_gameLogic.Update(_timer.GetTimeElapsed());
 	_gameLogic.LateUpdate(_timer.GetTimeElapsed());
 
@@ -163,7 +158,6 @@ void Room::Update()
 
 	{
 		_gameLogic.AddHistory();
-		//_history.AddHistory(_players); // 1 (1/60초) 프레임마다 월드 상태를 기록한다.
 		S2C_FRAMEPACKET packet;
 		packet.size = sizeof(S2C_FRAMEPACKET);
 		packet.type = (uint8)S_PACKET_TYPE::FRAME;

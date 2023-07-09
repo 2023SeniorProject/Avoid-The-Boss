@@ -172,12 +172,14 @@ void UIManager::ReleaseResources()
 
 void UIManager::DrawBackGround(int32 Scene)
 {
-    m_pd2dDeviceContext->DrawBitmap(m_backGround[Scene].resource, D2D1_RECT_F{ 0,0,m_fWidth,m_fHeight }, 1.0f, D2D1_INTERPOLATION_MODE_LINEAR,(D2D1_RECT_F*)0);
+    if (Scene > 2) return;
+    m_pd2dDeviceContext->DrawBitmap(m_backGround[Scene].resource, 
+        D2D1_RECT_F{ 0,0,m_fWidth,m_fHeight }, 1.0f, D2D1_INTERPOLATION_MODE_LINEAR,(D2D1_RECT_F*)0);
 }
 
-void UIManager::DrawButton(int32 idx)
+void UIManager::DrawButton(int32 Scene,int32 idx)
 {
-    m_pd2dDeviceContext->DrawBitmap(m_buttons[idx].resource, m_buttons[idx].d2dLayoutRect, 1.0f, D2D1_INTERPOLATION_MODE_LINEAR, (D2D1_RECT_F*)0);
+   if(Scene == 0) m_pd2dDeviceContext->DrawBitmap(m_buttons[idx].resource, m_buttons[idx].d2dLayoutRect, 1.0f, D2D1_INTERPOLATION_MODE_LINEAR, (D2D1_RECT_F*)0);
 }
 
 
@@ -224,7 +226,7 @@ void UIManager::Render2D(UINT nFrame, int32 curScene)
 
     m_pd2dDeviceContext->BeginDraw();
     DrawBackGround(curScene);
-    DrawButton(0);
+    DrawButton(curScene,0);
     m_pd2dDeviceContext->EndDraw();
 
     m_pd3d11On12Device->ReleaseWrappedResources(ppResources, _countof(ppResources));

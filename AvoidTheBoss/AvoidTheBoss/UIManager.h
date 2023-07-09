@@ -39,7 +39,7 @@ public:
     void Render2D(UINT nFrame,int32 curScene);
     void ReleaseResources();
     void DrawBackGround(int32 Scene);
-    void DrawButton(int32 idx);
+    void DrawButton(int32, int32 idx);
 
     ID2D1SolidColorBrush* CreateBrush(D2D1::ColorF d2dColor);
     IDWriteTextFormat* CreateTextFormat(WCHAR* pszFontName, float fFontSize);

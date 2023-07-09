@@ -356,19 +356,6 @@ void CGameFramework::BuildScenes()
 	m_UIRenderer = new UIManager(m_nSwapChainBuffers, 0, m_pd3dDevice, m_pd3dCommandQueue, m_ppd3dSwapChainBackBuffers, m_nWndClientWidth, m_nWndClientHeight);
 	m_SceneManager = new SceneManager();
 	
-
-	/*m_ppScene[(int32)SCENESTATE::TITLE] = new CTitleScene();
-	if (m_ppScene[(int32)SCENESTATE::TITLE]) m_ppScene[(int32)SCENESTATE::TITLE]->BuildObjects(m_pd3dDevice, m_pd3dCommandList);
-
-	m_ppScene[(int32)SCENESTATE::LOBBY] = new CLobbyScene();
-	if (m_ppScene[(int32)SCENESTATE::LOBBY]) m_ppScene[(int32)SCENESTATE::LOBBY]->BuildObjects(m_pd3dDevice, m_pd3dCommandList);
-
-	m_ppScene[(int32)SCENESTATE::ROOM] = new CRoomScene();
-	if (m_ppScene[(int32)SCENESTATE::ROOM]) m_ppScene[(int32)SCENESTATE::ROOM]->BuildObjects(m_pd3dDevice, m_pd3dCommandList);
-
-	m_ppScene[(int32)SCENESTATE::INGAME] = new CGameScene();
-	if (m_ppScene[(int32)SCENESTATE::INGAME]) m_ppScene[(int32)SCENESTATE::INGAME]->BuildObjects(m_pd3dDevice, m_pd3dCommandList);*/
-
 	m_SceneManager->BuildScene(m_pd3dDevice, m_pd3dCommandList);
 	
 	//씬 객체를 생성하기 위하여 필요한 그래픽 명령 리스트들을 명령 큐에 추가한다. 
@@ -381,14 +368,12 @@ void CGameFramework::BuildScenes()
 	WaitForGpuComplete();
 
 	//그래픽 리소스들을 생성하는 과정에 생성된 업로드 버퍼들을 소멸시킨다. 
-	//for (int i = 0; i < m_nScene; ++i) if(m_ppScene[i]) m_ppScene[i]->ReleaseUploadBuffers();
 	m_SceneManager->ReleaseUpBuffers();
-	//m_SceneManager->ChangeScene((int32)SceneManager::SCENESTATE::LOBBY);
 }
 
 void CGameFramework::ReleaseScenes()
 {
-	//for (int i = 0; i < m_nScene; ++i) if (m_ppScene[i]) m_ppScene[m_curScene]->ReleaseObjects();
+	
 	m_SceneManager->ReleaseScene();
 	if (m_UIRenderer) m_UIRenderer->ReleaseResources();
 	if (m_UIRenderer) delete m_UIRenderer;
@@ -397,18 +382,18 @@ void CGameFramework::ReleaseScenes()
 void CGameFramework::ProcessInput()
 {
 	m_SceneManager->ProcessInput(m_hWnd, m_curScene);
-	//m_ppScene[m_curScene]->ProcessInput(m_hWnd);
+	
 }
 
 void CGameFramework::UpdateObject()
 {
 	m_SceneManager->Update(m_hWnd, m_curScene);
-	//m_ppScene[m_curScene]->Update(m_hWnd);
+	
 }
 
 void CGameFramework::AnimateObjects()
 {
-	//if (m_ppScene[m_curScene]) m_ppScene[m_curScene]->AnimateObjects();
+	
 	m_SceneManager->Animate();
 }
 
@@ -514,7 +499,7 @@ void CGameFramework::Render()
 	//렌더 타겟 뷰(서술자)와 깊이-스텐실 뷰(서술자)를 출력-병합 단계(OM)에 연결한다.
 
 	//=======렌더링 코드는 여기에 추가될 것이다
-	//if (m_ppScene[m_curScene]) m_ppScene[m_curScene]->Render(m_pd3dCommandList, m_ppScene[m_curScene]->m_pCamera);
+	
 	m_SceneManager->Render(m_pd3dCommandList, m_curScene, true);
 	//3인칭 카메라일 때 플레이어가 항상 보이도록 렌더링한다. 
 #ifdef _WITH_PLAYER_TOP
@@ -555,6 +540,7 @@ void CGameFramework::MoveToNextFrame()
 
 void CGameFramework::ChangeScene(SCENESTATE ss)
 {
+	m_curScene = (int32)ss;
 	m_SceneManager->ChangeScene((int32)ss);
 }
 

@@ -7,11 +7,10 @@ public:
 	enum class SCENESTATE { TITLE = 0, LOBBY = 1, ROOM = 2, INGAME = 3 };
 protected:
 
-	std::array<CScene*, 4> m_pScenes;
+	CScene* m_pScenes[4];
 public:
 	SceneManager() 
 	{
-		
 	}
 	~SceneManager(){}
 	
@@ -29,6 +28,5 @@ public:
 	void ResetScene();
 	CScene* ChangeScene(int32 idx);
 	CScene* GetSceneByIdx(int32 idx) { return m_pScenes[idx];   } // 현재 씬을 반환 받는다.
-	CScene* GetSceneByIndex(int32 idx) { return m_pScenes[idx]; }
 };
 

@@ -271,7 +271,7 @@ void CGameScene::ProcessInput(HWND& hWnd)
 	m_lastKeyInput = keyInput;
 }
 
-void CGameScene::Update(HWND hWnd)
+void CGameScene::Update(HWND& hWnd)
 
 {
 	m_timer.Tick(0);

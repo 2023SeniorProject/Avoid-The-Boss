@@ -1,5 +1,5 @@
 #include "pch.h"
-#include "PlayerInfo.h"
+#include "SPlayer.h"
 #include "CollisionDetector.h"
 #include <string>
 

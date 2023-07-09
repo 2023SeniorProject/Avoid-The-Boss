@@ -33,7 +33,7 @@ void InteractionEvent::Task()
 				S2C_ANIMPACKET animPacket;
 				animPacket.size = sizeof(S2C_ANIMPACKET);
 				animPacket.type = (uint8)S_PACKET_TYPE::ANIM;
-				animPacket.idx = targetRoom.GetMyPlayerFromRoom(_sid).m_idx;
+				animPacket.idx = targetRoom._gameLogic.GetPlayerBySid(_sid).m_idx;
 				animPacket.track = (uint8)ANIMTRACK::GEN_ANIM;
 
 				targetRoom.BroadCastingExcept(&animPacket, _sid);
@@ -142,7 +142,7 @@ void moveEvent::Task()
 	// to do move Player in gameLogic
 	int16 roomNum = ServerIocpCore._clients[_sid]->_myRm;
 	Room& targetRoom = ServerIocpCore._rmgr->GetRoom(roomNum);
-	SPlayer& targetPlayer = targetRoom.GetMyPlayerFromRoom(_sid);
+	SPlayer& targetPlayer = targetRoom._gameLogic.GetPlayerBySid(_sid);
 	
 	targetPlayer.SetDirection(_dir);
 	

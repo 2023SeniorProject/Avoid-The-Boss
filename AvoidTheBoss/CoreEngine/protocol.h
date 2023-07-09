@@ -149,6 +149,7 @@ struct C2S_KEY
 	uint8 type;
 	uint8 key; // 입력 키
 	float x,z; // 플레이어 방향 // 키 입력의 변화가 있을 때만 전송
+	int8 idx; //  플레이어 자신의 인덱스를 가져온다.
 };
 
 

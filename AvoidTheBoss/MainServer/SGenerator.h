@@ -28,11 +28,15 @@ public:
 
 	void GenActivate(bool value)
 	{
-		
 		_IsActive = value;
-		
 	}
 	
+	void ResetState()
+	{
+		_IsActive = false;
+		_IsOnInteraction = false;
+		_curGuage = 0.f;
+	}
 	
 	bool CanInteraction(int32 rm, int32 sid);
 	

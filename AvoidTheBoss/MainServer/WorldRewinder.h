@@ -1,5 +1,5 @@
 #pragma once
-#include "PlayerInfo.h"
+#include "SPlayer.h"
 
 struct POS
 {
@@ -26,9 +26,9 @@ public:
 	XMFLOAT3 GetPos(int32 idx) { return XMFLOAT3(_pPos[idx].x, 0.f, _pPos[idx].z); }
 	void PrintWorldInfo() {}
 public:
-	POS _pPos[4]; // 도망자 위치
-	uint32   _myWorldFrame; //자기 자신의 월드 프레임
-	XMFLOAT3 _bossDir;
+	POS			_pPos[4];		//  플레이어 위치
+	uint32		_myWorldFrame; //  자기 자신의 월드 프레임
+	XMFLOAT3	_bossDir;
 };
 
 template <uint32 MAX_REWIND>
@@ -138,7 +138,7 @@ public:
 private:
 	uint32 _curFrame; //   현재 프레임
 	uint32 _frameIndex; // 배열내 위치
-	WorldStatus _lastWorldStatus;
+	WorldStatus _lastWorldStatus; // 가장 최신 월드 상태
 	std::array<WorldStatus, MAX_REWIND> _worldHistory; // 월드 상태 히스토리
 };
 

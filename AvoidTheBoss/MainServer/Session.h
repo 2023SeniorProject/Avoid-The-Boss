@@ -2,7 +2,7 @@
 
 #include "IocpEvent.h"
 #include "ASession.h"
-#include "PlayerInfo.h"
+
 // 서버에서 클라이언트 소켓을 관리할 클래스
 // 마찬가지로 Iocp에 등록할 대상이기 때문에 IocpObject에 해당된다
 

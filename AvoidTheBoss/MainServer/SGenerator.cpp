@@ -1,0 +1,16 @@
+#include "pch.h"
+#include "SGenerator.h"
+#include "CSIocpCore.h"
+
+
+
+
+bool SGenerator::CanInteraction(int32 rm,int32 sid)
+{
+	SPlayer& tp = ServerIocpCore._rmgr->GetRoom(rm)._gameLogic.GetPlayerBySid(sid);
+	XMFLOAT3 myPlayerpos = tp.GetPosition();
+	XMFLOAT3 distance = Vector3::Subtract(myPlayerpos,_pos);
+	float range = 0.2 + _ActiveRadius;
+	if (Vector3::Length(distance) <= range) return true;
+	return false;
+}

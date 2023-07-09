@@ -23,17 +23,11 @@
     <Filter Include="ForServer\Physics">
       <UniqueIdentifier>{a99ab83b-c87b-4dfe-b27b-7419a8878e9e}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ForServer\PlayerInfo">
-      <UniqueIdentifier>{5103721e-5783-48ba-9224-66369ec9516b}</UniqueIdentifier>
-    </Filter>
     <Filter Include="ForServer\RoomSystem">
       <UniqueIdentifier>{d794e8df-51ff-407b-a411-f4a2613d18fb}</UniqueIdentifier>
     </Filter>
     <Filter Include="ForServer\Session">
       <UniqueIdentifier>{af034ded-75b3-4c7c-8250-1be1c0832c26}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="ForServer\SwitchInfo">
-      <UniqueIdentifier>{d44fa11d-04cf-4b2f-81cc-337dde2fc631}</UniqueIdentifier>
     </Filter>
     <Filter Include="ForServer\WorldRewinder">
       <UniqueIdentifier>{2d88c4d3-aef4-43b4-90f7-c1ff8c7acdb5}</UniqueIdentifier>
@@ -44,11 +38,17 @@
     <Filter Include="ForServer\JobQueue">
       <UniqueIdentifier>{fea46be6-8a5c-4e26-b4a5-ce621bf41dc5}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ForServer\GameManager">
-      <UniqueIdentifier>{b3547dbd-1f8e-4e98-97cb-de1c129f353f}</UniqueIdentifier>
-    </Filter>
     <Filter Include="ForServer\SceneManager">
       <UniqueIdentifier>{93bde331-dabb-4396-b893-40bb16a5eecd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GameManager">
+      <UniqueIdentifier>{cec94c28-60a8-4300-a09b-c55a91a16f9a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ForServer\SPlayer">
+      <UniqueIdentifier>{5103721e-5783-48ba-9224-66369ec9516b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ForServer\Generator">
+      <UniqueIdentifier>{d44fa11d-04cf-4b2f-81cc-337dde2fc631}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -70,8 +70,8 @@
     <ClCompile Include="CollisionDetector.cpp">
       <Filter>ForServer\Physics</Filter>
     </ClCompile>
-    <ClCompile Include="PlayerInfo.cpp">
-      <Filter>ForServer\PlayerInfo</Filter>
+    <ClCompile Include="SPlayer.cpp">
+      <Filter>ForServer\SPlayer</Filter>
     </ClCompile>
     <ClCompile Include="RoomManager.cpp">
       <Filter>ForServer\RoomSystem</Filter>
@@ -79,8 +79,8 @@
     <ClCompile Include="Session.cpp">
       <Filter>ForServer\Session</Filter>
     </ClCompile>
-    <ClCompile Include="SwitchInfo.cpp">
-      <Filter>ForServer\SwitchInfo</Filter>
+    <ClCompile Include="SGenerator.cpp">
+      <Filter>ForServer\Generator</Filter>
     </ClCompile>
     <ClCompile Include="WorldRewinder.cpp">
       <Filter>ForServer\WorldRewinder</Filter>
@@ -91,11 +91,11 @@
     <ClCompile Include="JobQueue.cpp">
       <Filter>ForServer\JobQueue</Filter>
     </ClCompile>
-    <ClCompile Include="CGameManager.cpp">
-      <Filter>ForServer\GameManager</Filter>
-    </ClCompile>
     <ClCompile Include="SceneManager.cpp">
       <Filter>ForServer\SceneManager</Filter>
+    </ClCompile>
+    <ClCompile Include="CGameManager.cpp">
+      <Filter>GameManager</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -114,8 +114,8 @@
     <ClInclude Include="CollisionDetector.h">
       <Filter>ForServer\Physics</Filter>
     </ClInclude>
-    <ClInclude Include="PlayerInfo.h">
-      <Filter>ForServer\PlayerInfo</Filter>
+    <ClInclude Include="SPlayer.h">
+      <Filter>ForServer\SPlayer</Filter>
     </ClInclude>
     <ClInclude Include="RoomManager.h">
       <Filter>ForServer\RoomSystem</Filter>
@@ -123,8 +123,8 @@
     <ClInclude Include="Session.h">
       <Filter>ForServer\Session</Filter>
     </ClInclude>
-    <ClInclude Include="SwitchInfo.h">
-      <Filter>ForServer\SwitchInfo</Filter>
+    <ClInclude Include="SGenerator.h">
+      <Filter>ForServer\Generator</Filter>
     </ClInclude>
     <ClInclude Include="WorldRewinder.h">
       <Filter>ForServer\WorldRewinder</Filter>
@@ -135,11 +135,11 @@
     <ClInclude Include="JobQueue.h">
       <Filter>ForServer\JobQueue</Filter>
     </ClInclude>
-    <ClInclude Include="CGameManager.h">
-      <Filter>ForServer\GameManager</Filter>
-    </ClInclude>
     <ClInclude Include="SceneManager.h">
       <Filter>ForServer\SceneManager</Filter>
+    </ClInclude>
+    <ClInclude Include="CGameManager.h">
+      <Filter>GameManager</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

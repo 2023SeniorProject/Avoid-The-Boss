@@ -7,7 +7,7 @@
 #include "CBoss.h"
 #include "CGenerator.h" // 스위치 분리
 #include "ClientPacketEvent.h"
-
+#include "CSound.h"
 #define MAX_LIGHTS			16 
 
 #define POINT_LIGHT			1
@@ -44,6 +44,7 @@ class CGameScene : public SceneInterface
 	friend class CSession;
 	friend class queueEvent;
 	friend class FrameEvent;
+
 public:
 	static void CreateCbvSrvDescriptorHeaps(ID3D12Device5* pd3dDevice, int nConstantBufferViews, int nShaderResourceViews);
 
@@ -197,9 +198,11 @@ protected:
 
 class CMainScene : public CGameScene
 {
+private:
+	//CSound* m_BackgroundSound;
 public:
-	CMainScene() {}
-	~CMainScene() {}
+	CMainScene();
+	~CMainScene();
 	virtual void BuildObjects(ID3D12Device5* pd3dDevice, ID3D12GraphicsCommandList4
 		* pd3dCommandList);
 
@@ -210,13 +213,16 @@ public:
 		lParam);
 
 	virtual void ProcessInput(HWND hWnd);
+	//virtual void Update(HWND hWnd);
 };
 
 class CLobbyScene : public CGameScene
 {
+private:
+	//CSound* m_BackgroundSound;
 public:
-	CLobbyScene() {}
-	~CLobbyScene() {}
+	CLobbyScene();
+	~CLobbyScene();
 	virtual void BuildObjects(ID3D12Device5* pd3dDevice, ID3D12GraphicsCommandList4
 		* pd3dCommandList);
 

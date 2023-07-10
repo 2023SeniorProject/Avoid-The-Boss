@@ -10,12 +10,9 @@ CBoss::CBoss(ID3D12Device5* pd3dDevice,
 	ID3D12GraphicsCommandList4  * pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature)
 {
 	m_type = 0;
-	m_pCamera = ChangeCamera(FIRST_PERSON_CAMERA, 0.0f);
+	m_pCamera = ChangeCamera(THIRD_PERSON_CAMERA, 0.0f);
 	m_ctype = (uint8)PLAYER_TYPE::BOSS;
 	m_nCharacterType = CHARACTER_TYPE::BOSS;
-
-	//CLoadedModelInfo* pBossModel = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, g_pstrCharactorRefernece[(int)m_nCharacterType], NULL, Layout::PLAYER);
-	//SetChild(pBossModel->m_pModelRootObject, true);
 
 	CLoadedModelInfo* pBossUpperModel = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "Model/Character/Boss_Shooting_Run_UpperBody.bin", NULL, Layout::PLAYER);
 	SetChild(pBossUpperModel->m_pModelRootObject, true);
@@ -45,10 +42,34 @@ CBoss::CBoss(ID3D12Device5* pd3dDevice,
 	m_pSkinnedAnimationController1->SetTrackSpeed(1, 1.875);*/
 
 	m_pSkinnedAnimationController->SetTrackEnable(0, true);
-	m_pSkinnedAnimationController1->SetTrackEnable(0, true);
+	m_pSkinnedAnimationController->SetTrackEnable(0, true);
+	m_pSkinnedAnimationController->SetTrackEnable(2, false);
+	m_pSkinnedAnimationController->SetTrackEnable(3, false);
 
+	m_pSkinnedAnimationController1->SetTrackEnable(0, true);
+	m_pSkinnedAnimationController1->SetTrackEnable(1, false);
 	m_pSkinnedAnimationController1->SetTrackEnable(2, false);
 	m_pSkinnedAnimationController1->SetTrackEnable(3, false);
+
+	// 사운드 설정
+	m_pSkinnedAnimationController->SetCallbackKeys(0, 1); // 인덱스 번호 , 갯수
+	m_pSkinnedAnimationController->SetCallbackKeys(1, 1);
+	m_pSkinnedAnimationController->SetCallbackKeys(2, 1);
+	m_pSkinnedAnimationController->SetCallbackKeys(3, 1);
+
+#ifdef _WITH_SOUND_RESOURCE
+	m_pSkinnedAnimationController->SetCallbackKey(0, 0.1f, _T("Footstep01"));
+	m_pSkinnedAnimationController->SetCallbackKey(1, 0.5f, _T("Footstep02"));
+	m_pSkinnedAnimationController->SetCallbackKey(2, 0.9f, _T("Footstep03"));
+#else
+	m_pSkinnedAnimationController->SetCallbackKey(0, 0, 0.0000f, 
+		L"Sound/Footstep01.wav");
+	m_pSkinnedAnimationController->SetCallbackKey(1, 0, 0.0f, _T("Sound/Footstep02.wav"));
+	m_pSkinnedAnimationController->SetCallbackKey(2, 0, 0.0f, _T("Sound/Footstep03.wav"));
+	m_pSkinnedAnimationController->SetCallbackKey(3, 0, 0.0f, _T("Sound/Jump.wav"));
+#endif
+	CAnimationCallbackHandler *pAnimationCallbackHandler = new CSoundCallbackHandler();
+	m_pSkinnedAnimationController->SetAnimationCallbackHandler(1, pAnimationCallbackHandler);
 
 	if (m_pCamera->m_nMode == (DWORD)FIRST_PERSON_CAMERA)
 		SetPosition(XMFLOAT3(-22.55f, 1.57f, -1.04f));

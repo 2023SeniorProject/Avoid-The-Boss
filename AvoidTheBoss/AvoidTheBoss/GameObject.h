@@ -143,7 +143,7 @@ public:
 struct CALLBACKKEY
 {
    float  							m_fTime = 0.0f;
-   void  							*m_pCallbackData = NULL;
+   const void  							*m_pCallbackData = NULL;
 };
 
 #define _WITH_ANIMATION_INTERPOLATION
@@ -155,7 +155,7 @@ public:
 	~CAnimationCallbackHandler() { }
 
 public:
-   virtual void HandleCallback(void *pCallbackData, float fTrackPosition) { }
+   virtual void HandleCallback(const void *pCallbackData, float fTrackPosition) { }
 };
 
 class CAnimationSet
@@ -228,7 +228,7 @@ public:
 
 public:
 	void SetCallbackKeys(int nAnimationSet, int nCallbackKeys);
-	void SetCallbackKey(int nAnimationSet, int nKeyIndex, float fTime, void *pData);
+	void SetCallbackKey(int nAnimationSet, int nKeyIndex, float fTime, const void *pData);
 	void SetAnimationCallbackHandler(int nAnimationSet, CAnimationCallbackHandler *pCallbackHandler);
 };
 
@@ -306,7 +306,7 @@ public:
 	void SetTrackWeight(int nAnimationTrack, float fWeight);
 
 	void SetCallbackKeys(int nAnimationSet, int nCallbackKeys);
-	void SetCallbackKey(int nAnimationSet, int nKeyIndex, float fTime, void *pData);
+	void SetCallbackKey(int nAnimationSet, int nKeyIndex, float fTime, const void *pData);
 	void SetAnimationCallbackHandler(int nAnimationSet, CAnimationCallbackHandler *pCallbackHandler);
 
 	void AdvanceTime(float fElapsedTime, CGameObject *pRootGameObject);

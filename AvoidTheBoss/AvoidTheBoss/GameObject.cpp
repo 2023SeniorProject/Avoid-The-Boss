@@ -383,7 +383,7 @@ void CAnimationSets::SetCallbackKeys(int nAnimationSet, int nCallbackKeys)
 	m_pAnimationSets[nAnimationSet]->m_pCallbackKeys = new CALLBACKKEY[nCallbackKeys];
 }
 
-void CAnimationSets::SetCallbackKey(int nAnimationSet, int nKeyIndex, float fKeyTime, void *pData)
+void CAnimationSets::SetCallbackKey(int nAnimationSet, int nKeyIndex, float fKeyTime, const void *pData)
 {
 	m_pAnimationSets[nAnimationSet]->m_pCallbackKeys[nKeyIndex].m_fTime = fKeyTime;
 	m_pAnimationSets[nAnimationSet]->m_pCallbackKeys[nKeyIndex].m_pCallbackData = pData;
@@ -441,7 +441,7 @@ void CAnimationController::SetCallbackKeys(int nAnimationSet, int nCallbackKeys)
 	if (m_pAnimationSets) m_pAnimationSets->SetCallbackKeys(nAnimationSet, nCallbackKeys);
 }
 
-void CAnimationController::SetCallbackKey(int nAnimationSet, int nKeyIndex, float fKeyTime, void *pData)
+void CAnimationController::SetCallbackKey(int nAnimationSet, int nKeyIndex, float fKeyTime, void const *pData)
 {
 	if (m_pAnimationSets) m_pAnimationSets->SetCallbackKey(nAnimationSet, nKeyIndex, fKeyTime, pData);
 }

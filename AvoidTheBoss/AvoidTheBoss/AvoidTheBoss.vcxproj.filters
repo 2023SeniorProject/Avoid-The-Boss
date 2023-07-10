@@ -70,6 +70,9 @@
     <ClCompile Include="DXRHelpers\nv_helpers_dx12\ShaderBindingTableGenerator.cpp" />
     <ClCompile Include="DXRHelpers\nv_helpers_dx12\TopLevelASGenerator.cpp" />
     <ClCompile Include="DXSampleHelper.cpp" />
+    <ClCompile Include="CSound.cpp">
+      <Filter>Sound</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameObject.h">
@@ -149,6 +152,9 @@
     <ClInclude Include="DXRHelpers\nv_helpers_dx12\TopLevelASGenerator.h" />
     <ClInclude Include="DXRHelper.h" />
     <ClInclude Include="DXSampleHelper.h" />
+    <ClInclude Include="CSound.h">
+      <Filter>Sound</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AvoidTheBoss.cpp">
@@ -376,6 +382,9 @@
     </Filter>
     <Filter Include="Mananger">
       <UniqueIdentifier>{f06f0dab-99ab-423e-b1d6-855d105af5a6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sound">
+      <UniqueIdentifier>{50ab258b-038b-4bb0-bc8d-76e353bf34d8}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

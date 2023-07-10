@@ -44,6 +44,8 @@ CGameFramework::CGameFramework()
 	
 	_tcscpy_s(m_pszFrameRate, _T("FPS : "));
 
+	m_BackgroundSound = new CSound();
+	m_BackgroundSound->SoundSystem();
 }
 
 CGameFramework::~CGameFramework()
@@ -68,11 +70,16 @@ bool CGameFramework::OnCreate(HINSTANCE hInstance, HWND hMainWnd)
 	
 	//렌더링할 게임 객체를 생성한다.
 	BuildScenes();
+	m_BackgroundSound->MyPlaySound(0, 0);
+
 	return(true);
 }
 
 void CGameFramework::OnDestroy()
 {
+	delete m_BackgroundSound;
+	m_BackgroundSound->SoundRelease();
+
 	ReleaseScenes();
 	//게임 객체(게임 월드 객체)를 소멸한다.
 
@@ -395,6 +402,8 @@ void CGameFramework::FrameAdvance() // 여기서 업데이트랑 렌더링 동시에 진행하는 
 	ProcessInput();
 	//2 업데이트 처리
 	UpdateObject();
+	m_BackgroundSound->MyPlaySound(0, 0); 
+	m_BackgroundSound->SetVolum(0, 1.f);
 	//3 애니메이트 처리
 	AnimateObjects();
 	//4 렌더링 처리

@@ -199,8 +199,8 @@ void CGameScene::ProcessInput(HWND& hWnd)
 }
 
 void CGameScene::Update(HWND hWnd)
-
 {
+
 	_timer.Tick(0);
 	
 	{
@@ -228,6 +228,7 @@ void CGameScene::Update(HWND hWnd)
 	str.append(std::to_wstring(_curFrame));
 	//if(_timer.GetFrameRate()) str.append(std::to_wstring(1000.f / _timer.GetFrameRate()));
 	::SetWindowText(hWnd, str.c_str());
+	
 }
 
 
@@ -629,6 +630,8 @@ void CGameScene::InitGame(void* packet, int32 sid)
 	if(_players[1] != nullptr)_players[1]->SetPosition(XMFLOAT3(10, 0.25, -18));
 	if(_players[2] != nullptr)_players[2]->SetPosition(XMFLOAT3(15, 0.25, -18));
 	if(_players[3] != nullptr)_players[3]->SetPosition(XMFLOAT3(20, 0.25, -18));
+
+	
 }
 
 void CGameScene::AddEvent(queueEvent* ev, float after)
@@ -657,9 +660,23 @@ void CGameScene::Exit()
 	}
 }
 
+CLobbyScene::CLobbyScene()
+{
+	//m_BackgroundSound = new CSound();
+	//m_BackgroundSound->SoundSystem();
+}
+
+CLobbyScene::~CLobbyScene()
+{
+	//delete m_BackgroundSound;
+	//m_BackgroundSound->SoundRelease();
+}
+
 void CLobbyScene::BuildObjects(ID3D12Device5* pd3dDevice, ID3D12GraphicsCommandList4
 	* pd3dCommandList)
 {
+	//m_BackgroundSound->MyPlaySound(0, 1);
+
 	m_pd3dGraphicsRootSignature = CreateGraphicsRootSignature(pd3dDevice);
 
 	CreateCbvSrvDescriptorHeaps(pd3dDevice, 0, 3);
@@ -776,8 +793,20 @@ void CLobbyScene::ProcessInput(HWND hWnd)
 	m_lastKeyInput = keyInput;
 }
 
+CMainScene::CMainScene()
+{
+	//m_BackgroundSound = new CSound();
+	//m_BackgroundSound->SoundSystem();
+}
+CMainScene::~CMainScene()
+{
+	//delete m_BackgroundSound;
+	//m_BackgroundSound->SoundRelease();
+}
+
 void CMainScene::BuildObjects(ID3D12Device5* pd3dDevice, ID3D12GraphicsCommandList4* pd3dCommandList)
 {
+	//m_BackgroundSound->MyPlaySound(0, 1);
 	//�׷��� ��Ʈ �ñ׳��ĸ� �����Ѵ�. 
 	m_pd3dGraphicsRootSignature = CreateGraphicsRootSignature(pd3dDevice);
 
@@ -904,6 +933,8 @@ void CMainScene::ProcessInput(HWND hWnd)
 	m_lastKeyInput = keyInput;
 }
 
+
+
 void CMainScene::OnProcessingMouseMessage(HWND hWnd, UINT nMessageID, WPARAM wParam, LPARAM lParam)
 {
 	switch (nMessageID)
@@ -948,6 +979,7 @@ void CMainScene::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPARAM 
 		case VK_RETURN:
 		{
 			mainGame.m_nSceneIndex = 0;
+
 		}
 		break;
 		case VK_F9:

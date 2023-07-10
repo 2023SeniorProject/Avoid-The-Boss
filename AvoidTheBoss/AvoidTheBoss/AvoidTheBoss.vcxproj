@@ -72,8 +72,8 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <OutDir>$(SolutionDir)Binary\$(Configuration)\</OutDir>
-    <IncludePath>$(SolutionDir);$(SolutionDir)CoreEngine\;$(IncludePath)</IncludePath>
-    <LibraryPath>$(SolutionDir)Library\;$(LibraryPath)</LibraryPath>
+    <LibraryPath>C:\AvoidTheBoss\AvoidTheBoss\AvoidTheBoss\FMOD\lib;$(SolutionDir)Library\;$(LibraryPath)</LibraryPath>
+    <IncludePath>C:\AvoidTheBoss\AvoidTheBoss\AvoidTheBoss\FMOD\inc;C:\AvoidTheBoss\AvoidTheBoss\CoreEngine;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <OutDir>$(SolutionDir)Binary\$(Configuration)\</OutDir>
@@ -136,6 +136,7 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>fmod_vc.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -167,6 +168,7 @@
     <ClInclude Include="ClientPacketEvent.h" />
     <ClInclude Include="ClientSession.h" />
     <ClInclude Include="CollisionDetector.h" />
+    <ClInclude Include="CSound.h" />
     <ClInclude Include="DDSTextureLoader12.h" />
     <ClInclude Include="clientIocpCore.h" />
     <ClInclude Include="DXRHelper.h" />
@@ -200,6 +202,7 @@
     <ClCompile Include="ClientPacketEvent.cpp" />
     <ClCompile Include="ClientSession.cpp" />
     <ClCompile Include="CollisionDetector.cpp" />
+    <ClCompile Include="CSound.cpp" />
     <ClCompile Include="DDSTextureLoader12.cpp" />
     <ClCompile Include="DXRHelpers\nv_helpers_dx12\BottomLevelASGenerator.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>

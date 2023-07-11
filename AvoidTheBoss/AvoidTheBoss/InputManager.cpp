@@ -7,11 +7,11 @@ int8 InputManager::m_keyBuffer[256] = {-1,};
 
 void InputManager::InputStatusUpdate()
 {
-	for (int i = 65; i < 90; ++i)
+	for (int i = 65; i < 91; ++i)
 	{
 		Update(i);
 	}
-
+	Update(VK_BACK);
 	Update(VK_SPACE);
 } 
 

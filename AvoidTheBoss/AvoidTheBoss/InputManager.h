@@ -54,5 +54,6 @@ public:
 	static void InputStatusUpdate();
 	static void MouseInputStatusUpdate();
 	static int8 GetKeyBuffer(const KEY_TYPE key) { return m_keyBuffer[(int32)key]; }
+	static int8 GetKeyBuffer(int32 key) { return m_keyBuffer[(int32)key]; }
 };
 

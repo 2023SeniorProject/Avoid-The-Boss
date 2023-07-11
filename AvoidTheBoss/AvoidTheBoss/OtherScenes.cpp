@@ -3,6 +3,7 @@
 #include "Player.h"
 #include "GameFramework.h"
 
+#include "InputManager.h"
 #include "SceneManager.h"
 #include "UIManager.h"
 
@@ -139,10 +140,6 @@ void CLobbyScene::BuildDefaultLightsAndMaterials()
 
 bool IntersectRectByPoint(const D2D1_RECT_F& rect, const POINT& mp)
 {
-
-	std::cout << mp.x << " " << mp.y << "\n";
-	std::cout << rect.left << " " << rect.right << " ";
-	std::cout << rect.top << " " << rect.bottom << "\n";
 	return ((rect.left <= mp.x && mp.x <= rect.right) && (rect.top <= mp.y && mp.y <= rect.bottom));
 }
 #pragma region  Title
@@ -262,6 +259,37 @@ void CTitleScene::BuildDefaultLightsAndMaterials()
 
 void CTitleScene::ProcessInput(HWND& hWnd)
 {
+	InputManager::GetInstance().InputStatusUpdate();
+	//알파벳 입력 받기
+	for (int i = 65; i < 90; ++i)
+	{
+		if ((int8)KEY_STATUS::KEY_UP == InputManager::GetInstance().GetKeyBuffer(i))
+		{
+			wchar_t str[2];
+			str[0] = i;
+			str[1] = '\0';
+			if (focus == 0 && mainGame.m_UIRenderer->m_pTextBlocks[0].m_pstrText.length() <= 10)
+				mainGame.m_UIRenderer->m_pTextBlocks[0].m_pstrText.append(str);
+			else if( focus == 1 && mainGame.m_UIRenderer->m_pTextBlocks[1].m_pstrText.length() <= 10)
+				mainGame.m_UIRenderer->m_pTextBlocks[1].m_pstrText.append(str);
+		}
+	}
+	// 텍스트 지우기
+	if ((int8)KEY_STATUS::KEY_UP == InputManager::GetInstance().GetKeyBuffer(VK_BACK))
+	{
+		if (1 == focus)
+		{
+			if (mainGame.m_UIRenderer->m_pTextBlocks[1].m_pstrText.length() > 3)
+				mainGame.m_UIRenderer->m_pTextBlocks[1].m_pstrText.
+				erase(mainGame.m_UIRenderer->m_pTextBlocks[1].m_pstrText.length() - 1,
+					1);
+		}
+		else
+			if (mainGame.m_UIRenderer->m_pTextBlocks[0].m_pstrText.length() > 3)
+				mainGame.m_UIRenderer->m_pTextBlocks[0].m_pstrText.
+				erase(mainGame.m_UIRenderer->m_pTextBlocks[0].m_pstrText.length() - 1,
+					1);
+	}
 }
 void CTitleScene::Update(HWND hWnd)
 {
@@ -345,18 +373,8 @@ void CTitleScene::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPARAM
 			::PostQuitMessage(0);
 			break;
 		case VK_BACK:
-			if (1 == focus)
-			{
-				if(mainGame.m_UIRenderer->m_pTextBlocks[1].m_pstrText.length() > 3)
-				mainGame.m_UIRenderer->m_pTextBlocks[1].m_pstrText.
-					erase(mainGame.m_UIRenderer->m_pTextBlocks[1].m_pstrText.length(),
-						1);
-			}
-			else
-				if (mainGame.m_UIRenderer->m_pTextBlocks[0].m_pstrText.length() > 3)
-					mainGame.m_UIRenderer->m_pTextBlocks[0].m_pstrText.
-					erase(mainGame.m_UIRenderer->m_pTextBlocks[0].m_pstrText.length(),
-						1);
+			
+		
 			break;
 		default:
 			break;

@@ -1,7 +1,16 @@
 #include "pch.h"
+
 #include "Player.h"
+#include "GameFramework.h"
+
+#include "SceneManager.h"
+#include "UIManager.h"
+
 #include "OtherScenes.h"
+
 #include "clientIocpCore.h"
+
+#include <Windowsx.h>
 
 #pragma region Lobby
 
@@ -128,10 +137,13 @@ void CLobbyScene::BuildDefaultLightsAndMaterials()
 }
 #pragma endregion
 
-bool IntersectRectByPoint(const D2D1_RECT_F rect, const POINT& mp)
+bool IntersectRectByPoint(const D2D1_RECT_F& rect, const POINT& mp)
 {
 
-	return ((rect.left <= mp.x <= rect.right) && (rect.top <= mp.y <= rect.bottom));
+	std::cout << mp.x << " " << mp.y << "\n";
+	std::cout << rect.left << " " << rect.right << " ";
+	std::cout << rect.top << " " << rect.bottom << "\n";
+	return ((rect.left <= mp.x && mp.x <= rect.right) && (rect.top <= mp.y && mp.y <= rect.bottom));
 }
 #pragma region  Title
 void CTitleScene::BuildObjects(ID3D12Device5* pd3dDevice, ID3D12GraphicsCommandList4* pd3dCommandList)
@@ -152,11 +164,31 @@ void CTitleScene::BuildObjects(ID3D12Device5* pd3dDevice, ID3D12GraphicsCommandL
 
 void CTitleScene::MouseAction(const POINT& mp)
 {
-	if (IntersectRectByPoint(D2D1_RECT_F{150,150, 350, 350},mp))
+
+	if (IntersectRectByPoint(mainGame.m_UIRenderer->m_pTextBlocks[0].m_d2dLayoutRect, mp))
 	{
-		clientCore.InitConnect("127.0.0.1");
+		std::cout << "Focus Change 0\n";
+		focus = 0;
+	}
+	else if (IntersectRectByPoint(mainGame.m_UIRenderer->m_pTextBlocks[1].m_d2dLayoutRect, mp))
+	{
+		std::cout << "Focus Change 1\n";
+		focus = 1;
+	}
+
+	if (IntersectRectByPoint(mainGame.m_UIRenderer->GetButtonRect(0,0),mp))
+	{
+		/*clientCore.InitConnect("127.0.0.1");
 		C2S_LOGIN loginPacket;
+		lstrcpyn(loginPacket.name, mainGame.m_UIRenderer->m_pTextBlocks[0].m_pstrText.c_str(), 10);
+		lstrcpyn(loginPacket.pw, mainGame.m_UIRenderer->m_pTextBlocks[1].m_pstrText.c_str(), 10);
 		clientCore.DoConnect(&loginPacket);
+		mainGame.ChangeScene(CGameFramework::SCENESTATE::LOBBY);*/
+	}
+
+	else if (IntersectRectByPoint(mainGame.m_UIRenderer->GetButtonRect(0, 1), mp))
+	{
+		mainGame.OnDestroy();
 	}
 }
 
@@ -277,9 +309,12 @@ void CTitleScene::OnProcessingMouseMessage(HWND hWnd, UINT nMessageID, WPARAM wP
 	case WM_RBUTTONDOWN:
 		//마우스 캡쳐를 하고 현재 마우스 위치를 가져온다.
 	{
-		::SetCapture(hWnd);
+		int xPos = GET_X_LPARAM(lParam);
+		int yPos = GET_Y_LPARAM(lParam);
 		POINT m_mousePos;
-		::GetCursorPos(&m_mousePos);
+		m_mousePos.x = xPos;
+		m_mousePos.y = yPos;
+		
 		MouseAction(m_mousePos);
 	}
 	break;
@@ -289,6 +324,9 @@ void CTitleScene::OnProcessingMouseMessage(HWND hWnd, UINT nMessageID, WPARAM wP
 		::ReleaseCapture();
 		break;
 	case WM_MOUSEMOVE:
+	{
+		
+	}
 		break;
 	default:
 		break;
@@ -297,6 +335,36 @@ void CTitleScene::OnProcessingMouseMessage(HWND hWnd, UINT nMessageID, WPARAM wP
 
 void CTitleScene::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPARAM wParam, LPARAM lParam)
 {
+
+	switch (nMessageID)
+	{
+	case WM_KEYUP:
+		switch (wParam)
+		{
+		case VK_ESCAPE:
+			::PostQuitMessage(0);
+			break;
+		case VK_BACK:
+			if (1 == focus)
+			{
+				if(mainGame.m_UIRenderer->m_pTextBlocks[1].m_pstrText.length() > 3)
+				mainGame.m_UIRenderer->m_pTextBlocks[1].m_pstrText.
+					erase(mainGame.m_UIRenderer->m_pTextBlocks[1].m_pstrText.length(),
+						1);
+			}
+			else
+				if (mainGame.m_UIRenderer->m_pTextBlocks[0].m_pstrText.length() > 3)
+					mainGame.m_UIRenderer->m_pTextBlocks[0].m_pstrText.
+					erase(mainGame.m_UIRenderer->m_pTextBlocks[0].m_pstrText.length(),
+						1);
+			break;
+		default:
+			break;
+		}
+		break;
+	default:
+		break;
+	}
 }
 #pragma endregion
 

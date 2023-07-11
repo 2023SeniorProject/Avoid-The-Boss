@@ -20,7 +20,7 @@ public:
 class CTitleScene : public CScene
 {
 	CPlayer* m_player = NULL;
-
+	int32 focus = 0;
 public:
 	CTitleScene() {}
 	~CTitleScene() {}

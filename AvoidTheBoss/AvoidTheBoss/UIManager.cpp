@@ -142,6 +142,7 @@ void UIManager::CreateRenderTarget(ID3D12Resource** ppd3dRenderTargets)
 
 void UIManager::UpdateTextOutputs(UINT nIndex, WCHAR* pstrUIText, D2D1_RECT_F* pd2dLayoutRect, IDWriteTextFormat* pdwFormat, ID2D1SolidColorBrush* pd2dTextBrush)
 {
+
 }
 
 
@@ -179,7 +180,71 @@ void UIManager::DrawBackGround(int32 Scene)
 
 void UIManager::DrawButton(int32 Scene,int32 idx)
 {
-   if(Scene == 0) m_pd2dDeviceContext->DrawBitmap(m_buttons[idx].resource, m_buttons[idx].d2dLayoutRect, 1.0f, D2D1_INTERPOLATION_MODE_LINEAR, (D2D1_RECT_F*)0);
+   
+    if (Scene == 0) // 타이틀 씬
+    {
+        m_pd2dDeviceContext->DrawRectangle(m_TitleButtons[0].d2dLayoutRect, redBrush);
+        m_pd2dDeviceContext->DrawBitmap(m_TitleButtons[0].resource, m_TitleButtons[0].d2dLayoutRect, 1.0f, D2D1_INTERPOLATION_MODE_LINEAR, (D2D1_RECT_F*)0);
+        m_pd2dDeviceContext->DrawRectangle(m_TitleButtons[1].d2dLayoutRect, redBrush);
+        m_pd2dDeviceContext->DrawBitmap(m_TitleButtons[1].resource, m_TitleButtons[1].d2dLayoutRect, 1.0f, D2D1_INTERPOLATION_MODE_LINEAR, (D2D1_RECT_F*)0);
+
+    }
+    else if (Scene == 1) // 로비 씬
+    {
+        m_pd2dDeviceContext->DrawRectangle(m_LobbyButtons[0].d2dLayoutRect, redBrush);
+        m_pd2dDeviceContext->DrawBitmap(m_LobbyButtons[0].resource, m_LobbyButtons[0].d2dLayoutRect, 1.0f, D2D1_INTERPOLATION_MODE_LINEAR, (D2D1_RECT_F*)0);
+        
+        m_pd2dDeviceContext->DrawRectangle(m_LobbyButtons[1].d2dLayoutRect, redBrush);
+        m_pd2dDeviceContext->DrawBitmap(m_LobbyButtons[1].resource, m_LobbyButtons[1].d2dLayoutRect, 1.0f, D2D1_INTERPOLATION_MODE_LINEAR, (D2D1_RECT_F*)0);
+        
+        m_pd2dDeviceContext->DrawRectangle(m_LobbyButtons[2].d2dLayoutRect, redBrush);
+        m_pd2dDeviceContext->DrawBitmap(m_LobbyButtons[2].resource, m_LobbyButtons[2].d2dLayoutRect, 1.0f, D2D1_INTERPOLATION_MODE_LINEAR, (D2D1_RECT_F*)0);
+    }
+    else if (Scene == 2) // 게임 룸 씬
+    {
+        m_pd2dDeviceContext->DrawRectangle(m_RoomButtons[0].d2dLayoutRect, redBrush);
+        m_pd2dDeviceContext->DrawBitmap(m_RoomButtons[0].resource, m_RoomButtons[0].d2dLayoutRect, 1.0f, D2D1_INTERPOLATION_MODE_LINEAR, (D2D1_RECT_F*)0);
+        
+        m_pd2dDeviceContext->DrawRectangle(m_RoomButtons[1].d2dLayoutRect, redBrush);
+        m_pd2dDeviceContext->DrawBitmap(m_RoomButtons[1].resource, m_RoomButtons[1].d2dLayoutRect, 1.0f, D2D1_INTERPOLATION_MODE_LINEAR, (D2D1_RECT_F*)0);
+       
+        m_pd2dDeviceContext->DrawRectangle(m_RoomButtons[2].d2dLayoutRect, redBrush);
+        m_pd2dDeviceContext->DrawBitmap(m_RoomButtons[2].resource, m_RoomButtons[2].d2dLayoutRect, 1.0f, D2D1_INTERPOLATION_MODE_LINEAR, (D2D1_RECT_F*)0);
+    }
+}
+
+void UIManager::DrawTextBlock(int32 Scene)
+{
+
+    if (Scene == 0)
+    {
+        m_pd2dDeviceContext->FillRectangle(m_pTextBlocks[0].m_d2dLayoutRect, grayBrush);
+        m_pd2dDeviceContext->FillRectangle(m_pTextBlocks[1].m_d2dLayoutRect, grayBrush);
+        
+        m_pd2dDeviceContext->DrawText(m_pTextBlocks[0].m_pstrText.c_str(), 
+            (UINT)wcslen(m_pTextBlocks[0].m_pstrText.c_str()), m_pTextBlocks[0].m_pdwFormat, 
+            m_pTextBlocks[0].m_d2dLayoutRect, m_pTextBlocks[0].m_pd2dTextBrush);
+
+        m_pd2dDeviceContext->DrawText(m_pTextBlocks[1].m_pstrText.c_str(),
+            (UINT)wcslen(m_pTextBlocks[1].m_pstrText.c_str()), m_pTextBlocks[1].m_pdwFormat,
+            m_pTextBlocks[1].m_d2dLayoutRect, m_pTextBlocks[1].m_pd2dTextBrush);
+    }
+}
+
+D2D1_RECT_F UIManager::GetButtonRect(int32 Scene, int32 idx)
+{
+    switch (Scene)
+    {
+    case 0:
+        return m_TitleButtons[idx].d2dLayoutRect;
+        break;
+    case 1:
+        return m_LobbyButtons[idx].d2dLayoutRect;
+        break;
+    case 2:
+        return m_RoomButtons[idx].d2dLayoutRect;
+        break;
+    }
 }
 
 
@@ -191,7 +256,7 @@ ID2D1SolidColorBrush* UIManager::CreateBrush(D2D1::ColorF d2dColor)
     return(pd2dDefaultTextBrush);
 }
 
-IDWriteTextFormat* UIManager::CreateTextFormat(WCHAR* pszFontName, float fFontSize)
+IDWriteTextFormat* UIManager::CreateTextFormat(const WCHAR* pszFontName, float fFontSize)
 {
     IDWriteTextFormat* pdwDefaultTextFormat = NULL;
     m_pd2dWriteFactory->CreateTextFormat(L"맑은 고딕", nullptr, DWRITE_FONT_WEIGHT_NORMAL, DWRITE_FONT_STYLE_NORMAL, DWRITE_FONT_STRETCH_NORMAL, fFontSize, L"en-us", &pdwDefaultTextFormat);
@@ -208,12 +273,31 @@ void UIManager::InitializeDevice(ID3D12Device5* pd3dDevice, ID3D12CommandQueue* 
     CreateD3D11On12Device(pd3dDevice,pd3dCommandQueue);
     CreateD2DDevice();
     CreateRenderTarget(ppd3dRenderTargets);;
+    
+    // 배경 리소스들
     m_backGround[0].resource = LoadPngFromFile(L"UI/Title.png");
     m_backGround[1].resource = LoadPngFromFile(L"UI/Lobby.png");
     m_backGround[2].resource = LoadPngFromFile(L"UI/Room.png");
 
-    m_buttons[0].resource      = LoadPngFromFile(L"UI/Start.png");
-    m_buttons[0].d2dLayoutRect = MakeLayoutRect(m_fWidth / 2.0f, m_fHeight / 2.0f, 100, 100);
+    // 타이틀 씬에 필요한 버튼
+    m_TitleButtons[0].resource      = LoadPngFromFile(L"UI/Title_Start.png");
+    m_TitleButtons[0].d2dLayoutRect = MakeLayoutRect(m_fWidth / 2.0f + 300.f, m_fHeight / 2.0f + 100, 200, 100);
+    m_TitleButtons[1].resource =      LoadPngFromFile(L"UI/Title_Quit.png");
+    m_TitleButtons[1].d2dLayoutRect = MakeLayoutRect(m_fWidth / 2.0f + 300.f, m_fHeight / 2.0f + 200.f, 200, 100);
+    // ID / PW 입력 창
+    m_pTextBlocks[0].m_pd2dTextBrush = CreateBrush(D2D1::ColorF::White);
+    m_pTextBlocks[0].m_pdwFormat = CreateTextFormat(L"", 15);
+    m_pTextBlocks[0].m_pstrText = L"ID:";
+    m_pTextBlocks[0].m_d2dLayoutRect = MakeLayoutRect(m_fWidth / 2.0f, m_fHeight / 2.0f + 150, 200, 20);
+
+    m_pTextBlocks[1].m_pd2dTextBrush = CreateBrush(D2D1::ColorF::White);
+    m_pTextBlocks[1].m_pdwFormat = CreateTextFormat(L"", 15);
+    m_pTextBlocks[1].m_pstrText = L"PW:";
+    m_pTextBlocks[1].m_d2dLayoutRect = MakeLayoutRect(m_fWidth / 2.0f, m_fHeight / 2.0f + 200, 200, 20);
+    
+    // 브러시들
+     redBrush = CreateBrush(D2D1::ColorF::Red);
+     grayBrush = CreateBrush(D2D1::ColorF::Gray);
 }
 
 void UIManager::Render2D(UINT nFrame, int32 curScene)
@@ -227,6 +311,8 @@ void UIManager::Render2D(UINT nFrame, int32 curScene)
     m_pd2dDeviceContext->BeginDraw();
     DrawBackGround(curScene);
     DrawButton(curScene,0);
+    DrawButton(curScene,1);
+    DrawTextBlock(curScene);
     m_pd2dDeviceContext->EndDraw();
 
     m_pd3d11On12Device->ReleaseWrappedResources(ppResources, _countof(ppResources));

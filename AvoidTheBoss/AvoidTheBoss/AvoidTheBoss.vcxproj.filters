@@ -142,9 +142,6 @@
     <ClInclude Include="CEmployee.h">
       <Filter>Player\EMPLOYEE</Filter>
     </ClInclude>
-    <ClInclude Include="UIManager.h">
-      <Filter>Mananger\UIManager</Filter>
-    </ClInclude>
     <ClInclude Include="CScene.h">
       <Filter>Scene\CScene</Filter>
     </ClInclude>
@@ -167,6 +164,9 @@
     <ClInclude Include="DXRHelpers\nv_helpers_dx12\TopLevelASGenerator.h" />
     <ClInclude Include="DXRHelper.h" />
     <ClInclude Include="DXSampleHelper.h" />
+    <ClInclude Include="UIManager.h">
+      <Filter>Mananger\UIManager</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AvoidTheBoss.cpp">
@@ -374,9 +374,6 @@
     <Filter Include="Physics">
       <UniqueIdentifier>{73cebed3-babc-4eca-937c-352c470779db}</UniqueIdentifier>
     </Filter>
-    <Filter Include="PacketEvent">
-      <UniqueIdentifier>{14fdf138-71b4-4f50-a9e8-eafec120a2c8}</UniqueIdentifier>
-    </Filter>
     <Filter Include="JobQueue">
       <UniqueIdentifier>{c1aa5372-2438-4231-acce-d36167578b94}</UniqueIdentifier>
     </Filter>
@@ -403,6 +400,9 @@
     </Filter>
     <Filter Include="Scene\OtherScene">
       <UniqueIdentifier>{98120687-c313-4fbf-985e-4dbdaabab215}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="PacketEvent">
+      <UniqueIdentifier>{14fdf138-71b4-4f50-a9e8-eafec120a2c8}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

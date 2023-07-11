@@ -123,7 +123,7 @@ void CGameFramework::CreateSwapChain()
 	::GetClientRect(m_hWnd, &rcClient);
 	m_nWndClientWidth = rcClient.right - rcClient.left;
 	m_nWndClientHeight = rcClient.bottom - rcClient.top;
-
+	
 #ifdef _WITH_CREATE_SWAPCHAIN_FOR_HWND
 	DXGI_SWAP_CHAIN_DESC1 dxgiSwapChainDesc;
 	::ZeroMemory(&dxgiSwapChainDesc, sizeof(DXGI_SWAP_CHAIN_DESC1));
@@ -353,7 +353,7 @@ void CGameFramework::BuildScenes()
 
 		//씬 객체를 생성하고 씬에 포함될 게임 객체들을 생성한다. 
 
-	m_UIRenderer = new UIManager(m_nSwapChainBuffers, 0, m_pd3dDevice, m_pd3dCommandQueue, m_ppd3dSwapChainBackBuffers, m_nWndClientWidth, m_nWndClientHeight);
+	m_UIRenderer = new UIManager(m_nSwapChainBuffers, 2, m_pd3dDevice, m_pd3dCommandQueue, m_ppd3dSwapChainBackBuffers, m_nWndClientWidth, m_nWndClientHeight);
 	m_SceneManager = new SceneManager();
 	
 	m_SceneManager->BuildScene(m_pd3dDevice, m_pd3dCommandList);

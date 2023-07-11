@@ -6,7 +6,6 @@
 #include "Camera.h"
 #include "DXSampleHelper.h"
 //#include "DXRHelpers/nv_helpers_dx12/TopLevelASGenerator.h"
-#include <queue> 
 
 class CScene;
 class UIManager;
@@ -32,10 +31,14 @@ public:	enum class SCENESTATE { TITLE = 0, LOBBY = 1, ROOM = 2, INGAME = 3 };
 	friend class posEvent;
 	friend class InteractionEvent;
 	friend class FrameEvent;
+	
 	friend class CSession;
 	friend class CEmployee;
 	friend class CBoss;
+
 	friend class CGameScene;
+	friend class CLobbyScene;
+	friend class CTitleScene;
 private:
 	HINSTANCE m_hInstance;
 	HWND m_hWnd;
@@ -76,6 +79,7 @@ private:
 	//명령 큐, 명령 할당자, 명령 리스트 인터페이스 포인터이다.
 
 	// 게임 프레임워크에 필요한 각종 매니저들
+protected:
 	SceneManager*				m_SceneManager = nullptr;
 	UIManager*					m_UIRenderer   = nullptr;
 #if defined(_DEBUG)

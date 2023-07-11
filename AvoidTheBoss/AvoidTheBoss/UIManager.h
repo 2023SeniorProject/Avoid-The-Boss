@@ -6,7 +6,7 @@
 
 struct UITextBlock
 {
-    WCHAR                           m_pstrText[256]; // 출력할 텍스처
+    std::wstring                    m_pstrText; // 출력할 텍스처
     D2D1_RECT_F                     m_d2dLayoutRect; // 출력할 레이아웃 영역
     IDWriteTextFormat*              m_pdwFormat; // 입력 포맷
     ID2D1SolidColorBrush*           m_pd2dTextBrush; // 텍스처를 출력할 브러쉬
@@ -40,9 +40,12 @@ public:
     void ReleaseResources();
     void DrawBackGround(int32 Scene);
     void DrawButton(int32, int32 idx);
+    void DrawTextBlock(int32);
+
+    D2D1_RECT_F GetButtonRect(int32, int32);
 
     ID2D1SolidColorBrush* CreateBrush(D2D1::ColorF d2dColor);
-    IDWriteTextFormat* CreateTextFormat(WCHAR* pszFontName, float fFontSize);
+    IDWriteTextFormat* CreateTextFormat(const WCHAR* pszFontName, float fFontSize);
 public:
     void InitializeDevice(ID3D12Device5* pd3dDevice, ID3D12CommandQueue* pd3dCommandQueue, ID3D12Resource** ppd3dRenderTargets);
 
@@ -63,10 +66,10 @@ public:
     UINT                        m_nRenderTargets = 0;
 
     //DirectX2D
-    ID2D1Bitmap1**       m_ppd2dRenderTargets = NULL;
-    ID2D1Factory3*       m_pd2dFactory = NULL;
-    ID2D1Device2*        m_pd2dDevice = NULL;
-    ID2D1DeviceContext2* m_pd2dDeviceContext = NULL;
+    ID2D1Bitmap1**              m_ppd2dRenderTargets = NULL;
+    ID2D1Factory3*              m_pd2dFactory = NULL;
+    ID2D1Device2*               m_pd2dDevice = NULL;
+    ID2D1DeviceContext2*        m_pd2dDeviceContext = NULL;
 
     // TextBlock
     UINT                           m_nTextBlocks = 0;
@@ -75,15 +78,20 @@ public:
     UINT                           m_nBitmaps = 20;
     ID2D1Bitmap*                   m_bitmaps[20];
     
-
     // 배경 레이어 비트맵들
     UIBackGround m_backGround[3];
 
     // 버튼 비트맵들
     UINT m_nButtons = 10;
-    UIButton m_buttons[10];
+    UIButton m_TitleButtons[2];
+    UIButton m_LobbyButtons[3];
+    UIButton m_RoomButtons[3];
 
-    // 동적으로 바뀌는 텍스트 버튼들
-    UITextBlock* m_pTextBlocks = NULL;
+    // 동적으로 바뀌는 텍스트 버튼들 Id,PW 
+    UITextBlock* m_pTextBlocks;
+
+    // 레이어 위치 출력을 위한 브러시
+    ID2D1SolidColorBrush* redBrush; // 빨강
+    ID2D1SolidColorBrush* grayBrush; // 회색
 };
 

@@ -357,19 +357,14 @@ void CGameFramework::BuildScenes()
 {
 	m_pd3dCommandList->Reset(m_pd3dCommandAllocator, NULL);
 
-
-	for (int i = 0; i < m_nScene; i++)
-	{
-		m_ppScene[i]->m_pSound = m_pSound;
-	} >>> 수정
-
-		//씬 객체를 생성하고 씬에 포함될 게임 객체들을 생성한다. 
+	//씬 객체를 생성하고 씬에 포함될 게임 객체들을 생성한다. 
 
 	m_UIRenderer = new UIManager(m_nSwapChainBuffers, 2, m_pd3dDevice, m_pd3dCommandQueue, m_ppd3dSwapChainBackBuffers, m_nWndClientWidth, m_nWndClientHeight);
 	m_SceneManager = new SceneManager();
 	
-	m_SceneManager->BuildScene(m_pd3dDevice, m_pd3dCommandList);
-	
+	m_SceneManager->BuildScene(m_pd3dDevice, m_pd3dCommandList,m_pSound);
+
+
 	//씬 객체를 생성하기 위하여 필요한 그래픽 명령 리스트들을 명령 큐에 추가한다. 
 
 	m_pd3dCommandList->Close();

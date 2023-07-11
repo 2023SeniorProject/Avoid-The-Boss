@@ -56,13 +56,16 @@ public:
 private:
 	Timer m_timer;
 // ========== 서버 처리를 위해 사용하는 변수들 ==============
-public: // 씬에 있는 오브젝트 관련 변수
+public: 
+	// 씬에 있는 오브젝트 관련 변수
 	CPlayer*					m_players[4];
 	int16						m_playerIdx = 0;
 	int16						m_lastKeyInput = 0;
+
 	// 발전기
 	int							m_nGenerator = 3;
 	CGenerator**				m_ppGenerator = NULL;
+
 public:
 	int32						m_ActiveGeneratorCnt = 0; // 활성화 된 스위치 카운트;
 public:

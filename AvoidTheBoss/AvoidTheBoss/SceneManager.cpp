@@ -3,6 +3,7 @@
 #include "CScene.h"
 #include "GameScene.h"
 #include "OtherScenes.h"
+#include "CSound.h"
 
 void SceneManager::Render(ID3D12GraphicsCommandList4* pd3dCommandList, int32 idx, bool Raster)
 {
@@ -42,7 +43,7 @@ void SceneManager::Animate()
 	for (int i = 0; i < 4; ++i)  m_pScenes[i]->AnimateObjects();
 }
 
-void SceneManager::BuildScene(ID3D12Device5* pd3dDevice, ID3D12GraphicsCommandList4* pd3dCommandList)
+void SceneManager::BuildScene(ID3D12Device5* pd3dDevice, ID3D12GraphicsCommandList4* pd3dCommandList,CSound* pSound)
 {
 	m_pScenes[(int32)SCENESTATE::TITLE] = new CTitleScene();
 	m_pScenes[(int32)SCENESTATE::TITLE]->BuildObjects(pd3dDevice, pd3dCommandList);
@@ -53,4 +54,8 @@ void SceneManager::BuildScene(ID3D12Device5* pd3dDevice, ID3D12GraphicsCommandLi
 	m_pScenes[(int32)SCENESTATE::INGAME] = new CGameScene();
 	m_pScenes[(int32)SCENESTATE::INGAME]->BuildObjects(pd3dDevice, pd3dCommandList);
 
+	for (int i = 0; i < 4; i++)
+	{
+		m_pScenes[i]->m_pSound = pSound;
+	}
 }

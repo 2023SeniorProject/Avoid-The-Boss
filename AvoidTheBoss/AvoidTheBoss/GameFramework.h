@@ -5,6 +5,7 @@
 
 #include "Camera.h"
 #include "DXSampleHelper.h"
+#include "CSound.h"
 //#include "DXRHelpers/nv_helpers_dx12/TopLevelASGenerator.h"
 
 class CScene;
@@ -106,7 +107,7 @@ protected:
 
 	CScene*										m_ppScene[m_nScene];
 	
-	Atomic<int32>								m_curScene = 0;
+	Atomic<int32>								m_curScene = 3;
 public:
 	CGameFramework();
 	~CGameFramework();

@@ -40,6 +40,8 @@ protected:
 	ID3D12RootSignature* m_pd3dGraphicsRootSignature = NULL;
 public:
 	CCamera*			m_pCamera;
+
+	CSound* m_pSound;
 public:
 	LIGHT*								m_pLights = NULL;
 	LIGHTS*								m_pcbMappedLights = NULL;

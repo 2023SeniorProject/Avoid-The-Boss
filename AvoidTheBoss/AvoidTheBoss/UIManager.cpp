@@ -295,6 +295,15 @@ void UIManager::InitializeDevice(ID3D12Device5* pd3dDevice, ID3D12CommandQueue* 
     m_pTextBlocks[1].m_pstrText = L"PW:";
     m_pTextBlocks[1].m_d2dLayoutRect = MakeLayoutRect(m_fWidth / 2.0f, m_fHeight / 2.0f + 200, 200, 20);
     
+    // 로비 씬에 필요한 버튼
+    m_LobbyButtons[0].resource = LoadPngFromFile(L"UI/Enter_Game.png");
+    m_LobbyButtons[0].d2dLayoutRect = MakeLayoutRect(m_fWidth / 2.0f, m_fHeight / 2.0f + 200, m_fWidth / 4.0f, 200);
+    m_LobbyButtons[1].resource = LoadPngFromFile(L"UI/New_Game.png");
+    m_LobbyButtons[1].d2dLayoutRect = MakeLayoutRect(m_fWidth / 4.0f, 
+        m_fHeight / 2.0f + 200, m_fWidth / 4.0f, 200);
+    m_LobbyButtons[2].resource = LoadPngFromFile(L"UI/Quit_Lobby.png");
+    m_LobbyButtons[2].d2dLayoutRect = MakeLayoutRect(m_fWidth / 2.0f + m_fWidth / 4.0f,
+        m_fHeight / 2.0f + 200, m_fWidth / 4.0f, 200);
     // 브러시들
      redBrush = CreateBrush(D2D1::ColorF::Red);
      grayBrush = CreateBrush(D2D1::ColorF::Gray);

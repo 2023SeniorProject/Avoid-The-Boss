@@ -175,12 +175,15 @@ void CTitleScene::MouseAction(const POINT& mp)
 
 	if (IntersectRectByPoint(mainGame.m_UIRenderer->GetButtonRect(0,0),mp))
 	{
+		if (mainGame.m_UIRenderer->m_pTextBlocks[0].m_pstrText.length() <= 3
+			|| mainGame.m_UIRenderer->m_pTextBlocks[1].m_pstrText.length() <= 3) return;
+
 		/*clientCore.InitConnect("127.0.0.1");
 		C2S_LOGIN loginPacket;
 		lstrcpyn(loginPacket.name, mainGame.m_UIRenderer->m_pTextBlocks[0].m_pstrText.c_str(), 10);
 		lstrcpyn(loginPacket.pw, mainGame.m_UIRenderer->m_pTextBlocks[1].m_pstrText.c_str(), 10);
-		clientCore.DoConnect(&loginPacket);
-		mainGame.ChangeScene(CGameFramework::SCENESTATE::LOBBY);*/
+		clientCore.DoConnect(&loginPacket);*/
+		mainGame.ChangeScene(CGameFramework::SCENESTATE::LOBBY);
 	}
 
 	else if (IntersectRectByPoint(mainGame.m_UIRenderer->GetButtonRect(0, 1), mp))
@@ -260,6 +263,14 @@ void CTitleScene::BuildDefaultLightsAndMaterials()
 void CTitleScene::ProcessInput(HWND& hWnd)
 {
 	InputManager::GetInstance().InputStatusUpdate();
+
+	// TAB 처리
+	if ((int8)KEY_STATUS::KEY_UP == InputManager::GetInstance().GetKeyBuffer(VK_TAB))
+	{
+		if (0 == focus) focus = 1;
+		else if (1 == focus) focus = 0;
+		std::cout << focus << "\n";
+	}
 	//알파벳 입력 받기
 	for (int i = 65; i < 90; ++i)
 	{
@@ -274,6 +285,7 @@ void CTitleScene::ProcessInput(HWND& hWnd)
 				mainGame.m_UIRenderer->m_pTextBlocks[1].m_pstrText.append(str);
 		}
 	}
+	
 	// 텍스트 지우기
 	if ((int8)KEY_STATUS::KEY_UP == InputManager::GetInstance().GetKeyBuffer(VK_BACK))
 	{

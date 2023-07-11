@@ -13,6 +13,7 @@ void InputManager::InputStatusUpdate()
 	}
 	Update(VK_BACK);
 	Update(VK_SPACE);
+	Update(VK_TAB);
 } 
 
 void InputManager::MouseInputStatusUpdate()

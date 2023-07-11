@@ -36,16 +36,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     UNREFERENCED_PARAMETER(lpCmdLine);
    SocketUtil::Init();
    GCThreadManager = new ThreadManager;
-   C2S_LOGIN loginPacket;
-   loginPacket.size = sizeof(C2S_LOGIN);
-   loginPacket.type = (uint8)C_PACKET_TYPE::ACQ_LOGIN;
-   std::cout << "ID: ";
-   std::wcin.getline(loginPacket.name, 10);
-   std::cout << "PW: ";
-   std::wcin.getline(loginPacket.pw, 10);
-   // std::cout << "IP Address: ";
-   //char ipaddress[20];
-   //std::cin.getline(ipaddress, 20);
+  
 
    CoInitializeEx(nullptr, COINIT_APARTMENTTHREADED);
    // 전역 문자열을 초기화합니다.

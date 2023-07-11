@@ -5,8 +5,9 @@
 #pragma once
 
 #include "Mesh.h"
-
 #include "Camera.h"
+#include "CSound.h"
+
 extern std::vector<DirectX::BoundingBox> bv;
 
 
@@ -150,6 +151,7 @@ struct CALLBACKKEY
 
 class CAnimationCallbackHandler
 {
+
 public:
 	CAnimationCallbackHandler() { }
 	~CAnimationCallbackHandler() { }
@@ -329,6 +331,8 @@ public:
     virtual ~CGameObject();
 
 public:
+	CSound*							m_pSound;
+
 	Layout							objLayer;
 	bool							m_bEmpExit = false;
 
@@ -382,12 +386,9 @@ public:
 
 	XMFLOAT3 GetParentUp();
 
-
 	void SetPosition(float x, float y, float z);
 	void SetPosition(XMFLOAT3 xmf3Position);
 	void SetScale(float x, float y, float z);
-
-	
 
 	void Rotate(float fPitch = 10.0f, float fYaw = 10.0f, float fRoll = 10.0f);
 	void Rotate(XMFLOAT3 *pxmf3Axis, float fAngle);

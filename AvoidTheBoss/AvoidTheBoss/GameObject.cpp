@@ -258,8 +258,12 @@ void CAnimationSet::HandleCallback()
 		{
 			if (::IsEqual(m_pCallbackKeys[i].m_fTime, m_fPosition, ANIMATION_CALLBACK_EPSILON))
 			{
-				if (m_pCallbackKeys[i].m_pCallbackData) m_pAnimationCallbackHandler->HandleCallback(m_pCallbackKeys[i].m_pCallbackData, m_fPosition);
-				break;
+				if (m_pCallbackKeys[i].m_pCallbackData)
+				{
+
+					m_pAnimationCallbackHandler->HandleCallback(m_pCallbackKeys[i].m_pCallbackData, m_fPosition);
+					break;
+				}
 			}
 		}
 	}
@@ -1285,7 +1289,7 @@ void CSiren::OnPrepareAnimate()
 
 void CSiren::Animate(float fTimeElapsed)
 {
-	//if (m_bEmpExit)
+	if (m_bEmpExit)
 	{
 		float delta = 100.0f;
 		if (m_AnimationDegree > 0.0f)

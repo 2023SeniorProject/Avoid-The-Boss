@@ -17,11 +17,11 @@ void CSound::SoundSystem()
 	FMOD_System_Init(pSystem, 20, FMOD_INIT_NORMAL, nullptr);
 
 	// 배경음악
-	FMOD_System_CreateSound(pSystem, "Sound/Danger_Background.mp3", FMOD_LOOP_NORMAL, nullptr, &pSound[0]);
-	FMOD_System_CreateSound(pSystem, "Sound/Danger_Background2.mp3", FMOD_LOOP_NORMAL, nullptr, &pSound[1]);
+	FMOD_System_CreateSound(pSystem, "Sound/Danger_Background.mp3", FMOD_LOOP_NORMAL, nullptr, &pSound[0]); //0
+	FMOD_System_CreateSound(pSystem, "Sound/Danger_Background2.mp3", FMOD_LOOP_NORMAL, nullptr, &pSound[1]); //1
 
 	// 보스
-	FMOD_System_CreateSound(pSystem, "Sound/Boss_Shot1.mp3", FMOD_LOOP_OFF, nullptr, &pSound[2]);
+	FMOD_System_CreateSound(pSystem, "Sound/Boss_Shot1.mp3", FMOD_LOOP_OFF, nullptr, &pSound[2]); // 2
 	FMOD_System_CreateSound(pSystem, "Sound/Boss_Shot2.mp3", FMOD_LOOP_OFF, nullptr, &pSound[3]);
 	FMOD_System_CreateSound(pSystem, "Sound/Boss_Shot3.mp3", FMOD_LOOP_OFF, nullptr, &pSound[4]);
 	FMOD_System_CreateSound(pSystem, "Sound/Boss_Shot4.mp3", FMOD_LOOP_OFF, nullptr, &pSound[5]);
@@ -39,10 +39,10 @@ void CSound::SoundSystem()
 
 	// 오브젝트
 	FMOD_System_CreateSound(pSystem, "Sound/Dangerous_Alarm.mp3", FMOD_LOOP_NORMAL, nullptr, &pSound[15]);
-	FMOD_System_CreateSound(pSystem, "Sound/Emergency_Door_Open.mp3", FMOD_LOOP_OFF, nullptr, &pSound[16]);
-	FMOD_System_CreateSound(pSystem, "Sound/Generator.mp3", FMOD_LOOP_OFF, nullptr, &pSound[17]);
-	FMOD_System_CreateSound(pSystem, "Sound/Hangar_Door_Open.mp3", FMOD_LOOP_OFF, nullptr, &pSound[18]);
-	FMOD_System_CreateSound(pSystem, "Sound/Shutter_Open.mp3", FMOD_LOOP_OFF, nullptr, &pSound[19]);
+	FMOD_System_CreateSound(pSystem, "Sound/Emergency_Door_Open.mp3", FMOD_LOOP_NORMAL, nullptr, &pSound[16]);
+	FMOD_System_CreateSound(pSystem, "Sound/Generator.mp3", FMOD_LOOP_NORMAL, nullptr, &pSound[17]);
+	FMOD_System_CreateSound(pSystem, "Sound/Hangar_Door_Open.mp3", FMOD_LOOP_NORMAL, nullptr, &pSound[18]);
+	FMOD_System_CreateSound(pSystem, "Sound/Shutter_Open.mp3", FMOD_LOOP_NORMAL, nullptr, &pSound[19]);
 }
 
 void CSound::MyPlaySound(int nSound, int nChannel)
@@ -53,6 +53,16 @@ void CSound::MyPlaySound(int nSound, int nChannel)
 void CSound::SoundStop(int nChannel)
 {
 	FMOD_Channel_Stop(pChannel[nChannel]);
+}
+
+void CSound::SoundPause(int nChannel)
+{
+	FMOD_Channel_SetPaused(pChannel[nChannel], true);
+}
+
+void CSound::SoundResume(int nChannel)
+{
+	FMOD_Channel_SetPaused(pChannel[nChannel], false);
 }
 
 void CSound::SoundRelease()

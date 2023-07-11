@@ -57,17 +57,11 @@ CBoss::CBoss(ID3D12Device5* pd3dDevice,
 	m_pSkinnedAnimationController->SetCallbackKeys(2, 1);
 	m_pSkinnedAnimationController->SetCallbackKeys(3, 1);
 
-#ifdef _WITH_SOUND_RESOURCE
-	m_pSkinnedAnimationController->SetCallbackKey(0, 0.1f, _T("Footstep01"));
-	m_pSkinnedAnimationController->SetCallbackKey(1, 0.5f, _T("Footstep02"));
-	m_pSkinnedAnimationController->SetCallbackKey(2, 0.9f, _T("Footstep03"));
-#else
-	m_pSkinnedAnimationController->SetCallbackKey(0, 0, 0.0000f, 
-		L"Sound/Footstep01.wav");
-	m_pSkinnedAnimationController->SetCallbackKey(1, 0, 0.0f, _T("Sound/Footstep02.wav"));
-	m_pSkinnedAnimationController->SetCallbackKey(2, 0, 0.0f, _T("Sound/Footstep03.wav"));
-	m_pSkinnedAnimationController->SetCallbackKey(3, 0, 0.0f, _T("Sound/Jump.wav"));
-#endif
+	m_pSkinnedAnimationController->SetCallbackKey(0, 0, 0.0000f, L"Sound/Character_Walk.wav");
+	m_pSkinnedAnimationController->SetCallbackKey(1, 0, 0.0f, L"Sound/Character_Walk.wav");
+	m_pSkinnedAnimationController->SetCallbackKey(2, 0, 0.0f, L"Sound/Character_Walk.wav");
+	m_pSkinnedAnimationController->SetCallbackKey(3, 0, 0.0f, L"Sound/Character_Walk.wav");
+
 	CAnimationCallbackHandler *pAnimationCallbackHandler = new CSoundCallbackHandler();
 	m_pSkinnedAnimationController->SetAnimationCallbackHandler(1, pAnimationCallbackHandler);
 
@@ -356,6 +350,7 @@ uint8 CBoss::ProcessInput()
 	if (InputManager::GetInstance().GetKeyBuffer(KEY_TYPE::SPACE) == (uint8)KEY_STATUS::KEY_PRESS && !GetOnAttack())
 	{
 		SetOnAttack(true);
+		m_pSound->MyPlaySound(2, 3);
 	}
 	
 	Move(dir, BOSS_VELOCITY);

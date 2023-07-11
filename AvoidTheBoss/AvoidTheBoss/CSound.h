@@ -14,6 +14,8 @@ public:
 	void SoundSystem();
 	void MyPlaySound(int nSound, int nChannel);
 	void SoundStop(int nChannel);
+	void SoundPause(int nChannel);
+	void SoundResume(int nChannel);
 	void SoundRelease();
 	void SetVolum(int nChannel, float volume);
 };

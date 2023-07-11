@@ -645,16 +645,24 @@ void CGameScene::Exit()
 {
 	if (m_bEmpExit) // 탈출 성공 시 , 해야할 일 처리
 	{
+		m_pSound->MyPlaySound(16, 5);
+		m_pSound->MyPlaySound(15, 5);
+		m_pSound->MyPlaySound(18, 5);
+		m_pSound->MyPlaySound(19, 5);
+		
 		std::cout << "Exit Ready\n";
-		for (int i = 0; i < m_nShaders; i++)
+		for (int j = 0; j < m_nShaders; j++)
 		{
-			CStandardObjectsShader* pShaderObjects = (CStandardObjectsShader*)m_ppShaders[i];
+			CStandardObjectsShader* pShaderObjects = (CStandardObjectsShader*)m_ppShaders[j];
 			for (int i = 0; i < pShaderObjects->m_nObjects; i++)
 			{
 				if (pShaderObjects->m_ppObjects[i])
 				{
-					if ((pShaderObjects->m_ppObjects[i]->objLayer == Layout::SIREN) || (pShaderObjects->m_ppObjects[i]->objLayer == Layout::DOOR))
+					if (pShaderObjects->m_ppObjects[i]->objLayer == Layout::SIREN
+				|| pShaderObjects->m_ppObjects[i]->objLayer == Layout::DOOR)
+					{
 						pShaderObjects->m_ppObjects[i]->m_bEmpExit = true;
+					}
 				}
 			}
 		}
@@ -883,8 +891,17 @@ void CMainScene::BuildObjects(ID3D12Device5* pd3dDevice, ID3D12GraphicsCommandLi
 			((CEmployee*)_players[i])->m_pSwitches[2].position = XMFLOAT3(0.6774719, 1.083242, -23.05909);
 			((CEmployee*)_players[i])->m_pSwitches[2].radius = 0.2f;
 		}
+		((CGameObject*)_players[i])->m_pSound = m_pSound;
 	}
 	m_pCamera = _players[0]->GetCamera();
+
+	for (int i = 2; i < m_nShaders; i++)
+	{
+		for (int j = 0; j < ((CStandardObjectsShader*)m_ppShaders[i])->m_nObjects; j++)
+		{
+			((CStandardObjectsShader*)m_ppShaders[i])->m_ppObjects[j]->m_pSound = m_pSound;
+		}
+	}
 
 	CreateShaderVariables(pd3dDevice, pd3dCommandList);
 }

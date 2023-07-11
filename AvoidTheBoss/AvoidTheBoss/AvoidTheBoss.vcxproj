@@ -72,8 +72,8 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <OutDir>$(SolutionDir)Binary\$(Configuration)\</OutDir>
-    <LibraryPath>C:\AvoidTheBoss\AvoidTheBoss\AvoidTheBoss\FMOD\lib;$(SolutionDir)Library\;$(LibraryPath)</LibraryPath>
-    <IncludePath>C:\AvoidTheBoss\AvoidTheBoss\AvoidTheBoss\FMOD\inc;C:\AvoidTheBoss\AvoidTheBoss\CoreEngine;$(IncludePath)</IncludePath>
+    <LibraryPath>$(SolutionDir)AvoidTheBoss\FMOD\lib;$(SolutionDir)Library\;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(SolutionDir)CoreEngine\;$(SolutionDir)AvoidTheBoss\FMOD\inc;C:\AvoidTheBoss\AvoidTheBoss\CoreEngine;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <OutDir>$(SolutionDir)Binary\$(Configuration)\</OutDir>

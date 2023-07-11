@@ -271,13 +271,20 @@ void CTitleScene::ProcessInput(HWND& hWnd)
 		else if (1 == focus) focus = 0;
 		std::cout << focus << "\n";
 	}
+	// CAP 처리
+	if ((int8)KEY_STATUS::KEY_UP == InputManager::GetInstance().GetKeyBuffer(VK_CAPITAL))
+	{
+		if (cap) cap = false;
+		else cap = true;
+	}
 	//알파벳 입력 받기
 	for (int i = 65; i < 90; ++i)
 	{
 		if ((int8)KEY_STATUS::KEY_UP == InputManager::GetInstance().GetKeyBuffer(i))
 		{
 			wchar_t str[2];
-			str[0] = i;
+			if (cap) str[0] = i;
+			else str[0] = i + 32;
 			str[1] = '\0';
 			if (focus == 0 && mainGame.m_UIRenderer->m_pTextBlocks[0].m_pstrText.length() <= 10)
 				mainGame.m_UIRenderer->m_pTextBlocks[0].m_pstrText.append(str);

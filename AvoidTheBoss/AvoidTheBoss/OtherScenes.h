@@ -21,6 +21,7 @@ class CTitleScene : public CScene
 {
 	CPlayer* m_player = NULL;
 	int32 focus = 0;
+	bool cap = false;
 public:
 	CTitleScene() {}
 	~CTitleScene() {}

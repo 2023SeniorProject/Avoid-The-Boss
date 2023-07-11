@@ -17,7 +17,7 @@ void CGenerator::SetNormalVector()
 }
 void CGenerator::LogicUpdate()
 {
-	//if (m_bOnInteraction || m_bAlreadyOn)
+	if (m_bOnInteraction || m_bAlreadyOn)
 	{  
 		m_nPipeStartAnimation[0] = true;
 	}
@@ -76,7 +76,7 @@ void CGenerator::BodyAnimate(float fTimeElapsed)
 {
 	XMMATRIX xmmtxTranslate;
 	int changeFrame = 8;
-	//if (m_bOnInteraction)
+	if (m_bOnInteraction)
 	{
 			if (m_nGenerBodyAnimationCount > changeFrame && m_nGenerBodyAnimationCount <= GENERATOR_BODY_ANIM_FRAM)
 			{
@@ -105,7 +105,7 @@ void CGenerator::BodyAnimate(float fTimeElapsed)
 void CGenerator::PipelineAnimate(float fTimeElapsed)
 {
 	float delta = 0.01f;
-	//if (m_bOnInteraction)
+	if (m_bOnInteraction)
 	{
 		for (int i = 0; i < m_nPipe; i++) //1.8 ->1.7    ̵  10.f
 		{
@@ -116,7 +116,6 @@ void CGenerator::PipelineAnimate(float fTimeElapsed)
 					if (m_nGenerPipeAnimationCount[i] == GENERATOR_PIPE_ANIM_FRAM)
 					{
 						m_nGenerPipeAnimationCount[i] = -20;
-						//std::cout << m_ppPipe[i]->GetPosition().y << std::endl;
 					}
 
 					XMMATRIX xmmtxTranslate = DirectX::XMMatrixTranslation(0.0f, delta, 0.0f);
@@ -126,9 +125,6 @@ void CGenerator::PipelineAnimate(float fTimeElapsed)
 				{
 					XMMATRIX xmmtxTranslate = DirectX::XMMatrixTranslation(0.0f, -delta, 0.0f);
 					m_ppPipe[i]->m_xmf4x4ToParent = Matrix4x4::Multiply(xmmtxTranslate, m_ppPipe[i]->m_xmf4x4ToParent);
-
-					//if(	m_nGenerPipeAnimationCount[i]==1)
-					//	std::cout << m_ppPipe[i]->GetPosition().y << std::endl;
 				}
 			}
 		}

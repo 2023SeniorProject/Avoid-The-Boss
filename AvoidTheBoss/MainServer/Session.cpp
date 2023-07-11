@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "SocketUtil.h"
 #include "Session.h"
+#include "SPlayer.h"
 #include "CSIocpCore.h"
 #include "JobQueue.h"
 #include "OBDC_MGR.h"

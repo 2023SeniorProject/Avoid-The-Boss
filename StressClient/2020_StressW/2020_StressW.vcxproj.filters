@@ -1,0 +1,141 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Shared">
+      <UniqueIdentifier>{133f9461-8dd3-4679-9288-0a97062b3ba2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shared\IocpCore">
+      <UniqueIdentifier>{a06c721c-2c92-4ff8-ab27-20d171802b9e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="NetworkModule">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Shared\ThreadManager">
+      <UniqueIdentifier>{ebf2f978-20df-4cea-87ba-af8647c00c76}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shared\Protocol">
+      <UniqueIdentifier>{354660d2-bf5d-4dc8-b5e4-a6512bc10ff9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shared\Pch">
+      <UniqueIdentifier>{7efa6d30-1651-4406-a27c-d8050682b98c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shared\Timer">
+      <UniqueIdentifier>{cc3fef95-75af-4613-b2d3-ab6f50729c4b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Renderer">
+      <UniqueIdentifier>{94f820be-3df8-4b9d-a3fe-0592040ed382}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shared\Asession">
+      <UniqueIdentifier>{e137f831-b6d8-46f9-9b41-c446aea10c6a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="DummySession">
+      <UniqueIdentifier>{9fcbc91e-5383-4b36-b642-973ff4990850}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ConnectManager">
+      <UniqueIdentifier>{68a91242-53a0-40ef-aa68-f9ae8aa63004}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\AvoidTheBoss\CoreEngine\IocpCore.h">
+      <Filter>Shared\IocpCore</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\AvoidTheBoss\CoreEngine\IocpEvent.h">
+      <Filter>Shared\IocpCore</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\AvoidTheBoss\CoreEngine\IocpObject.h">
+      <Filter>Shared\IocpCore</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\AvoidTheBoss\CoreEngine\ThreadManager.h">
+      <Filter>Shared\ThreadManager</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\AvoidTheBoss\CoreEngine\protocol.h">
+      <Filter>Shared\Protocol</Filter>
+    </ClInclude>
+    <ClInclude Include="pch.h">
+      <Filter>Shared\Pch</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\AvoidTheBoss\CoreEngine\CTimer.h">
+      <Filter>Shared\Timer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\AvoidTheBoss\CoreEngine\CoreTLS.h">
+      <Filter>Shared\IocpCore</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\AvoidTheBoss\CoreEngine\CorePch.h">
+      <Filter>Shared\Pch</Filter>
+    </ClInclude>
+    <ClInclude Include="NetworkModule.h">
+      <Filter>NetworkModule</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\AvoidTheBoss\CoreEngine\ASession.h">
+      <Filter>Shared\Asession</Filter>
+    </ClInclude>
+    <ClInclude Include="DummySession.h">
+      <Filter>DummySession</Filter>
+    </ClInclude>
+    <ClInclude Include="ConnectManager.h">
+      <Filter>ConnectManager</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="2020_StressW.rc">
+      <Filter>Resource</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="small.ico">
+      <Filter>Resource</Filter>
+    </Image>
+    <Image Include="2020_StressW.ico">
+      <Filter>Resource</Filter>
+    </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="NetworkModule.cpp">
+      <Filter>NetworkModule</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\AvoidTheBoss\CoreEngine\IocpCore.cpp">
+      <Filter>Shared\IocpCore</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\AvoidTheBoss\CoreEngine\IocpEvent.cpp">
+      <Filter>Shared\IocpCore</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\AvoidTheBoss\CoreEngine\IocpObject.cpp">
+      <Filter>Shared\IocpCore</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\AvoidTheBoss\CoreEngine\ThreadManager.cpp">
+      <Filter>Shared\ThreadManager</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\AvoidTheBoss\CoreEngine\protocol.cpp">
+      <Filter>Shared\Protocol</Filter>
+    </ClCompile>
+    <ClCompile Include="pch.cpp">
+      <Filter>Shared\Pch</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\AvoidTheBoss\CoreEngine\CTimer.cpp">
+      <Filter>Shared\Timer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\AvoidTheBoss\CoreEngine\CoreTLS.cpp">
+      <Filter>Shared\IocpCore</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\AvoidTheBoss\CoreEngine\CorePch.cpp">
+      <Filter>Shared\Pch</Filter>
+    </ClCompile>
+    <ClCompile Include="DrawModule.cpp">
+      <Filter>Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\AvoidTheBoss\CoreEngine\ASession.cpp">
+      <Filter>Shared\Asession</Filter>
+    </ClCompile>
+    <ClCompile Include="DummySession.cpp">
+      <Filter>DummySession</Filter>
+    </ClCompile>
+    <ClCompile Include="ConnectManager.cpp">
+      <Filter>ConnectManager</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>

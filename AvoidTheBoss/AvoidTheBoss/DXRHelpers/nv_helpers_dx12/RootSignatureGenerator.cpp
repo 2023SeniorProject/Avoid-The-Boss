@@ -154,7 +154,7 @@ void RootSignatureGenerator::AddRootParameter(D3D12_ROOT_PARAMETER_TYPE type,
 //--------------------------------------------------------------------------------------------------
 //
 // Create the root signature from the set of parameters, in the order of the addition calls
-ID3D12RootSignature* RootSignatureGenerator::Generate(ID3D12Device* device, bool isLocal)
+ID3D12RootSignature* RootSignatureGenerator::Generate(ID3D12Device5* device, bool isLocal)
 {
   // Go through all the parameters, and set the actual addresses of the heap range descriptors based
   // on their indices in the range set array

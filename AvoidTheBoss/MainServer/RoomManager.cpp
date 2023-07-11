@@ -14,21 +14,21 @@ using namespace std;
 //=============================
 Room::Room()
 {
-	_jobQueue = new Scheduler();
 }
 
 Room::~Room()
 {
-	delete _jobQueue;
 }
+
 void Room::UserOut(int32 sid)
 {
 	int idx = 0;
 	{
 		// cList Lock 쓰기 호출
-		GetMyPlayerFromRoom(sid).SetVelocity(XMFLOAT3(0, 0, 0)); // 속도 0
-		idx = GetMyPlayerFromRoom(sid).m_idx; /// 인덱스 가져오기
-		GetMyPlayerFromRoom(sid).m_hide = true; // 업데이트 false로 변경
+		_gameLogic.GetPlayerBySid(sid).SetVelocity(XMFLOAT3(0, 0, 0)); // 속도 0
+		idx = _gameLogic.GetPlayerBySid(sid).m_idx; /// 인덱스 가져오기
+		_gameLogic.GetPlayerBySid(sid).m_hide = true; // 업데이트 false로 변경
+		
 		std::unique_lock<std::shared_mutex> wll(_listLock);
 		auto i = std::find(_cList.begin(), _cList.end(), sid); // 리스트에 있는지 탐색 후
 		if (i != _cList.end()) _cList.erase(i); // 리스트에서 제거
@@ -88,6 +88,7 @@ void Room::UserIn(int32 sid)
 			std::unique_lock<std::shared_mutex> wll(_listLock);
 			_cList.push_back(sid);
 		}
+
 		if (_cList.size() == PLAYERNUM)
 		{
 			
@@ -98,8 +99,7 @@ void Room::UserIn(int32 sid)
 			for (auto i : _cList)
 			{
 				packet.sids[k] = i;
-				_players[k].m_sid = i;
-				_players[k].m_idx = k;
+				_gameLogic.SetPlayerSidAndIdx(i, k);
 				++k;
 			}
 			std::cout << "GAME START\n";
@@ -107,19 +107,8 @@ void Room::UserIn(int32 sid)
 			for (auto i : _cList) std::cout << i << " | ";
 			std::cout << " ]\n";
 			BroadCasting(&packet);
-			_generator[0]._pos = XMFLOAT3(-23.12724, 1.146619, 1.814123);
-			_generator[1]._pos = XMFLOAT3(23.08867, 1.083242, 3.155997);
-			_generator[2]._pos = XMFLOAT3(0.6774719, 1.083242, -23.05909);
-			for (int i = 0; i < 3; ++i)
-			{
-				_generator[i]._idx = i;
-			}
-
-			_players[0].SetPosition(XMFLOAT3(0,  0.25, -18));
-			_players[1].SetPosition(XMFLOAT3(10, 0.25, -18));
-			_players[2].SetPosition(XMFLOAT3(15, 0.25, -18));
-			_players[3].SetPosition(XMFLOAT3(20, 0.25, -18));
 			_status = ROOM_STATUS::FULL;
+			_gameLogic.InitGame();
 			_timer.Reset();
 		}
 	}		
@@ -161,36 +150,35 @@ void Room::Update()
 {
 	_timer.Tick(60.f);
 	
-	{
-		std::unique_lock<std::shared_mutex> ql(_jobQueueLock); // Queue Lock 호출
-		_jobQueue->DoTasks();
-	}
-	for (int i = 0; i < PLAYERNUM; ++i) if(!_players[i].m_hide)_players[i].Update(_timer.GetTimeElapsed());
 	
+	_gameLogic.Update(_timer.GetTimeElapsed());
+	_gameLogic.LateUpdate(_timer.GetTimeElapsed());
 
 	if (_timer.IsTimeToAddHistory())
 
 	{
-		_history.AddHistory(_players); // 1 (1/60초) 프레임마다 월드 상태를 기록한다.
+		_gameLogic.AddHistory();
 		S2C_FRAMEPACKET packet;
 		packet.size = sizeof(S2C_FRAMEPACKET);
 		packet.type = (uint8)S_PACKET_TYPE::FRAME;
 		packet.wf = _history.GetCurFrame();
 		BroadCasting(&packet);
 	}
+
 	if (_timer.IsAfterTick(45)) // 1/45초마다 정확한 위치값을 브로드캐스팅 한다.
 	{
 		
 		for (int i = 0; i < PLAYERNUM; ++i)
 		{
-			if (Vector3::IsZero(_players[i].GetVelocity()) || _players[i].m_hide) continue;
-	
+			if (!_gameLogic.IsAvailablePlayer(i)) continue;
+			SPlayer& ps = _gameLogic.GetPlayerByIdx(i);
+
 			S2C_POS packet;
-			packet.sid = _players[i].m_sid;
+			packet.sid = ps.m_sid;
 			packet.size = sizeof(S2C_POS);
 			packet.type = (uint8)S_PACKET_TYPE::SPOS;
-			packet.x = _players[i].GetPosition().x;
-			packet.z = _players[i].GetPosition().z;
+			packet.x = ps.GetPosition().x;
+			packet.z = ps.GetPosition().z;
 			BroadCasting(&packet);
 		}
 	}
@@ -198,14 +186,12 @@ void Room::Update()
 
 void Room::AddEvent(QueueEvent* qe, float after)
 {
-	std::unique_lock<std::shared_mutex> ql(_jobQueueLock); // Queue Lock 호출
-	_jobQueue->PushTask(qe,after);
+	_gameLogic.AddEventAfterTime(after, qe);
 }
 
 void Room::AddEvent(QueueEvent* qe)
 {
-	std::unique_lock<std::shared_mutex> ql(_jobQueueLock); // Queue Lock 호출
-	_jobQueue->PushTask(qe);
+	_gameLogic.AddEvent(qe);
 }
 // ======= RoomManager ========
 

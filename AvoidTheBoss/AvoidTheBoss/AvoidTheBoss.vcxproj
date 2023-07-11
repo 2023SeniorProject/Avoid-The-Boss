@@ -167,7 +167,9 @@
     <ClInclude Include="CGenerator.h" />
     <ClInclude Include="ClientPacketEvent.h" />
     <ClInclude Include="ClientSession.h" />
+    <ClInclude Include="OtherScenes.h" />
     <ClInclude Include="CollisionDetector.h" />
+    <ClInclude Include="CScene.h" />
     <ClInclude Include="CSound.h" />
     <ClInclude Include="DDSTextureLoader12.h" />
     <ClInclude Include="clientIocpCore.h" />
@@ -185,11 +187,12 @@
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="Player.h" />
-    <ClInclude Include="Scene.h" />
-    <ClInclude Include="SceneInterface.h" />
+    <ClInclude Include="GameScene.h" />
+    <ClInclude Include="SceneManager.h" />
     <ClInclude Include="Shader.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="targetver.h" />
+    <ClInclude Include="UIManager.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AvoidTheBoss.cpp" />
@@ -201,7 +204,9 @@
     <ClCompile Include="clientIocpCore.cpp" />
     <ClCompile Include="ClientPacketEvent.cpp" />
     <ClCompile Include="ClientSession.cpp" />
+    <ClCompile Include="OtherScenes.cpp" />
     <ClCompile Include="CollisionDetector.cpp" />
+    <ClCompile Include="CScene.cpp" />
     <ClCompile Include="CSound.cpp" />
     <ClCompile Include="DDSTextureLoader12.cpp" />
     <ClCompile Include="DXRHelpers\nv_helpers_dx12\BottomLevelASGenerator.cpp">
@@ -232,9 +237,10 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="Player.cpp" />
-    <ClCompile Include="Scene.cpp" />
-    <ClCompile Include="SceneInterface.cpp" />
+    <ClCompile Include="GameScene.cpp" />
+    <ClCompile Include="SceneManager.cpp" />
     <ClCompile Include="Shader.cpp" />
+    <ClCompile Include="UIManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="AvoidTheBoss.rc" />

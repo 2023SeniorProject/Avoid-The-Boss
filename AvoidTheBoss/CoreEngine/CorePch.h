@@ -47,15 +47,22 @@
 #include <string>
 #include <wrl.h>
 #include <shellapi.h>
-
 #include <d3d12.h>	//Direct3D 12 API 함수
 #include <dxgi1_4.h>
 #include <D3Dcompiler.h>
-
 #include <DXGIDebug.h>
 #include <D3d12SDKLayers.h>
 
 #include "d3dx12.h"
+
+//DirectD2D 
+#include <d2d1.h>
+#include <d3d11.h>
+#include <dwrite.h>
+#include <d3d11on12.h>
+#include <dxgi1_6.h>
+#include <d2d1_3.h>
+
 #include <array>
 #include <cassert>
 #include <memory>
@@ -82,6 +89,7 @@ using namespace DirectX;
 using namespace DirectX::PackedVector;
 
 #include "protocol.h"
+#include "CTimer.h"
 
 
 
@@ -95,6 +103,10 @@ using Microsoft::WRL::ComPtr;
 #pragma comment(lib, "dxgi.lib")
 #pragma comment(lib, "dxguid.lib")
 
+// -------D2D 라이브러리
+#pragma comment(lib, "d3d11.lib")
+#pragma comment(lib, "d2d1.lib")
+#pragma comment(lib, "dwrite.lib")
 
 //----클라이언트 영역 크기 및 후면 버퍼 크기
 #define FRAME_BUFFER_WIDTH  800

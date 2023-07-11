@@ -336,13 +336,6 @@ uint8 CBoss::ProcessInput()
 	if (InputManager::GetInstance().GetKeyBuffer(KEY_TYPE::S) > 0)  dir |= KEY_BACKWARD;
 	if (InputManager::GetInstance().GetKeyBuffer(KEY_TYPE::D) > 0)  dir |= KEY_RIGHT;
 
-	//if (InputManager::GetInstance().GetKeyBuffer(KEY_TYPE::D) > 0)
-	//{
-	//	m_pCamera = ChangeCamera(THIRD_PERSON_CAMERA, 0.0f);
-	//	//m_pCamera = _players[_playerIdx]->m_pCamera;
-	//}
-	//if (InputManager::GetInstance().GetKeyBuffer(VK_F1) > 0)
-
 	if (dir) SetBehavior(PLAYER_BEHAVIOR::RUN);
 	else	 SetBehavior(PLAYER_BEHAVIOR::IDLE);
 

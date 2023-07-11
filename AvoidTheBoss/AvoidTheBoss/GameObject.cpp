@@ -6,7 +6,7 @@
 #include "GameObject.h"
 #include "Shader.h"
 
-#include "Scene.h"
+#include "CScene.h"
 
 std::vector<BoundingBox> bv;
 
@@ -206,7 +206,7 @@ void CMaterial::LoadTextureFromFile(ID3D12Device5 *pd3dDevice, ID3D12GraphicsCom
 			(*ppTexture)->LoadTextureFromFile(pd3dDevice, pd3dCommandList, pwstrTextureName, 0, true);
 			if (*ppTexture) (*ppTexture)->AddRef();
 
-			CGameScene::CreateShaderResourceViews(pd3dDevice, *ppTexture, nRootParameter, false);
+			CScene::CreateShaderResourceViews(pd3dDevice, *ppTexture, nRootParameter, false);
 		}
 		else
 		{
@@ -1251,7 +1251,7 @@ CSkyBox::CSkyBox(ID3D12Device5 *pd3dDevice, ID3D12GraphicsCommandList4   *pd3dCo
 	pSkyBoxShader->CreateShader(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature);
 	pSkyBoxShader->CreateShaderVariables(pd3dDevice, pd3dCommandList);
 
-	CGameScene::CreateShaderResourceViews(pd3dDevice, pSkyBoxTexture, 10, false);
+	CScene::CreateShaderResourceViews(pd3dDevice, pSkyBoxTexture, 10, false);
 
 	CMaterial *pSkyBoxMaterial = new CMaterial(1);
 	pSkyBoxMaterial->SetTexture(pSkyBoxTexture);
@@ -1303,12 +1303,7 @@ void CSiren::Animate(float fTimeElapsed)
 			{
 				float radius = 0.000471f / 2.0f;
 				XMMATRIX xmmtxRotate = DirectX::XMMatrixRotationZ(XMConvertToRadians(delta * fTimeElapsed));
-				//XMMATRIX xmmtxTranslate = DirectX::XMMatrixTranslation(radius * cos(XMConvertToRadians(delta * fTimeElapsed)), 0.0f, radius * sin(XMConvertToRadians(delta * fTimeElapsed)));
-				//XMMATRIX xmf4x4Result = DirectX::XMMatrixMultiply(xmmtxTranslate, xmmtxRotate);
-
 				m_ppSirenCap->m_xmf4x4ToParent = Matrix4x4::Multiply(xmmtxRotate, m_ppSirenCap->m_xmf4x4ToParent);
-
-				//std::cout <<"m_ppSirenCap : " << m_ppSirenCap->GetPosition().x << " " << m_ppSirenCap->GetPosition().y << " " << m_ppSirenCap->GetPosition().z << std::endl;
 			}
 			m_AnimationDegree -= delta * fTimeElapsed;
 		}

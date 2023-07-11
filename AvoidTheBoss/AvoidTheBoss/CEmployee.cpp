@@ -1,7 +1,9 @@
 #include "pch.h"
+#include "CEmployee.h"
 #include "clientIocpCore.h"
 #include "GameFramework.h"
 #include "InputManager.h"
+#include "CGenerator.h"
 
 
 
@@ -388,11 +390,11 @@ int32 CEmployee::GetAvailGenIdx()
 		float sumRange = m_playerBV.Radius + m_pSwitches[i].radius;
 		if (distance <= sumRange)
 		{
-			CGenerator* targetGenerator = mainGame.m_ppScene[mainGame.m_nSceneIndex]->GetSceneGenByIdx(i);
-			if (targetGenerator)
+			//CGenerator* targetGenerator = mainGame.m_ppScene[mainGame.m_nSceneIndex]->GetSceneGenByIdx(i);
+			/*if (targetGenerator)
 			{
 				if (targetGenerator->IsAvailable()) return i;
-			}
+			}*/
 		}
 	}
 	
@@ -404,12 +406,12 @@ int32 CEmployee::GetAvailEMPldx()
 	for (int i = 1; i < PLAYERNUM; ++i)
 	{
 
-		CEmployee* p = static_cast<CEmployee*>(mainGame.m_ppScene[mainGame.m_nSceneIndex]->GetScenePlayerByIdx(i));
-		if (p == nullptr || i == m_idx) continue;
-		XMFLOAT3 ppos = p->GetPosition();
-		ppos = Vector3::Subtract(m_xmf3Position, ppos);
-		float dist = Vector3::Length(ppos);
-		if (dist < 1.5 && p->GetBehavior() == (int32)PLAYER_BEHAVIOR::CRAWL && !p->GetRescueOn()) return i;
+		//CEmployee* p = static_cast<CEmployee*>(mainGame.m_ppScene[mainGame.m_nSceneIndex]->GetScenePlayerByIdx(i));
+		//if (p == nullptr || i == m_idx) continue;
+		//XMFLOAT3 ppos = p->GetPosition();
+		//ppos = Vector3::Subtract(m_xmf3Position, ppos);
+		//float dist = Vector3::Length(ppos);
+		//if (dist < 1.5 && p->GetBehavior() == (int32)PLAYER_BEHAVIOR::CRAWL && !p->GetRescueOn()) return i;
 	}
 	return -1;
 }
@@ -445,7 +447,7 @@ bool CEmployee::GenTasking()
 
 	int genIdx = GetAvailGenIdx();
 	CGenerator* targetGen = nullptr;
-	if (genIdx >= 0) mainGame.m_ppScene[mainGame.m_nSceneIndex]->GetSceneGenByIdx(genIdx); // 반환된 idx가 0보다 클 때만 처리
+	//if (genIdx >= 0) mainGame.m_ppScene[mainGame.m_nSceneIndex]->GetSceneGenByIdx(genIdx); // 반환된 idx가 0보다 클 때만 처리
 
 	//  F키를 눌렀고, 구하기 상호작용 중이 아닐 때
 	if (InputManager::GetInstance().GetKeyBuffer(KEY_TYPE::F) && !GetIsPlayerOnRescueInter())
@@ -515,7 +517,7 @@ bool CEmployee::RescueTasking()
 			packet.type = (uint8)SC_PACKET_TYPE::GAMEEVENT;
 			clientCore.DoSend(&packet);
 
-			static_cast<CEmployee*>(mainGame.m_ppScene[mainGame.m_nSceneIndex]->GetScenePlayerByIdx(pIdx))->RescueOn(true);
+			//static_cast<CEmployee*>(mainGame.m_ppScene[mainGame.m_nSceneIndex]->GetScenePlayerByIdx(pIdx))->RescueOn(true);
 			std::cout << pIdx << " Rescuing\n";
 
 		}
@@ -529,8 +531,8 @@ bool CEmployee::RescueTasking()
 			{
 				SetBehavior(PLAYER_BEHAVIOR::IDLE);
 				SetRescueInteraction(false);
-				static_cast<CEmployee*>(mainGame.m_ppScene[mainGame.m_nSceneIndex]->GetScenePlayerByIdx(pIdx))->RescueOn(false);
-				static_cast<CEmployee*>(mainGame.m_ppScene[mainGame.m_nSceneIndex]->GetScenePlayerByIdx(pIdx))->ResetRescueGuage();
+				//static_cast<CEmployee*>(mainGame.m_ppScene[mainGame.m_nSceneIndex]->GetScenePlayerByIdx(pIdx))->RescueOn(false);
+				//static_cast<CEmployee*>(mainGame.m_ppScene[mainGame.m_nSceneIndex]->GetScenePlayerByIdx(pIdx))->ResetRescueGuage();
 
 
 				SC_EVENTPACKET packet;

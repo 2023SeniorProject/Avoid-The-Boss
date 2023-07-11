@@ -1,5 +1,6 @@
 #pragma once
 #include "Player.h"
+
 class CEmployee : public CPlayer
 {
 public:
@@ -68,8 +69,7 @@ public:
 	
 
 	virtual void AnimTrackUpdate();
-	// ================ 다른 클라이언트 애니메이션 재생 전용
-	void SetInteractionAnimTrackOtherClient();
+
 
 	// ================ 캐릭터 상태 반환 ============ 05-23 추가함수
 public: // 05-23 추가 함수
@@ -83,5 +83,5 @@ public: // 05-23 추가 함수
 	int32 GetAvailGenIdx();
 	int32 GetAvailEMPldx();
 public: // 05-24 추가함수
-	SwitchInformation m_pSwitches[3];
+	GEN_INFO m_pSwitches[3];
 };

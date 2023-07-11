@@ -19,7 +19,7 @@ namespace nv_helpers_dx12
 //--------------------------------------------------------------------------------------------------
 //
 //
-inline ID3D12Resource* CreateBuffer(ID3D12Device* m_device, uint64_t size,
+inline ID3D12Resource* CreateBuffer(ID3D12Device5* m_device, uint64_t size,
                                     D3D12_RESOURCE_FLAGS flags, D3D12_RESOURCE_STATES initState,
                                     const D3D12_HEAP_PROPERTIES& heapProps)
 {
@@ -126,7 +126,7 @@ IDxcBlob* CompileShaderLibrary(LPCWSTR fileName)
 //--------------------------------------------------------------------------------------------------
 //
 //
-ID3D12DescriptorHeap* CreateDescriptorHeap(ID3D12Device* device, uint32_t count,
+ID3D12DescriptorHeap* CreateDescriptorHeap(ID3D12Device5* device, uint32_t count,
                                            D3D12_DESCRIPTOR_HEAP_TYPE type, bool shaderVisible)
 {
   D3D12_DESCRIPTOR_HEAP_DESC desc = {};

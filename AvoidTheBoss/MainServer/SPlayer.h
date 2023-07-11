@@ -28,13 +28,16 @@ public:
 	int32 m_sid = -1;
 	int32 m_idx = -1;
 	bool m_hide = false;
-	int32 m_hp = 5; // 05-06추가 플레이어 HP
+	int32 m_hp = 3; // 05-06추가 플레이어 HP
 public:
 	int32 m_behavior = (int32)PLAYER_BEHAVIOR::IDLE;
 	int32 m_attackedAnimationCount = 0;
 	int32 m_downAnimationCount = 0;
+private:
+	bool m_isEscaped = false;
 public:
 	SPlayer();
+	SPlayer(const XMFLOAT3& pos) : m_xmf3Position(pos) {};
 	virtual ~SPlayer();
 
 	XMFLOAT3 GetPosition() const { return(m_xmf3Position); }
@@ -50,6 +53,7 @@ public:
 
 	XMFLOAT3& GetVelocity() { return(m_xmf3Velocity); }
 
+	// 출력 함수
 	void PrintRightVec()
 	{
 		std::cout << "(" << m_xmf3Right.x << " " << m_xmf3Right.z << ")\n";
@@ -63,8 +67,11 @@ public:
 		std::cout << m_xmf3Position.x << " " << m_xmf3Position.z << "\n";
 	}
 
+	// 행동 트리 함수
 	void SetBehavior(PLAYER_BEHAVIOR pb) { m_behavior = (int32)pb; }
 	int32 GetBehavior()					 { return m_behavior;	   }
+	bool  GetEscaped()					 { return m_isEscaped;	   }
+
 	void ProcessAttack() 
 	{ 
 		if(m_hp > 0) m_hp -= 1;
@@ -84,4 +91,6 @@ public:
 	void Move(const int16& dwDirection, float fDistance);
 	void Update(float fTimeElapsed);
 	void LateUpdate(float fTimeElapsed);
+	
+	void ResetState();
 };

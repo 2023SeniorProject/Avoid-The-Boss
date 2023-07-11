@@ -2,9 +2,14 @@
 #include "GameFramework.h"
 #include "clientIocpCore.h"
 
-#include <string>
+// 매니저 관련 헤더파일
+#include "UIManager.h"
+#include "SceneManager.h"
 
-//#include "DXRHelpers/nv_helpers_dx12/BottomLevelASGenerator.h"
+// 씬관련 헤더파일
+#include "CScene.h"
+#include "GameScene.h"
+#include "OtherScenes.h"
 
 CGameFramework mainGame;
 // #define _WITH_PLAYER_TOP // 플레이어 깊이 버퍼값 1.0f
@@ -14,7 +19,7 @@ CGameFramework::CGameFramework()
 	m_pdxgiFactory = NULL;
 	m_pdxgiSwapChain = NULL;
 	m_pd3dDevice = NULL;
-	_curScene = SceneInfo::LOBBY;
+	m_curScene = (int32)SCENESTATE::TITLE;
 	for (int i = 0; i < m_nSwapChainBuffers; i++) 
 		m_ppd3dSwapChainBackBuffers[i] = NULL;
 	m_nSwapChainBufferIndex = 0;
@@ -69,6 +74,8 @@ bool CGameFramework::OnCreate(HINSTANCE hInstance, HWND hMainWnd)
 	CreateDepthStencilView();
 	
 	//렌더링할 게임 객체를 생성한다.
+
+
 	BuildScenes();
 
 	return(true);
@@ -122,7 +129,7 @@ void CGameFramework::CreateSwapChain()
 	::GetClientRect(m_hWnd, &rcClient);
 	m_nWndClientWidth = rcClient.right - rcClient.left;
 	m_nWndClientHeight = rcClient.bottom - rcClient.top;
-
+	
 #ifdef _WITH_CREATE_SWAPCHAIN_FOR_HWND
 	DXGI_SWAP_CHAIN_DESC1 dxgiSwapChainDesc;
 	::ZeroMemory(&dxgiSwapChainDesc, sizeof(DXGI_SWAP_CHAIN_DESC1));
@@ -350,17 +357,21 @@ void CGameFramework::BuildScenes()
 {
 	m_pd3dCommandList->Reset(m_pd3dCommandAllocator, NULL);
 
-	//씬 객체를 생성하고 씬에 포함될 게임 객체들을 생성한다. 
-	m_ppScene[0] = new CLobbyScene();
-	m_ppScene[1] = new CMainScene();
 
 	for (int i = 0; i < m_nScene; i++)
 	{
 		m_ppScene[i]->m_pSound = m_pSound;
-		m_ppScene[i]->BuildObjects(m_pd3dDevice, m_pd3dCommandList);
-	}
+	} >>> 수정
 
+		//씬 객체를 생성하고 씬에 포함될 게임 객체들을 생성한다. 
+
+	m_UIRenderer = new UIManager(m_nSwapChainBuffers, 2, m_pd3dDevice, m_pd3dCommandQueue, m_ppd3dSwapChainBackBuffers, m_nWndClientWidth, m_nWndClientHeight);
+	m_SceneManager = new SceneManager();
+	
+	m_SceneManager->BuildScene(m_pd3dDevice, m_pd3dCommandList);
+	
 	//씬 객체를 생성하기 위하여 필요한 그래픽 명령 리스트들을 명령 큐에 추가한다. 
+
 	m_pd3dCommandList->Close();
 	ID3D12CommandList* ppd3dCommandLists[] = { m_pd3dCommandList };
 	m_pd3dCommandQueue->ExecuteCommandLists(1, ppd3dCommandLists);
@@ -369,36 +380,39 @@ void CGameFramework::BuildScenes()
 	WaitForGpuComplete();
 
 	//그래픽 리소스들을 생성하는 과정에 생성된 업로드 버퍼들을 소멸시킨다. 
-	if (m_ppScene[m_nSceneIndex]) m_ppScene[m_nSceneIndex]->ReleaseUploadBuffers();
-	m_ppScene[m_nSceneIndex]->InitScene();
+	m_SceneManager->ReleaseUpBuffers();
 }
 
 void CGameFramework::ReleaseScenes()
 {
-	if (m_ppScene[m_nSceneIndex]) m_ppScene[m_nSceneIndex]->ReleaseObjects();
-	if (m_ppScene[m_nSceneIndex]) delete m_ppScene[m_nSceneIndex];
+	
+	m_SceneManager->ReleaseScene();
+	if (m_UIRenderer) m_UIRenderer->ReleaseResources();
+	if (m_UIRenderer) delete m_UIRenderer;
 }
 
 void CGameFramework::ProcessInput()
 {
-	m_ppScene[m_nSceneIndex]->ProcessInput(m_hWnd);
+	m_SceneManager->ProcessInput(m_hWnd, m_curScene);
+	
 }
 
 void CGameFramework::UpdateObject()
 {
-	m_ppScene[m_nSceneIndex]->Update(m_hWnd);
+	m_SceneManager->Update(m_hWnd, m_curScene);
+	
 }
 
 void CGameFramework::AnimateObjects()
 {
-	if (m_ppScene[m_nSceneIndex]) m_ppScene[m_nSceneIndex]->AnimateObjects();
+	
+	m_SceneManager->Animate();
 }
 
 void CGameFramework::FrameAdvance() // 여기서 업데이트랑 렌더링 동시에 진행하는 곳
 {
 	//타이머의 시간이 갱신되도록 하고 프레임 레이트를 계산한다. 
-	if (_curScene.load() != SceneInfo::GAMEROOM) return;
-	
+
 	//1 인풋 처리
 	ProcessInput();
 	//2 업데이트 처리
@@ -409,7 +423,7 @@ void CGameFramework::FrameAdvance() // 여기서 업데이트랑 렌더링 동시에 진행하는 
 	Render();
 	WaitForGpuComplete();
 	//GPU가 모든 명령 리스트를 실행할 때 까지 기다린다.
-
+	m_UIRenderer->Render2D(m_nSwapChainBufferIndex, m_curScene);
 #ifdef _WITH_PRESENT_PARAMETERS
 	DXGI_PRESENT_PARAMETERS dxgiPresentParameters;
 	dxgiPresentParameters.DirtyRectsCount = 0;
@@ -497,15 +511,15 @@ void CGameFramework::Render()
 	//렌더 타겟 뷰(서술자)와 깊이-스텐실 뷰(서술자)를 출력-병합 단계(OM)에 연결한다.
 
 	//=======렌더링 코드는 여기에 추가될 것이다
-	if (m_ppScene) m_ppScene[m_nSceneIndex]->Render(m_pd3dCommandList, m_ppScene[m_nSceneIndex]->m_pCamera, m_raster);
-
+	
+	m_SceneManager->Render(m_pd3dCommandList, m_curScene, true);
 	//3인칭 카메라일 때 플레이어가 항상 보이도록 렌더링한다. 
 #ifdef _WITH_PLAYER_TOP
 	//렌더 타겟은 그대로 두고 깊이 버퍼를 1.0으로 지우고 플레이어를 렌더링하면 플레이어는 무조건 그려질 것이다. 
 	m_pd3dCommandList->ClearDepthStencilView(d3dDsvCPUDescriptorHandle,
 		D3D12_CLEAR_FLAG_DEPTH | D3D12_CLEAR_FLAG_STENCIL, 1.0f, 0, 0, NULL);
 #endif
-	//if (m_pPlayer) m_pPlayer->Render(m_pd3dCommandList, m_pCamera);
+	
 
 	d3dResourceBarrier.Transition.StateBefore = D3D12_RESOURCE_STATE_RENDER_TARGET;
 	d3dResourceBarrier.Transition.StateAfter = D3D12_RESOURCE_STATE_PRESENT;
@@ -536,16 +550,22 @@ void CGameFramework::MoveToNextFrame()
 	}
 }
 
+void CGameFramework::ChangeScene(SCENESTATE ss)
+{
+	m_curScene = (int32)ss;
+	m_SceneManager->ChangeScene((int32)ss);
+}
+
 void CGameFramework::OnProcessingMouseMessage(HWND hWnd, UINT nMessageID, WPARAM wParam, LPARAM lParam)
 {
-
-	m_ppScene[m_nSceneIndex]->OnProcessingMouseMessage(hWnd, nMessageID, wParam, lParam);
+	m_SceneManager->GetSceneByIdx(m_curScene)->OnProcessingMouseMessage(hWnd, nMessageID, wParam, lParam);
+	//m_ppScene[m_curScene]->OnProcessingMouseMessage(hWnd, nMessageID, wParam, lParam);
 }
 
 void CGameFramework::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPARAM wParam, LPARAM lParam)
 {
-	
-	m_ppScene[m_nSceneIndex]->OnProcessingKeyboardMessage(hWnd, nMessageID, wParam, lParam);
+	m_SceneManager->GetSceneByIdx(m_curScene)->OnProcessingKeyboardMessage(hWnd, nMessageID, wParam, lParam);
+	//m_ppScene[m_curScene]->OnProcessingKeyboardMessage(hWnd, nMessageID, wParam, lParam);
 }
 
 LRESULT CGameFramework::OnProcessingWindowMessage(HWND hWnd, UINT nMessageID, WPARAM wParam, LPARAM lParam)
@@ -554,10 +574,10 @@ LRESULT CGameFramework::OnProcessingWindowMessage(HWND hWnd, UINT nMessageID, WP
 	{
 	case WM_ACTIVATE:
 	{
-		if (LOWORD(wParam) == WA_INACTIVE)
-			m_ppScene[m_nSceneIndex]->StopTimer();
+		/*if (LOWORD(wParam) == WA_INACTIVE)
+			static_cast<CGameScene*>(m_ppScene[m_curScene])->StopTimer();
 		else
-			m_ppScene[m_nSceneIndex]->StartTimer();
+			static_cast<CGameScene*>(m_ppScene[m_curScene])->StartTimer();*/
 		break;
 	}
 	case WM_SIZE:
@@ -595,7 +615,7 @@ void CGameFramework::CheckRaytracingSupport()
 void CGameFramework::OnKeyUp(UINT8 key)
 {
 	// Alternate between rasterization and raytracing using the F2
-	if (key == VK_SPACE) 
+	if (key == VK_NUMPAD0) 
 	{
 		m_raster = !m_raster; 
 	}

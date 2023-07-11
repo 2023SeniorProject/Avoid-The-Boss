@@ -1,12 +1,24 @@
 #include "pch.h"
-#include "ClientSession.h"
+// 네트워크 관련 헤더
 #include "SocketUtil.h"
+#include "ClientSession.h"
+// 프레임 워크 헤더
 #include "GameFramework.h"
+#include "SceneManager.h"
+// 이벤트 처리관련 헤더
 #include "IocpEvent.h"
 #include "ClientPacketEvent.h"
-#include "CBullet.h"
 #include "CJobQueue.h"
-#include <string>
+// 객체 관련 헤더
+#include "CBullet.h"
+#include "CBoss.h"
+#include "CEmployee.h"
+// 씬관련 헤더
+#include "OtherScenes.h"
+#include "GameScene.h"
+
+
+
 
 CSession::CSession()
 {
@@ -89,6 +101,19 @@ bool CSession::DoSend(void* packet)
 	return true;
 }
 
+void CSession::DoDelaySend(C2S_ATTACK packet, float afterTick)
+{
+	DelayEvent<C2S_ATTACK>* de = new DelayEvent(packet);
+	std::unique_lock<std::shared_mutex> wl(_DelayQueueLock);
+	_DelayjobQueue->PushTask(static_cast<queueEvent*>(de), afterTick);
+}
+
+void CSession::DoDelayTask()
+{
+	std::unique_lock<std::shared_mutex> wl(_DelayQueueLock);
+	_DelayjobQueue->DoTasks();
+}
+
 bool CSession::DoRecv()
 {
 
@@ -114,84 +139,26 @@ bool CSession::DoRecv()
 
 void CSession::ProcessPacket(char* packet)
 {
+
+	
+	CGameScene* gc =
+		static_cast<CGameScene*>(mainGame.m_SceneManager->GetSceneByIdx((int32)CGameFramework::SCENESTATE::INGAME));
+	if (!gc) return; // something error detected;
+
 	switch ((uint8)packet[1])
 	{
-
-	case (uint8)S_PACKET_TYPE::SKEY:
-	{
-		S2C_KEY* movePacket = reinterpret_cast<S2C_KEY*>(packet);
-		moveEvent* mev = new moveEvent();
-
-		CPlayer* player = mainGame.m_ppScene[mainGame.m_nSceneIndex]->GetScenePlayerBySid(movePacket->sid);
-		if (player == nullptr) break;
-
-		mev->player = player;
-		mev->_dir.x = movePacket->x;
-		mev->_dir.y = 0;
-		mev->_dir.z = movePacket->z;
-		mev->_key = movePacket->key;
-		mainGame.m_ppScene[mainGame.m_nSceneIndex]->AddEvent(static_cast<queueEvent*>(mev), 0);
-	}
-	break;
-
-	case (uint8)S_PACKET_TYPE::SROT:
-	{
-		S2C_ROTATE* rotatePacket = reinterpret_cast<S2C_ROTATE*>(packet);
-		CPlayer* player = mainGame.m_ppScene[mainGame.m_nSceneIndex]->GetScenePlayerBySid(rotatePacket->sid);
-		if (player != nullptr)
-		{
-			//player->Rotate(0, rotatePacket->angle, 0);
-		}
-
-	}
-	break;
-	case (uint8)S_PACKET_TYPE::SPOS: // 미리 계산한 좌표값을 보내준다.
-	{
-		S2C_POS* posPacket = reinterpret_cast<S2C_POS*>(packet);
-		CPlayer* player = mainGame.m_ppScene[mainGame.m_nSceneIndex]->GetScenePlayerBySid(posPacket->sid);		
-		if (player == nullptr) break;
-		
-		XMFLOAT3 newPos = XMFLOAT3(posPacket->x, player->GetPosition().y, posPacket->z);
-		posEvent* pe = new posEvent();
-		pe->player = player;
-		pe->_pos = newPos;
 	
-		mainGame.m_ppScene[mainGame.m_nSceneIndex]->AddEvent(static_cast<queueEvent*>(pe), 0.f);
-		
-	}
-	break;
-	case (uint8)S_PACKET_TYPE::SCHAT:
-	{
-		break;
-	}
-	case (uint8)S_PACKET_TYPE::GAME_START:
-	{
-		S2C_GAMESTART* gsp = reinterpret_cast<S2C_GAMESTART*>(packet);
-		
-		// ================= 플레이어 초기 위치 초기화 ==================
-		mainGame.m_ppScene[mainGame.m_nSceneIndex]->InitGame(gsp, _sid);
-
-		// ================= 자신의 클라이언트 IDX 확인 =================
-		std::cout << "MYPLAYER IDX : " << mainGame.m_ppScene[mainGame.m_nSceneIndex]->_playerIdx << "\n";
-		
-		// ================= 카메라 셋팅 ================================
-		CPlayer* myPlayer = mainGame.m_ppScene[mainGame.m_nSceneIndex]->_players[mainGame.m_ppScene[mainGame.m_nSceneIndex]->_playerIdx];
-		std::wstring str = L"Client";
-		str.append(std::to_wstring(mainGame.m_ppScene[mainGame.m_nSceneIndex]->_playerIdx));
-		::SetConsoleTitle(str.c_str());
-		mainGame.m_ppScene[mainGame.m_nSceneIndex]->m_pCamera = myPlayer->GetCamera();
-		mainGame.m_ppScene[mainGame.m_nSceneIndex]->m_cid = _cid;
-		mainGame.m_ppScene[mainGame.m_nSceneIndex]->m_sid = _sid;
-		mainGame._curScene.store(SceneInfo::GAMEROOM);
-		mainGame.m_ppScene[mainGame.m_nSceneIndex]->InitScene();
-	}
-	break;
 	// ================ 로그인 관련 처리 ================
+#pragma region Title
 	case (uint8)S_PACKET_TYPE::LOGIN_OK:
 	{
 		S2C_LOGIN_OK* lo = (S2C_LOGIN_OK*)packet;
 		_cid = lo->cid;
 		_sid = lo->sid;
+
+		CScene::m_sid = lo->sid;
+		CScene::m_cid = lo->cid;
+		mainGame.ChangeScene(CGameFramework::SCENESTATE::LOBBY);
 	}
 	break;
 	case (uint8)S_PACKET_TYPE::LOGIN_FAIL:
@@ -201,6 +168,9 @@ void CSession::ProcessPacket(char* packet)
 		::SendMessage(mainGame.m_hWnd, WM_QUIT, 0, 0);
 	}
 	break;
+#pragma endregion
+	// ================ 로비씬 패킷      ===============
+#pragma region  Lobby
 	// ============= 방 관련 패킷 ============
 	case (uint8)S_ROOM_PACKET_TYPE::REP_ENTER_RM:
 	{
@@ -217,12 +187,83 @@ void CSession::ProcessPacket(char* packet)
 		std::cout << "Fail to Create Room!!(MAX_CAPACITY)" << std::endl;
 	}
 	break;
+	case (uint8)S_PACKET_TYPE::SCHAT:
+	{
+		break;
+	}
+#pragma endregion
+#pragma region Room
+	case (uint8)S_PACKET_TYPE::GAME_START:
+	{
+		S2C_GAMESTART* gsp = reinterpret_cast<S2C_GAMESTART*>(packet);
+
+		// ================= 플레이어 초기 위치 초기화 ==================
+		 gc->InitGame(gsp, _sid);
+		// ================= 자신의 클라이언트 IDX 확인 =================
+		std::cout << "MYPLAYER IDX : " << gc->m_playerIdx << "\n";
+
+		// ================= 카메라 셋팅 ================================
+		CPlayer* myPlayer = gc->m_players[gc->m_playerIdx];
+		std::wstring str = L"Client";
+		str.append(std::to_wstring(gc->m_playerIdx));
+		::SetConsoleTitle(str.c_str());
+		mainGame.ChangeScene(CGameFramework::SCENESTATE::INGAME);
+		gc->InitScene();
+	}
+	break;
+#pragma endregion
+	// ============== 인게임 관련 패킷 =============
+#pragma region InGame
+	case (uint8)S_PACKET_TYPE::SKEY:
+	{
+		S2C_KEY* movePacket = reinterpret_cast<S2C_KEY*>(packet);
+		moveEvent* mev = new moveEvent();
+
+		CPlayer* player = gc ->GetScenePlayerBySid(movePacket->sid);
+		if (player == nullptr) break;
+
+		//mev->player = player;
+		mev->_dir.x = movePacket->x;
+		mev->_dir.y = 0;
+		mev->_dir.z = movePacket->z;
+		mev->_key = movePacket->key;
+
+		gc->AddEvent(static_cast<queueEvent*>(mev), 0);
+	}
+	break;
+
+	case (uint8)S_PACKET_TYPE::SROT:
+	{
+		S2C_ROTATE* rotatePacket = reinterpret_cast<S2C_ROTATE*>(packet);
+		CPlayer* player = gc->GetScenePlayerBySid(rotatePacket->sid);
+		if (player != nullptr)
+		{
+			player->Rotate(0, rotatePacket->angle, 0);
+		}
+
+	}
+	break;
+	case (uint8)S_PACKET_TYPE::SPOS: // 미리 계산한 좌표값을 보내준다.
+	{
+		S2C_POS* posPacket = reinterpret_cast<S2C_POS*>(packet);
+		CPlayer* player = gc->GetScenePlayerBySid(posPacket->sid);		
+		if (player == nullptr) break;
+
+		XMFLOAT3 newPos = XMFLOAT3(posPacket->x, player->GetPosition().y, posPacket->z);
+		posEvent* pe = new posEvent();
+		pe->player = player;
+		pe->_pos = newPos;
+
+		gc->AddEvent(static_cast<queueEvent*>(pe), 0.f);
+
+	}
+	break;
 	case (uint8)SC_PACKET_TYPE::GAMEEVENT:
 	{
 		SC_EVENTPACKET* ev = (SC_EVENTPACKET*)packet;
 		InteractionEvent* gev = new InteractionEvent();
 		gev->eventId = ev->eventId;
-		mainGame.m_ppScene[mainGame.m_nSceneIndex]->AddEvent(static_cast<queueEvent*>(gev), 0.f);
+		gc->AddEvent(static_cast<queueEvent*>(gev), 0.f);
 
 	}
 	break;
@@ -231,7 +272,7 @@ void CSession::ProcessPacket(char* packet)
 	{
 		S2C_ANIMPACKET* sw = (S2C_ANIMPACKET*)packet;
 		uint8 idx = sw->idx;
-		CEmployee* myPlayer = (CEmployee*)mainGame.m_ppScene[mainGame.m_nSceneIndex]->GetScenePlayerBySid(idx);
+		CEmployee* myPlayer = (CEmployee*)gc->GetScenePlayerBySid(idx);
 		if (myPlayer != nullptr)
 		{
 			if (sw->track == (uint8)ANIMTRACK::GEN_ANIM) myPlayer->SetBehavior(PLAYER_BEHAVIOR::SWITCH_INTER);
@@ -243,8 +284,10 @@ void CSession::ProcessPacket(char* packet)
 	{
 		S2C_FRAMEPACKET* fp = (S2C_FRAMEPACKET*)packet;
 		FrameEvent* fe = new FrameEvent(fp->wf);
-		mainGame.m_ppScene[mainGame.m_nSceneIndex]->AddEvent(static_cast<queueEvent*>(fe),0);
+		gc->AddEvent(static_cast<queueEvent*>(fe),0);
 	}
 	break;
+#pragma endregion
 	}
+
 }

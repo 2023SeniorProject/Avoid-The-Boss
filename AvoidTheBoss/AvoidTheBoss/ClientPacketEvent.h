@@ -57,3 +57,21 @@ public:
 	virtual void Task();
 };
 
+template<class T>
+class DelayEvent : public queueEvent
+{
+	T _packet;
+
+public:
+	~DelayEvent() {};
+	DelayEvent(T packet)
+	{
+		_packet = packet;
+	}
+public:
+	virtual void Task()
+	{
+		//clientCore.DoSend(&_packet);
+	};
+};
+

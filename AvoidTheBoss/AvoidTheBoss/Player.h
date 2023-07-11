@@ -128,7 +128,7 @@ public: //04-29 추가함수
 	virtual void AnimTrackUpdate(float ,CLIENT_TYPE) {};
 	virtual void SetBehavior(PLAYER_BEHAVIOR b) { m_behavior = (int32)b; };
 	virtual int32 GetBehavior() { return m_behavior; }
-	//virtual void Render(ID3D12GraphicsCommandList* pd3dCommandList, CCamera* pCamera =NULL);
+	//virtual void Render(ID3D12GraphicsCommandList4* pd3dCommandList, CCamera* pCamera =NULL);
 
 	virtual void BuildObjects(ID3D12Device5* pd3dDevice, ID3D12GraphicsCommandList4
 		* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature) {}
@@ -150,7 +150,7 @@ public:
 	virtual uint8 ProcessInput();
 };
 
-struct SwitchInformation
+struct GEN_INFO
 {
 	XMFLOAT3 position;
 	float radius; //raderArea

@@ -1,5 +1,5 @@
 #include "pch.h"
-#include "PlayerInfo.h"
+#include "SPlayer.h"
 #include "CollisionDetector.h"
 #include "CSIocpCore.h"
 
@@ -80,6 +80,30 @@ void SPlayer::LateUpdate(float fTimeElapsed)
 {
 	m_playerBV.Center = GetPosition();
 	BoxTree->CheckCollision(m_playerBV, m_xmf3Position);
+}
+
+void SPlayer::ResetState()
+{
+	m_hp = 5;
+	m_behavior = (int32)PLAYER_BEHAVIOR::IDLE;
+	m_hide = false;
+	m_sid = -1;
+	m_idx = -1;
+	m_isEscaped = false;
+
+	m_xmf3Right = XMFLOAT3(1.0f, 0.0f, 0.0f);
+	m_xmf3Up = XMFLOAT3(0.0f, 1.0f, 0.0f);
+	m_xmf3Look = XMFLOAT3(0.0f, 0.0f, 1.0f);
+
+	m_xmf3Position = XMFLOAT3(0.0f, 0.25f, -20.0f);
+	m_xmf3Velocity = XMFLOAT3(0.0f, 0.0f, 0.0f);
+
+	m_fPitch = 0.0f;
+	m_fRoll = 0.0f;
+	m_fYaw = 0.0f;
+
+	m_playerBV.Center = m_xmf3Position;
+	m_playerBV.Radius = 0.2f;
 }
 
 

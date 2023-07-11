@@ -2,11 +2,14 @@
 //----CGameFramework 클래스
 //----1 Direct3D 디바이스 생성과 관리 
 //----2 화면 출력을 위한 처리 - 게임 객체 생성과 관리, 사용자 입력, 애니메이션 작업
-#include "Scene.h"
+
 #include "Camera.h"
 #include "DXSampleHelper.h"
 //#include "DXRHelpers/nv_helpers_dx12/TopLevelASGenerator.h"
-#include <queue> 
+
+class CScene;
+class UIManager;
+class SceneManager;
 
 // 이 자습서에서는 단일 하위 수준 pResult에서 AS만 사용
 // 최상위 AS의 경우 동적 변경을 구현할 가능성을 두고 생성한 구조체이다.
@@ -21,15 +24,21 @@ struct AccelerationStructureBuffers
 
 class CGameFramework
 {
+
+public:	enum class SCENESTATE { TITLE = 0, LOBBY = 1, ROOM = 2, INGAME = 3 };
 	friend class queueEvent;
 	friend class moveEvnet;
 	friend class posEvent;
 	friend class InteractionEvent;
 	friend class FrameEvent;
+	
 	friend class CSession;
 	friend class CEmployee;
 	friend class CBoss;
+
 	friend class CGameScene;
+	friend class CLobbyScene;
+	friend class CTitleScene;
 private:
 	HINSTANCE m_hInstance;
 	HWND m_hWnd;
@@ -37,6 +46,7 @@ private:
 	int	m_nWndClientWidth = FRAME_BUFFER_WIDTH;
 	int	m_nWndClientHeight = FRAME_BUFFER_HEIGHT;
 
+	
 	IDXGIFactory4*				m_pdxgiFactory = NULL;
 	//DXGI 팩토리 인터페이스에 대한 포인터이다. 
 	IDXGISwapChain3*			m_pdxgiSwapChain = NULL;
@@ -68,6 +78,10 @@ private:
 	ID3D12GraphicsCommandList4*	m_pd3dCommandList;		//5.14 광선추적 버전 4로 변경
 	//명령 큐, 명령 할당자, 명령 리스트 인터페이스 포인터이다.
 
+	// 게임 프레임워크에 필요한 각종 매니저들
+protected:
+	SceneManager*				m_SceneManager = nullptr;
+	UIManager*					m_UIRenderer   = nullptr;
 #if defined(_DEBUG)
 	ID3D12Debug* m_pd3dDebugController;
 #endif
@@ -81,16 +95,19 @@ private:
 	
 
 	//다음은 프레임 레이트를 주 윈도우의 캡션에 출력하기 위한 문자열이다. 
-	WCHAR					m_pszFrameRate[500];
+	WCHAR										m_pszFrameRate[500];
+public:
+	Microsoft::WRL::ComPtr<ID3D11DeviceContext>  m_d3d11DeviceContext;
+	Microsoft::WRL::ComPtr<ID3D11On12Device>	 m_d3d11On12Device;
 public:
 	CSound* m_pSound;
 protected:
-	static const int							m_nScene = 2;
+	static const int							m_nScene = 4;
 
-	CGameScene*				m_ppScene[m_nScene];
-	Atomic<int8>			_curScene = 0;
+	CScene*										m_ppScene[m_nScene];
+	
+	Atomic<int32>								m_curScene = 0;
 public:
-	int							m_nSceneIndex = 0;
 	CGameFramework();
 	~CGameFramework();
 
@@ -102,7 +119,8 @@ public:
 	void CreateDirect3DDevice();	//createDirect3DDisplay()
 	void CreateCommandQueueAndList();
 	//스왑 체인, 디바이스, 서술자 힙, 명령 큐/할당자/리스트를 생성하는 함수이다. 
-
+	
+	
 	void CreateRtvAndDsvDescriptorHeaps();
 
 	void CreateRenderTargetViews();
@@ -126,6 +144,9 @@ public:
 	void Render();
 	void MoveToNextFrame();
 
+	// 씬 관련 함수 추가 07-03~ 07-04
+	void ChangeScene(SCENESTATE ss);
+public:
 	void OnProcessingMouseMessage(HWND hWnd, UINT nMessageID, WPARAM wParam, LPARAM
 		lParam);
 	void OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPARAM wParam, LPARAM

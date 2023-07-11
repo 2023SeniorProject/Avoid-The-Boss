@@ -1208,7 +1208,7 @@ namespace
 
     //--------------------------------------------------------------------------------------
     HRESULT CreateTextureResource(
-        _In_ ID3D12Device* d3dDevice,
+        _In_ ID3D12Device5* d3dDevice,
         D3D12_RESOURCE_DIMENSION resDim,
         size_t width,
         size_t height,
@@ -1266,7 +1266,7 @@ namespace
     }
 
     //--------------------------------------------------------------------------------------
-    HRESULT CreateTextureFromDDS(_In_ ID3D12Device* d3dDevice,
+    HRESULT CreateTextureFromDDS(_In_ ID3D12Device5* d3dDevice,
         _In_ const DDS_HEADER* header,
         _In_reads_bytes_(bitSize) const uint8_t* bitData,
         size_t bitSize,
@@ -1616,7 +1616,7 @@ namespace
 //--------------------------------------------------------------------------------------
 _Use_decl_annotations_
 HRESULT DirectX::LoadDDSTextureFromMemory(
-    ID3D12Device* d3dDevice,
+    ID3D12Device5* d3dDevice,
     const uint8_t* ddsData,
     size_t ddsDataSize,
     ID3D12Resource** texture,
@@ -1641,7 +1641,7 @@ HRESULT DirectX::LoadDDSTextureFromMemory(
 
 _Use_decl_annotations_
 HRESULT DirectX::LoadDDSTextureFromMemoryEx(
-    ID3D12Device* d3dDevice,
+    ID3D12Device5* d3dDevice,
     const uint8_t* ddsData,
     size_t ddsDataSize,
     size_t maxsize,
@@ -1705,7 +1705,7 @@ HRESULT DirectX::LoadDDSTextureFromMemoryEx(
 //--------------------------------------------------------------------------------------
 _Use_decl_annotations_
 HRESULT DirectX::LoadDDSTextureFromFile(
-    ID3D12Device* d3dDevice,
+    ID3D12Device5* d3dDevice,
     const wchar_t* fileName,
     ID3D12Resource** texture,
     std::unique_ptr<uint8_t[]>& ddsData,
@@ -1729,7 +1729,7 @@ HRESULT DirectX::LoadDDSTextureFromFile(
 
 _Use_decl_annotations_
 HRESULT DirectX::LoadDDSTextureFromFileEx(
-    ID3D12Device* d3dDevice,
+    ID3D12Device5* d3dDevice,
     const wchar_t* fileName,
     size_t maxsize,
     D3D12_RESOURCE_FLAGS resFlags,

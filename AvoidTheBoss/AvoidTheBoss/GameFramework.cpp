@@ -5,7 +5,7 @@
 // 매니저 관련 헤더파일
 #include "UIManager.h"
 #include "SceneManager.h"
-#include "CSound.h"
+#include "SoundManager.h"
 // 씬관련 헤더파일
 #include "CScene.h"
 #include "GameScene.h"
@@ -49,8 +49,7 @@ CGameFramework::CGameFramework()
 	
 	_tcscpy_s(m_pszFrameRate, _T("FPS : "));
 
-	m_pSound = new CSound();
-	m_pSound->SoundSystem();
+	SoundManager::GetInstance(); // 사운드 매니저 생성
 }
 
 CGameFramework::~CGameFramework()
@@ -84,7 +83,7 @@ bool CGameFramework::OnCreate(HINSTANCE hInstance, HWND hMainWnd)
 void CGameFramework::OnDestroy()
 {
 	//delete m_pSound;
-	m_pSound->SoundRelease();
+	SoundManager::GetInstance().SoundRelease();
 
 	ReleaseScenes();
 	//게임 객체(게임 월드 객체)를 소멸한다.
@@ -362,7 +361,7 @@ void CGameFramework::BuildScenes()
 	m_UIRenderer = new UIManager(m_nSwapChainBuffers, 2, m_pd3dDevice, m_pd3dCommandQueue, m_ppd3dSwapChainBackBuffers, m_nWndClientWidth, m_nWndClientHeight);
 	m_SceneManager = new SceneManager();
 	
-	m_SceneManager->BuildScene(m_pd3dDevice, m_pd3dCommandList,m_pSound);
+	m_SceneManager->BuildScene(m_pd3dDevice, m_pd3dCommandList);
 
 
 	//씬 객체를 생성하기 위하여 필요한 그래픽 명령 리스트들을 명령 큐에 추가한다. 
@@ -549,18 +548,19 @@ void CGameFramework::ChangeScene(SCENESTATE ss)
 {
 	m_curScene = (int32)ss;
 	m_SceneManager->ChangeScene((int32)ss);
+	SoundManager::GetInstance().PlayBackGroundSound(m_curScene); // 씬 전환 시, 사운드 재생 변경
 }
 
 void CGameFramework::OnProcessingMouseMessage(HWND hWnd, UINT nMessageID, WPARAM wParam, LPARAM lParam)
 {
 	m_SceneManager->GetSceneByIdx(m_curScene)->OnProcessingMouseMessage(hWnd, nMessageID, wParam, lParam);
-	//m_ppScene[m_curScene]->OnProcessingMouseMessage(hWnd, nMessageID, wParam, lParam);
+	
 }
 
 void CGameFramework::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPARAM wParam, LPARAM lParam)
 {
 	m_SceneManager->GetSceneByIdx(m_curScene)->OnProcessingKeyboardMessage(hWnd, nMessageID, wParam, lParam);
-	//m_ppScene[m_curScene]->OnProcessingKeyboardMessage(hWnd, nMessageID, wParam, lParam);
+
 }
 
 LRESULT CGameFramework::OnProcessingWindowMessage(HWND hWnd, UINT nMessageID, WPARAM wParam, LPARAM lParam)

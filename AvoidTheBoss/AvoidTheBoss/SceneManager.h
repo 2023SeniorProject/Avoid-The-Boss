@@ -21,7 +21,7 @@ public:
 	void ProcessInput(HWND& hWnd, int32);
 
 
-	void BuildScene(ID3D12Device5* pd3dDevice, ID3D12GraphicsCommandList4* pd3dCommandList, CSound* pSound);
+	void BuildScene(ID3D12Device5* pd3dDevice, ID3D12GraphicsCommandList4* pd3dCommandList);
 	void ReleaseUpBuffers();
 	void ReleaseScene();
 

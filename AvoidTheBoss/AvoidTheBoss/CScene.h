@@ -44,8 +44,6 @@ protected:
 	ID3D12RootSignature* m_pd3dGraphicsRootSignature = NULL;
 public:
 	CCamera*			m_pCamera;
-
-	//CSound*				m_pSound;
 public:
 	LIGHT*								m_pLights = NULL;
 	LIGHTS*								m_pcbMappedLights = NULL;
@@ -98,7 +96,7 @@ public:
 	virtual void Render(ID3D12GraphicsCommandList4* pd3dCommandList, CCamera* pCamera,bool Raster) {};
 	virtual void Update(HWND& hWnd) {}
 	virtual void AnimateObjects() {}
-	virtual void BuildObjects(ID3D12Device5* pd3dDevice, ID3D12GraphicsCommandList4* pd3dCommandList, CSound* pSound) {}
+	virtual void BuildObjects(ID3D12Device5* pd3dDevice, ID3D12GraphicsCommandList4* pd3dCommandList) {}
 public:
 	ID3D12RootSignature* CreateGraphicsRootSignature(ID3D12Device5* pd3dDevice);
 	ID3D12RootSignature* GetGraphicsRootSignature() { return(m_pd3dGraphicsRootSignature); }

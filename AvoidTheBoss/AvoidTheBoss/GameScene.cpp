@@ -145,7 +145,7 @@ void CGameScene::BuildDefaultLightsAndMaterials()
 	m_pLights[4].m_xmf3Attenuation = XMFLOAT3(1.0f, 0.001f, 0.0001f);
 }
 
-void CGameScene::BuildObjects(ID3D12Device5* pd3dDevice,ID3D12GraphicsCommandList4*  pd3dCommandList,CSound* pSound)
+void CGameScene::BuildObjects(ID3D12Device5* pd3dDevice,ID3D12GraphicsCommandList4*  pd3dCommandList)
 {
 	m_pd3dGraphicsRootSignature = CreateGraphicsRootSignature(pd3dDevice);
 
@@ -223,8 +223,7 @@ void CGameScene::BuildObjects(ID3D12Device5* pd3dDevice,ID3D12GraphicsCommandLis
 	m_pCamera = m_players[m_playerIdx]->GetCamera();
 	
 	//씬에 사운드 설정
-	//m_players[m_playerIdx]->m_pSound = pSound;
-	//m_pSound = pSound;
+	
 	SoundManager::GetInstance().PlayBackGroundSound(3);
 	CreateShaderVariables(pd3dDevice, pd3dCommandList);
 }

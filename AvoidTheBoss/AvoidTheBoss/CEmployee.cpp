@@ -460,10 +460,7 @@ bool CEmployee::GenTasking()
 			SetBehavior(PLAYER_BEHAVIOR::SWITCH_INTER);
 
 			targetGen->SetInteractionOn(true); // 발전기 애니메이션 재생을 시작한다.
-			/*targetGen->m_pSound->PlayBackGroundSound(17, 4);
-			targetGen->m_pSound->PlayBackGroundSound(6, 4);
-			*/
-			//targetGen->SetAnimationCount(BUTTON_ANIM_FRAME);
+			
 			SoundManager::GetInstance().PlayObjectSound(17, 4);
 			SoundManager::GetInstance().PlayObjectSound(6, 4);
 
@@ -488,7 +485,8 @@ bool CEmployee::GenTasking()
 				SetGenInteraction(false);
 				SetBehavior(PLAYER_BEHAVIOR::IDLE);
 				targetGen->SetInteractionOn(false); // 애니메이션 재생을 정지한다.
-				//targetGen->m_pSound->SoundStop(4);
+			
+
 				SoundManager::GetInstance().SoundStop(4);
 				//========= 패킷 송신 처리 ==============
 				SC_EVENTPACKET packet;

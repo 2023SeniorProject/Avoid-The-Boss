@@ -29,7 +29,7 @@ public:
 	
 	void BuildDefaultLightsAndMaterials();
 	virtual void BuildObjects(ID3D12Device5* pd3dDevice, ID3D12GraphicsCommandList4
-		* pd3dCommandList, CSound* pSound);
+		* pd3dCommandList);
 	
 
 	virtual void AnimateObjects();

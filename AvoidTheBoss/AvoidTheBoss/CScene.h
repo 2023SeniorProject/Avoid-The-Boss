@@ -1,7 +1,7 @@
 #pragma once
 #include "GameObject.h"
 #include "Shader.h"
-#include "CSound.h"
+
 #define MAX_LIGHTS			16 
 
 #define POINT_LIGHT			1
@@ -30,6 +30,8 @@ struct LIGHTS
 	XMFLOAT4				m_xmf4GlobalAmbient;
 	int						m_nLights;
 };
+
+class CSound;
 
 class CScene
 {

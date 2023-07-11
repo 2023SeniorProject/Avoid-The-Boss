@@ -73,11 +73,11 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <OutDir>$(SolutionDir)Binary\$(Configuration)\</OutDir>
     <LibraryPath>$(SolutionDir)AvoidTheBoss\FMOD\lib;$(SolutionDir)Library\;$(LibraryPath)</LibraryPath>
-    <IncludePath>$(SolutionDir)CoreEngine\;$(SolutionDir)AvoidTheBoss\FMOD\inc;C:\AvoidTheBoss\AvoidTheBoss\CoreEngine;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir)CoreEngine\;$(SolutionDir)AvoidTheBoss\FMOD\inc;C:\AvoidTheBoss\AvoidTheBoss\CoreEngine;$(IncludePath);$(SolutionDir)\</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <OutDir>$(SolutionDir)Binary\$(Configuration)\</OutDir>
-    <IncludePath>$(SolutionDir);$(SolutionDir)CoreEngine\;$(IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir);$(SolutionDir)CoreEngine\;$(IncludePath);$(SolutionDir)\</IncludePath>
     <LibraryPath>$(SolutionDir)Library\;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">

@@ -178,11 +178,11 @@ void CTitleScene::MouseAction(const POINT& mp)
 		if (mainGame.m_UIRenderer->m_pTextBlocks[0].m_pstrText.length() <= 3
 			|| mainGame.m_UIRenderer->m_pTextBlocks[1].m_pstrText.length() <= 3) return;
 
-		/*clientCore.InitConnect("127.0.0.1");
+		clientCore.InitConnect("127.0.0.1");
 		C2S_LOGIN loginPacket;
 		lstrcpyn(loginPacket.name, mainGame.m_UIRenderer->m_pTextBlocks[0].m_pstrText.c_str(), 10);
 		lstrcpyn(loginPacket.pw, mainGame.m_UIRenderer->m_pTextBlocks[1].m_pstrText.c_str(), 10);
-		clientCore.DoConnect(&loginPacket);*/
+		clientCore.DoConnect(&loginPacket);
 		mainGame.ChangeScene(CGameFramework::SCENESTATE::LOBBY);
 	}
 

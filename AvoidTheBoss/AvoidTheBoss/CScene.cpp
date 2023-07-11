@@ -1,4 +1,5 @@
 #include "pch.h"
+#include "CSound.h"
 #include "Camera.h"
 #include "CBoss.h"
 #include "CEmployee.h"

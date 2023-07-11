@@ -6,13 +6,14 @@
 
 #include "Mesh.h"
 #include "Camera.h"
-#include "CSound.h"
+
 
 extern std::vector<DirectX::BoundingBox> bv;
 
 
 #define DIR_BUTTON_F				0X0300
 
+class CSound;
 class CShader;
 class CStandardShader;
 

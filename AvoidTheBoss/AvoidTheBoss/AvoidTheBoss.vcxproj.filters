@@ -82,6 +82,9 @@
     <ClCompile Include="CSound.cpp">
       <Filter>Sound</Filter>
     </ClCompile>
+    <ClCompile Include="SoundManager.cpp">
+      <Filter>Mananger\SoundManager</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameObject.h">
@@ -172,6 +175,9 @@
     </ClInclude>
     <ClInclude Include="CSound.h">
       <Filter>Sound</Filter>
+    </ClInclude>
+    <ClInclude Include="SoundManager.h">
+      <Filter>Mananger\SoundManager</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -412,6 +418,9 @@
     </Filter>
     <Filter Include="Sound">
       <UniqueIdentifier>{50ab258b-038b-4bb0-bc8d-76e353bf34d8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Mananger\SoundManager">
+      <UniqueIdentifier>{f7f2deae-19c8-4886-b8f6-41029c2c779f}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

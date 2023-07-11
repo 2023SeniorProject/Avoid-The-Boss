@@ -6,16 +6,14 @@
 #include "InputManager.h"
 #include "SceneManager.h"
 #include "UIManager.h"
-
 #include "OtherScenes.h"
-
 #include "clientIocpCore.h"
-
+#include "CSound.h"
 #include <Windowsx.h>
 
 #pragma region Lobby
 
-void CLobbyScene::BuildObjects(ID3D12Device5* pd3dDevice, ID3D12GraphicsCommandList4* pd3dCommandList)
+void CLobbyScene::BuildObjects(ID3D12Device5* pd3dDevice, ID3D12GraphicsCommandList4* pd3dCommandList, CSound* pSound)
 {
 	m_pd3dGraphicsRootSignature = CreateGraphicsRootSignature(pd3dDevice);
 	CreateCbvSrvDescriptorHeaps(pd3dDevice, 0, 3);
@@ -25,6 +23,8 @@ void CLobbyScene::BuildObjects(ID3D12Device5* pd3dDevice, ID3D12GraphicsCommandL
 	
 	m_player = new CVirtualPlayer(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature);	
 	m_pCamera = m_player->GetCamera();
+	//m_pSound = pSound;
+	//m_pSound->PlayBackGroundSound(0, 0);
 }
 
 void CLobbyScene::ProcessInput(HWND& hWnd)
@@ -143,7 +143,7 @@ bool IntersectRectByPoint(const D2D1_RECT_F& rect, const POINT& mp)
 	return ((rect.left <= mp.x && mp.x <= rect.right) && (rect.top <= mp.y && mp.y <= rect.bottom));
 }
 #pragma region  Title
-void CTitleScene::BuildObjects(ID3D12Device5* pd3dDevice, ID3D12GraphicsCommandList4* pd3dCommandList)
+void CTitleScene::BuildObjects(ID3D12Device5* pd3dDevice, ID3D12GraphicsCommandList4* pd3dCommandList, CSound* pSound)
 {
 	m_pd3dGraphicsRootSignature = CreateGraphicsRootSignature(pd3dDevice);
 
@@ -157,6 +157,7 @@ void CTitleScene::BuildObjects(ID3D12Device5* pd3dDevice, ID3D12GraphicsCommandL
 
 	m_player = new CVirtualPlayer(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature);
 	m_pCamera = m_player->GetCamera();
+	//m_pSound = pSound;
 }
 
 void CTitleScene::MouseAction(const POINT& mp)
@@ -407,8 +408,10 @@ void CTitleScene::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPARAM
 
 #pragma region Room
 
-void CRoomScene::BuildObjects(ID3D12Device5* pd3dDevice, ID3D12GraphicsCommandList4* pd3dCommandList)
+void CRoomScene::BuildObjects(ID3D12Device5* pd3dDevice, ID3D12GraphicsCommandList4* pd3dCommandList, CSound* pSound)
 {
+	//m_pSound = pSound;\
+
 }
 
 void CRoomScene::ProcessInput(HWND& hWnd)

@@ -12,7 +12,7 @@ public:
 	CSound();
 	~CSound();
 	void SoundSystem();
-	void MyPlaySound(int nSound, int nChannel);
+	void PlayBackGroundSound(int nSound, int nChannel);
 	void SoundStop(int nChannel);
 	void SoundPause(int nChannel);
 	void SoundResume(int nChannel);

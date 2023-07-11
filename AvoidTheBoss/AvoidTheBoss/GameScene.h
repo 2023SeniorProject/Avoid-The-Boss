@@ -11,7 +11,7 @@
 
 class Scheduler;
 class CGenerator;
-
+class CSound;
 
 class CGameScene : public CScene
 {
@@ -29,7 +29,7 @@ public:
 	
 	void BuildDefaultLightsAndMaterials();
 	virtual void BuildObjects(ID3D12Device5* pd3dDevice, ID3D12GraphicsCommandList4
-		* pd3dCommandList);
+		* pd3dCommandList, CSound* pSound);
 	
 
 	virtual void AnimateObjects();

@@ -4,7 +4,8 @@
 #include "GameFramework.h"
 #include "InputManager.h"
 #include "CGenerator.h"
-
+#include "CSound.h"
+#include "SoundManager.h"
 
 
 CEmployee::CEmployee(ID3D12Device5* pd3dDevice, ID3D12GraphicsCommandList4* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, CHARACTER_TYPE nType)
@@ -459,10 +460,12 @@ bool CEmployee::GenTasking()
 			SetBehavior(PLAYER_BEHAVIOR::SWITCH_INTER);
 
 			targetGen->SetInteractionOn(true); // 발전기 애니메이션 재생을 시작한다.
-			targetGen->m_pSound->MyPlaySound(17, 4);
-			targetGen->m_pSound->MyPlaySound(6, 4);
-
+			/*targetGen->m_pSound->PlayBackGroundSound(17, 4);
+			targetGen->m_pSound->PlayBackGroundSound(6, 4);
+			*/
 			//targetGen->SetAnimationCount(BUTTON_ANIM_FRAME);
+			SoundManager::GetInstance().PlayObjectSound(17, 4);
+			SoundManager::GetInstance().PlayObjectSound(6, 4);
 
 			if (InputManager::GetInstance().GetKeyBuffer(KEY_TYPE::F) == (int8)KEY_STATUS::KEY_PRESS)
 			{
@@ -485,7 +488,8 @@ bool CEmployee::GenTasking()
 				SetGenInteraction(false);
 				SetBehavior(PLAYER_BEHAVIOR::IDLE);
 				targetGen->SetInteractionOn(false); // 애니메이션 재생을 정지한다.
-				targetGen->m_pSound->SoundStop(4);
+				//targetGen->m_pSound->SoundStop(4);
+				SoundManager::GetInstance().SoundStop(4);
 				//========= 패킷 송신 처리 ==============
 				SC_EVENTPACKET packet;
 				packet.eventId = m_curInterGen + (int32)EVENT_TYPE::SWITCH_ONE_END_EVENT;

@@ -5,7 +5,7 @@
 // 매니저 관련 헤더파일
 #include "UIManager.h"
 #include "SceneManager.h"
-
+#include "CSound.h"
 // 씬관련 헤더파일
 #include "CScene.h"
 #include "GameScene.h"

@@ -191,6 +191,7 @@
     <ClInclude Include="SceneManager.h" />
     <ClInclude Include="Shader.h" />
     <ClInclude Include="Resource.h" />
+    <ClInclude Include="SoundManager.h" />
     <ClInclude Include="targetver.h" />
     <ClInclude Include="UIManager.h" />
   </ItemGroup>
@@ -240,6 +241,7 @@
     <ClCompile Include="GameScene.cpp" />
     <ClCompile Include="SceneManager.cpp" />
     <ClCompile Include="Shader.cpp" />
+    <ClCompile Include="SoundManager.cpp" />
     <ClCompile Include="UIManager.cpp" />
   </ItemGroup>
   <ItemGroup>

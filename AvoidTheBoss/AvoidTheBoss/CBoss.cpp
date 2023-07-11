@@ -3,6 +3,7 @@
 #include "CBullet.h"
 #include "clientIocpCore.h"
 #include "InputManager.h"
+#include "SoundManager.h";
 
 
 CBoss::CBoss(ID3D12Device5* pd3dDevice, 
@@ -343,7 +344,7 @@ uint8 CBoss::ProcessInput()
 	if (InputManager::GetInstance().GetKeyBuffer(KEY_TYPE::SPACE) == (uint8)KEY_STATUS::KEY_PRESS && !GetOnAttack())
 	{
 		SetOnAttack(true);
-		m_pSound->MyPlaySound(2, 3);
+		SoundManager::GetInstance().PlayObjectSound(2, 3);
 	}
 	
 	Move(dir, BOSS_VELOCITY);

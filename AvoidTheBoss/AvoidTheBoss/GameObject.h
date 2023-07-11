@@ -332,7 +332,7 @@ public:
     virtual ~CGameObject();
 
 public:
-	CSound*							m_pSound;
+	//CSound*							m_pSound;
 
 	Layout							objLayer;
 	bool							m_bEmpExit = false;

@@ -46,16 +46,13 @@ void SceneManager::Animate()
 void SceneManager::BuildScene(ID3D12Device5* pd3dDevice, ID3D12GraphicsCommandList4* pd3dCommandList,CSound* pSound)
 {
 	m_pScenes[(int32)SCENESTATE::TITLE] = new CTitleScene();
-	m_pScenes[(int32)SCENESTATE::TITLE]->BuildObjects(pd3dDevice, pd3dCommandList);
+	m_pScenes[(int32)SCENESTATE::TITLE]->BuildObjects(pd3dDevice, pd3dCommandList,pSound);
 	m_pScenes[(int32)SCENESTATE::LOBBY] = new CLobbyScene();
-	m_pScenes[(int32)SCENESTATE::LOBBY]->BuildObjects(pd3dDevice, pd3dCommandList);
+	m_pScenes[(int32)SCENESTATE::LOBBY]->BuildObjects(pd3dDevice, pd3dCommandList,pSound);
 	m_pScenes[(int32)SCENESTATE::ROOM] = new CRoomScene();
-	m_pScenes[(int32)SCENESTATE::ROOM]->BuildObjects(pd3dDevice, pd3dCommandList);
+	m_pScenes[(int32)SCENESTATE::ROOM]->BuildObjects(pd3dDevice, pd3dCommandList,pSound);
 	m_pScenes[(int32)SCENESTATE::INGAME] = new CGameScene();
-	m_pScenes[(int32)SCENESTATE::INGAME]->BuildObjects(pd3dDevice, pd3dCommandList);
+	m_pScenes[(int32)SCENESTATE::INGAME]->BuildObjects(pd3dDevice, pd3dCommandList,pSound);
 
-	for (int i = 0; i < 4; i++)
-	{
-		m_pScenes[i]->m_pSound = pSound;
-	}
+	
 }

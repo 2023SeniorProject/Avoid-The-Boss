@@ -45,7 +45,7 @@ void CSound::SoundSystem()
 	FMOD_System_CreateSound(pSystem, "Sound/Shutter_Open.mp3", FMOD_LOOP_NORMAL, nullptr, &pSound[19]);
 }
 
-void CSound::MyPlaySound(int nSound, int nChannel)
+void CSound::PlayBackGroundSound(int nSound, int nChannel)
 {
 	FMOD_System_PlaySound(pSystem, pSound[nSound], nullptr, 0, &pChannel[nChannel]);
 }

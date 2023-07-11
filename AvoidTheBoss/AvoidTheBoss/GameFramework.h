@@ -5,9 +5,10 @@
 
 #include "Camera.h"
 #include "DXSampleHelper.h"
-#include "CSound.h"
+
 //#include "DXRHelpers/nv_helpers_dx12/TopLevelASGenerator.h"
 
+class CSound;
 class CScene;
 class UIManager;
 class SceneManager;

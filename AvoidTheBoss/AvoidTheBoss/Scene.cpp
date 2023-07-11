@@ -21,6 +21,7 @@ D3D12_GPU_DESCRIPTOR_HANDLE	CGameScene::m_d3dSrvGPUDescriptorNextHandle;
 CGameScene::CGameScene()
 {
 	_jobQueue = new Scheduler();
+	//m_pSound = new CSound();
 }
 
 CGameScene::~CGameScene()
@@ -662,21 +663,17 @@ void CGameScene::Exit()
 
 CLobbyScene::CLobbyScene()
 {
-	//m_BackgroundSound = new CSound();
-	//m_BackgroundSound->SoundSystem();
+
 }
 
 CLobbyScene::~CLobbyScene()
 {
-	//delete m_BackgroundSound;
-	//m_BackgroundSound->SoundRelease();
+
 }
 
 void CLobbyScene::BuildObjects(ID3D12Device5* pd3dDevice, ID3D12GraphicsCommandList4
 	* pd3dCommandList)
 {
-	//m_BackgroundSound->MyPlaySound(0, 1);
-
 	m_pd3dGraphicsRootSignature = CreateGraphicsRootSignature(pd3dDevice);
 
 	CreateCbvSrvDescriptorHeaps(pd3dDevice, 0, 3);
@@ -692,6 +689,8 @@ void CLobbyScene::BuildObjects(ID3D12Device5* pd3dDevice, ID3D12GraphicsCommandL
 		//_players[i]->BuildObjects(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature);
 	}
 	m_pCamera = _players[0]->GetCamera();
+
+	m_pSound->MyPlaySound(0, 0);
 }
 
 void CLobbyScene::OnProcessingMouseMessage(HWND hWnd, UINT nMessageID, WPARAM wParam, LPARAM lParam)
@@ -732,6 +731,9 @@ void CLobbyScene::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPARAM
 		case VK_RETURN:
 		{
 			mainGame.m_nSceneIndex = 1;
+			m_pSound->SoundStop(0);
+			m_pSound->MyPlaySound(1, 1);
+
 		}
 			break;
 		case VK_F9:
@@ -793,21 +795,22 @@ void CLobbyScene::ProcessInput(HWND hWnd)
 	m_lastKeyInput = keyInput;
 }
 
+void CLobbyScene::Update(HWND hWnd)
+{
+	CGameScene::Update(hWnd);
+}
+
 CMainScene::CMainScene()
 {
-	//m_BackgroundSound = new CSound();
-	//m_BackgroundSound->SoundSystem();
+
 }
 CMainScene::~CMainScene()
 {
-	//delete m_BackgroundSound;
-	//m_BackgroundSound->SoundRelease();
+
 }
 
 void CMainScene::BuildObjects(ID3D12Device5* pd3dDevice, ID3D12GraphicsCommandList4* pd3dCommandList)
 {
-	//m_BackgroundSound->MyPlaySound(0, 1);
-	//�׷��� ��Ʈ �ñ׳��ĸ� �����Ѵ�. 
 	m_pd3dGraphicsRootSignature = CreateGraphicsRootSignature(pd3dDevice);
 
 	CreateCbvSrvDescriptorHeaps(pd3dDevice, 0, 52 + 1 + 1 + 12 + 3 + 12 + 3 + 89 + 5 + 5 * 4 + 6 * 17 + 2 * 50 + 3 * 2 + 14 + 1 + 12);//Albedomap 52 / player 1 / skybox 1 / box subTexture 3 * 4/ tile subTexture 3 * 1/ woodPallet 3 * 4 / pillar2 3 * 1 / BoundsMap 89 / ����ġ 2 + 3 / �� / ���̷� 6 / �Ѿ� 100 / ���̵� �� 3*2 / 14
@@ -933,7 +936,10 @@ void CMainScene::ProcessInput(HWND hWnd)
 	m_lastKeyInput = keyInput;
 }
 
-
+void CMainScene::Update(HWND hWnd)
+{
+	CGameScene::Update(hWnd);
+}
 
 void CMainScene::OnProcessingMouseMessage(HWND hWnd, UINT nMessageID, WPARAM wParam, LPARAM lParam)
 {
@@ -979,7 +985,8 @@ void CMainScene::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPARAM 
 		case VK_RETURN:
 		{
 			mainGame.m_nSceneIndex = 0;
-
+			m_pSound->MyPlaySound(0, 0);
+			m_pSound->SoundStop(1);
 		}
 		break;
 		case VK_F9:

@@ -44,8 +44,8 @@ CGameFramework::CGameFramework()
 	
 	_tcscpy_s(m_pszFrameRate, _T("FPS : "));
 
-	m_BackgroundSound = new CSound();
-	m_BackgroundSound->SoundSystem();
+	m_pSound = new CSound();
+	m_pSound->SoundSystem();
 }
 
 CGameFramework::~CGameFramework()
@@ -70,15 +70,14 @@ bool CGameFramework::OnCreate(HINSTANCE hInstance, HWND hMainWnd)
 	
 	//렌더링할 게임 객체를 생성한다.
 	BuildScenes();
-	m_BackgroundSound->MyPlaySound(0, 0);
 
 	return(true);
 }
 
 void CGameFramework::OnDestroy()
 {
-	delete m_BackgroundSound;
-	m_BackgroundSound->SoundRelease();
+	//delete m_pSound;
+	m_pSound->SoundRelease();
 
 	ReleaseScenes();
 	//게임 객체(게임 월드 객체)를 소멸한다.
@@ -351,13 +350,15 @@ void CGameFramework::BuildScenes()
 {
 	m_pd3dCommandList->Reset(m_pd3dCommandAllocator, NULL);
 
-		//씬 객체를 생성하고 씬에 포함될 게임 객체들을 생성한다. 
+	//씬 객체를 생성하고 씬에 포함될 게임 객체들을 생성한다. 
 	m_ppScene[0] = new CLobbyScene();
-	if (m_ppScene[0]) m_ppScene[0]->BuildObjects(m_pd3dDevice, m_pd3dCommandList);
-
 	m_ppScene[1] = new CMainScene();
-	if (m_ppScene[1]) m_ppScene[1]->BuildObjects(m_pd3dDevice, m_pd3dCommandList);
 
+	for (int i = 0; i < m_nScene; i++)
+	{
+		m_ppScene[i]->m_pSound = m_pSound;
+		m_ppScene[i]->BuildObjects(m_pd3dDevice, m_pd3dCommandList);
+	}
 
 	//씬 객체를 생성하기 위하여 필요한 그래픽 명령 리스트들을 명령 큐에 추가한다. 
 	m_pd3dCommandList->Close();
@@ -402,8 +403,6 @@ void CGameFramework::FrameAdvance() // 여기서 업데이트랑 렌더링 동시에 진행하는 
 	ProcessInput();
 	//2 업데이트 처리
 	UpdateObject();
-	m_BackgroundSound->MyPlaySound(0, 0); 
-	m_BackgroundSound->SetVolum(0, 1.f);
 	//3 애니메이트 처리
 	AnimateObjects();
 	//4 렌더링 처리

@@ -83,7 +83,7 @@ private:
 	//다음은 프레임 레이트를 주 윈도우의 캡션에 출력하기 위한 문자열이다. 
 	WCHAR					m_pszFrameRate[500];
 public:
-	CSound* m_BackgroundSound;
+	CSound* m_pSound;
 protected:
 	static const int							m_nScene = 2;
 

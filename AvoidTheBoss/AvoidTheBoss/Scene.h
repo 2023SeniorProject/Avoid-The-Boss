@@ -163,7 +163,9 @@ public: // 씬에 있는 오브젝트 관련 변수
 	int16						_playerIdx = 0;
 	int16						m_lastKeyInput = 0;
 
-
+	// 사운드
+	CSound* m_pSound;
+	 
 	// 발전기
 	int							m_nGenerator = 3;
 	CGenerator**				m_ppGenerator = NULL;
@@ -198,8 +200,6 @@ protected:
 
 class CMainScene : public CGameScene
 {
-private:
-	//CSound* m_BackgroundSound;
 public:
 	CMainScene();
 	~CMainScene();
@@ -213,13 +213,11 @@ public:
 		lParam);
 
 	virtual void ProcessInput(HWND hWnd);
-	//virtual void Update(HWND hWnd);
+	virtual void Update(HWND hWnd);
 };
 
 class CLobbyScene : public CGameScene
 {
-private:
-	//CSound* m_BackgroundSound;
 public:
 	CLobbyScene();
 	~CLobbyScene();
@@ -233,4 +231,5 @@ public:
 		lParam);
 
 	virtual void ProcessInput(HWND hWnd);
+	virtual void Update(HWND hWnd);
 };

@@ -410,11 +410,6 @@ void CGameScene::AddEvent(queueEvent* ev, float after)
 
 void CGameScene::Exit()
 {
-	//m_pSound->MyPlaySound(16, 5);
-	//m_pSound->MyPlaySound(15, 5);
-	//m_pSound->MyPlaySound(18, 5);
-	//m_pSound->MyPlaySound(19, 5);
-
 	if (m_bEmpExit) // 탈출 성공 시 , 해야할 일 처리
 	{
 		SoundManager::GetInstance().PlayObjectSound(16, 5);

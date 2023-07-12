@@ -31,9 +31,9 @@ void CSound::SoundSystem()
 	FMOD_System_CreateSound(pSystem, "Sound/Character_Down.mp3", FMOD_LOOP_OFF, nullptr, &pSound[7]);
 	FMOD_System_CreateSound(pSystem, "Sound/Character_Hit.mp3", FMOD_LOOP_OFF, nullptr, &pSound[8]);
 	FMOD_System_CreateSound(pSystem, "Sound/Character_Hit2.mp3", FMOD_LOOP_OFF, nullptr, &pSound[9]);
-	FMOD_System_CreateSound(pSystem, "Sound/Character_Run1.mp3", FMOD_LOOP_OFF, nullptr, &pSound[10]);
-	FMOD_System_CreateSound(pSystem, "Sound/Character_Run2.mp3", FMOD_LOOP_OFF, nullptr, &pSound[11]);
-	FMOD_System_CreateSound(pSystem, "Sound/Character_Run3.mp3", FMOD_LOOP_OFF, nullptr, &pSound[12]);	
+	FMOD_System_CreateSound(pSystem, "Sound/Character_Run1.mp3", FMOD_LOOP_NORMAL, nullptr, &pSound[10]);
+	FMOD_System_CreateSound(pSystem, "Sound/Character_Run2.mp3", FMOD_LOOP_NORMAL, nullptr, &pSound[11]);
+	FMOD_System_CreateSound(pSystem, "Sound/Character_Run3.mp3", FMOD_LOOP_NORMAL, nullptr, &pSound[12]);
 	FMOD_System_CreateSound(pSystem, "Sound/Character_Scream.mp3", FMOD_LOOP_OFF, nullptr, &pSound[13]);
 	FMOD_System_CreateSound(pSystem, "Sound/Character_Walk.mp3", FMOD_LOOP_NORMAL, nullptr, &pSound[14]);
 

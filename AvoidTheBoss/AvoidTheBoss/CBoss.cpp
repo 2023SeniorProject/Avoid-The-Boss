@@ -44,20 +44,6 @@ CBoss::CBoss(ID3D12Device5* pd3dDevice,
 	m_pSkinnedAnimationController1->SetTrackEnable(2, false);
 	m_pSkinnedAnimationController1->SetTrackEnable(3, false);
 
-	// 사운드 설정
-	//m_pSkinnedAnimationController->SetCallbackKeys(0, 1); // 인덱스 번호 , 갯수
-	//m_pSkinnedAnimationController->SetCallbackKeys(1, 1);
-	//m_pSkinnedAnimationController->SetCallbackKeys(2, 1);
-	//m_pSkinnedAnimationController->SetCallbackKeys(3, 1);
-
-	//m_pSkinnedAnimationController->SetCallbackKey(0, 0, 0.0f, L"Sound/Land.wav");
-	//m_pSkinnedAnimationController->SetCallbackKey(0, 1, 0.1f, L"Sound/Land.wav");
-	//m_pSkinnedAnimationController->SetCallbackKey(0, 2, 0.3f, L"Sound/Land.wav");
-	//m_pSkinnedAnimationController->SetCallbackKey(0, 3, 1.0f, L"Sound/Land.wav");
-
-	//CAnimationCallbackHandler *pAnimationCallbackHandler = new CSoundCallbackHandler();
-	//m_pSkinnedAnimationController->SetAnimationCallbackHandler(1, pAnimationCallbackHandler);
-
 	if (m_pCamera->m_nMode == (DWORD)FIRST_PERSON_CAMERA)
 		SetPosition(XMFLOAT3(-22.55f, 1.57f, -1.04f));
 
@@ -352,23 +338,11 @@ uint8 CBoss::ProcessInput()
 	if (dir) SetBehavior(PLAYER_BEHAVIOR::RUN);
 	else	 SetBehavior(PLAYER_BEHAVIOR::IDLE);
 
-	//if (InputManager::GetInstance().GetKeyBuffer(KEY_TYPE::W) == (uint8)KEY_STATUS::KEY_PRESS ||
-	//	InputManager::GetInstance().GetKeyBuffer(KEY_TYPE::A) == (uint8)KEY_STATUS::KEY_PRESS ||
-	//	InputManager::GetInstance().GetKeyBuffer(KEY_TYPE::S) == (uint8)KEY_STATUS::KEY_PRESS ||
-	//	InputManager::GetInstance().GetKeyBuffer(KEY_TYPE::D) == (uint8)KEY_STATUS::KEY_PRESS)
-	//{
-	//	
-	//}
-	//else 
-	//{
-
-	//}
-
 	// 1. 공격 키를 눌렀을 경우 처리 
 	if (InputManager::GetInstance().GetKeyBuffer(KEY_TYPE::SPACE) == (uint8)KEY_STATUS::KEY_PRESS && !GetOnAttack())
 	{
 		SetOnAttack(true);
-		SoundManager::GetInstance().PlayObjectSound(2, 3);
+		SoundManager::GetInstance().PlayObjectSound(4, 3);
 	}
 	
 	Move(dir, BOSS_VELOCITY);

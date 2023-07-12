@@ -8,6 +8,14 @@ class CSound {
 	FMOD_SYSTEM* pSystem;
 	FMOD_SOUND* pSound[20];
 	FMOD_CHANNEL* pChannel[6];
+	// 0 : 배경음악
+	// 1 : 배경음악 temp
+	// 2 : UI 버튼
+	// 3 : 총알, 피격
+	// 4 : 플레이어 이동
+	// 5 : 탈출 오브젝트 (사이렌,문)
+	// 6 : 발전기
+
 public:
 	CSound();
 	~CSound();

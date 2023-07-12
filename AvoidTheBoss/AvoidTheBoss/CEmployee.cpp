@@ -323,9 +323,19 @@ void CEmployee::AnimTrackUpdate()
 	case (int32)PLAYER_BEHAVIOR::RESCUE:
 	case (int32)PLAYER_BEHAVIOR::IDLE:
 		SetIdleAnimTrack();
+		if (GetOnMoveSound())
+		{
+			SetOnMoveSound(false);
+			SoundManager::SoundStop(4);
+		}
 		break;
 	case (int32)PLAYER_BEHAVIOR::RUN:
 		SetRunAnimTrack();
+		if (!GetOnMoveSound())
+		{
+			SoundManager::GetInstance().PlayObjectSound(12, 4);
+			SetOnMoveSound(true);
+		}
 		break;
 	case (int32)PLAYER_BEHAVIOR::SWITCH_INTER:
 		SetInteractionAnimTrack();
@@ -335,6 +345,8 @@ void CEmployee::AnimTrackUpdate()
 		{
 			SetAttackedAnimTrack();
 			m_attackedAnimationCount--;
+
+			SoundManager::GetInstance().PlayObjectSound(13, 3);
 		}
 		else 
 		{
@@ -351,6 +363,7 @@ void CEmployee::AnimTrackUpdate()
 		{
 			SetDownAnimTrack();
 			m_downAnimationCount--;
+			SoundManager::GetInstance().PlayObjectSound(7, 3);
 		}
 		else
 		{
@@ -363,6 +376,7 @@ void CEmployee::AnimTrackUpdate()
 		break;
 	case (int32)PLAYER_BEHAVIOR::CRAWL:
 		SetCrawlAnimTrack();
+		SoundManager::GetInstance().PlayObjectSound(12, 3);
 		break;
 	case (int32)PLAYER_BEHAVIOR::STAND:
 		if (m_standAnimationCount == EMPLOYEE_STAND_TIME)
@@ -461,8 +475,8 @@ bool CEmployee::GenTasking()
 
 			targetGen->SetInteractionOn(true); // 발전기 애니메이션 재생을 시작한다.
 			
-			SoundManager::GetInstance().PlayObjectSound(17, 4);
-			SoundManager::GetInstance().PlayObjectSound(6, 4);
+			SoundManager::GetInstance().PlayObjectSound(17, 6);
+			SoundManager::GetInstance().PlayObjectSound(6, 6);
 
 			if (InputManager::GetInstance().GetKeyBuffer(KEY_TYPE::F) == (int8)KEY_STATUS::KEY_PRESS)
 			{
@@ -486,7 +500,7 @@ bool CEmployee::GenTasking()
 				SetBehavior(PLAYER_BEHAVIOR::IDLE);
 				targetGen->SetInteractionOn(false); // 애니메이션 재생을 정지한다.
 			
-				SoundManager::GetInstance().SoundStop(4);
+				SoundManager::GetInstance().SoundStop(6);
 				//========= 패킷 송신 처리 ==============
 				SC_EVENTPACKET packet;
 				packet.eventId = m_curInterGen + (int32)EVENT_TYPE::SWITCH_ONE_END_EVENT;

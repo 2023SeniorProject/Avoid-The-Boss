@@ -807,214 +807,214 @@ void CLobbyScene::Update(HWND hWnd)
 {
 	CGameScene::Update(hWnd);
 }
-
-CMainScene::CMainScene()
-{
-
-}
-CMainScene::~CMainScene()
-{
-
-}
-
-void CMainScene::BuildObjects(ID3D12Device5* pd3dDevice, ID3D12GraphicsCommandList4* pd3dCommandList)
-{
-	m_pd3dGraphicsRootSignature = CreateGraphicsRootSignature(pd3dDevice);
-
-	CreateCbvSrvDescriptorHeaps(pd3dDevice, 0, 52 + 1 + 1 + 12 + 3 + 12 + 3 + 89 + 5 + 5 * 4 + 6 * 17 + 2 * 50 + 3 * 2 + 14 + 1 + 12);//Albedomap 52 / player 1 / skybox 1 / box subTexture 3 * 4/ tile subTexture 3 * 1/ woodPallet 3 * 4 / pillar2 3 * 1 / BoundsMap 89 / 占쏙옙占쏙옙치 2 + 3 / 占쏙옙 / 占쏙옙占싱뤄옙 6 / 占싼억옙 100 / 占쏙옙占싱듸옙 占쏙옙 3*2 / 14
-
-	CMaterial::PrepareShaders(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature);
-
-	BuildDefaultLightsAndMaterials();
-
-	m_pSkyBox = new CSkyBox(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature);
-	m_pSkyBox->SetScale(50.0f, 50.0f, 50.0f);
-
-	XMFLOAT3 xmf3Scale(8.0f, 2.0f, 8.0f);
-	XMFLOAT4 xmf4Color(0.0f, 0.3f, 0.0f, 0.0f);
-
-	m_nShaders = 5;
-	m_ppShaders = new CShader * [m_nShaders];
-
-	CMapObjectsShader* pMapShader = new CMapObjectsShader();
-	pMapShader->CreateShader(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature);
-	pMapShader->BuildObjects(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, NULL, NULL);
-	m_ppShaders[0] = pMapShader;
-
-	CBulletObjectsShader* pBulletObjectShader = new CBulletObjectsShader();
-	pBulletObjectShader->CreateShader(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature);
-	pBulletObjectShader->BuildObjects(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, NULL, NULL);
-	m_ppShaders[1] = pBulletObjectShader;
-
-	CDoorObjectsShader* pDoorObjectShader = new CDoorObjectsShader();
-	pDoorObjectShader->CreateShader(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature);
-	pDoorObjectShader->BuildObjects(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, NULL, NULL);
-	m_ppShaders[2] = pDoorObjectShader;
-
-	CSirenObjectsShader* pSirenObjectShader = new CSirenObjectsShader();
-	pSirenObjectShader->CreateShader(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature);
-	pSirenObjectShader->BuildObjects(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, NULL, NULL);
-	m_ppShaders[3] = pSirenObjectShader;
-
-	CGeneratorObjectsShader* pGeneratorObjectsShader = new CGeneratorObjectsShader();
-	pGeneratorObjectsShader->CreateShader(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature);
-	pGeneratorObjectsShader->BuildObjects(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, NULL, NULL);
-	m_ppShaders[4] = pGeneratorObjectsShader;
-
-	CBoundsObjectsShader* pBoundsMapShader = new CBoundsObjectsShader();
-	pBoundsMapShader->CreateShader(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature);
-	pBoundsMapShader->BuildObjects(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, NULL, NULL);
-
-	m_ppGenerator = new CGenerator * [m_nGenerator];
-	for (int i = 0; i < m_nGenerator; ++i)
-	{
-		m_ppGenerator[i] = ((CGenerator*)pGeneratorObjectsShader->m_ppObjects[i]);
-		m_ppGenerator[i]->m_idx = i;
-	}
-	for (int i = 0; i < PLAYERNUM; ++i)
-	{
-		if (i == (int)CHARACTER_TYPE::BOSS)
-		{
-			_players[i] = new CBoss(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature);
-			if (m_ppShaders[1])
-			{
-				((CBoss*)_players[i])->m_pBullet = (CBullet*)pBulletObjectShader->m_ppObjects[0];
-			}
-		}
-		else
-		{
-			_players[i] = new CEmployee(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, (CHARACTER_TYPE)(i));
-			((CEmployee*)_players[i])->m_pSwitches[0].position = XMFLOAT3(-23.12724, 1.146619, 1.814123);
-			((CEmployee*)_players[i])->m_pSwitches[0].radius = 0.2f;
-			((CEmployee*)_players[i])->m_pSwitches[1].position = XMFLOAT3(23.08867, 1.083242, 3.155997);
-			((CEmployee*)_players[i])->m_pSwitches[1].radius = 0.2f;
-			((CEmployee*)_players[i])->m_pSwitches[2].position = XMFLOAT3(0.6774719, 1.083242, -23.05909);
-			((CEmployee*)_players[i])->m_pSwitches[2].radius = 0.2f;
-		}
-		((CGameObject*)_players[i])->m_pSound = m_pSound;
-	}
-	m_pCamera = _players[0]->GetCamera();
-
-	for (int i = 2; i < m_nShaders; i++)
-	{
-		for (int j = 0; j < ((CStandardObjectsShader*)m_ppShaders[i])->m_nObjects; j++)
-		{
-			((CStandardObjectsShader*)m_ppShaders[i])->m_ppObjects[j]->m_pSound = m_pSound;
-		}
-	}
-
-	CreateShaderVariables(pd3dDevice, pd3dCommandList);
-}
-
-void CMainScene::ProcessInput(HWND hWnd)
-{
-	if (::GetActiveWindow() != hWnd) return;
-
-	uint8 keyInput = 0;
-	InputManager::GetInstance().InputStatusUpdate();
-	InputManager::GetInstance().MouseInputStatusUpdate();
-
-
-	// ============= 마우스 버튼 관련 처리 ================
-	float cxDelta = 0.0f, cyDelta = 0.0f;
-	if (InputManager::GetInstance().GetKeyBuffer(KEY_TYPE::MLBUTTON) > 0)
-	{
-
-		POINT ptCursorPos;
-		if (::GetCapture() == hWnd)
-		{
-			::SetCursor(NULL);
-			::GetCursorPos(&ptCursorPos);
-			cxDelta = (float)(ptCursorPos.x - m_ptOldCursorPos.x) / 3.0f;
-			cyDelta = (float)(ptCursorPos.y - m_ptOldCursorPos.y) / 3.0f;
-			::SetCursorPos(m_ptOldCursorPos.x, m_ptOldCursorPos.y);
-		}
-		if (cxDelta != 0) _players[_playerIdx]->Rotate(0.f, cxDelta, 0.0f);
-	}
-
-
-	//============  플레이어에게 최종 키입력 처리 ============
-	keyInput = _players[_playerIdx]->ProcessInput(); // 입력된 키를 기반으로 인풋 처리 진행
-
-
-	// ============ 패킷 송신 파트 ===================
-	// 이동 키 입력에 변화가 있거나 키 입력 중 회전을 수행하는 경우에만.. 이동 관련 패킷을 전송한다.
-	if (m_lastKeyInput != keyInput || (keyInput && cxDelta != 0))
-	{
-
-		C2S_KEY packet; // 키 입력 + 방향 정보를 보낸다.
-		packet.size = sizeof(C2S_KEY);
-		packet.type = (uint8)C_PACKET_TYPE::CKEY;
-		packet.key = keyInput;
-		packet.x = _players[_playerIdx]->GetLook().x;
-		packet.z = _players[_playerIdx]->GetLook().z;
-		clientCore.DoSend(&packet);
-	}
-	m_lastKeyInput = keyInput;
-}
-
-void CMainScene::Update(HWND hWnd)
-{
-	CGameScene::Update(hWnd);
-}
-
-void CMainScene::OnProcessingMouseMessage(HWND hWnd, UINT nMessageID, WPARAM wParam, LPARAM lParam)
-{
-	switch (nMessageID)
-	{
-	case WM_LBUTTONDOWN:
-	case WM_RBUTTONDOWN:
-		//마우스 캡쳐를 하고 현재 마우스 위치를 가져온다. 
-		::SetCapture(hWnd);
-		::GetCursorPos(&m_ptOldCursorPos);
-		break;
-	case WM_LBUTTONUP:
-	case WM_RBUTTONUP:
-		//마우스 캡쳐를 해제한다. 
-		::ReleaseCapture();
-		break;
-	case WM_MOUSEMOVE:
-		break;
-	default:
-		break;
-	}
-}
-
-void CMainScene::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPARAM wParam, LPARAM lParam)
-{
-	switch (nMessageID)
-	{
-	case WM_KEYUP:
-		switch (wParam)
-		{
-		case VK_ESCAPE:
-			::PostQuitMessage(0);
-			break;
-		//case VK_F1:
-		//	_players[_playerIdx]->m_pCamera = _players[_playerIdx]->ChangeCamera(FIRST_PERSON_CAMERA, 0.0f);
-		//	m_pCamera = _players[_playerIdx]->m_pCamera;
-		//	break;
-		//case VK_F3:
-		//	_players[_playerIdx]->m_pCamera = _players[_playerIdx]->ChangeCamera(THIRD_PERSON_CAMERA, 0.0f);
-		//	m_pCamera = _players[_playerIdx]->m_pCamera;
-		//	break;
-		//	/*‘F1’ 키를 누르면 1인칭 카메라, ‘F3’ 키를 누르면 3인칭 카메라로 변경한다.*/
-		case VK_RETURN:
-		{
-			mainGame.m_nSceneIndex = 0;
-			m_pSound->MyPlaySound(0, 0);
-			m_pSound->SoundStop(1);
-		}
-		break;
-		case VK_F9:
-			//“F9” 키가 눌려지면 윈도우 모드와 전체화면 모드의 전환을 처리한다. 
-			mainGame.ChangeSwapChainState();
-			break;
-		default:
-			break;
-		}
-		break;
-	default:
-		break;
-	}
-}
+//
+//CMainScene::CMainScene()
+//{
+//
+//}
+//CMainScene::~CMainScene()
+//{
+//
+//}
+//
+//void CMainScene::BuildObjects(ID3D12Device5* pd3dDevice, ID3D12GraphicsCommandList4* pd3dCommandList)
+//{
+//	m_pd3dGraphicsRootSignature = CreateGraphicsRootSignature(pd3dDevice);
+//
+//	CreateCbvSrvDescriptorHeaps(pd3dDevice, 0, 52 + 1 + 1 + 12 + 3 + 12 + 3 + 89 + 5 + 5 * 4 + 6 * 17 + 2 * 50 + 3 * 2 + 14 + 1 + 12);//Albedomap 52 / player 1 / skybox 1 / box subTexture 3 * 4/ tile subTexture 3 * 1/ woodPallet 3 * 4 / pillar2 3 * 1 / BoundsMap 89 / 占쏙옙占쏙옙치 2 + 3 / 占쏙옙 / 占쏙옙占싱뤄옙 6 / 占싼억옙 100 / 占쏙옙占싱듸옙 占쏙옙 3*2 / 14
+//
+//	CMaterial::PrepareShaders(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature);
+//
+//	BuildDefaultLightsAndMaterials();
+//
+//	m_pSkyBox = new CSkyBox(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature);
+//	m_pSkyBox->SetScale(50.0f, 50.0f, 50.0f);
+//
+//	XMFLOAT3 xmf3Scale(8.0f, 2.0f, 8.0f);
+//	XMFLOAT4 xmf4Color(0.0f, 0.3f, 0.0f, 0.0f);
+//
+//	m_nShaders = 5;
+//	m_ppShaders = new CShader * [m_nShaders];
+//
+//	CMapObjectsShader* pMapShader = new CMapObjectsShader();
+//	pMapShader->CreateShader(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature);
+//	pMapShader->BuildObjects(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, NULL, NULL);
+//	m_ppShaders[0] = pMapShader;
+//
+//	CBulletObjectsShader* pBulletObjectShader = new CBulletObjectsShader();
+//	pBulletObjectShader->CreateShader(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature);
+//	pBulletObjectShader->BuildObjects(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, NULL, NULL);
+//	m_ppShaders[1] = pBulletObjectShader;
+//
+//	CDoorObjectsShader* pDoorObjectShader = new CDoorObjectsShader();
+//	pDoorObjectShader->CreateShader(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature);
+//	pDoorObjectShader->BuildObjects(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, NULL, NULL);
+//	m_ppShaders[2] = pDoorObjectShader;
+//
+//	CSirenObjectsShader* pSirenObjectShader = new CSirenObjectsShader();
+//	pSirenObjectShader->CreateShader(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature);
+//	pSirenObjectShader->BuildObjects(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, NULL, NULL);
+//	m_ppShaders[3] = pSirenObjectShader;
+//
+//	CGeneratorObjectsShader* pGeneratorObjectsShader = new CGeneratorObjectsShader();
+//	pGeneratorObjectsShader->CreateShader(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature);
+//	pGeneratorObjectsShader->BuildObjects(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, NULL, NULL);
+//	m_ppShaders[4] = pGeneratorObjectsShader;
+//
+//	CBoundsObjectsShader* pBoundsMapShader = new CBoundsObjectsShader();
+//	pBoundsMapShader->CreateShader(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature);
+//	pBoundsMapShader->BuildObjects(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, NULL, NULL);
+//
+//	m_ppGenerator = new CGenerator * [m_nGenerator];
+//	for (int i = 0; i < m_nGenerator; ++i)
+//	{
+//		m_ppGenerator[i] = ((CGenerator*)pGeneratorObjectsShader->m_ppObjects[i]);
+//		m_ppGenerator[i]->m_idx = i;
+//	}
+//	for (int i = 0; i < PLAYERNUM; ++i)
+//	{
+//		if (i == (int)CHARACTER_TYPE::BOSS)
+//		{
+//			_players[i] = new CBoss(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature);
+//			if (m_ppShaders[1])
+//			{
+//				((CBoss*)_players[i])->m_pBullet = (CBullet*)pBulletObjectShader->m_ppObjects[0];
+//			}
+//		}
+//		else
+//		{
+//			_players[i] = new CEmployee(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, (CHARACTER_TYPE)(i));
+//			((CEmployee*)_players[i])->m_pSwitches[0].position = XMFLOAT3(-23.12724, 1.146619, 1.814123);
+//			((CEmployee*)_players[i])->m_pSwitches[0].radius = 0.2f;
+//			((CEmployee*)_players[i])->m_pSwitches[1].position = XMFLOAT3(23.08867, 1.083242, 3.155997);
+//			((CEmployee*)_players[i])->m_pSwitches[1].radius = 0.2f;
+//			((CEmployee*)_players[i])->m_pSwitches[2].position = XMFLOAT3(0.6774719, 1.083242, -23.05909);
+//			((CEmployee*)_players[i])->m_pSwitches[2].radius = 0.2f;
+//		}
+//		((CGameObject*)_players[i])->m_pSound = m_pSound;
+//	}
+//	m_pCamera = _players[0]->GetCamera();
+//
+//	for (int i = 2; i < m_nShaders; i++)
+//	{
+//		for (int j = 0; j < ((CStandardObjectsShader*)m_ppShaders[i])->m_nObjects; j++)
+//		{
+//			((CStandardObjectsShader*)m_ppShaders[i])->m_ppObjects[j]->m_pSound = m_pSound;
+//		}
+//	}
+//
+//	CreateShaderVariables(pd3dDevice, pd3dCommandList);
+//}
+//
+//void CMainScene::ProcessInput(HWND hWnd)
+//{
+//	if (::GetActiveWindow() != hWnd) return;
+//
+//	uint8 keyInput = 0;
+//	InputManager::GetInstance().InputStatusUpdate();
+//	InputManager::GetInstance().MouseInputStatusUpdate();
+//
+//
+//	// ============= 마우스 버튼 관련 처리 ================
+//	float cxDelta = 0.0f, cyDelta = 0.0f;
+//	if (InputManager::GetInstance().GetKeyBuffer(KEY_TYPE::MLBUTTON) > 0)
+//	{
+//
+//		POINT ptCursorPos;
+//		if (::GetCapture() == hWnd)
+//		{
+//			::SetCursor(NULL);
+//			::GetCursorPos(&ptCursorPos);
+//			cxDelta = (float)(ptCursorPos.x - m_ptOldCursorPos.x) / 3.0f;
+//			cyDelta = (float)(ptCursorPos.y - m_ptOldCursorPos.y) / 3.0f;
+//			::SetCursorPos(m_ptOldCursorPos.x, m_ptOldCursorPos.y);
+//		}
+//		if (cxDelta != 0) _players[_playerIdx]->Rotate(0.f, cxDelta, 0.0f);
+//	}
+//
+//
+//	//============  플레이어에게 최종 키입력 처리 ============
+//	keyInput = _players[_playerIdx]->ProcessInput(); // 입력된 키를 기반으로 인풋 처리 진행
+//
+//
+//	// ============ 패킷 송신 파트 ===================
+//	// 이동 키 입력에 변화가 있거나 키 입력 중 회전을 수행하는 경우에만.. 이동 관련 패킷을 전송한다.
+//	if (m_lastKeyInput != keyInput || (keyInput && cxDelta != 0))
+//	{
+//
+//		C2S_KEY packet; // 키 입력 + 방향 정보를 보낸다.
+//		packet.size = sizeof(C2S_KEY);
+//		packet.type = (uint8)C_PACKET_TYPE::CKEY;
+//		packet.key = keyInput;
+//		packet.x = _players[_playerIdx]->GetLook().x;
+//		packet.z = _players[_playerIdx]->GetLook().z;
+//		clientCore.DoSend(&packet);
+//	}
+//	m_lastKeyInput = keyInput;
+//}
+//
+//void CMainScene::Update(HWND hWnd)
+//{
+//	CGameScene::Update(hWnd);
+//}
+//
+//void CMainScene::OnProcessingMouseMessage(HWND hWnd, UINT nMessageID, WPARAM wParam, LPARAM lParam)
+//{
+//	switch (nMessageID)
+//	{
+//	case WM_LBUTTONDOWN:
+//	case WM_RBUTTONDOWN:
+//		//마우스 캡쳐를 하고 현재 마우스 위치를 가져온다. 
+//		::SetCapture(hWnd);
+//		::GetCursorPos(&m_ptOldCursorPos);
+//		break;
+//	case WM_LBUTTONUP:
+//	case WM_RBUTTONUP:
+//		//마우스 캡쳐를 해제한다. 
+//		::ReleaseCapture();
+//		break;
+//	case WM_MOUSEMOVE:
+//		break;
+//	default:
+//		break;
+//	}
+//}
+//
+//void CMainScene::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPARAM wParam, LPARAM lParam)
+//{
+//	switch (nMessageID)
+//	{
+//	case WM_KEYUP:
+//		switch (wParam)
+//		{
+//		case VK_ESCAPE:
+//			::PostQuitMessage(0);
+//			break;
+//		//case VK_F1:
+//		//	_players[_playerIdx]->m_pCamera = _players[_playerIdx]->ChangeCamera(FIRST_PERSON_CAMERA, 0.0f);
+//		//	m_pCamera = _players[_playerIdx]->m_pCamera;
+//		//	break;
+//		//case VK_F3:
+//		//	_players[_playerIdx]->m_pCamera = _players[_playerIdx]->ChangeCamera(THIRD_PERSON_CAMERA, 0.0f);
+//		//	m_pCamera = _players[_playerIdx]->m_pCamera;
+//		//	break;
+//		//	/*‘F1’ 키를 누르면 1인칭 카메라, ‘F3’ 키를 누르면 3인칭 카메라로 변경한다.*/
+//		case VK_RETURN:
+//		{
+//			mainGame.m_nSceneIndex = 0;
+//			m_pSound->MyPlaySound(0, 0);
+//			m_pSound->SoundStop(1);
+//		}
+//		break;
+//		case VK_F9:
+//			//“F9” 키가 눌려지면 윈도우 모드와 전체화면 모드의 전환을 처리한다. 
+//			mainGame.ChangeSwapChainState();
+//			break;
+//		default:
+//			break;
+//		}
+//		break;
+//	default:
+//		break;
+//	}
+//}

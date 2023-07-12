@@ -74,6 +74,14 @@ public:
 	int32 m_idx = 0;
 	// 05-22 Ãß°¡
 	int32 m_behavior = (int32)PLAYER_BEHAVIOR::IDLE;
+
+	bool m_bOnMoveSound = false;
+	virtual void SetOnMoveSound(bool bOnMoveSound) {
+		m_bOnMoveSound = bOnMoveSound;
+	}
+	virtual bool GetOnMoveSound() {
+		return m_bOnMoveSound;
+	}
 public: 
 	CPlayer();
 	virtual ~CPlayer();

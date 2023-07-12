@@ -3,6 +3,8 @@
 #include "GameFramework.h"
 #include "InputManager.h"
 #include "SoundManager.h"
+#include "CSound.h"
+
 //네트워크 관련
 #include "clientIocpCore.h"
 #include "CJobQueue.h"
@@ -255,13 +257,11 @@ void CGameScene::ProcessInput(HWND& hWnd)
 
 	//============  플레이어에게 최종 키입력 처리 ============
 	keyInput = m_players[m_playerIdx]->ProcessInput(); // 입력된 키를 기반으로 인풋 처리 진행
-	
 
 	// ============ 패킷 송신 파트 ===================
 	// 이동 키 입력에 변화가 있거나 키 입력 중 회전을 수행하는 경우에만.. 이동 관련 패킷을 전송한다.
 	if (m_lastKeyInput != keyInput || (keyInput && cxDelta != 0))
 	{
-
 		C2S_KEY packet; // 키 입력 + 방향 정보를 보낸다.
 		packet.size = sizeof(C2S_KEY);
 		packet.type = (uint8)C_PACKET_TYPE::CKEY;
@@ -410,11 +410,6 @@ void CGameScene::AddEvent(queueEvent* ev, float after)
 
 void CGameScene::Exit()
 {
-	SoundManager::GetInstance().PlayObjectSound(16,5);
-	SoundManager::GetInstance().PlayObjectSound(15,5);
-	SoundManager::GetInstance().PlayObjectSound(18,5);
-	SoundManager::GetInstance().PlayObjectSound(19,5);
-
 	//m_pSound->MyPlaySound(16, 5);
 	//m_pSound->MyPlaySound(15, 5);
 	//m_pSound->MyPlaySound(18, 5);
@@ -422,6 +417,11 @@ void CGameScene::Exit()
 
 	if (m_bEmpExit) // 탈출 성공 시 , 해야할 일 처리
 	{
+		SoundManager::GetInstance().PlayObjectSound(16, 5);
+		SoundManager::GetInstance().PlayObjectSound(15, 5);
+		SoundManager::GetInstance().PlayObjectSound(18, 5);
+		SoundManager::GetInstance().PlayObjectSound(19, 5);
+
 		std::cout << "Exit Ready\n";
 		for (int j = 0; j < m_nShaders; j++)
 		{

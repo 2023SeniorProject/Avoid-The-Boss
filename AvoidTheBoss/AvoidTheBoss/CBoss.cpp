@@ -24,26 +24,18 @@ CBoss::CBoss(ID3D12Device5* pd3dDevice,
 	m_pSkinnedAnimationController = new CAnimationController(pd3dDevice, pd3dCommandList, 4, pBossUpperModel);
 	m_pSkinnedAnimationController1 = new CAnimationController(pd3dDevice, pd3dCommandList, 4, pBossLowerModel);
 
-	m_pSkinnedAnimationController->SetTrackAnimationSet(3, 0);//RunningShoot 
 	m_pSkinnedAnimationController->SetTrackAnimationSet(0, 1);//Idle
 	m_pSkinnedAnimationController->SetTrackAnimationSet(1, 2);//Run
 	m_pSkinnedAnimationController->SetTrackAnimationSet(2, 3);//Shoot 2
+	m_pSkinnedAnimationController->SetTrackAnimationSet(3, 0);//RunningShoot 
 
-	m_pSkinnedAnimationController1->SetTrackAnimationSet(1, 0);//Run
 	m_pSkinnedAnimationController1->SetTrackAnimationSet(0, 1);//Idle
+	m_pSkinnedAnimationController1->SetTrackAnimationSet(1, 0);//Run
 	m_pSkinnedAnimationController1->SetTrackAnimationSet(2, 2);//Run
 	m_pSkinnedAnimationController1->SetTrackAnimationSet(3, 3);//Run
 
-	/*m_pSkinnedAnimationController->SetTrackSpeed(0, 1.875);
-	m_pSkinnedAnimationController->SetTrackSpeed(1, 1.875);
-	m_pSkinnedAnimationController->SetTrackSpeed(2, 1.875);
-	m_pSkinnedAnimationController->SetTrackSpeed(3, 1.875);
-
-	m_pSkinnedAnimationController1->SetTrackSpeed(0, 1.875);
-	m_pSkinnedAnimationController1->SetTrackSpeed(1, 1.875);*/
-
 	m_pSkinnedAnimationController->SetTrackEnable(0, true);
-	m_pSkinnedAnimationController->SetTrackEnable(0, true);
+	m_pSkinnedAnimationController->SetTrackEnable(1, false);
 	m_pSkinnedAnimationController->SetTrackEnable(2, false);
 	m_pSkinnedAnimationController->SetTrackEnable(3, false);
 
@@ -53,18 +45,18 @@ CBoss::CBoss(ID3D12Device5* pd3dDevice,
 	m_pSkinnedAnimationController1->SetTrackEnable(3, false);
 
 	// 사운드 설정
-	m_pSkinnedAnimationController->SetCallbackKeys(0, 1); // 인덱스 번호 , 갯수
-	m_pSkinnedAnimationController->SetCallbackKeys(1, 1);
-	m_pSkinnedAnimationController->SetCallbackKeys(2, 1);
-	m_pSkinnedAnimationController->SetCallbackKeys(3, 1);
+	//m_pSkinnedAnimationController->SetCallbackKeys(0, 1); // 인덱스 번호 , 갯수
+	//m_pSkinnedAnimationController->SetCallbackKeys(1, 1);
+	//m_pSkinnedAnimationController->SetCallbackKeys(2, 1);
+	//m_pSkinnedAnimationController->SetCallbackKeys(3, 1);
 
-	m_pSkinnedAnimationController->SetCallbackKey(0, 0, 0.0000f, L"Sound/Character_Walk.wav");
-	m_pSkinnedAnimationController->SetCallbackKey(1, 0, 0.0f, L"Sound/Character_Walk.wav");
-	m_pSkinnedAnimationController->SetCallbackKey(2, 0, 0.0f, L"Sound/Character_Walk.wav");
-	m_pSkinnedAnimationController->SetCallbackKey(3, 0, 0.0f, L"Sound/Character_Walk.wav");
+	//m_pSkinnedAnimationController->SetCallbackKey(0, 0, 0.0f, L"Sound/Land.wav");
+	//m_pSkinnedAnimationController->SetCallbackKey(0, 1, 0.1f, L"Sound/Land.wav");
+	//m_pSkinnedAnimationController->SetCallbackKey(0, 2, 0.3f, L"Sound/Land.wav");
+	//m_pSkinnedAnimationController->SetCallbackKey(0, 3, 1.0f, L"Sound/Land.wav");
 
-	CAnimationCallbackHandler *pAnimationCallbackHandler = new CSoundCallbackHandler();
-	m_pSkinnedAnimationController->SetAnimationCallbackHandler(1, pAnimationCallbackHandler);
+	//CAnimationCallbackHandler *pAnimationCallbackHandler = new CSoundCallbackHandler();
+	//m_pSkinnedAnimationController->SetAnimationCallbackHandler(1, pAnimationCallbackHandler);
 
 	if (m_pCamera->m_nMode == (DWORD)FIRST_PERSON_CAMERA)
 		SetPosition(XMFLOAT3(-22.55f, 1.57f, -1.04f));
@@ -314,15 +306,35 @@ void CBoss::AnimTrackUpdate()
 	{
 		case (int32)PLAYER_BEHAVIOR::IDLE:
 			SetIdleAnimTrack();
+			if (GetOnMoveSound())
+			{
+				SetOnMoveSound(false);
+				SoundManager::SoundStop(4);
+			}
 			break;
 		case(int32)PLAYER_BEHAVIOR::RUN:
 			SetRunAnimTrack();
+			if (!GetOnMoveSound())
+			{
+				SoundManager::GetInstance().PlayObjectSound(10, 4);
+				SetOnMoveSound(true);
+			}
 			break;
 		case (int32)PLAYER_BEHAVIOR::ATTACK:
 			SetAttackAnimTrack();
+			if (GetOnMoveSound())
+			{
+				SetOnMoveSound(false);
+				SoundManager::SoundStop(4);
+			}
 			break;
 		case (int32)PLAYER_BEHAVIOR::RUN_ATTACK:
 			SetRunAttackAnimTrack();
+			if (!GetOnMoveSound())
+			{
+				SoundManager::GetInstance().PlayObjectSound(10, 4);
+				SetOnMoveSound(true);
+			}
 			break;
 	}
 }
@@ -339,6 +351,18 @@ uint8 CBoss::ProcessInput()
 
 	if (dir) SetBehavior(PLAYER_BEHAVIOR::RUN);
 	else	 SetBehavior(PLAYER_BEHAVIOR::IDLE);
+
+	//if (InputManager::GetInstance().GetKeyBuffer(KEY_TYPE::W) == (uint8)KEY_STATUS::KEY_PRESS ||
+	//	InputManager::GetInstance().GetKeyBuffer(KEY_TYPE::A) == (uint8)KEY_STATUS::KEY_PRESS ||
+	//	InputManager::GetInstance().GetKeyBuffer(KEY_TYPE::S) == (uint8)KEY_STATUS::KEY_PRESS ||
+	//	InputManager::GetInstance().GetKeyBuffer(KEY_TYPE::D) == (uint8)KEY_STATUS::KEY_PRESS)
+	//{
+	//	
+	//}
+	//else 
+	//{
+
+	//}
 
 	// 1. 공격 키를 눌렀을 경우 처리 
 	if (InputManager::GetInstance().GetKeyBuffer(KEY_TYPE::SPACE) == (uint8)KEY_STATUS::KEY_PRESS && !GetOnAttack())

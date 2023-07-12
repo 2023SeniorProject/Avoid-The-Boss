@@ -145,6 +145,8 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
     mainGame.OnCreate(hInst, hMainWnd);
     //clientCore.InitGameLoop(hInst, hMainWnd);
 
+    //PlaySound(L"Sound/Land.wav", NULL, SND_LOOP | SND_ASYNC);
+
     ShowWindow(hMainWnd, nCmdShow);
     UpdateWindow(hMainWnd);
 

@@ -34,6 +34,7 @@ void SoundManager::PlayBackGroundSound(int32 Scene)
 	case 3:
 		m_pSound->SoundStop(0);
 		m_pSound->PlayBackGroundSound(1, 0);
+		break;
 	}
 }
 

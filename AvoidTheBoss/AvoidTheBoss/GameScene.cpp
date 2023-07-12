@@ -223,8 +223,6 @@ void CGameScene::BuildObjects(ID3D12Device5* pd3dDevice,ID3D12GraphicsCommandLis
 	m_pCamera = m_players[m_playerIdx]->GetCamera();
 	
 	//씬에 사운드 설정
-	
-	SoundManager::GetInstance().PlayBackGroundSound(3);
 	CreateShaderVariables(pd3dDevice, pd3dCommandList);
 }
 
@@ -412,12 +410,22 @@ void CGameScene::AddEvent(queueEvent* ev, float after)
 
 void CGameScene::Exit()
 {
+	SoundManager::GetInstance().PlayObjectSound(16,5);
+	SoundManager::GetInstance().PlayObjectSound(15,5);
+	SoundManager::GetInstance().PlayObjectSound(18,5);
+	SoundManager::GetInstance().PlayObjectSound(19,5);
+
+	//m_pSound->MyPlaySound(16, 5);
+	//m_pSound->MyPlaySound(15, 5);
+	//m_pSound->MyPlaySound(18, 5);
+	//m_pSound->MyPlaySound(19, 5);
+
 	if (m_bEmpExit) // 탈출 성공 시 , 해야할 일 처리
 	{
 		std::cout << "Exit Ready\n";
-		for (int i = 0; i < m_nShaders; i++)
+		for (int j = 0; j < m_nShaders; j++)
 		{
-			CStandardObjectsShader* pShaderObjects = (CStandardObjectsShader*)m_ppShaders[i];
+			CStandardObjectsShader* pShaderObjects = (CStandardObjectsShader*)m_ppShaders[j];
 			for (int i = 0; i < pShaderObjects->m_nObjects; i++)
 			{
 				if (pShaderObjects->m_ppObjects[i])

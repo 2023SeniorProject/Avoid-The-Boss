@@ -8,6 +8,7 @@
 #include "UIManager.h"
 #include "OtherScenes.h"
 #include "clientIocpCore.h"
+#include "SoundManager.h"
 #include "CSound.h"
 #include <Windowsx.h>
 
@@ -156,7 +157,8 @@ void CTitleScene::BuildObjects(ID3D12Device5* pd3dDevice, ID3D12GraphicsCommandL
 
 	m_player = new CVirtualPlayer(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature);
 	m_pCamera = m_player->GetCamera();
-	
+
+	SoundManager::GetInstance().PlayBackGroundSound(0);
 }
 
 void CTitleScene::MouseAction(const POINT& mp)

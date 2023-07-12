@@ -486,7 +486,6 @@ bool CEmployee::GenTasking()
 				SetBehavior(PLAYER_BEHAVIOR::IDLE);
 				targetGen->SetInteractionOn(false); // 애니메이션 재생을 정지한다.
 			
-
 				SoundManager::GetInstance().SoundStop(4);
 				//========= 패킷 송신 처리 ==============
 				SC_EVENTPACKET packet;

@@ -346,6 +346,9 @@ void CEmployee::AnimTrackUpdate()
 			SetAttackedAnimTrack();
 			m_attackedAnimationCount--;
 
+			SoundManager::GetInstance().PlayObjectSound(8, 4); // 총알 충돌 시
+			//SoundManager::GetInstance().PlayObjectSound(9, 4); // 총알 2번 째 충돌 시
+
 			SoundManager::GetInstance().PlayObjectSound(13, 3);
 		}
 		else 
@@ -440,6 +443,7 @@ void CEmployee::PlayerAttacked()
 		if (m_hp == 0)
 		{
 			PlayerDown();
+			//SoundManager::GetInstance().PlayObjectSound(9, 4); // 총알 2번 째 충돌 시
 		}
 		else
 		{

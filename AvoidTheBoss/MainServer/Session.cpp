@@ -181,7 +181,7 @@ void ServerSession::ProcessPacket(char* packet)
 		case (uint8)C_ROOM_PACKET_TYPE::ACQ_ENTER_RM:
 		{
 			C2S_ROOM_ENTER* rep = reinterpret_cast<C2S_ROOM_ENTER*>(packet);
-			ServerIocpCore._rmgr->EnterRoom(_sid,rep->rmNum);
+			ServerIocpCore._rmgr->EnterRoom(_sid, rep->rmNum);
 		}
 		break;
 		case (uint8)C_ROOM_PACKET_TYPE::ACQ_MK_RM:

@@ -71,13 +71,13 @@ void Room::UserIn(int32 sid)
 	packet.type = (uint8)S_ROOM_PACKET_TYPE::REP_ENTER_RM;
 
 	// 비어있는 방 (만들어지지 않은 방) or 현재 인원수가 4명이면 접속 실패 
-	if (_cList.size() >= MAX_ROOM_USER || _status == ROOM_STATUS::EMPTY)
+	if (_cList.size() >= MAX_ROOM_USER || _status == (int8)ROOM_STATUS::EMPTY)
 	{
 		// enter fail
 		packet.success = 0;
 		ServerIocpCore._clients[sid]->DoSend(&packet);
 	}
-	else if (_cList.size() < MAX_ROOM_USER && _status != ROOM_STATUS::EMPTY) // 아니면 접속 성공
+	else if (_cList.size() < MAX_ROOM_USER && _status != (int8)ROOM_STATUS::EMPTY) // 아니면 접속 성공
 	{
 		packet.success = 1;
 		ServerIocpCore._clients[sid]->_myRm = _num;
@@ -87,6 +87,8 @@ void Room::UserIn(int32 sid)
 			//cList Lock 쓰기 호출 
 			std::unique_lock<std::shared_mutex> wll(_listLock);
 			_cList.push_back(sid);
+
+			
 		}
 
 		if (_cList.size() == PLAYERNUM)
@@ -107,12 +109,28 @@ void Room::UserIn(int32 sid)
 			for (auto i : _cList) std::cout << i << " | ";
 			std::cout << " ]\n";
 			BroadCasting(&packet);
-			_status = ROOM_STATUS::FULL;
+			_status = (int8)ROOM_STATUS::FULL;
 			_gameLogic.InitGame();
 			_timer.Reset();
 		}
-	}		
+	}
+
+	S2C_ROOM rmpacket;
+	rmpacket.size = sizeof(S2C_ROOM);
+	rmpacket.type = (int8)S_ROOM_PACKET_TYPE::UPDATE_LIST;
+	rmpacket.rmNum = _num;
+	{
+		std::shared_lock<std::shared_mutex> wll(_listLock);
+		rmpacket.member = _cList.size();
+	}
+	
+	{
+		READ_SERVER_LOCK;
+		ServerIocpCore.BroadCastingAll(&rmpacket);
+	}
+	
 	std::cout << "RM [" << _num << "][" << _cList.size() << "/4]" << std::endl;
+	
 	// 갱신하는걸 보내줄지 말지 미정
 }
 
@@ -207,33 +225,38 @@ void RoomManager::Init()
 void RoomManager::EnterRoom(int32 sid,int16 rmNum)
 {
 	_rooms[rmNum].UserIn(sid);
+	std::cout << "Dead Lock Checking\n";
 }
 void RoomManager::CreateRoom(int32 sid)
 {
+	S2C_ROOM_EVENT packet;
+	packet.size = sizeof(S2C_ROOM_EVENT);
+
 	if (_rmCnt.load() >= _cap)
-	{
-		S2C_ROOM_CREATE packet;
-		packet.size = sizeof(S2C_ROOM_CREATE);
+	{	
 		packet.type = (uint8)S_ROOM_PACKET_TYPE::MK_RM_FAIL;
 		ServerIocpCore._clients[sid]->DoSend(&packet);
 		return;
 	}
 	for (int i = 0; i < 100; ++i)
 	{
-		if (_rooms[i]._status == ROOM_STATUS::EMPTY)
+		if (_rooms[i]._status == (int8)ROOM_STATUS::EMPTY)
 		{
-			_rooms[i]._status = ROOM_STATUS::NOT_FULL;
+			_rooms[i]._status = (int8)ROOM_STATUS::NOT_FULL;
 			_rooms[i].UserIn(sid);
 			_rmCnt.fetch_add(1);
 			break;
 		}
 	}
+
+	packet.type = (uint8)S_ROOM_PACKET_TYPE::MK_RM_OK;
+	ServerIocpCore._clients[sid]->DoSend(&packet);
 }
 void RoomManager::UpdateRooms()
 {
 	for (int i = 0; i < _cap; ++i)
 	{
-		if (_rooms[i]._status != ROOM_STATUS::FULL) continue;
+		if (_rooms[i]._status != (int8)ROOM_STATUS::FULL) continue;
 		_rooms[i].Update();
 	}
 }

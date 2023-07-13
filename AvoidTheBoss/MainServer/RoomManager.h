@@ -6,10 +6,7 @@
 #include "CGameManager.h"
 
 
-enum ROOM_STATUS : int8
-{
-	INGAME = 0 ,FULL = 1, NOT_FULL = 2, EMPTY = 3, COUNT = 4
-};
+
 
 
 class Scheduler;
@@ -44,7 +41,7 @@ private:
 public:
 	std::shared_mutex _listLock;
 	std::list<int32> _cList; // 방에 속해있는 클라이언트 리스트
-	int8 _status = ROOM_STATUS::EMPTY; // 방 상태
+	int8 _status = (int8)ROOM_STATUS::EMPTY; // 방 상태
 	int32 _num = 0; // 방에 있는 인원 수
 	Timer _timer;
 };

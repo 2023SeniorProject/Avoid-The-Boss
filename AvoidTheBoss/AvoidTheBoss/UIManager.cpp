@@ -14,9 +14,10 @@ const float TITLEBUTTON_X_OFFSET = FRAME_BUFFER_WIDTH / 2.0 - 100.f;
 const float TITLEBUTTON_Y_OFFSET = 100.f;
 
 const float LOBBYBUTTON_X_OFFSET = FRAME_BUFFER_WIDTH / 3.0;
-const float LOBBYBUTTON_Y_OFFSET = FRAME_BUFFER_HEIGHT/ 3.0f + 50;
-const float LOBBYROOMLIST_X_OFFSET = FRAME_BUFFER_WIDTH / 20;
-const float LOBBYROOMLIST_Y_OFFSET = FRAME_BUFFER_HEIGHT / 18;
+const float LOBBYBUTTON_Y_OFFSET = FRAME_BUFFER_HEIGHT/ 4.0f * 3;
+
+const float LOBBYROOMLIST_X_OFFSET = FRAME_BUFFER_WIDTH / 22;
+const float LOBBYROOMLIST_Y_OFFSET = FRAME_BUFFER_HEIGHT / 18.5;
 
 
 const float FontSize = 50;
@@ -263,7 +264,7 @@ void UIManager::DrawTextBlock(int32 Scene)
     }
     else if (Scene == 1)
     {
-        m_pd2dDeviceContext->DrawRectangle(m_RoomListLayout, redBrush, 4.0f);
+        m_pd2dDeviceContext->DrawRectangle(m_RoomListLayout, blackBrush, 3.0f);
     }
 }
 
@@ -339,9 +340,9 @@ void UIManager::InitializeDevice(ID3D12Device5* pd3dDevice, ID3D12CommandQueue* 
     m_LobbyButtons[1].resource = LoadPngFromFile(L"UI/New_Game.png");
     m_LobbyButtons[2].resource = LoadPngFromFile(L"UI/Quit_Lobby.png");
 
-    m_LobbyButtons[0].d2dLayoutRect = MakeLayoutRect(CENTER_X,                        CENTER_Y + LOBBYBUTTON_Y_OFFSET, m_fWidth / 3.0f, 120);
-    m_LobbyButtons[1].d2dLayoutRect = MakeLayoutRect(CENTER_X - LOBBYBUTTON_X_OFFSET, CENTER_Y + LOBBYBUTTON_Y_OFFSET, m_fWidth / 3.0f, 120);
-    m_LobbyButtons[2].d2dLayoutRect = MakeLayoutRect(CENTER_X + LOBBYBUTTON_X_OFFSET, CENTER_Y + LOBBYBUTTON_Y_OFFSET, m_fWidth / 3.0f, 120);
+    m_LobbyButtons[0].d2dLayoutRect = MakeLayoutRectByCorner(LOBBYBUTTON_X_OFFSET,LOBBYBUTTON_Y_OFFSET, FRAME_BUFFER_WIDTH / 3.0f,          FRAME_BUFFER_HEIGHT / 4.0);
+    m_LobbyButtons[1].d2dLayoutRect = MakeLayoutRectByCorner(0,                   LOBBYBUTTON_Y_OFFSET, FRAME_BUFFER_WIDTH / 3.0f,          FRAME_BUFFER_HEIGHT / 4.0);
+    m_LobbyButtons[2].d2dLayoutRect = MakeLayoutRectByCorner(LOBBYBUTTON_X_OFFSET * 2.0f, LOBBYBUTTON_Y_OFFSET, FRAME_BUFFER_WIDTH / 3.0f,  FRAME_BUFFER_HEIGHT / 4.0);
     
     //로비에서 출력할 방 리스트 영역
     m_RoomListLayout = MakeLayoutRectByCorner(LOBBYROOMLIST_X_OFFSET,LOBBYROOMLIST_Y_OFFSET,

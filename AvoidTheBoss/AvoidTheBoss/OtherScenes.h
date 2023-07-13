@@ -1,10 +1,18 @@
 #pragma once
 #include "CScene.h"
 
-class CSound;
+const int32 MAX_ROOM = 100;
 
 class CLobbyScene : public CScene
 {
+	struct Room
+	{
+		int32 member = 0;
+		ROOM_STATUS status = ROOM_STATUS::EMPTY;
+	};
+	int32	 m_curPage;
+	int32	 m_lastPage;
+	Room	 m_rooms[MAX_ROOM];
 	CPlayer* m_player = NULL;
 public:
 	CLobbyScene() {}
@@ -17,6 +25,11 @@ public:
 
 	virtual void OnProcessingMouseMessage(HWND hWnd, UINT nMessageID, WPARAM wParam, LPARAM	lParam) {};
 	virtual void OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPARAM wParam, LPARAM lParam) {};
+
+	void ChangePage(int32);
+	void UpdateRoomText(int32, int32);
+	Room& GetRoom(int32);
+	int32 GetCurPage() { return m_curPage; };
 };
 
 class CTitleScene : public CScene
@@ -51,7 +64,9 @@ public:
 	virtual void Update(HWND hWnd);
 	virtual void Render(ID3D12GraphicsCommandList4* pd3dCommandList, CCamera* pCamera,bool);
 	void		 BuildDefaultLightsAndMaterials();
-
+	
 	virtual void OnProcessingMouseMessage(HWND hWnd, UINT nMessageID, WPARAM wParam, LPARAM	lParam) {};
 	virtual void OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPARAM wParam, LPARAM lParam) {};
+
+	
 };

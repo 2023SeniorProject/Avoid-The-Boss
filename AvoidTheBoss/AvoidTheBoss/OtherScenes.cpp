@@ -38,6 +38,7 @@ void CLobbyScene::ProcessInput(HWND& hWnd)
 
 void CLobbyScene::Update(HWND hWnd)
 {
+	
 }
 
 void CLobbyScene::Render(ID3D12GraphicsCommandList4* pd3dCommandList, CCamera* pCamera, bool Raster)
@@ -141,6 +142,28 @@ void CLobbyScene::BuildDefaultLightsAndMaterials()
 	m_pLights[4].m_xmf3Position = XMFLOAT3(600.0f, 250.0f, 700.0f);
 	m_pLights[4].m_xmf3Attenuation = XMFLOAT3(1.0f, 0.001f, 0.0001f);
 }
+void CLobbyScene::ChangePage(int32 newPage)
+{
+	m_lastPage = m_curPage;
+	m_curPage = newPage;
+	
+}
+void CLobbyScene::UpdateRoomText(int32 index = -1, int32 member = -1)
+{
+	
+	if (index >= 0 || member >= 0)
+	{
+		m_rooms[m_curPage * 5 + index].member = member;
+		if (PLAYERNUM == member) m_rooms[m_curPage * 5 + index].status = ROOM_STATUS::FULL;
+		else if (0 == member)	 m_rooms[m_curPage * 5 + index].status = ROOM_STATUS::EMPTY;
+	}
+	mainGame.m_UIRenderer->UpdateRoomText();
+}
+
+CLobbyScene::Room & CLobbyScene::GetRoom(int32 idx)
+{
+	return m_rooms[idx];
+}
 #pragma endregion
 
 
@@ -165,12 +188,12 @@ void CTitleScene::BuildObjects(ID3D12Device5* pd3dDevice, ID3D12GraphicsCommandL
 void CTitleScene::MouseAction(const POINT& mp)
 {
 
-	if (IntersectRectByPoint(mainGame.m_UIRenderer->m_pTextBlocks[0].m_d2dLayoutRect, mp))
+	if (IntersectRectByPoint(mainGame.m_UIRenderer->m_pIDPWTextBlocks[0].m_d2dLayoutRect, mp))
 	{
 		std::cout << "Focus Change 0\n";
 		focus = 0;
 	}
-	else if (IntersectRectByPoint(mainGame.m_UIRenderer->m_pTextBlocks[1].m_d2dLayoutRect, mp))
+	else if (IntersectRectByPoint(mainGame.m_UIRenderer->m_pIDPWTextBlocks[1].m_d2dLayoutRect, mp))
 	{
 		std::cout << "Focus Change 1\n";
 		focus = 1;
@@ -178,13 +201,13 @@ void CTitleScene::MouseAction(const POINT& mp)
 
 	if (IntersectRectByPoint(mainGame.m_UIRenderer->GetButtonRect(0,0),mp))
 	{
-		if (mainGame.m_UIRenderer->m_pTextBlocks[0].m_pstrText.length() <= 3
-			|| mainGame.m_UIRenderer->m_pTextBlocks[1].m_pstrText.length() <= 3) return;
+		if (mainGame.m_UIRenderer->m_pIDPWTextBlocks[0].m_pstrText.length() <= 3
+			|| mainGame.m_UIRenderer->m_pIDPWTextBlocks[1].m_pstrText.length() <= 3) return;
 
 		clientCore.InitConnect("127.0.0.1");
 		C2S_LOGIN loginPacket;
-		lstrcpyn(loginPacket.name, mainGame.m_UIRenderer->m_pTextBlocks[0].m_pstrText.c_str(), 10);
-		lstrcpyn(loginPacket.pw, mainGame.m_UIRenderer->m_pTextBlocks[1].m_pstrText.c_str(), 10);
+		lstrcpyn(loginPacket.name, mainGame.m_UIRenderer->m_pIDPWTextBlocks[0].m_pstrText.c_str(), 10);
+		lstrcpyn(loginPacket.pw, mainGame.m_UIRenderer->m_pIDPWTextBlocks[1].m_pstrText.c_str(), 10);
 		clientCore.DoConnect(&loginPacket);
 		mainGame.ChangeScene(CGameFramework::SCENESTATE::LOBBY);
 	}
@@ -289,10 +312,10 @@ void CTitleScene::ProcessInput(HWND& hWnd)
 			if (cap) str[0] = i;
 			else str[0] = i + 32;
 			str[1] = '\0';
-			if (focus == 0 && mainGame.m_UIRenderer->m_pTextBlocks[0].m_pstrText.length() <= 10)
-				mainGame.m_UIRenderer->m_pTextBlocks[0].m_pstrText.append(str);
-			else if( focus == 1 && mainGame.m_UIRenderer->m_pTextBlocks[1].m_pstrText.length() <= 10)
-				mainGame.m_UIRenderer->m_pTextBlocks[1].m_pstrText.append(str);
+			if (focus == 0 && mainGame.m_UIRenderer->m_pIDPWTextBlocks[0].m_pstrText.length() <= 10)
+				mainGame.m_UIRenderer->m_pIDPWTextBlocks[0].m_pstrText.append(str);
+			else if( focus == 1 && mainGame.m_UIRenderer->m_pIDPWTextBlocks[1].m_pstrText.length() <= 10)
+				mainGame.m_UIRenderer->m_pIDPWTextBlocks[1].m_pstrText.append(str);
 		}
 	}
 	
@@ -301,15 +324,15 @@ void CTitleScene::ProcessInput(HWND& hWnd)
 	{
 		if (1 == focus)
 		{
-			if (mainGame.m_UIRenderer->m_pTextBlocks[1].m_pstrText.length() > 3)
-				mainGame.m_UIRenderer->m_pTextBlocks[1].m_pstrText.
-				erase(mainGame.m_UIRenderer->m_pTextBlocks[1].m_pstrText.length() - 1,
+			if (mainGame.m_UIRenderer->m_pIDPWTextBlocks[1].m_pstrText.length() > 3)
+				mainGame.m_UIRenderer->m_pIDPWTextBlocks[1].m_pstrText.
+				erase(mainGame.m_UIRenderer->m_pIDPWTextBlocks[1].m_pstrText.length() - 1,
 					1);
 		}
 		else
-			if (mainGame.m_UIRenderer->m_pTextBlocks[0].m_pstrText.length() > 3)
-				mainGame.m_UIRenderer->m_pTextBlocks[0].m_pstrText.
-				erase(mainGame.m_UIRenderer->m_pTextBlocks[0].m_pstrText.length() - 1,
+			if (mainGame.m_UIRenderer->m_pIDPWTextBlocks[0].m_pstrText.length() > 3)
+				mainGame.m_UIRenderer->m_pIDPWTextBlocks[0].m_pstrText.
+				erase(mainGame.m_UIRenderer->m_pIDPWTextBlocks[0].m_pstrText.length() - 1,
 					1);
 	}
 }

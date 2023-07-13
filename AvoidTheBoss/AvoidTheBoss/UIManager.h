@@ -94,6 +94,7 @@ public:
     UITextBlock m_RoomListTextBlock[5];
     
     int32 m_lastRoomPage = 0;
+    int32 m_selectedLayout = -1;
     D2D1_RECT_F m_RoomListLayout[5];
 
     UIButton m_RoomButtons[3];

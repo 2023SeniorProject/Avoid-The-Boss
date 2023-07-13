@@ -8,11 +8,13 @@ class CLobbyScene : public CScene
 	struct Room
 	{
 		int32 member = 0;
+		int32 idx = 0;
 		ROOM_STATUS status = ROOM_STATUS::EMPTY;
 	};
 	int32	 m_curPage;
 	int32	 m_lastPage;
 	Room	 m_rooms[MAX_ROOM];
+	int32	 m_selected_rm = -1;
 	CPlayer* m_player = NULL;
 public:
 	CLobbyScene() {}
@@ -23,8 +25,9 @@ public:
 	virtual void Render(ID3D12GraphicsCommandList4* pd3dCommandList, CCamera* pCamera, bool);
 	void		 BuildDefaultLightsAndMaterials();
 
-	virtual void OnProcessingMouseMessage(HWND hWnd, UINT nMessageID, WPARAM wParam, LPARAM	lParam) {};
+	virtual void OnProcessingMouseMessage(HWND hWnd, UINT nMessageID, WPARAM wParam, LPARAM	lParam);
 	virtual void OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPARAM wParam, LPARAM lParam) {};
+	virtual void MouseAction(const POINT& mp);
 
 	void ChangePage(int32);
 	void UpdateRoomText(int32, int32);
@@ -48,7 +51,7 @@ public:
 	virtual void OnProcessingMouseMessage(HWND hWnd, UINT nMessageID, WPARAM wParam, LPARAM	lParam);
 	virtual void OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPARAM wParam, LPARAM lParam);
 
-	void		 MouseAction(const POINT& mp);
+	virtual void MouseAction(const POINT& mp);
 	void		 BuildDefaultLightsAndMaterials();
 };
 

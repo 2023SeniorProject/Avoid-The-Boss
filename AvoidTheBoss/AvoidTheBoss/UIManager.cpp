@@ -171,7 +171,7 @@ void UIManager::UpdateRoomText()
        ROOM_STATUS rs = ls->GetRoom(curPage * 5 + i).status;
            
        _itow_s(curPage * 5 + i, temp, 10); // ¸â¹ö º¯È¯
-       temp[2] = '\0';
+       temp[1] = '\0';
 
        newText.append(temp);
        newText.append(L" ");
@@ -198,6 +198,7 @@ void UIManager::UpdateRoomText()
            newRect = MakeLayoutRectByCorner(LOBBYROOMLIST_X_OFFSET
                , LOBBYROOMLIST_Y_OFFSET + (FRAME_BUFFER_HEIGHT / 2.0f * ((float)tempidx / m_nRoomListPerPage)),
                FRAME_BUFFER_WIDTH - (LOBBYROOMLIST_X_OFFSET * 2.0), FRAME_BUFFER_HEIGHT / 2.0f * (1.0 / m_nRoomListPerPage));
+           ls->GetRoom(curPage * 5 + i).idx = tempidx;
            tempidx += 1;
        }
        UpdateRoomTextBlocks(i, newText.c_str(), newRect, hide);
@@ -304,10 +305,12 @@ void UIManager::DrawTextBlock(int32 Scene)
     {
         for (int i = 0; i < m_nRoomListPerPage; ++i)
         {
+            
             m_pd2dDeviceContext->DrawRectangle(m_RoomListLayout[i], blackBrush, 4.0f);
             if(!m_RoomListTextBlock[i].m_hide) m_pd2dDeviceContext->DrawText(m_RoomListTextBlock[i].m_pstrText.c_str()
                 , (UINT)wcslen(m_RoomListTextBlock[i].m_pstrText.c_str()), m_RoomListTextBlock[i].m_pdwFormat
                 , m_RoomListTextBlock[i].m_d2dLayoutRect, blackBrush);
+            if (i == m_selectedLayout)  m_pd2dDeviceContext->DrawRectangle(m_RoomListLayout[i], redBrush, 4.0f);
         }
     }
 }

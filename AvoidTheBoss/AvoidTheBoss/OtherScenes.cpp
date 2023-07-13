@@ -142,6 +142,74 @@ void CLobbyScene::BuildDefaultLightsAndMaterials()
 	m_pLights[4].m_xmf3Position = XMFLOAT3(600.0f, 250.0f, 700.0f);
 	m_pLights[4].m_xmf3Attenuation = XMFLOAT3(1.0f, 0.001f, 0.0001f);
 }
+void CLobbyScene::OnProcessingMouseMessage(HWND hWnd, UINT nMessageID, WPARAM wParam, LPARAM lParam)
+{
+	switch (nMessageID)
+	{
+	case WM_LBUTTONDOWN:
+	case WM_RBUTTONDOWN:
+		//마우스 캡쳐를 하고 현재 마우스 위치를 가져온다.
+	{
+		int xPos = GET_X_LPARAM(lParam);
+		int yPos = GET_Y_LPARAM(lParam);
+		POINT m_mousePos;
+		m_mousePos.x = xPos;
+		m_mousePos.y = yPos;
+
+		MouseAction(m_mousePos);
+	}
+	break;
+	case WM_LBUTTONUP:
+	case WM_RBUTTONUP:
+		//마우스 캡쳐를 해제한다. 
+		::ReleaseCapture();
+		break;
+	case WM_MOUSEMOVE:
+	{
+
+	}
+	break;
+	default:
+		break;
+	}
+}
+void CLobbyScene::MouseAction(const POINT& mp)
+{
+	// 체크리스트 충돌체크 처리
+	for (int i = 0; i < mainGame.m_UIRenderer->m_nRoomListPerPage; ++i)
+	{
+		if (IntersectRectByPoint(mainGame.m_UIRenderer->m_RoomListLayout[i], mp))
+		{
+			if (m_rooms[m_curPage * 5 + i].status != ROOM_STATUS::EMPTY) m_selected_rm = m_curPage * 5 + i;
+			mainGame.m_UIRenderer->m_selectedLayout = i;
+			std::cout << "Selected RM:" << i << "\n";
+		}
+	}
+
+	if (IntersectRectByPoint(mainGame.m_UIRenderer->m_LobbyButtons[0].d2dLayoutRect, mp) && m_selected_rm != -1)
+	{
+		//enter
+		C2S_ROOM_ENTER packet;
+		packet.size = sizeof(C2S_ROOM_ENTER);
+		packet.type = (uint8)C_ROOM_PACKET_TYPE::ACQ_ENTER_RM;
+		packet.rmNum = m_selected_rm;
+		m_selected_rm = -1;
+	}
+	else if (IntersectRectByPoint(mainGame.m_UIRenderer->m_LobbyButtons[1].d2dLayoutRect, mp))
+	{
+		//create
+		C2S_ROOM_EVENT packet;
+		packet.size = sizeof(C2S_ROOM_EVENT);
+		packet.type = (uint8)C_ROOM_PACKET_TYPE::ACQ_MK_RM;
+		clientCore.DoSend(&packet);
+	}
+	else if (IntersectRectByPoint(mainGame.m_UIRenderer->m_LobbyButtons[2].d2dLayoutRect, mp))
+	{
+		//quit
+		clientCore.Disconnect(0);
+		mainGame.ChangeScene(CGameFramework::SCENESTATE::TITLE);
+	}
+}
 void CLobbyScene::ChangePage(int32 newPage)
 {
 	m_lastPage = m_curPage;

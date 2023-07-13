@@ -1,27 +1,12 @@
 #include "pch.h"
 #include "GameFramework.h"
 #include "UIManager.h"
+#include "SceneManager.h"
+#include "OtherScenes.h"
 #include <d2d1_1.h>
 #include <wincodec.h>
 
 #pragma comment(lib,"windowscodecs.lib")
-
-
-// LobbyButton
-const float CENTER_X = FRAME_BUFFER_WIDTH / 2.0;
-const float CENTER_Y = FRAME_BUFFER_HEIGHT / 2.0;
-const float TITLEBUTTON_X_OFFSET = FRAME_BUFFER_WIDTH / 2.0 - 100.f;
-const float TITLEBUTTON_Y_OFFSET = 100.f;
-
-const float LOBBYBUTTON_X_OFFSET = FRAME_BUFFER_WIDTH / 3.0;
-const float LOBBYBUTTON_Y_OFFSET = FRAME_BUFFER_HEIGHT/ 4.0f * 3;
-
-const float LOBBYROOMLIST_X_OFFSET = FRAME_BUFFER_WIDTH / 22;
-const float LOBBYROOMLIST_Y_OFFSET = FRAME_BUFFER_HEIGHT / 18.5;
-
-
-const float FontSize = 50;
-const float IDPW_Y_OFFSET = FontSize / 2.0f;
 
 D2D1_RECT_F MakeLayoutRect(float cx, float cy , float width, float height)
 {
@@ -33,7 +18,7 @@ D2D1_RECT_F MakeLayoutRectByCorner(float left, float top, float width, float hei
     return D2D1_RECT_F{ left , top , left + width, top + height};
 }
 
-UIManager::UIManager(UINT nFrames, UINT nTextBlocks, ID3D12Device5* pd3dDevice, ID3D12CommandQueue* pd3dCommandQueue, ID3D12Resource** ppd3dRenderTargets, UINT nWidth, UINT nHeight)
+UIManager::UIManager(UINT nFrames, ID3D12Device5* pd3dDevice, ID3D12CommandQueue* pd3dCommandQueue, ID3D12Resource** ppd3dRenderTargets, UINT nWidth, UINT nHeight)
 {
 
     m_fWidth = static_cast<float>(nWidth);
@@ -41,9 +26,6 @@ UIManager::UIManager(UINT nFrames, UINT nTextBlocks, ID3D12Device5* pd3dDevice, 
     m_nRenderTargets = nFrames; // 렌더 타겟
     m_ppd3d11WrappedRenderTargets = new ID3D11Resource * [nFrames];
     m_ppd2dRenderTargets = new ID2D1Bitmap1 * [nFrames];
-
-    m_nTextBlocks = nTextBlocks;
-    m_pTextBlocks = new UITextBlock[nTextBlocks];
 
     InitializeDevice(pd3dDevice, pd3dCommandQueue, ppd3dRenderTargets);
 
@@ -162,9 +144,65 @@ void UIManager::CreateRenderTarget(ID3D12Resource** ppd3dRenderTargets)
 }
 
 
-void UIManager::UpdateTextOutputs(UINT nIndex, WCHAR* pstrUIText, D2D1_RECT_F* pd2dLayoutRect, IDWriteTextFormat* pdwFormat, ID2D1SolidColorBrush* pd2dTextBrush)
+void UIManager::UpdateRoomTextBlocks(UINT nIndex,const WCHAR* pstrUIText, const D2D1_RECT_F& pd2dLayoutRect, bool hide)
 {
+    m_RoomListTextBlock[nIndex].m_pstrText.erase();
+    m_RoomListTextBlock[nIndex].m_pstrText.append(pstrUIText);
+    m_RoomListTextBlock[nIndex].m_d2dLayoutRect = pd2dLayoutRect;
+    m_RoomListTextBlock[nIndex].m_hide = hide;
+}
 
+void UIManager::UpdateRoomText()
+{
+    
+    CLobbyScene* ls = static_cast<CLobbyScene*>(mainGame.m_SceneManager->GetSceneByIdx((int32)CGameFramework::SCENESTATE::LOBBY));
+    int32 curPage = ls->GetCurPage();
+    int32 tempidx = -1;
+    bool hide = false;
+    WCHAR temp[2];
+    
+    std::wstring newText = L"RM:";
+    D2D1_RECT_F newRect{ 0,0,0,0 };
+    // 전체 페이지를 갱신한다.
+   
+   for(int i = 0; i < m_nRoomListPerPage; ++i)
+   { 
+       int32 mem = ls->GetRoom((curPage * 5 + i)).member;
+       ROOM_STATUS rs = ls->GetRoom(curPage * 5 + i).status;
+           
+       _itow_s(curPage * 5 + i, temp, 10); // 멤버 변환
+       temp[2] = '\0';
+
+       newText.append(temp);
+       newText.append(L" ");
+       temp[0] = L'\0';
+       _itow_s(mem, temp, 10);
+       newText.append(temp);
+       newText.append(L"/4");
+
+       newRect = MakeLayoutRectByCorner(LOBBYROOMLIST_X_OFFSET
+           , LOBBYROOMLIST_Y_OFFSET + (FRAME_BUFFER_HEIGHT / 2.0f * ((float)i / m_nRoomListPerPage)),
+           FRAME_BUFFER_WIDTH - (LOBBYROOMLIST_X_OFFSET * 2.0), FRAME_BUFFER_HEIGHT / 2.0f * (1.0 / m_nRoomListPerPage));
+
+       if (rs == ROOM_STATUS::FULL || rs == ROOM_STATUS::EMPTY)
+            {
+                tempidx = i;
+                hide = true;
+                UpdateRoomTextBlocks(i, newText.c_str(), newRect, hide);
+                hide = false;
+                continue;
+            }
+       
+       if (tempidx != -1)
+       {
+           newRect = MakeLayoutRectByCorner(LOBBYROOMLIST_X_OFFSET
+               , LOBBYROOMLIST_Y_OFFSET + (FRAME_BUFFER_HEIGHT / 2.0f * ((float)tempidx / m_nRoomListPerPage)),
+               FRAME_BUFFER_WIDTH - (LOBBYROOMLIST_X_OFFSET * 2.0), FRAME_BUFFER_HEIGHT / 2.0f * (1.0 / m_nRoomListPerPage));
+           tempidx += 1;
+       }
+       UpdateRoomTextBlocks(i, newText.c_str(), newRect, hide);
+   }
+    
 }
 
 
@@ -248,23 +286,29 @@ void UIManager::DrawTextBlock(int32 Scene)
 
     if (Scene == 0)
     {
-        m_pd2dDeviceContext->FillRectangle(m_pTextBlocks[0].m_d2dLayoutRect, grayBrush);
-        m_pd2dDeviceContext->FillRectangle(m_pTextBlocks[1].m_d2dLayoutRect, grayBrush);
+        m_pd2dDeviceContext->FillRectangle(m_pIDPWTextBlocks[0].m_d2dLayoutRect, grayBrush);
+        m_pd2dDeviceContext->FillRectangle(m_pIDPWTextBlocks[1].m_d2dLayoutRect, grayBrush);
         
-        m_pd2dDeviceContext->DrawRectangle(m_pTextBlocks[0].m_d2dLayoutRect, blackBrush,4.0);
-        m_pd2dDeviceContext->DrawRectangle(m_pTextBlocks[1].m_d2dLayoutRect, blackBrush,4.0);
+        m_pd2dDeviceContext->DrawRectangle(m_pIDPWTextBlocks[0].m_d2dLayoutRect, blackBrush,4.0);
+        m_pd2dDeviceContext->DrawRectangle(m_pIDPWTextBlocks[1].m_d2dLayoutRect, blackBrush,4.0);
 
-        m_pd2dDeviceContext->DrawText(m_pTextBlocks[0].m_pstrText.c_str(), 
-            (UINT)wcslen(m_pTextBlocks[0].m_pstrText.c_str()), m_pTextBlocks[0].m_pdwFormat, 
-            m_pTextBlocks[0].m_d2dLayoutRect, m_pTextBlocks[0].m_pd2dTextBrush);
+        if(!m_pIDPWTextBlocks[0].m_hide) m_pd2dDeviceContext->DrawText(m_pIDPWTextBlocks[0].m_pstrText.c_str(),
+            (UINT)wcslen(m_pIDPWTextBlocks[0].m_pstrText.c_str()), m_pIDPWTextBlocks[0].m_pdwFormat, 
+            m_pIDPWTextBlocks[0].m_d2dLayoutRect, m_pIDPWTextBlocks[0].m_pd2dTextBrush);
 
-        m_pd2dDeviceContext->DrawText(m_pTextBlocks[1].m_pstrText.c_str(),
-            (UINT)wcslen(m_pTextBlocks[1].m_pstrText.c_str()), m_pTextBlocks[1].m_pdwFormat,
-            m_pTextBlocks[1].m_d2dLayoutRect, m_pTextBlocks[1].m_pd2dTextBrush);
+        if (!m_pIDPWTextBlocks[1].m_hide) m_pd2dDeviceContext->DrawText(m_pIDPWTextBlocks[1].m_pstrText.c_str(),
+            (UINT)wcslen(m_pIDPWTextBlocks[1].m_pstrText.c_str()), m_pIDPWTextBlocks[1].m_pdwFormat,
+            m_pIDPWTextBlocks[1].m_d2dLayoutRect, m_pIDPWTextBlocks[1].m_pd2dTextBrush);
     }
     else if (Scene == 1)
     {
-        m_pd2dDeviceContext->DrawRectangle(m_RoomListLayout, blackBrush, 3.0f);
+        for (int i = 0; i < m_nRoomListPerPage; ++i)
+        {
+            m_pd2dDeviceContext->DrawRectangle(m_RoomListLayout[i], blackBrush, 4.0f);
+            if(!m_RoomListTextBlock[i].m_hide) m_pd2dDeviceContext->DrawText(m_RoomListTextBlock[i].m_pstrText.c_str()
+                , (UINT)wcslen(m_RoomListTextBlock[i].m_pstrText.c_str()), m_RoomListTextBlock[i].m_pdwFormat
+                , m_RoomListTextBlock[i].m_d2dLayoutRect, blackBrush);
+        }
     }
 }
 
@@ -311,6 +355,13 @@ void UIManager::InitializeDevice(ID3D12Device5* pd3dDevice, ID3D12CommandQueue* 
     CreateD2DDevice();
     CreateRenderTarget(ppd3dRenderTargets);;
     
+    // 브러시들
+    redBrush = CreateBrush(D2D1::ColorF::Red);
+    grayBrush = CreateBrush(D2D1::ColorF::Gray);
+    blackBrush = CreateBrush(D2D1::ColorF::Black);
+    // 폰트
+    m_TitleTextFormat = CreateTextFormat(L"", FRAME_BUFFER_HEIGHT / 30);
+    m_LobbyTextFormat = CreateTextFormat(L"", FRAME_BUFFER_HEIGHT / 20);
     // 배경 리소스들
     m_backGround[0].resource = LoadPngFromFile(L"UI/Title.png");
     m_backGround[1].resource = LoadPngFromFile(L"UI/Lobby.png");
@@ -322,17 +373,17 @@ void UIManager::InitializeDevice(ID3D12Device5* pd3dDevice, ID3D12CommandQueue* 
     m_TitleButtons[0].d2dLayoutRect = MakeLayoutRect(CENTER_X + TITLEBUTTON_X_OFFSET, CENTER_Y + TITLEBUTTON_Y_OFFSET,     200, 50);
     m_TitleButtons[1].d2dLayoutRect = MakeLayoutRect(CENTER_X + TITLEBUTTON_X_OFFSET, CENTER_Y + TITLEBUTTON_Y_OFFSET * 2, 200, 50);
     // ID / PW 입력 창
-    m_pTextBlocks[0].m_pd2dTextBrush = CreateBrush(D2D1::ColorF::White);
-    m_pTextBlocks[0].m_pdwFormat = CreateTextFormat(L"", 20);
-    m_pTextBlocks[0].m_pstrText = L"ID:";
+    m_pIDPWTextBlocks[0].m_pd2dTextBrush = CreateBrush(D2D1::ColorF::White);
+    m_pIDPWTextBlocks[0].m_pdwFormat = m_TitleTextFormat;
+    m_pIDPWTextBlocks[0].m_pstrText = L"ID:";
     
 
-    m_pTextBlocks[1].m_pd2dTextBrush = CreateBrush(D2D1::ColorF::White);
-    m_pTextBlocks[1].m_pdwFormat = CreateTextFormat(L"", 20);
-    m_pTextBlocks[1].m_pstrText = L"PW:";
+    m_pIDPWTextBlocks[1].m_pd2dTextBrush = CreateBrush(D2D1::ColorF::White);
+    m_pIDPWTextBlocks[1].m_pdwFormat = m_TitleTextFormat;
+    m_pIDPWTextBlocks[1].m_pstrText = L"PW:";
 
-    m_pTextBlocks[0].m_d2dLayoutRect = MakeLayoutRect(CENTER_X, CENTER_Y + 150, 200, FontSize);
-    m_pTextBlocks[1].m_d2dLayoutRect = MakeLayoutRect(CENTER_X, CENTER_Y + 200, 200, FontSize);
+    m_pIDPWTextBlocks[0].m_d2dLayoutRect = MakeLayoutRect(CENTER_X, CENTER_Y + 150, 200, FontSize);
+    m_pIDPWTextBlocks[1].m_d2dLayoutRect = MakeLayoutRect(CENTER_X, CENTER_Y + 200, 200, FontSize);
     
 
     // 로비 씬에 필요한 버튼
@@ -345,13 +396,16 @@ void UIManager::InitializeDevice(ID3D12Device5* pd3dDevice, ID3D12CommandQueue* 
     m_LobbyButtons[2].d2dLayoutRect = MakeLayoutRectByCorner(LOBBYBUTTON_X_OFFSET * 2.0f, LOBBYBUTTON_Y_OFFSET, FRAME_BUFFER_WIDTH / 3.0f,  FRAME_BUFFER_HEIGHT / 4.0);
     
     //로비에서 출력할 방 리스트 영역
-    m_RoomListLayout = MakeLayoutRectByCorner(LOBBYROOMLIST_X_OFFSET,LOBBYROOMLIST_Y_OFFSET,
-        FRAME_BUFFER_WIDTH - (LOBBYROOMLIST_X_OFFSET * 2.0), FRAME_BUFFER_HEIGHT / 2.0f);
-    
-    // 브러시들
-     redBrush = CreateBrush(D2D1::ColorF::Red);
-     grayBrush = CreateBrush(D2D1::ColorF::Gray);
-     blackBrush = CreateBrush(D2D1::ColorF::Black);
+    for (int i = 0; i < m_nRoomListPerPage; ++i)
+    {
+        m_RoomListLayout[i] = MakeLayoutRectByCorner(LOBBYROOMLIST_X_OFFSET
+            , LOBBYROOMLIST_Y_OFFSET + (FRAME_BUFFER_HEIGHT / 2.0f * ((float)i / m_nRoomListPerPage)),
+            FRAME_BUFFER_WIDTH - (LOBBYROOMLIST_X_OFFSET * 2.0), FRAME_BUFFER_HEIGHT / 2.0f * (1.0 / m_nRoomListPerPage));
+        m_RoomListTextBlock[i].m_d2dLayoutRect = m_RoomListLayout[i];
+        m_RoomListTextBlock[i].m_pdwFormat = m_LobbyTextFormat;
+        m_RoomListTextBlock[i].m_pstrText =  L"ROOMNUM:   MEMBER:   0/4";
+    }
+
 }
 
 void UIManager::Render2D(UINT nFrame, int32 curScene)
@@ -368,7 +422,6 @@ void UIManager::Render2D(UINT nFrame, int32 curScene)
     DrawButton(curScene,1);
     DrawTextBlock(curScene);
     m_pd2dDeviceContext->EndDraw();
-
     m_pd3d11On12Device->ReleaseWrappedResources(ppResources, _countof(ppResources));
     m_pd3d11DeviceContext->Flush();
 }

@@ -41,6 +41,8 @@ public:	enum class SCENESTATE { TITLE = 0, LOBBY = 1, ROOM = 2, INGAME = 3 };
 	friend class CGameScene;
 	friend class CLobbyScene;
 	friend class CTitleScene;
+
+	friend class UIManager;
 private:
 	HINSTANCE m_hInstance;
 	HWND m_hWnd;

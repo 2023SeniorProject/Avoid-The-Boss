@@ -27,8 +27,7 @@ public:
 	void UserIn(int32 sid);
 	void BroadCasting(void* packet);
 	void BroadCastingExcept(void* packet, int32 sid);
-	bool ProcessAttackEvent(const int32& frame, const int16& target) 
-	{ return (_gameLogic._history.IsAttackAvailable(frame, target)); }
+	bool ProcessAttackEvent(const int32& frame, const int16& target) { return (_gameLogic._history.IsAttackAvailable(frame, target)); }
 	CGameManager& GetGameManager() { return _gameLogic; }
 	void Update();
 	void AddEvent(QueueEvent* packet, float after); // 이벤트 패킷이 들어오면 큐에다가 추가를 할 것이다.
@@ -37,6 +36,7 @@ public:
 	{
 		_timer.Reset();
 	}
+	void SendRoomInfo(); 
 private:
 	Rewinder<30> _history;
 private:

@@ -84,7 +84,10 @@ public:
     // 버튼 비트맵들
     UINT m_nButtons = 10;
     UIButton m_TitleButtons[2];
+    
     UIButton m_LobbyButtons[3];
+    D2D1_RECT_F m_RoomListLayout;
+
     UIButton m_RoomButtons[3];
 
     // 동적으로 바뀌는 텍스트 버튼들 Id,PW 
@@ -93,5 +96,6 @@ public:
     // 레이어 위치 출력을 위한 브러시
     ID2D1SolidColorBrush* redBrush; // 빨강
     ID2D1SolidColorBrush* grayBrush; // 회색
+    ID2D1SolidColorBrush* blackBrush; // 회색
 };
 

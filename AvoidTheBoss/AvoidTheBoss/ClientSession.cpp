@@ -207,7 +207,7 @@ void CSession::ProcessPacket(char* packet)
 		std::wstring str = L"Client";
 		str.append(std::to_wstring(gc->m_playerIdx));
 		::SetConsoleTitle(str.c_str());
-		mainGame.ChangeScene(CGameFramework::SCENESTATE::INGAME);
+		//mainGame.ChangeScene(CGameFramework::SCENESTATE::INGAME);
 		gc->InitScene();
 	}
 	break;

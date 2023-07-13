@@ -11,6 +11,12 @@
 #include "CSound.h"
 #include <Windowsx.h>
 
+
+bool IntersectRectByPoint(const D2D1_RECT_F& rect, const POINT& mp)
+{
+	return ((rect.left <= mp.x && mp.x <= rect.right) && (rect.top <= mp.y && mp.y <= rect.bottom));
+}
+
 #pragma region Lobby
 
 void CLobbyScene::BuildObjects(ID3D12Device5* pd3dDevice, ID3D12GraphicsCommandList4* pd3dCommandList)
@@ -137,10 +143,7 @@ void CLobbyScene::BuildDefaultLightsAndMaterials()
 }
 #pragma endregion
 
-bool IntersectRectByPoint(const D2D1_RECT_F& rect, const POINT& mp)
-{
-	return ((rect.left <= mp.x && mp.x <= rect.right) && (rect.top <= mp.y && mp.y <= rect.bottom));
-}
+
 #pragma region  Title
 void CTitleScene::BuildObjects(ID3D12Device5* pd3dDevice, ID3D12GraphicsCommandList4* pd3dCommandList)
 {

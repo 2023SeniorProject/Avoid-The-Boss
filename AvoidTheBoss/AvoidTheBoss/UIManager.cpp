@@ -6,9 +6,30 @@
 
 #pragma comment(lib,"windowscodecs.lib")
 
+
+// LobbyButton
+const float CENTER_X = FRAME_BUFFER_WIDTH / 2.0;
+const float CENTER_Y = FRAME_BUFFER_HEIGHT / 2.0;
+const float TITLEBUTTON_X_OFFSET = FRAME_BUFFER_WIDTH / 2.0 - 100.f;
+const float TITLEBUTTON_Y_OFFSET = 100.f;
+
+const float LOBBYBUTTON_X_OFFSET = FRAME_BUFFER_WIDTH / 3.0;
+const float LOBBYBUTTON_Y_OFFSET = FRAME_BUFFER_HEIGHT/ 3.0f + 50;
+const float LOBBYROOMLIST_X_OFFSET = FRAME_BUFFER_WIDTH / 20;
+const float LOBBYROOMLIST_Y_OFFSET = FRAME_BUFFER_HEIGHT / 18;
+
+
+const float FontSize = 50;
+const float IDPW_Y_OFFSET = FontSize / 2.0f;
+
 D2D1_RECT_F MakeLayoutRect(float cx, float cy , float width, float height)
 {
     return D2D1_RECT_F{ cx - width / 2.0f , cy - height / 2.0f , cx + width / 2.0f , cy + height / 2.0f };
+}
+
+D2D1_RECT_F MakeLayoutRectByCorner(float left, float top, float width, float height)
+{
+    return D2D1_RECT_F{ left , top , left + width, top + height};
 }
 
 UIManager::UIManager(UINT nFrames, UINT nTextBlocks, ID3D12Device5* pd3dDevice, ID3D12CommandQueue* pd3dCommandQueue, ID3D12Resource** ppd3dRenderTargets, UINT nWidth, UINT nHeight)
@@ -173,9 +194,17 @@ void UIManager::ReleaseResources()
 
 void UIManager::DrawBackGround(int32 Scene)
 {
-    if (Scene > 2) return;
-    m_pd2dDeviceContext->DrawBitmap(m_backGround[Scene].resource, 
-        D2D1_RECT_F{ 0,0,m_fWidth,m_fHeight }, 1.0f, D2D1_INTERPOLATION_MODE_LINEAR,(D2D1_RECT_F*)0);
+    switch (Scene)
+    {
+    case 0:
+    case 1:
+    case 2:
+        m_pd2dDeviceContext->DrawBitmap(m_backGround[Scene].resource,
+            D2D1_RECT_F{ 0,0,m_fWidth,m_fHeight }, 1.0f, D2D1_INTERPOLATION_MODE_LINEAR, (D2D1_RECT_F*)0);
+        break;
+    case 3:
+        break;
+    }
 }
 
 void UIManager::DrawButton(int32 Scene,int32 idx)
@@ -221,6 +250,9 @@ void UIManager::DrawTextBlock(int32 Scene)
         m_pd2dDeviceContext->FillRectangle(m_pTextBlocks[0].m_d2dLayoutRect, grayBrush);
         m_pd2dDeviceContext->FillRectangle(m_pTextBlocks[1].m_d2dLayoutRect, grayBrush);
         
+        m_pd2dDeviceContext->DrawRectangle(m_pTextBlocks[0].m_d2dLayoutRect, blackBrush,4.0);
+        m_pd2dDeviceContext->DrawRectangle(m_pTextBlocks[1].m_d2dLayoutRect, blackBrush,4.0);
+
         m_pd2dDeviceContext->DrawText(m_pTextBlocks[0].m_pstrText.c_str(), 
             (UINT)wcslen(m_pTextBlocks[0].m_pstrText.c_str()), m_pTextBlocks[0].m_pdwFormat, 
             m_pTextBlocks[0].m_d2dLayoutRect, m_pTextBlocks[0].m_pd2dTextBrush);
@@ -228,6 +260,10 @@ void UIManager::DrawTextBlock(int32 Scene)
         m_pd2dDeviceContext->DrawText(m_pTextBlocks[1].m_pstrText.c_str(),
             (UINT)wcslen(m_pTextBlocks[1].m_pstrText.c_str()), m_pTextBlocks[1].m_pdwFormat,
             m_pTextBlocks[1].m_d2dLayoutRect, m_pTextBlocks[1].m_pd2dTextBrush);
+    }
+    else if (Scene == 1)
+    {
+        m_pd2dDeviceContext->DrawRectangle(m_RoomListLayout, redBrush, 4.0f);
     }
 }
 
@@ -280,33 +316,41 @@ void UIManager::InitializeDevice(ID3D12Device5* pd3dDevice, ID3D12CommandQueue* 
     m_backGround[2].resource = LoadPngFromFile(L"UI/Room.png");
 
     // 타이틀 씬에 필요한 버튼
-    m_TitleButtons[0].resource      = LoadPngFromFile(L"UI/Title_Start.png");
-    m_TitleButtons[0].d2dLayoutRect = MakeLayoutRect(m_fWidth / 2.0f + 300.f, m_fHeight / 2.0f + 100, 200, 100);
-    m_TitleButtons[1].resource =      LoadPngFromFile(L"UI/Title_Quit.png");
-    m_TitleButtons[1].d2dLayoutRect = MakeLayoutRect(m_fWidth / 2.0f + 300.f, m_fHeight / 2.0f + 200.f, 200, 100);
+    m_TitleButtons[0].resource      = LoadPngFromFile(L"UI/Title_Start.png");  
+    m_TitleButtons[1].resource      = LoadPngFromFile(L"UI/Title_Quit.png");
+    m_TitleButtons[0].d2dLayoutRect = MakeLayoutRect(CENTER_X + TITLEBUTTON_X_OFFSET, CENTER_Y + TITLEBUTTON_Y_OFFSET,     200, 50);
+    m_TitleButtons[1].d2dLayoutRect = MakeLayoutRect(CENTER_X + TITLEBUTTON_X_OFFSET, CENTER_Y + TITLEBUTTON_Y_OFFSET * 2, 200, 50);
     // ID / PW 입력 창
     m_pTextBlocks[0].m_pd2dTextBrush = CreateBrush(D2D1::ColorF::White);
-    m_pTextBlocks[0].m_pdwFormat = CreateTextFormat(L"", 15);
+    m_pTextBlocks[0].m_pdwFormat = CreateTextFormat(L"", 20);
     m_pTextBlocks[0].m_pstrText = L"ID:";
-    m_pTextBlocks[0].m_d2dLayoutRect = MakeLayoutRect(m_fWidth / 2.0f, m_fHeight / 2.0f + 150, 200, 20);
+    
 
     m_pTextBlocks[1].m_pd2dTextBrush = CreateBrush(D2D1::ColorF::White);
-    m_pTextBlocks[1].m_pdwFormat = CreateTextFormat(L"", 15);
+    m_pTextBlocks[1].m_pdwFormat = CreateTextFormat(L"", 20);
     m_pTextBlocks[1].m_pstrText = L"PW:";
-    m_pTextBlocks[1].m_d2dLayoutRect = MakeLayoutRect(m_fWidth / 2.0f, m_fHeight / 2.0f + 200, 200, 20);
+
+    m_pTextBlocks[0].m_d2dLayoutRect = MakeLayoutRect(CENTER_X, CENTER_Y + 150, 200, FontSize);
+    m_pTextBlocks[1].m_d2dLayoutRect = MakeLayoutRect(CENTER_X, CENTER_Y + 200, 200, FontSize);
     
+
     // 로비 씬에 필요한 버튼
     m_LobbyButtons[0].resource = LoadPngFromFile(L"UI/Enter_Game.png");
-    m_LobbyButtons[0].d2dLayoutRect = MakeLayoutRect(m_fWidth / 2.0f, m_fHeight / 2.0f + 200, m_fWidth / 4.0f, 200);
     m_LobbyButtons[1].resource = LoadPngFromFile(L"UI/New_Game.png");
-    m_LobbyButtons[1].d2dLayoutRect = MakeLayoutRect(m_fWidth / 4.0f, 
-        m_fHeight / 2.0f + 200, m_fWidth / 4.0f, 200);
     m_LobbyButtons[2].resource = LoadPngFromFile(L"UI/Quit_Lobby.png");
-    m_LobbyButtons[2].d2dLayoutRect = MakeLayoutRect(m_fWidth / 2.0f + m_fWidth / 4.0f,
-        m_fHeight / 2.0f + 200, m_fWidth / 4.0f, 200);
+
+    m_LobbyButtons[0].d2dLayoutRect = MakeLayoutRect(CENTER_X,                        CENTER_Y + LOBBYBUTTON_Y_OFFSET, m_fWidth / 3.0f, 120);
+    m_LobbyButtons[1].d2dLayoutRect = MakeLayoutRect(CENTER_X - LOBBYBUTTON_X_OFFSET, CENTER_Y + LOBBYBUTTON_Y_OFFSET, m_fWidth / 3.0f, 120);
+    m_LobbyButtons[2].d2dLayoutRect = MakeLayoutRect(CENTER_X + LOBBYBUTTON_X_OFFSET, CENTER_Y + LOBBYBUTTON_Y_OFFSET, m_fWidth / 3.0f, 120);
+    
+    //로비에서 출력할 방 리스트 영역
+    m_RoomListLayout = MakeLayoutRectByCorner(LOBBYROOMLIST_X_OFFSET,LOBBYROOMLIST_Y_OFFSET,
+        FRAME_BUFFER_WIDTH - (LOBBYROOMLIST_X_OFFSET * 2.0), FRAME_BUFFER_HEIGHT / 2.0f);
+    
     // 브러시들
      redBrush = CreateBrush(D2D1::ColorF::Red);
      grayBrush = CreateBrush(D2D1::ColorF::Gray);
+     blackBrush = CreateBrush(D2D1::ColorF::Black);
 }
 
 void UIManager::Render2D(UINT nFrame, int32 curScene)

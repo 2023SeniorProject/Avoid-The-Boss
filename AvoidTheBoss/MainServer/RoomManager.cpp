@@ -32,12 +32,28 @@ void Room::UserOut(int32 sid)
 		std::unique_lock<std::shared_mutex> wll(_listLock);
 		auto i = std::find(_cList.begin(), _cList.end(), sid); // 리스트에 있는지 탐색 후
 		if (i != _cList.end()) _cList.erase(i); // 리스트에서 제거
+
+		S2C_ROOM rmpacket;
+		rmpacket.size = sizeof(S2C_ROOM);
+		rmpacket.type = (int8)S_ROOM_PACKET_TYPE::UPDATE_LIST;
+		rmpacket.member = _num;
+		{
+			std::shared_lock<std::shared_mutex> wll(_listLock);
+			rmpacket.member = _cList.size();
+		}
+
+		{
+			READ_SERVER_LOCK;
+			ServerIocpCore.BroadCastingAll(&rmpacket);
+		}
 	}
 		
 	std::cout << "LEFT USER SID LIST [";
 	for (auto i : _cList) std::cout << i << ", ";
 	std::cout << " ]\n";
-		
+	
+	_mem.fetch_sub(1);
+
 	// 나간 플레이어는 숨기도록 한다.
 	SC_EVENTPACKET packet;
 	packet.size = sizeof(SC_EVENTPACKET);
@@ -46,18 +62,8 @@ void Room::UserOut(int32 sid)
 	BroadCasting(&packet);
 	if (IsDestroyRoom())
 	{
-		/*_status = ROOM_STATUS::EMPTY;
-		S2C_HIDE_ROOM packet;
-		packet.size = sizeof(S2C_HIDE_ROOM);
-		packet.rmNum = _num;*/
-		// 업데이트 리스트를 보내준다. ==> 빈방이므로 더 이상 표시 X
-		{
-			//READ_SERVER_LOCK;
-			//for (auto i : ServerIocpCore._clients)
-			//{
-				//i.second->DoSend(&packet);
-			//}
-		}
+		_status = (uint8)ROOM_STATUS::EMPTY;
+		
 		std::cout << "Destroy Room\n";
 	}
 	std::cout << "RM [" << _num << "][" << _cList.size() << "/4]" << std::endl;
@@ -83,15 +89,16 @@ void Room::UserIn(int32 sid)
 		ServerIocpCore._clients[sid]->_myRm = _num;
 		ServerIocpCore._clients[sid]->_status = USER_STATUS::ROOM;
 		ServerIocpCore._clients[sid]->DoSend(&packet);
+		
 		{
 			//cList Lock 쓰기 호출 
 			std::unique_lock<std::shared_mutex> wll(_listLock);
 			_cList.push_back(sid);
-
-			
 		}
 
-		if (_cList.size() == PLAYERNUM)
+		_mem.fetch_add(1);
+
+	/*	if (_cList.size() == PLAYERNUM)
 		{
 			
 			S2C_GAMESTART packet;
@@ -112,7 +119,7 @@ void Room::UserIn(int32 sid)
 			_status = (int8)ROOM_STATUS::FULL;
 			_gameLogic.InitGame();
 			_timer.Reset();
-		}
+		}*/
 	}
 
 	S2C_ROOM rmpacket;

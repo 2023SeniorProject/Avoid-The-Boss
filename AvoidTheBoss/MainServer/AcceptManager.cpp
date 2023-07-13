@@ -182,6 +182,15 @@ void AcceptManager::ProcessAccept(AcceptEvent* acceptEvent)
 	}
 	
 	session->_status = USER_STATUS::LOBBY;
+	S2C_ROOM packet;
+	packet.size = sizeof(S2C_ROOM);
+	packet.type = (uint8)S_ROOM_PACKET_TYPE::UPDATE_LIST;
+	for (int32 i = 0; i < 5; ++i)
+	{
+		packet.member = ServerIocpCore._rmgr->GetRoom(session->_curPage * 5 + i)._mem.load();
+		packet.rmNum = session->_curPage * 5 + i;
+		session->DoSend(&packet);
+	}
 	session->DoRecv();  // recv 상태로 만든다.
 	acceptEvent->_session = nullptr;
 	RegisterAccept(acceptEvent); // 다시 acceptEvent를 등록한다.

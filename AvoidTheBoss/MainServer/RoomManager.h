@@ -33,7 +33,7 @@ public:
 	{
 		_timer.Reset();
 	}
-	void SendRoomInfo(); 
+	int32 GetMemersCnt() { return _mem; }
 private:
 	Rewinder<30> _history;
 private:
@@ -42,7 +42,8 @@ public:
 	std::shared_mutex _listLock;
 	std::list<int32> _cList; // 방에 속해있는 클라이언트 리스트
 	int8 _status = (int8)ROOM_STATUS::EMPTY; // 방 상태
-	int32 _num = 0; // 방에 있는 인원 수
+	int32 _num = 0; // 방번호
+	Atomic<int32> _mem = 0;
 	Timer _timer;
 };
 

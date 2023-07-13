@@ -27,6 +27,7 @@ public:
 	void ProcessPacket(char*);
 public:
 	int16 _myRm = -1;
+	int32 _curPage = 0;
 	int32 _prev_remain = 0;
 	Atomic<USER_STATUS> _status = USER_STATUS::EMPTY;
 	

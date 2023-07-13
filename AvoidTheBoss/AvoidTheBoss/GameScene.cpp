@@ -254,7 +254,6 @@ void CGameScene::ProcessInput(HWND& hWnd)
 		if(cxDelta != 0) m_players[m_playerIdx]->Rotate(0.f, cxDelta, 0.0f);
 	}
 
-
 	//============  플레이어에게 최종 키입력 처리 ============
 	keyInput = m_players[m_playerIdx]->ProcessInput(); // 입력된 키를 기반으로 인풋 처리 진행
 

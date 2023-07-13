@@ -25,8 +25,8 @@ static const char *g_pstrCharactorRefernece[5] =
 	"Model/Character/Character4_Idle.bin"
 };
 
-#define BOSS_ATTACK_TIME 60 //25프레임 (기존 65)
-#define BOSS_RUNATTACK_TIME 50 //25프레임 (기존 65)
+#define BOSS_ATTACK_TIME 25 //25프레임 (기존 65)
+#define BOSS_RUNATTACK_TIME 25 //25프레임 (기존 65)
 
 #define EMPLOYEE_ATTACKED_TIME 30 //20프레임 (기존 65)
 #define EMPLOYEE_DOWN_TIME 30 //25프레임 (기존 65)

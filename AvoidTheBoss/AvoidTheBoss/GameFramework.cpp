@@ -506,7 +506,7 @@ void CGameFramework::Render()
 
 	//=======렌더링 코드는 여기에 추가될 것이다
 	
-	m_SceneManager->Render(m_pd3dCommandList, m_curScene, true);
+	m_SceneManager->Render(m_pd3dCommandList, m_curScene, m_raster);
 	//3인칭 카메라일 때 플레이어가 항상 보이도록 렌더링한다. 
 #ifdef _WITH_PLAYER_TOP
 	//렌더 타겟은 그대로 두고 깊이 버퍼를 1.0으로 지우고 플레이어를 렌더링하면 플레이어는 무조건 그려질 것이다. 
@@ -585,6 +585,7 @@ LRESULT CGameFramework::OnProcessingWindowMessage(HWND hWnd, UINT nMessageID, WP
 		OnProcessingMouseMessage(hWnd, nMessageID, wParam, lParam);
 		break;
 	case WM_KEYDOWN:
+		OnKeyDown(static_cast<UINT8>(wParam));
 	case WM_KEYUP:
 		OnProcessingKeyboardMessage(hWnd, nMessageID, wParam, lParam);
 		break;
@@ -607,12 +608,12 @@ void CGameFramework::CheckRaytracingSupport()
 // buffers in GPU memory along with their vertex count. The build is then done
 // in 3 steps: gathering the geometry, computing the sizes of the required
 // buffers, and building the actual AS D3D12HelloTriangle::AccelerationStructureBuffers
-void CGameFramework::OnKeyUp(UINT8 key)
+void CGameFramework::OnKeyDown(UINT8 key)
 {
 	// Alternate between rasterization and raytracing using the F2
-	if (key == VK_NUMPAD0) 
+	if (key == VK_NUMPAD0)
 	{
-		m_raster = !m_raster; 
+		m_raster = !m_raster;
 	}
 }
 //

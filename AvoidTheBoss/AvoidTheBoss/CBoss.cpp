@@ -342,6 +342,7 @@ uint8 CBoss::ProcessInput()
 	if (InputManager::GetInstance().GetKeyBuffer(KEY_TYPE::SPACE) == (uint8)KEY_STATUS::KEY_PRESS && !GetOnAttack())
 	{
 		SetOnAttack(true);
+		m_pBullet->SetOnShoot(true);
 		SoundManager::GetInstance().PlayObjectSound(4, 3);
 	}
 	

@@ -173,7 +173,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
     case WM_MOUSEMOVE:
     case WM_KEYDOWN:
     case WM_KEYUP:
-        mainGame.OnKeyUp(static_cast<UINT8>(wParam));
+        //mainGame.OnKeyDown(static_cast<UINT8>(wParam));
         mainGame.OnProcessingWindowMessage(hWnd, message, wParam, lParam);
         break;
     case WM_COMMAND:

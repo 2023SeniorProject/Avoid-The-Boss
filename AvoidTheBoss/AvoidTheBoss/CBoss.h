@@ -15,9 +15,7 @@ public:
 	int nBullet = 50;
 	CBullet* m_pBullet = NULL;
 
-	CBoss(ID3D12Device5* pd3dDevice,  
-   
-  ID3D12GraphicsCommandList4* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature);
+	CBoss(ID3D12Device5* pd3dDevice, ID3D12GraphicsCommandList4* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature);
 	virtual ~CBoss();
 
 	virtual CCamera* ChangeCamera(DWORD nNewCameraMode, float fTimeElapsed);

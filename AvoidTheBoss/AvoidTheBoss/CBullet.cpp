@@ -11,6 +11,10 @@
 //	SetChild(pBulletModel->m_pModelRootObject, true);
 //}
 
+CBullet::CBullet()
+{
+}
+
 CBullet::~CBullet()
 {
 }

@@ -159,8 +159,8 @@ public:
 
 	void CheckRaytracingSupport(); //광선추적 지원 체크 함수 D3D12_FEATURE_D3D12_OPTIONS5
 
-	virtual void OnKeyUp(UINT8 key);
-	bool m_raster = true;
+	virtual void OnKeyDown(UINT8 key);
+	bool m_raster = true; // 래스터화 상태로 시작, 래스터화 off 시 광선추적 상태
 
 	// 가속 구조 구축
 private:

@@ -9,6 +9,7 @@ public:
 	CSIocpCore();
 	~CSIocpCore();
 	virtual void Disconnect(int32 sid) override;
+	void BroadCastingAll(void* packet);
 public:
 	std::shared_mutex _lock;
 	std::unordered_map<int32, ServerSession*> _clients;

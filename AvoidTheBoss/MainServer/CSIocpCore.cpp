@@ -32,3 +32,11 @@ void CSIocpCore::Disconnect(int32 sid)
 		std::cout << "Dead Lock Checking\n";
 	}
 }
+
+void CSIocpCore::BroadCastingAll(void* packet)
+{
+	for (auto& i : _clients)
+	{
+		i.second->DoSend(packet);
+	}
+}

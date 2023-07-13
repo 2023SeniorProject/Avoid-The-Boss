@@ -187,12 +187,25 @@ void CSession::ProcessPacket(char* packet)
 	{
 		std::cout << "Fail to Create Room!!(MAX_CAPACITY)" << std::endl;
 	}
-	case (uint8)S_ROOM_PACKET_TYPE::MK_RM_OK:
-		mainGame.ChangeScene(CGameFramework::SCENESTATE::ROOM);
 	break;
+	case (uint8)S_ROOM_PACKET_TYPE::MK_RM_OK:
+	{
+		mainGame.ChangeScene(CGameFramework::SCENESTATE::ROOM);
+	}
+		break;
 	case (uint8)S_ROOM_PACKET_TYPE::UPDATE_LIST:
 	{
+		std::cout << "Update\n";
+
 		S2C_ROOM* rp = (S2C_ROOM*)packet;
+		ls->GetRoom(rp->rmNum).member = rp->member;
+		if (rp->member > 0)
+		{
+			if (rp->member >= 4) ls->GetRoom(rp->rmNum).status = ROOM_STATUS::FULL;
+			else												 ROOM_STATUS::NOT_FULL;
+		}
+		else  ls->GetRoom(rp->rmNum).status = ROOM_STATUS::EMPTY;
+
 		ls->UpdateRoomText(rp->rmNum, rp->member);
 	}
 		break;

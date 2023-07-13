@@ -112,7 +112,8 @@ public:
 public:
 	virtual void OnProcessingMouseMessage(HWND hWnd, UINT nMessageID, WPARAM wParam, LPARAM	lParam) {};
 	virtual void OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPARAM wParam, LPARAM lParam) {};
-};
+	virtual void MouseAction(const POINT& mp) {};
+}; 
 
 
 

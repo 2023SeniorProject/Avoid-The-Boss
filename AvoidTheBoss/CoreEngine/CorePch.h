@@ -112,6 +112,22 @@ using Microsoft::WRL::ComPtr;
 #define FRAME_BUFFER_WIDTH  800
 #define FRAME_BUFFER_HEIGHT 600
 
+const float CENTER_X = FRAME_BUFFER_WIDTH / 2.0;
+const float CENTER_Y = FRAME_BUFFER_HEIGHT / 2.0;
+const float TITLEBUTTON_X_OFFSET = FRAME_BUFFER_WIDTH / 2.0 - 100.f;
+const float TITLEBUTTON_Y_OFFSET = 100.f;
+
+const float LOBBYBUTTON_X_OFFSET = FRAME_BUFFER_WIDTH / 3.0;
+const float LOBBYBUTTON_Y_OFFSET = FRAME_BUFFER_HEIGHT / 4.0f * 3;
+
+const float LOBBYROOMLIST_X_OFFSET = FRAME_BUFFER_WIDTH / 22;
+const float LOBBYROOMLIST_Y_OFFSET = FRAME_BUFFER_HEIGHT / 18.5;
+
+
+const float FontSize = 50;
+const float IDPW_Y_OFFSET = FontSize / 2.0f;
+
+
 #define _WITH_CB_WORLD_MATRIX_DESCRIPTOR_TABLE
 //----전체 화면 모드로 시작
 //#define _WITH_SWAPCHAIN_FULLSCREEN_STATE
@@ -422,3 +438,7 @@ namespace Plane
 #define KEY_E		 0x0400
 #define KEY_SPACE	 0x0200
 
+enum class ROOM_STATUS : int8
+{
+	INGAME = 0, FULL = 1, NOT_FULL = 2, EMPTY = 3, COUNT = 4
+};

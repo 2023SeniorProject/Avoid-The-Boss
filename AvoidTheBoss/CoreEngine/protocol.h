@@ -39,7 +39,7 @@ enum class ANIMTRACK : uint8
 enum class SC_PACKET_TYPE : uint8 { GAMEEVENT = 208};
 
 enum class C_ROOM_PACKET_TYPE : uint8 { ACQ_MK_RM = 115, ACQ_ENTER_RM = 116, EXIT_CRM = 117 }; // 방 생성, 방 삭제, 입장 , 종료 
-enum class S_ROOM_PACKET_TYPE : uint8 { MK_RM_OK = 119, MK_RM_FAIL = 120, HIDE_RM = 121, REP_ENTER_RM = 122, REP_EXIT_RM = 123 }; // 방 생성, 방 삭제, 입장 , 종료 
+enum class S_ROOM_PACKET_TYPE : uint8 { MK_RM_OK = 119, MK_RM_FAIL = 120, HIDE_RM = 121, REP_ENTER_RM = 122, REP_EXIT_RM = 123, UPDATE_LIST }; // 방 생성, 방 삭제, 입장 , 종료 
 
 enum class PLAYER_BEHAVIOR {IDLE = 0, RUN, WALK, SWITCH_INTER, ATTACKED, DOWN, RESCUE, ATTACK, RUN_ATTACK, CRAWL, STAND};
 
@@ -120,24 +120,20 @@ struct C2S_LOGOUT
 	uint16 sid;
 };
 
-struct C2S_ROOM_CREATE
+struct C2S_ROOM_EVENT // 생성, 나가기, 게임 시작
 {
 	uint8 size;
 	uint8 type;
 };
 
-struct C2S_ROOM_ENTER
+struct C2S_ROOM_ENTER // 방 입장
 {
 	uint8 size;
 	uint8 type;
 	int32 rmNum;
 };
 
-struct C2S_ROOM_EXIT
-{
-	uint8 size;
-	uint8 type;
-};
+
 
 
 // ======= 게임 로직 패킷 ==============
@@ -218,7 +214,7 @@ struct S2C_ROTATE
 	int32 angle;
 };
 
-struct S2C_ROOM_CREATE
+struct S2C_ROOM_EVENT
 {
 	uint8 size;
 	uint8 type;
@@ -231,26 +227,15 @@ struct S2C_ROOM_ENTER
 	uint8 success;
 };
 
-struct S2C_ROOM_EXIT
-{
-	uint8 size;
-	uint8 type;
-	int32 rmNum;
-};
-
 struct S2C_ROOM
 {
 	uint8 size;
 	uint8 type;
 	int32 rmNum;
+	int8 member;
 };
 
-struct S2C_HIDE_ROOM
-{
-	uint8 size;
-	uint8 type;
-	int32 rmNum;
-};
+
 
 struct S2C_FRAMEPACKET
 {
@@ -258,6 +243,7 @@ struct S2C_FRAMEPACKET
 	uint8 type;
 	int32 wf;
 };
+
 
 // 클라 / 서버 공용
 struct SC_EVENTPACKET

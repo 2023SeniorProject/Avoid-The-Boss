@@ -22,6 +22,12 @@ struct UIBackGround
     D2D1_RECT_F                     d2dLayoutRect; // 출력할 레이아웃 영역
     ID2D1Bitmap*                    resource = NULL;
 };
+struct UIEffect
+{
+    D2D1_RECT_F                     d2dLayoutRect; // 출력할 레이아웃 영역
+    ID2D1Bitmap* resource = NULL;
+};
+
 
 class UIManager
 {
@@ -39,6 +45,7 @@ public:
     void Render2D(UINT nFrame,int32 curScene);
     void ReleaseResources();
     void DrawBackGround(int32 Scene);
+    void DrawEffects(int32 Scene);
     void DrawButton(int32, int32 idx);
     void DrawTextBlock(int32);
 
@@ -86,6 +93,7 @@ public:
     UIButton m_TitleButtons[2];
     UIButton m_LobbyButtons[3];
     UIButton m_RoomButtons[3];
+    UIEffect m_GameEffect[1];
 
     // 동적으로 바뀌는 텍스트 버튼들 Id,PW 
     UITextBlock* m_pTextBlocks;

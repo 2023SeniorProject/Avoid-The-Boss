@@ -395,10 +395,10 @@ void CGameScene::InitGame(void* packet, int32 sid)
 		// 각 플레이어 별로 세션 아이디 부여
 	}
 
-	m_players[0]->SetPosition(XMFLOAT3(0, 0.25, -18));
-	if(m_players[1] != nullptr)m_players[1]->SetPosition(XMFLOAT3(10, 0.25, -18));
-	if(m_players[2] != nullptr)m_players[2]->SetPosition(XMFLOAT3(15, 0.25, -18));
-	if(m_players[3] != nullptr)m_players[3]->SetPosition(XMFLOAT3(20, 0.25, -18));
+	//m_players[0]->SetPosition(XMFLOAT3(0, 0.25, -18));
+	//if(m_players[1] != nullptr)m_players[1]->SetPosition(XMFLOAT3(10, 0.25, -18));
+	//if(m_players[2] != nullptr)m_players[2]->SetPosition(XMFLOAT3(15, 0.25, -18));
+	//if(m_players[3] != nullptr)m_players[3]->SetPosition(XMFLOAT3(20, 0.25, -18));
 }
 
 void CGameScene::AddEvent(queueEvent* ev, float after)

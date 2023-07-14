@@ -178,9 +178,17 @@ void UIManager::DrawBackGround(int32 Scene)
         D2D1_RECT_F{ 0,0,m_fWidth,m_fHeight }, 1.0f, D2D1_INTERPOLATION_MODE_LINEAR,(D2D1_RECT_F*)0);
 }
 
+void UIManager::DrawEffects(int32 Scene)
+{
+    if (Scene == 3)
+    {
+        m_pd2dDeviceContext->DrawBitmap(m_GameEffect[0].resource,
+            m_GameEffect[0].d2dLayoutRect, 1.0f, D2D1_INTERPOLATION_MODE_LINEAR, (D2D1_RECT_F*)0);
+    }
+}
+
 void UIManager::DrawButton(int32 Scene,int32 idx)
 {
-   
     if (Scene == 0) // 타이틀 씬
     {
         m_pd2dDeviceContext->DrawRectangle(m_TitleButtons[0].d2dLayoutRect, redBrush);
@@ -304,6 +312,11 @@ void UIManager::InitializeDevice(ID3D12Device5* pd3dDevice, ID3D12CommandQueue* 
     m_LobbyButtons[2].resource = LoadPngFromFile(L"UI/Quit_Lobby.png");
     m_LobbyButtons[2].d2dLayoutRect = MakeLayoutRect(m_fWidth / 2.0f + m_fWidth / 4.0f,
         m_fHeight / 2.0f + 200, m_fWidth / 4.0f, 200);
+
+    // 게임 씬에 필요한 버튼
+    m_GameEffect[0].resource = LoadPngFromFile(L"UI/crosshair.png");
+    m_GameEffect[0].d2dLayoutRect = MakeLayoutRect(m_fWidth / 2.0f, m_fHeight / 2.0f ,225.0f*0.25f, 225.0f * 0.25f);
+
     // 브러시들
      redBrush = CreateBrush(D2D1::ColorF::Red);
      grayBrush = CreateBrush(D2D1::ColorF::Gray);
@@ -319,6 +332,7 @@ void UIManager::Render2D(UINT nFrame, int32 curScene)
 
     m_pd2dDeviceContext->BeginDraw();
     DrawBackGround(curScene);
+    DrawEffects(curScene);
     DrawButton(curScene,0);
     DrawButton(curScene,1);
     DrawTextBlock(curScene);

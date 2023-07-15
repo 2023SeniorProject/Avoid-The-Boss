@@ -32,16 +32,13 @@ void Room::UserOut(int32 sid)
 		std::unique_lock<std::shared_mutex> wll(_listLock);
 		auto i = std::find(_cList.begin(), _cList.end(), sid); // 리스트에 있는지 탐색 후
 		if (i != _cList.end()) _cList.erase(i); // 리스트에서 제거
-
+		_mem.fetch_sub(1);
 		S2C_ROOM rmpacket;
 		rmpacket.size = sizeof(S2C_ROOM);
 		rmpacket.type = (int8)S_ROOM_PACKET_TYPE::UPDATE_LIST;
-		rmpacket.member = _num;
-		{
-			std::shared_lock<std::shared_mutex> wll(_listLock);
-			rmpacket.member = _cList.size();
-		}
-
+		rmpacket.member = _mem.load();
+		rmpacket.rmNum = _num;
+	
 		{
 			READ_SERVER_LOCK;
 			ServerIocpCore.BroadCastingAll(&rmpacket);
@@ -52,8 +49,6 @@ void Room::UserOut(int32 sid)
 	for (auto i : _cList) std::cout << i << ", ";
 	std::cout << " ]\n";
 	
-	_mem.fetch_sub(1);
-
 	// 나간 플레이어는 숨기도록 한다.
 	SC_EVENTPACKET packet;
 	packet.size = sizeof(SC_EVENTPACKET);
@@ -126,10 +121,7 @@ void Room::UserIn(int32 sid)
 	rmpacket.size = sizeof(S2C_ROOM);
 	rmpacket.type = (int8)S_ROOM_PACKET_TYPE::UPDATE_LIST;
 	rmpacket.rmNum = _num;
-	{
-		std::shared_lock<std::shared_mutex> wll(_listLock);
-		rmpacket.member = _cList.size();
-	}
+	rmpacket.member = _mem.load();
 	
 	{
 		READ_SERVER_LOCK;

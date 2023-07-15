@@ -27,7 +27,9 @@ struct AccelerationStructureBuffers
 class CGameFramework
 {
 
-public:	enum class SCENESTATE { TITLE = 0, LOBBY = 1, ROOM = 2, INGAME = 3 };
+public:	
+	enum class SCENESTATE { TITLE = 0, LOBBY = 1, ROOM = 2, INGAME = 3 };
+	
 	friend class queueEvent;
 	friend class moveEvnet;
 	friend class posEvent;
@@ -35,10 +37,9 @@ public:	enum class SCENESTATE { TITLE = 0, LOBBY = 1, ROOM = 2, INGAME = 3 };
 	friend class FrameEvent;
 	
 	friend class CSession;
-	friend class CEmployee;
-	friend class CBoss;
 
 	friend class CGameScene;
+	friend class CRoomScene;
 	friend class CLobbyScene;
 	friend class CTitleScene;
 
@@ -87,7 +88,7 @@ protected:
 	SceneManager*				m_SceneManager = nullptr;
 	UIManager*					m_UIRenderer   = nullptr;
 #if defined(_DEBUG)
-	ID3D12Debug* m_pd3dDebugController;
+	ID3D12Debug*				m_pd3dDebugController;
 #endif
 
 	ID3D12Fence					*m_pd3dFence;

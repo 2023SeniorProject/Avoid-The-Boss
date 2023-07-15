@@ -547,7 +547,6 @@ void CGameFramework::MoveToNextFrame()
 void CGameFramework::ChangeScene(SCENESTATE ss)
 {
 	m_curScene = (int32)ss;
-	m_SceneManager->ChangeScene((int32)ss);
 	SoundManager::GetInstance().PlayBackGroundSound(m_curScene); // 씬 전환 시, 사운드 재생 변경
 }
 

@@ -25,9 +25,7 @@ public:
 	virtual void Render(ID3D12GraphicsCommandList4* pd3dCommandList, CCamera* pCamera, bool);
 	void		 BuildDefaultLightsAndMaterials();
 
-	virtual void OnProcessingMouseMessage(HWND hWnd, UINT nMessageID, WPARAM wParam, LPARAM	lParam);
-	virtual void OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPARAM wParam, LPARAM lParam) {};
-	virtual void MouseAction(const POINT& mp);
+	virtual void MouseAction(const POINT& mp) override;
 
 	void ChangePage(int32);
 	void UpdateRoomText(int32, int32);
@@ -47,11 +45,7 @@ public:
 	virtual void ProcessInput(HWND& hWnd);
 	virtual void Update(HWND hWnd);
 	virtual void Render(ID3D12GraphicsCommandList4* pd3dCommandList, CCamera* pCamera, bool);
-
-	virtual void OnProcessingMouseMessage(HWND hWnd, UINT nMessageID, WPARAM wParam, LPARAM	lParam);
-	virtual void OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPARAM wParam, LPARAM lParam);
-
-	virtual void MouseAction(const POINT& mp);
+	virtual void MouseAction(const POINT& mp) override;
 	void		 BuildDefaultLightsAndMaterials();
 };
 
@@ -67,9 +61,5 @@ public:
 	virtual void Update(HWND hWnd);
 	virtual void Render(ID3D12GraphicsCommandList4* pd3dCommandList, CCamera* pCamera,bool);
 	void		 BuildDefaultLightsAndMaterials();
-	
-	virtual void OnProcessingMouseMessage(HWND hWnd, UINT nMessageID, WPARAM wParam, LPARAM	lParam) {};
-	virtual void OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPARAM wParam, LPARAM lParam) {};
-
-	
+	virtual void MouseAction(const POINT& mp) override;
 };

@@ -96,9 +96,6 @@
     <ClInclude Include="Camera.h">
       <Filter>Camera</Filter>
     </ClInclude>
-    <ClInclude Include="GameFramework.h">
-      <Filter>GameFramework</Filter>
-    </ClInclude>
     <ClInclude Include="pch.h">
       <Filter>AvoidTheBoss</Filter>
     </ClInclude>
@@ -178,6 +175,9 @@
     </ClInclude>
     <ClInclude Include="SoundManager.h">
       <Filter>Mananger\SoundManager</Filter>
+    </ClInclude>
+    <ClInclude Include="GameFramework.h">
+      <Filter>GameFramework</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

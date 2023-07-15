@@ -195,17 +195,10 @@ void CSession::ProcessPacket(char* packet)
 		break;
 	case (uint8)S_ROOM_PACKET_TYPE::UPDATE_LIST:
 	{
-		std::cout << "Update\n";
-
+		
 		S2C_ROOM* rp = (S2C_ROOM*)packet;
+		std::cout << "Update" << rp->rmNum << ")" << (int32)(rp->member) << "\n";
 		ls->GetRoom(rp->rmNum).member = rp->member;
-		if (rp->member > 0)
-		{
-			if (rp->member >= 4) ls->GetRoom(rp->rmNum).status = ROOM_STATUS::FULL;
-			else												 ROOM_STATUS::NOT_FULL;
-		}
-		else  ls->GetRoom(rp->rmNum).status = ROOM_STATUS::EMPTY;
-
 		ls->UpdateRoomText(rp->rmNum, rp->member);
 	}
 		break;

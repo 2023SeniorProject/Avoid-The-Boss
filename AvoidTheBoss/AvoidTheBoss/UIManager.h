@@ -97,7 +97,7 @@ public:
     int32 m_selectedLayout = -1;
     D2D1_RECT_F m_RoomListLayout[5];
 
-    UIButton m_RoomButtons[3];
+    UIButton m_RoomButtons[2];
 
     // 동적으로 바뀌는 텍스트 버튼들 Id,PW 
     UITextBlock m_pIDPWTextBlocks[2];

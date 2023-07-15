@@ -161,7 +161,7 @@ void UIManager::UpdateRoomText()
     bool hide = false;
     WCHAR temp[2];
     
-    std::wstring newText = L"RM:";
+    std::wstring newText = L"ROOM[";
     D2D1_RECT_F newRect{ 0,0,0,0 };
     // 전체 페이지를 갱신한다.
    
@@ -174,7 +174,7 @@ void UIManager::UpdateRoomText()
        temp[1] = '\0';
 
        newText.append(temp);
-       newText.append(L" ");
+       newText.append(L"] ");
        temp[0] = L'\0';
        _itow_s(mem, temp, 10);
        newText.append(temp);
@@ -186,7 +186,7 @@ void UIManager::UpdateRoomText()
 
        if (rs == ROOM_STATUS::FULL || rs == ROOM_STATUS::EMPTY)
             {
-                tempidx = i;
+                if(tempidx == -1 )tempidx = i;
                 hide = true;
                 UpdateRoomTextBlocks(i, newText.c_str(), newRect, hide);
                 hide = false;
@@ -276,9 +276,9 @@ void UIManager::DrawButton(int32 Scene,int32 idx)
         
         m_pd2dDeviceContext->DrawRectangle(m_RoomButtons[1].d2dLayoutRect, redBrush);
         m_pd2dDeviceContext->DrawBitmap(m_RoomButtons[1].resource, m_RoomButtons[1].d2dLayoutRect, 1.0f, D2D1_INTERPOLATION_MODE_LINEAR, (D2D1_RECT_F*)0);
-       
-        m_pd2dDeviceContext->DrawRectangle(m_RoomButtons[2].d2dLayoutRect, redBrush);
-        m_pd2dDeviceContext->DrawBitmap(m_RoomButtons[2].resource, m_RoomButtons[2].d2dLayoutRect, 1.0f, D2D1_INTERPOLATION_MODE_LINEAR, (D2D1_RECT_F*)0);
+      
+    //    m_pd2dDeviceContext->DrawRectangle(m_RoomButtons[2].d2dLayoutRect, redBrush);
+    //    m_pd2dDeviceContext->DrawBitmap(m_RoomButtons[2].resource, m_RoomButtons[2].d2dLayoutRect, 1.0f, D2D1_INTERPOLATION_MODE_LINEAR, (D2D1_RECT_F*)0);
     }
 }
 
@@ -309,9 +309,9 @@ void UIManager::DrawTextBlock(int32 Scene)
             m_pd2dDeviceContext->DrawRectangle(m_RoomListLayout[i], blackBrush, 4.0f);
             if(!m_RoomListTextBlock[i].m_hide) m_pd2dDeviceContext->DrawText(m_RoomListTextBlock[i].m_pstrText.c_str()
                 , (UINT)wcslen(m_RoomListTextBlock[i].m_pstrText.c_str()), m_RoomListTextBlock[i].m_pdwFormat
-                , m_RoomListTextBlock[i].m_d2dLayoutRect, blackBrush);
-            if (i == m_selectedLayout)  m_pd2dDeviceContext->DrawRectangle(m_RoomListLayout[i], redBrush, 4.0f);
+                , m_RoomListTextBlock[i].m_d2dLayoutRect, blackBrush);  
         }
+        if (m_selectedLayout >= 0)  m_pd2dDeviceContext->DrawRectangle(m_RoomListLayout[m_selectedLayout], redBrush, 4.0f);
     }
 }
 
@@ -368,7 +368,7 @@ void UIManager::InitializeDevice(ID3D12Device5* pd3dDevice, ID3D12CommandQueue* 
     // 배경 리소스들
     m_backGround[0].resource = LoadPngFromFile(L"UI/Title.png");
     m_backGround[1].resource = LoadPngFromFile(L"UI/Lobby.png");
-    m_backGround[2].resource = LoadPngFromFile(L"UI/Room.png");
+    m_backGround[2].resource = LoadPngFromFile(L"UI/Game.png");
 
     // 타이틀 씬에 필요한 버튼
     m_TitleButtons[0].resource      = LoadPngFromFile(L"UI/Title_Start.png");  
@@ -390,14 +390,20 @@ void UIManager::InitializeDevice(ID3D12Device5* pd3dDevice, ID3D12CommandQueue* 
     
 
     // 로비 씬에 필요한 버튼
-    m_LobbyButtons[0].resource = LoadPngFromFile(L"UI/Enter_Game.png");
-    m_LobbyButtons[1].resource = LoadPngFromFile(L"UI/New_Game.png");
+    m_LobbyButtons[0].resource = LoadPngFromFile(L"UI/Enter_Room.png");
+    m_LobbyButtons[1].resource = LoadPngFromFile(L"UI/Create_Room.png");
     m_LobbyButtons[2].resource = LoadPngFromFile(L"UI/Quit_Lobby.png");
 
-    m_LobbyButtons[0].d2dLayoutRect = MakeLayoutRectByCorner(LOBBYBUTTON_X_OFFSET,LOBBYBUTTON_Y_OFFSET, FRAME_BUFFER_WIDTH / 3.0f,          FRAME_BUFFER_HEIGHT / 4.0);
-    m_LobbyButtons[1].d2dLayoutRect = MakeLayoutRectByCorner(0,                   LOBBYBUTTON_Y_OFFSET, FRAME_BUFFER_WIDTH / 3.0f,          FRAME_BUFFER_HEIGHT / 4.0);
-    m_LobbyButtons[2].d2dLayoutRect = MakeLayoutRectByCorner(LOBBYBUTTON_X_OFFSET * 2.0f, LOBBYBUTTON_Y_OFFSET, FRAME_BUFFER_WIDTH / 3.0f,  FRAME_BUFFER_HEIGHT / 4.0);
+    m_LobbyButtons[0].d2dLayoutRect = MakeLayoutRectByCorner(LOBBYBUTTON_X_OFFSET,        LOBBYBUTTON_Y_OFFSET, FRAME_BUFFER_WIDTH / 3.0f, FRAME_BUFFER_HEIGHT / 4.0);
+    m_LobbyButtons[1].d2dLayoutRect = MakeLayoutRectByCorner(0,                           LOBBYBUTTON_Y_OFFSET, FRAME_BUFFER_WIDTH / 3.0f, FRAME_BUFFER_HEIGHT / 4.0);
+    m_LobbyButtons[2].d2dLayoutRect = MakeLayoutRectByCorner(LOBBYBUTTON_X_OFFSET * 2.0f, LOBBYBUTTON_Y_OFFSET, FRAME_BUFFER_WIDTH / 3.0f, FRAME_BUFFER_HEIGHT / 4.0);
     
+
+    m_RoomButtons[0].resource = LoadPngFromFile(L"UI/Ready_Game.png");
+    m_RoomButtons[1].resource = LoadPngFromFile(L"UI/Quit_Game.png");
+    m_RoomButtons[0].d2dLayoutRect = MakeLayoutRectByCorner(0,                        LOBBYBUTTON_Y_OFFSET, FRAME_BUFFER_WIDTH / 2.0f, FRAME_BUFFER_HEIGHT / 4.0);
+    m_RoomButtons[1].d2dLayoutRect = MakeLayoutRectByCorner(FRAME_BUFFER_WIDTH / 2.0, LOBBYBUTTON_Y_OFFSET, FRAME_BUFFER_WIDTH / 2.0f, FRAME_BUFFER_HEIGHT / 4.0);
+
     //로비에서 출력할 방 리스트 영역
     for (int i = 0; i < m_nRoomListPerPage; ++i)
     {

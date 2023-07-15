@@ -38,7 +38,7 @@ enum class ANIMTRACK : uint8
 };
 enum class SC_PACKET_TYPE : uint8 { GAMEEVENT = 208};
 
-enum class C_ROOM_PACKET_TYPE : uint8 { ACQ_MK_RM = 115, ACQ_ENTER_RM = 116, EXIT_CRM = 117 }; // 规 积己, 规 昏力, 涝厘 , 辆丰 
+enum class C_ROOM_PACKET_TYPE : uint8 { ACQ_MK_RM = 115, ACQ_ENTER_RM = 116, ACQ_EXIT_ROOM = 117 }; // 规 积己, 规 昏力, 涝厘 , 辆丰 
 enum class S_ROOM_PACKET_TYPE : uint8 { MK_RM_OK = 119, MK_RM_FAIL = 120, HIDE_RM = 121, REP_ENTER_RM = 122, REP_EXIT_RM = 123, UPDATE_LIST }; // 规 积己, 规 昏力, 涝厘 , 辆丰 
 
 enum class PLAYER_BEHAVIOR {IDLE = 0, RUN, WALK, SWITCH_INTER, ATTACKED, DOWN, RESCUE, ATTACK, RUN_ATTACK, CRAWL, STAND};

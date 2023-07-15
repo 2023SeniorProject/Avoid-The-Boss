@@ -5,6 +5,8 @@
 #include "CEmployee.h"
 #include "CScene.h"
 #include "Shader.h"
+#include <Windowsx.h>
+
 
 int32 CScene::m_sid = -1;
 int32 CScene::m_cid = -1;
@@ -352,5 +354,58 @@ void CScene::ReleaseObjects()
 	ReleaseShaderVariables();
 
 	if (m_pLights) delete[] m_pLights;
+}
+
+void CScene::OnProcessingMouseMessage(HWND hWnd, UINT nMessageID, WPARAM wParam, LPARAM lParam)
+{
+	switch (nMessageID)
+	{
+	case WM_LBUTTONDOWN:
+	case WM_RBUTTONDOWN:
+		//마우스 캡쳐를 하고 현재 마우스 위치를 가져온다.
+	{
+		int xPos = GET_X_LPARAM(lParam);
+		int yPos = GET_Y_LPARAM(lParam);
+		POINT m_mousePos;
+		m_mousePos.x = xPos;
+		m_mousePos.y = yPos;
+
+		MouseAction(m_mousePos);
+	}
+	break;
+	case WM_LBUTTONUP:
+	case WM_RBUTTONUP:
+		//마우스 캡쳐를 해제한다. 
+		::ReleaseCapture();
+		break;
+	case WM_MOUSEMOVE:
+	{
+
+	}
+	break;
+	default:
+		break;
+	}
+}
+
+void CScene::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPARAM wParam, LPARAM lParam)
+{
+	switch (nMessageID)
+	{
+	case WM_KEYUP:
+		switch (wParam)
+		{
+		case VK_ESCAPE:
+			::PostQuitMessage(0);
+			break;
+		case VK_BACK:
+			break;
+		default:
+			break;
+		}
+		break;
+	default:
+		break;
+	}
 }
 

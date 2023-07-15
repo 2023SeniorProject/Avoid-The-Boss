@@ -9,7 +9,6 @@
 #include "OtherScenes.h"
 #include "clientIocpCore.h"
 #include "CSound.h"
-#include <Windowsx.h>
 
 
 bool IntersectRectByPoint(const D2D1_RECT_F& rect, const POINT& mp)
@@ -38,7 +37,6 @@ void CLobbyScene::ProcessInput(HWND& hWnd)
 
 void CLobbyScene::Update(HWND hWnd)
 {
-	
 }
 
 void CLobbyScene::Render(ID3D12GraphicsCommandList4* pd3dCommandList, CCamera* pCamera, bool Raster)
@@ -74,7 +72,6 @@ void CLobbyScene::Render(ID3D12GraphicsCommandList4* pd3dCommandList, CCamera* p
 	if (m_player) m_player->Render(pd3dCommandList, pCamera, Raster);
 
 }
-
 void CLobbyScene::BuildDefaultLightsAndMaterials()
 {
 	m_nLights = 5;
@@ -142,37 +139,6 @@ void CLobbyScene::BuildDefaultLightsAndMaterials()
 	m_pLights[4].m_xmf3Position = XMFLOAT3(600.0f, 250.0f, 700.0f);
 	m_pLights[4].m_xmf3Attenuation = XMFLOAT3(1.0f, 0.001f, 0.0001f);
 }
-void CLobbyScene::OnProcessingMouseMessage(HWND hWnd, UINT nMessageID, WPARAM wParam, LPARAM lParam)
-{
-	switch (nMessageID)
-	{
-	case WM_LBUTTONDOWN:
-	case WM_RBUTTONDOWN:
-		//마우스 캡쳐를 하고 현재 마우스 위치를 가져온다.
-	{
-		int xPos = GET_X_LPARAM(lParam);
-		int yPos = GET_Y_LPARAM(lParam);
-		POINT m_mousePos;
-		m_mousePos.x = xPos;
-		m_mousePos.y = yPos;
-
-		MouseAction(m_mousePos);
-	}
-	break;
-	case WM_LBUTTONUP:
-	case WM_RBUTTONUP:
-		//마우스 캡쳐를 해제한다. 
-		::ReleaseCapture();
-		break;
-	case WM_MOUSEMOVE:
-	{
-
-	}
-	break;
-	default:
-		break;
-	}
-}
 void CLobbyScene::MouseAction(const POINT& mp)
 {
 	// 체크리스트 충돌체크 처리
@@ -186,14 +152,18 @@ void CLobbyScene::MouseAction(const POINT& mp)
 		}
 	}
 
-	if (IntersectRectByPoint(mainGame.m_UIRenderer->m_LobbyButtons[0].d2dLayoutRect, mp) && m_selected_rm != -1)
+	if (IntersectRectByPoint(mainGame.m_UIRenderer->m_LobbyButtons[0].d2dLayoutRect, mp) )
 	{
 		//enter
-		C2S_ROOM_ENTER packet;
-		packet.size = sizeof(C2S_ROOM_ENTER);
-		packet.type = (uint8)C_ROOM_PACKET_TYPE::ACQ_ENTER_RM;
-		packet.rmNum = m_selected_rm;
-		m_selected_rm = -1;
+		if (m_selected_rm != -1)
+		{
+			C2S_ROOM_ENTER packet;
+			packet.size = sizeof(C2S_ROOM_ENTER);
+			packet.type = (uint8)C_ROOM_PACKET_TYPE::ACQ_ENTER_RM;
+			packet.rmNum = m_selected_rm;
+			m_selected_rm = -1;
+		}
+		else std::cout << "There is No Any Room Available\n";
 	}
 	else if (IntersectRectByPoint(mainGame.m_UIRenderer->m_LobbyButtons[1].d2dLayoutRect, mp))
 	{
@@ -214,7 +184,6 @@ void CLobbyScene::ChangePage(int32 newPage)
 {
 	m_lastPage = m_curPage;
 	m_curPage = newPage;
-	
 }
 void CLobbyScene::UpdateRoomText(int32 index = -1, int32 member = -1)
 {
@@ -224,10 +193,10 @@ void CLobbyScene::UpdateRoomText(int32 index = -1, int32 member = -1)
 		m_rooms[m_curPage * 5 + index].member = member;
 		if (PLAYERNUM == member) m_rooms[m_curPage * 5 + index].status = ROOM_STATUS::FULL;
 		else if (0 == member)	 m_rooms[m_curPage * 5 + index].status = ROOM_STATUS::EMPTY;
+		else m_rooms[m_curPage * 5 + index].status = ROOM_STATUS::NOT_FULL;
 	}
 	mainGame.m_UIRenderer->UpdateRoomText();
 }
-
 CLobbyScene::Room & CLobbyScene::GetRoom(int32 idx)
 {
 	return m_rooms[idx];
@@ -252,7 +221,6 @@ void CTitleScene::BuildObjects(ID3D12Device5* pd3dDevice, ID3D12GraphicsCommandL
 	m_pCamera = m_player->GetCamera();
 	
 }
-
 void CTitleScene::MouseAction(const POINT& mp)
 {
 
@@ -285,7 +253,6 @@ void CTitleScene::MouseAction(const POINT& mp)
 		mainGame.OnDestroy();
 	}
 }
-
 void CTitleScene::BuildDefaultLightsAndMaterials()
 {
 	m_nLights = 5;
@@ -353,7 +320,6 @@ void CTitleScene::BuildDefaultLightsAndMaterials()
 	m_pLights[4].m_xmf3Position = XMFLOAT3(600.0f, 250.0f, 700.0f);
 	m_pLights[4].m_xmf3Attenuation = XMFLOAT3(1.0f, 0.001f, 0.0001f);
 }
-
 void CTitleScene::ProcessInput(HWND& hWnd)
 {
 	InputManager::GetInstance().InputStatusUpdate();
@@ -407,7 +373,6 @@ void CTitleScene::ProcessInput(HWND& hWnd)
 void CTitleScene::Update(HWND hWnd)
 {
 }
-
 void CTitleScene::Render(ID3D12GraphicsCommandList4* pd3dCommandList, CCamera* pCamera,bool Raster)
 {
 
@@ -441,70 +406,12 @@ void CTitleScene::Render(ID3D12GraphicsCommandList4* pd3dCommandList, CCamera* p
 
 	if (m_player) m_player->Render(pd3dCommandList, pCamera, Raster);
 }
-
-void CTitleScene::OnProcessingMouseMessage(HWND hWnd, UINT nMessageID, WPARAM wParam, LPARAM lParam)
-{
-	switch (nMessageID)
-	{
-	case WM_LBUTTONDOWN:
-	case WM_RBUTTONDOWN:
-		//마우스 캡쳐를 하고 현재 마우스 위치를 가져온다.
-	{
-		int xPos = GET_X_LPARAM(lParam);
-		int yPos = GET_Y_LPARAM(lParam);
-		POINT m_mousePos;
-		m_mousePos.x = xPos;
-		m_mousePos.y = yPos;
-		
-		MouseAction(m_mousePos);
-	}
-	break;
-	case WM_LBUTTONUP:
-	case WM_RBUTTONUP:
-		//마우스 캡쳐를 해제한다. 
-		::ReleaseCapture();
-		break;
-	case WM_MOUSEMOVE:
-	{
-		
-	}
-		break;
-	default:
-		break;
-	}
-}
-
-void CTitleScene::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPARAM wParam, LPARAM lParam)
-{
-
-	switch (nMessageID)
-	{
-	case WM_KEYUP:
-		switch (wParam)
-		{
-		case VK_ESCAPE:
-			::PostQuitMessage(0);
-			break;
-		case VK_BACK:
-			
-		
-			break;
-		default:
-			break;
-		}
-		break;
-	default:
-		break;
-	}
-}
 #pragma endregion
 
 #pragma region Room
 
 void CRoomScene::BuildObjects(ID3D12Device5* pd3dDevice, ID3D12GraphicsCommandList4* pd3dCommandList)
 {
-	
-
 }
 
 void CRoomScene::ProcessInput(HWND& hWnd)
@@ -517,6 +424,20 @@ void CRoomScene::Update(HWND hWnd)
 
 void CRoomScene::Render(ID3D12GraphicsCommandList4* pd3dCommandList, CCamera* pCamera, bool Raster)
 {
+}
+
+void CRoomScene::MouseAction(const POINT& mp)
+{
+	if (IntersectRectByPoint(mainGame.m_UIRenderer->m_RoomButtons[0].d2dLayoutRect, mp))
+	{
+
+	}
+	else if (IntersectRectByPoint(mainGame.m_UIRenderer->m_RoomButtons[1].d2dLayoutRect, mp))
+	{
+		C2S_ROOM_EVENT packet;
+		packet.size = sizeof(C2S_ROOM_EVENT);
+		packet.type = (uint8)C_ROOM_PACKET_TYPE::ACQ_EXIT_ROOM;
+	}
 }
 
 void CRoomScene::BuildDefaultLightsAndMaterials()

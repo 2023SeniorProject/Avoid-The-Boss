@@ -138,7 +138,6 @@ void ServerSession::ProcessPacket(char* packet)
 		case (uint8)C_ROOM_PACKET_TYPE::ACQ_ENTER_RM:
 		{
 			C2S_ROOM_ENTER* rep = reinterpret_cast<C2S_ROOM_ENTER*>(packet);
-			std::cout << "Enter Room\n";
 			ServerIocpCore._rmgr->EnterRoom(_sid, rep->rmNum);
 		}
 		break;
@@ -177,7 +176,7 @@ void ServerSession::ProcessPacket(char* packet)
 		}
 		break;
 		case (uint8)C_ROOM_PACKET_TYPE::ACQ_EXIT_ROOM:
-			ServerIocpCore._rmgr->GetRoom(_myRm).UserOut(_sid);
+			ServerIocpCore._rmgr->ExitRoom(_sid,_myRm);
 		break;
 
 		case (uint8)C_GAME_PACKET_TYPE::CKEY:

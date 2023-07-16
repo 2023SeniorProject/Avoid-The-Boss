@@ -9,6 +9,9 @@ public:
 private:
 	bool m_bIsInGenArea = false;
 	bool m_bIsInDownPlayerArea = false; // Down된 플레이어와 인접해 있는가?
+public:
+	CHitEffect* m_pHitEffect = NULL;
+	bool m_bIsAttacked = false;
 private:
 	float m_maxRGuage = 100;
 	float m_curGuage = 0;
@@ -82,6 +85,8 @@ public: // 05-23 추가 함수
 	bool GetIsInGenArea() { return m_bIsInGenArea; }
 	int32 GetAvailGenIdx();
 	int32 GetAvailEMPldx();
+
+	
 public: // 05-24 추가함수
 	GEN_INFO m_pSwitches[3];
 };

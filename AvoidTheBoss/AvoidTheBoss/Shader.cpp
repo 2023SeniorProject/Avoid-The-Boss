@@ -799,10 +799,27 @@ void CHitEffectObjectsShader::BuildObjects(ID3D12Device5* pd3dDevice, ID3D12Grap
 	
 	CGameObject* pHit = CGameObject::LoadGeometryFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "Model/HitMesh.bin", NULL, Layout::EFFECT);
 	pHit->m_type = 1;
-	m_ppObjects[0] = new CGameObject();
+	m_ppObjects[0] = new CHitEffect();
 	m_ppObjects[0]->SetChild(pHit);
 	pHit->AddRef();
-	//m_ppObjects[0]->SetPosition(XMFLOAT3(0.0f, 0.0f, 0.0f));
 
 	CreateShaderVariables(pd3dDevice, pd3dCommandList);
+}
+
+void CHitEffectObjectsShader::Render(ID3D12GraphicsCommandList4* pd3dCommandList, CCamera* pCamera, bool bRaster)
+{
+	CStandardShader::Render(pd3dCommandList, pCamera, bRaster);
+	for (int j = 0; j < m_nObjects; j++)
+	{
+		if (m_ppObjects[j])
+		{
+			if (m_ppObjects[j])
+			{
+				m_ppObjects[j]->Animate(m_fElapsedTime);
+				m_ppObjects[j]->UpdateTransform(NULL);
+				if (((CHitEffect*)m_ppObjects[j])->GetOnHit())
+					m_ppObjects[j]->Render(pd3dCommandList, pCamera, bRaster);
+			}
+		}
+	}
 }

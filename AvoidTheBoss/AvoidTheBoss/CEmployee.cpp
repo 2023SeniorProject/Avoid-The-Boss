@@ -439,6 +439,12 @@ void CEmployee::PlayerAttacked()
 {
 	if (m_hp > 0)
 	{
+		if (!m_bIsAttacked)
+		{
+			m_pHitEffect->SetOnHit(true);
+			m_pHitEffect->SetPosition(GetPosition());
+			m_bIsAttacked = true;
+		}
 		m_hp -= 1;
 		if (m_hp == 0)
 		{

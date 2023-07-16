@@ -225,6 +225,11 @@ void CGameScene::BuildObjects(ID3D12Device5* pd3dDevice,ID3D12GraphicsCommandLis
 			((CEmployee*)m_players[i])->m_pSwitches[1].radius = 0.2f;
 			((CEmployee*)m_players[i])->m_pSwitches[2].position = XMFLOAT3(0.6774719, 1.083242, -23.05909);
 			((CEmployee*)m_players[i])->m_pSwitches[2].radius = 0.2f;
+
+			if (m_ppShaders[5])
+			{
+				((CEmployee*)m_players[i])->m_pHitEffect = (CHitEffect*)pHitEffectObjectsShader->m_ppObjects[0];
+			}
 		}
 	}
 	m_pCamera = m_players[m_playerIdx]->GetCamera();

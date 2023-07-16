@@ -1422,3 +1422,29 @@ void CShutterDoor::Animate(float fTimeElapsed)
 	}
 }
 
+
+CHitEffect::CHitEffect()
+{
+}
+
+CHitEffect::~CHitEffect()
+{
+}
+
+void CHitEffect::OnPrepareAnimate()
+{
+	m_pHit = FindFrame("HitMesh");
+}
+
+void CHitEffect::Animate(float fTimeElapsed)
+{
+	if (m_bOnHit)
+	{
+		if(m_nAnimCount == HIT_EFFECT_ANIM_TIME)
+		{
+			m_bOnHit = false;
+			m_nAnimCount = 0;
+		}
+		m_nAnimCount++;
+	}
+}

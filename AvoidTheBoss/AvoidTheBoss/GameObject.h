@@ -493,3 +493,21 @@ public:
 	virtual void OnPrepareAnimate();
 	virtual void Animate(float fTimeElapsed);
 };
+
+#define HIT_EFFECT_ANIM_TIME 15
+class CHitEffect : public CGameObject
+{
+private:
+	int m_nAnimCount = 0;
+	bool m_bOnHit = false;
+	CGameObject* m_pHit = NULL;
+public:
+	CHitEffect();
+	virtual ~CHitEffect();
+
+	virtual void OnPrepareAnimate();
+	virtual void Animate(float fTimeElapsed);
+
+	void SetOnHit(bool hit) { m_bOnHit = hit; }
+	bool GetOnHit() { return m_bOnHit; }
+};

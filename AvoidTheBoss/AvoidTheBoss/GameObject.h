@@ -494,7 +494,7 @@ public:
 	virtual void Animate(float fTimeElapsed);
 };
 
-#define HIT_EFFECT_ANIM_TIME 15
+#define HIT_EFFECT_ANIM_TIME 60
 class CHitEffect : public CGameObject
 {
 private:

@@ -10,9 +10,11 @@
 #include "CJobQueue.h"
 
 // 객체 관련
+#include "CBullet.h"
 #include "CBoss.h"
 #include "CEmployee.h"
 #include "CGenerator.h"
+
 
 
 
@@ -211,9 +213,12 @@ void CGameScene::BuildObjects(ID3D12Device5* pd3dDevice,ID3D12GraphicsCommandLis
 		if (i == (int)CHARACTER_TYPE::BOSS)
 		{
 			m_players[i] = new CBoss(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature);
-			if (m_ppShaders[1])
+			if (m_ppShaders[1]&& m_ppShaders[5])
 			{
+				((CBullet*)(pBulletObjectShader->m_ppObjects[0]))->SetHitEffect((CHitEffect*)pHitEffectObjectsShader->m_ppObjects[0]);
 				((CBoss*)m_players[i])->m_pBullet = (CBullet*)pBulletObjectShader->m_ppObjects[0];
+				//((CBoss*)m_players[i])->m_pBullet->m_pHitEffect = (CHitEffect*)pHitEffectObjectsShader->m_ppObjects[0];
+
 			}
 		}
 		else
@@ -225,11 +230,8 @@ void CGameScene::BuildObjects(ID3D12Device5* pd3dDevice,ID3D12GraphicsCommandLis
 			((CEmployee*)m_players[i])->m_pSwitches[1].radius = 0.2f;
 			((CEmployee*)m_players[i])->m_pSwitches[2].position = XMFLOAT3(0.6774719, 1.083242, -23.05909);
 			((CEmployee*)m_players[i])->m_pSwitches[2].radius = 0.2f;
+			// 피격 이펙트 코드
 
-			if (m_ppShaders[5])
-			{
-				((CEmployee*)m_players[i])->m_pHitEffect = (CHitEffect*)pHitEffectObjectsShader->m_ppObjects[0];
-			}
 		}
 	}
 	m_pCamera = m_players[m_playerIdx]->GetCamera();

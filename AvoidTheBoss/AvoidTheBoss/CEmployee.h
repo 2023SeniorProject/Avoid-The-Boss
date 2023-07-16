@@ -10,8 +10,9 @@ private:
 	bool m_bIsInGenArea = false;
 	bool m_bIsInDownPlayerArea = false; // Down된 플레이어와 인접해 있는가?
 public:
-	CHitEffect* m_pHitEffect = NULL;
-	bool m_bIsAttacked = false;
+	// 피격 이펙트 코드
+	//CHitEffect* m_pHitEffect = NULL;
+	//bool m_bIsAttacked = false;
 private:
 	float m_maxRGuage = 100;
 	float m_curGuage = 0;

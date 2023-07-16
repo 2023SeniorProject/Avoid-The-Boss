@@ -797,10 +797,11 @@ void CHitEffectObjectsShader::BuildObjects(ID3D12Device5* pd3dDevice, ID3D12Grap
 	m_nObjects = 1;
 	m_ppObjects = new CGameObject * [m_nObjects];
 	
-	CGameObject* pHit = CGameObject::LoadGeometryFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "Model/HitMesh.bin", NULL, Layout::EFFECT);
+	CGameObject* pHit = CGameObject::LoadGeometryFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "Model/hit.bin", NULL, Layout::EFFECT);
 	pHit->m_type = 1;
 	m_ppObjects[0] = new CHitEffect();
 	m_ppObjects[0]->SetChild(pHit);
+	m_ppObjects[0]->Rotate(-90.0f, 0.0f, 0.0f);
 	pHit->AddRef();
 
 	CreateShaderVariables(pd3dDevice, pd3dCommandList);

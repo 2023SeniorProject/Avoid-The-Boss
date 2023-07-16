@@ -11,7 +11,7 @@ CBoss::CBoss(ID3D12Device5* pd3dDevice,
 	ID3D12GraphicsCommandList4  * pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature)
 {
 	m_type = 0;
-	m_pCamera = ChangeCamera(THIRD_PERSON_CAMERA, 0.0f);//FIRST_PERSON_CAMERA
+	m_pCamera = ChangeCamera(FIRST_PERSON_CAMERA, 0.0f);//FIRST_PERSON_CAMERA
 	m_ctype = (uint8)PLAYER_TYPE::BOSS;
 	m_nCharacterType = CHARACTER_TYPE::BOSS;
 
@@ -76,8 +76,8 @@ CCamera* CBoss::ChangeCamera(DWORD nNewCameraMode, float fTimeElapsed)
 	case FIRST_PERSON_CAMERA:
 		m_pCamera = OnChangeCamera(FIRST_PERSON_CAMERA, nCurrentCameraMode);
 		m_pCamera->SetTimeLag(0.0f);
-		m_pCamera->SetOffset(XMFLOAT3(0.0f, 1.3f, 0.0f));
-		m_pCamera->GenerateProjectionMatrix(1.01f, MaxDepthofMap, ASPECT_RATIO, 60.0f); //5000.f
+		m_pCamera->SetOffset(XMFLOAT3(-0.1f, 1.2f, 0.0f));
+		m_pCamera->GenerateProjectionMatrix(0.01f, MaxDepthofMap, ASPECT_RATIO, 60.0f); //5000.f
 		m_pCamera->SetViewport(0, 0, FRAME_BUFFER_WIDTH, FRAME_BUFFER_HEIGHT, 0.0f, 1.0f);
 		m_pCamera->SetScissorRect(0, 0, FRAME_BUFFER_WIDTH, FRAME_BUFFER_HEIGHT);
 		break;

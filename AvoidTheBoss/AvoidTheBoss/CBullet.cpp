@@ -40,6 +40,17 @@ void CBullet::Update(float fTimeElapsed)
 		
 		m_fDistance += BULLET_SPEED;
 	}
+	if (m_OnHit)
+	{
+		m_pHitEffect->SetPosition(GetPosition()); // 충돌 지점 위치 넘겨주기
+		//+여기에 회전 위치 갱신 코드 추가하기
+		XMFLOAT3 shootLook = XMFLOAT3(-GetLook().x, 0.0f, -GetLook().z);
+		XMFLOAT3 effectLook = XMFLOAT3(m_pHitEffect->GetLook());
+		float angle = Vector3::Angle(shootLook, effectLook);
+
+		m_pHitEffect->Rotate(0.0f,-angle, 0.0f);
+		m_pHitEffect->SetOnHit(true);
+	}
 }
 
 void CBullet::SetBulletPosition(XMFLOAT3 playerPos)

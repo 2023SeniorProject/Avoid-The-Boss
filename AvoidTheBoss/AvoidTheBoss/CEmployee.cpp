@@ -439,12 +439,13 @@ void CEmployee::PlayerAttacked()
 {
 	if (m_hp > 0)
 	{
-		if (!m_bIsAttacked)
-		{
-			m_pHitEffect->SetOnHit(true);
-			m_pHitEffect->SetPosition(GetPosition()); //SetPosition() 파라미터에 총알 충돌 지점 값을 넣으면 된다.
-			m_bIsAttacked = true;
-		}
+		// 피격 이펙트 코드
+		//if (!m_bIsAttacked)
+		//{
+		//	m_pHitEffect->SetOnHit(true);
+		//	m_pHitEffect->SetPosition(GetPosition()); //SetPosition() 파//라미터에 총알 충돌 지점 값을 넣으면 된다.
+		//	m_bIsAttacked = true;
+		//}
 		m_hp -= 1;
 		if (m_hp == 0)
 		{
@@ -456,9 +457,7 @@ void CEmployee::PlayerAttacked()
 			m_behavior = (int32)PLAYER_BEHAVIOR::ATTACKED;
 			m_attackedAnimationCount = EMPLOYEE_ATTACKED_TIME;
 		}
-		
 	}
-	
 }
 
 void CEmployee::PlayerDown()

@@ -15,7 +15,10 @@ private:
 	XMFLOAT3	m_xmf3Velocity = XMFLOAT3(0.0f, 0.0f, 0.0f);
 
 	bool		m_OnShoot = false;
+	bool		m_OnHit = true;
 public:
+	CHitEffect* m_pHitEffect = NULL;
+
 	CBullet();
 	//CBullet(ID3D12Device5* pd3dDevice, ID3D12GraphicsCommandList4* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature);
 	virtual ~CBullet();
@@ -23,6 +26,12 @@ public:
 	virtual void Update(float fTimeElapsed);
 	void SetOnShoot(bool value) { m_OnShoot = value; }
 	bool GetOnShoot() { return m_OnShoot; }
+
+	void SetOnHit(bool value) { m_OnHit = value; }
+	bool GetOnHit() { return m_OnHit; }
+
+	CHitEffect* GetHitEffect() { return m_pHitEffect; }
+	void SetHitEffect(CHitEffect* pHit) { m_pHitEffect = pHit; }
 
 	void SetBulletPosition(XMFLOAT3 Pos);
 };

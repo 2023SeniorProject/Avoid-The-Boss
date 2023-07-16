@@ -77,7 +77,6 @@ void InteractionEvent::Task()
 		CPlayer* player = gc->m_players[eventId - (int8)(EVENT_TYPE::ATTACKED_PLAYER_ONE)];
 		//if (player == nullptr) break;
 		//static_cast<CEmployee*>(player)->PlayerAttacked();
-		//static_cast<CEmployee*>(player)->m_pHitEffect->SetOnHit(true);
 	}
 	break;
 	case EVENT_TYPE::RESCUE_PLAYER_TWO:

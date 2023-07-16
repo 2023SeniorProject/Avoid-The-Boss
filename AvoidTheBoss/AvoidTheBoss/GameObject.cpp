@@ -1445,9 +1445,6 @@ void CHitEffect::Update(float fTimeElapsed)
 {
 	if (m_bOnHit)
 	{
-		// 사장님 Nomal의 반대방향으로 회전한다.
-		// +코드 추가하기
-
 		if (m_nAnimCount == HIT_EFFECT_ANIM_TIME)
 		{
 			m_bOnHit = false;

@@ -12,7 +12,7 @@
 #include "OtherScenes.h"
 
 CGameFramework mainGame;
-//#define _WITH_PLAYER_TOP // 플레이어 깊이 버퍼값 1.0f
+#define _WITH_PLAYER_TOP // 플레이어 깊이 버퍼값 1.0f
 
 CGameFramework::CGameFramework()
 {

@@ -181,13 +181,13 @@ void AcceptManager::ProcessAccept(AcceptEvent* acceptEvent)
 		//else if(ServerIocpCore._clients[sid]->_cid != 0 &&ServerIocpCore._clients[sid]->_cid != -1) ServerIocpCore._rmgr->EnterRoom(sid,0);
 	}
 	
-	session->_status = USER_STATUS::LOBBY;
-	S2C_ROOM packet;
-	packet.size = sizeof(S2C_ROOM);
+	
+	S2C_ROOM_LIST packet;
+	packet.size = sizeof(S2C_ROOM_LIST);
 	packet.type = (uint8)S_ROOM_PACKET_TYPE::UPDATE_LIST;
 	for (int32 i = 0; i < 5; ++i)
 	{
-		packet.member = ServerIocpCore._rmgr->GetRoom(session->_curPage * 5 + i)._mem.load();
+		packet.member = ServerIocpCore._rmgr->GetRoom(session->_curPage * 5 + i)._memCnt.load();
 		packet.rmNum = session->_curPage * 5 + i;
 		session->DoSend(&packet);
 	}

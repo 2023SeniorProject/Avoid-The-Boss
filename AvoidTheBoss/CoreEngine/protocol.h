@@ -5,21 +5,56 @@
 #define CHATBUF 50
 // 클라 -> 서버 패킷
 
-enum class C_PACKET_TYPE : uint8 
-{ 
-	ACQ_LOGIN = 101, 
-	ACQ_LOGOUT, 
-	CCHAT, 
-	CKEY,
-	CROT, 
-	CMOVE,
-	CATTACK,
+
+
+enum class C_TITLE_PACKET_TYPE : uint8
+{
+	ACQ_LOGIN = 150,
+	ACQ_LOGOUT = 151
 };
 
-enum class S_PACKET_TYPE : uint8 
+enum class C_ROOM_PACKET_TYPE : uint8
+{
+	ACQ_MK_RM = 119, 
+	ACQ_ENTER_RM = 120, 
+	ACQ_EXIT_ROOM = 121,
+	ACQ_READY = 122,
+	ACQ_READY_CANCEL = 123
+}; // 방 생성, 방 삭제, 입장 , 종료, 레디 게임 
+
+enum class C_GAME_PACKET_TYPE : uint8
+{
+	CCHAT = 152,
+	CKEY = 153,
+	CROT = 154,
+	CMOVE = 155,
+	CATTACK = 156,
+};
+
+// 서버 -> 클라 패킷
+
+enum class S_TITLE_PACKET_TYPE : uint8
+{
+	LOGIN_OK = 150,
+	LOGIN_FAIL = 151,
+};
+enum class S_ROOM_PACKET_TYPE : uint8
+{
+	MK_RM_OK = 119, 
+	MK_RM_FAIL = 120, 
+	REP_ENTER_FAIL = 121, 
+	REP_ENTER_OK = 122, 
+	REP_EXIT_RM = 123, 
+	UPDATE_LIST = 124, 
+	ROOM_INFO = 125,
+	REP_READY = 126, 
+	REP_READY_CANCEL = 127, 
+	GAME_START = 128
+};
+
+enum class S_GAME_PACKET_TYPE : uint8 
 { 
-	LOGIN_OK = 150,  
-	LOGIN_FAIL = 151, 
+
 	SCHAT = 152, 
 	SKEY = 153, 
 	SROT = 154, 
@@ -29,17 +64,18 @@ enum class S_PACKET_TYPE : uint8
 	FRAME = 158,
 };
 
+// 공통 패킷
+enum class SC_GAME_PACKET_TYPE : uint8 { GAMEEVENT = 208 };
+
 enum class ANIMTRACK : uint8
 {
 	GEN_ANIM = 170,
 	GEN_ANIM_CANCEL = 171,
 	ATTACK_ANIM = 172,
-	
 };
-enum class SC_PACKET_TYPE : uint8 { GAMEEVENT = 208};
 
-enum class C_ROOM_PACKET_TYPE : uint8 { ACQ_MK_RM = 115, ACQ_ENTER_RM = 116, ACQ_EXIT_ROOM = 117 }; // 방 생성, 방 삭제, 입장 , 종료 
-enum class S_ROOM_PACKET_TYPE : uint8 { MK_RM_OK = 119, MK_RM_FAIL = 120, HIDE_RM = 121, REP_ENTER_RM = 122, REP_EXIT_RM = 123, UPDATE_LIST }; // 방 생성, 방 삭제, 입장 , 종료 
+ 
+// 방 생성 응답, 방 입장 응답, 종료
 
 enum class PLAYER_BEHAVIOR {IDLE = 0, RUN, WALK, SWITCH_INTER, ATTACKED, DOWN, RESCUE, ATTACK, RUN_ATTACK, CRAWL, STAND};
 
@@ -105,6 +141,7 @@ struct _CHAT
 	char buf[CHATBUF];
 };
 
+//============ 클라이언트 로그인 ============
 struct C2S_LOGIN
 {
 	uint8 size;
@@ -120,7 +157,8 @@ struct C2S_LOGOUT
 	uint16 sid;
 };
 
-struct C2S_ROOM_EVENT // 생성, 나가기, 게임 시작
+// ========== 클라이언트 방 관련 패킷 ============
+struct C2S_ROOM_EVENT // 생성, 나가기, 레디
 {
 	uint8 size;
 	uint8 type;
@@ -134,10 +172,7 @@ struct C2S_ROOM_ENTER // 방 입장
 };
 
 
-
-
-// ======= 게임 로직 패킷 ==============
-
+// ======= 클라이언트 게임 로직 패킷 ==============
 
 struct C2S_KEY
 {
@@ -164,7 +199,7 @@ struct C2S_ATTACK
 	int32 wf; // 발생 시점 월드 프레임
 };
 
-// =================
+// ================= 서버 로그인 패킷 ==============
 
 struct S2C_LOGIN_OK
 {
@@ -181,6 +216,7 @@ struct S2C_LOGIN_FAIL
 	int8 err_code; // 로그인 실패 사유
 };
 
+// ==============  서버 게임 로직 패킷 ==============
 struct S2C_GAMESTART
 {
 	uint8 size;
@@ -214,6 +250,9 @@ struct S2C_ROTATE
 	int32 angle;
 };
 
+
+// ===========  서버 방 패킷 =======================
+
 struct S2C_ROOM_EVENT
 {
 	uint8 size;
@@ -224,18 +263,29 @@ struct S2C_ROOM_ENTER
 {
 	uint8 size;
 	uint8 type;
-	uint8 success;
 };
 
-struct S2C_ROOM
+struct S2C_ROOM_LIST
 {
 	uint8 size;
 	uint8 type;
-	int32 rmNum;
+	uint8 rmNum;
 	int8 member;
 };
 
+struct S2C_ROOM_INFO
+{
+	uint8 size;
+	uint8 type;
+	int16 sids[4];
+};
 
+struct S2C_ROOM_READY
+{
+	uint8 size;
+	uint8 type;
+	int16 sid;
+};
 
 struct S2C_FRAMEPACKET
 {

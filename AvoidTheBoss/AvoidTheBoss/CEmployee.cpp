@@ -442,7 +442,7 @@ void CEmployee::PlayerAttacked()
 		if (!m_bIsAttacked)
 		{
 			m_pHitEffect->SetOnHit(true);
-			m_pHitEffect->SetPosition(GetPosition());
+			m_pHitEffect->SetPosition(GetPosition()); //SetPosition() 파라미터에 총알 충돌 지점 값을 넣으면 된다.
 			m_bIsAttacked = true;
 		}
 		m_hp -= 1;

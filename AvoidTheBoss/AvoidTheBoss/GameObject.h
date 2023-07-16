@@ -507,6 +507,7 @@ public:
 
 	virtual void OnPrepareAnimate();
 	virtual void Animate(float fTimeElapsed);
+	virtual void Update(float fTimeElapsed);
 
 	void SetOnHit(bool hit) { m_bOnHit = hit; }
 	bool GetOnHit() { return m_bOnHit; }

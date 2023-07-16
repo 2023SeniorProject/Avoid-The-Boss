@@ -154,7 +154,7 @@ struct C2S_LOGOUT
 {
 	uint8 size;
 	uint8 type;
-	uint16 sid;
+	uint16 sid = -1;
 };
 
 // ========== 클라이언트 방 관련 패킷 ============

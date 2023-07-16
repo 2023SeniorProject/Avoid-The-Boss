@@ -14,7 +14,7 @@ using namespace std;
 //=============================
 Room::Room()
 {
-	_cList.reserve(4);
+	//_cList.reserve(PLAYERNUM);
 }
 
 Room::~Room()
@@ -30,9 +30,9 @@ void Room::UserOut(int32 sid)
 
 	{
 		// cList Lock 쓰기 호출	
-		std::unique_lock<std::shared_mutex> wll(_listLock);
-		auto i = std::find(_cList.begin(), _cList.end(), sid); // 리스트에 있는지 탐색 후
-		if (i != _cList.end()) _cList.erase(i); // 리스트에서 제거
+		//std::unique_lock<std::shared_mutex> wll(_listLock);
+		//auto i = std::find(_cList.begin(), _cList.end(), sid); // 리스트에 있는지 탐색 후
+		//if (i != _cList.end()) _cList.erase(i); // 리스트에서 제거
 		_memCnt.fetch_sub(1);
 		
 		for (int i = 0; i < PLAYERNUM; ++i)
@@ -54,7 +54,8 @@ void Room::UserOut(int32 sid)
 	}
 		
 	std::cout << "LEFT USER SID LIST [";
-	for (auto i : _cList) std::cout << i << ", ";
+	//for (auto i : _cList) std::cout << i << ", ";
+	for (auto i : _cArr) if(-1 != i.sid) std::cout << i.sid << ", ";
 	std::cout << " ]\n";
 	
 	// 인 게임중에  나간 플레이어는 숨기도록 한다.
@@ -73,7 +74,7 @@ void Room::UserOut(int32 sid)
 		
 		std::cout << "Destroy Room\n";
 	}
-	std::cout << "RM [" << _rmNum << "][" << _cList.size() << "/4]" << std::endl;
+	std::cout << "RM [" << _rmNum << "][" << _memCnt.load() << "/4]" << std::endl;
 }
 
 void Room::UserIn(int32 sid)
@@ -98,19 +99,20 @@ void Room::UserIn(int32 sid)
 		{
 			//cList Lock 쓰기 호출 
 			std::unique_lock<std::shared_mutex> wll(_listLock);
-			_cList.push_back(sid);
-
+			//_cList.push_back(sid);
 			_memCnt.fetch_add(1);
-
 			// 빈 배열 자리에다가 정보 채우기
-			for (int i = 0; i < PLAYERNUM; ++i)
+			for (int k = 0; k < PLAYERNUM; ++k)
 			{
-				if (-1 == _cArr[i].sid) _cArr[i].sid = _cList[_memCnt.load()];
+				if (-1 == _cArr[k].sid)
+				{
+					_cArr[k].sid = sid;
+					break;
+				}
 			}
-		}
 		
-
-		if (_cList.size() == PLAYERNUM)
+		}
+		if (/*_cList.size()*/_memCnt == PLAYERNUM)
 		{
 			_status = (int8)ROOM_STATUS::FULL;
 			/*S2C_GAMESTART packet;
@@ -132,13 +134,13 @@ void Room::UserIn(int32 sid)
 			_gameLogic.InitGame();
 			_timer.Reset();*/
 		}
-		SendRoomInfoPacket();
+	
 	}
-
+	SendRoomInfoPacket();
 	// 갱신할 방 리스트 정보와 방 정보를 보낸다.
 	SendRoomListPacket();
 	
-	std::cout << "RM [" << _rmNum << "][" << _cList.size() << "/4]" << std::endl;
+	std::cout << "RM [" << _rmNum << "][" << _memCnt.load() << "/4]" << std::endl;
 	
 	// 갱신하는걸 보내줄지 말지 미정
 }
@@ -147,12 +149,24 @@ void Room::BroadCasting(void* packet) // 방에 속하는 클라이언트에게만 전달하기
 {
 	// cList Lock 읽기 호출 
 	std::shared_lock<std::shared_mutex> rll(_listLock);
-	for (auto i =  _cList.begin(); i != _cList.end(); ++i)
+	/*for (auto i =  _cList.begin(); i != _cList.end(); ++i)
 	{
 		if (ServerIocpCore._clients[*i] == nullptr) continue;
 		if(!ServerIocpCore._clients[*i]->DoSend(packet))
 		{ 
 			continue;
+		}
+	}*/
+	for (auto i : _cArr)
+	{
+		if (-1 == i.sid) continue;
+		else 
+		{
+			if (ServerIocpCore._clients[i.sid] == nullptr) continue;
+			if (!ServerIocpCore._clients[i.sid]->DoSend(packet))
+			{
+				continue;
+			}
 		}
 	}
 }
@@ -161,15 +175,26 @@ void Room::BroadCastingExcept(void* packet, int32 sid) // 방에 속하는 클라이언트
 {
 	// cList Lock 읽기 호출 
 	std::shared_lock<std::shared_mutex> rll(_listLock);
-	for (auto i = _cList.begin(); i != _cList.end(); ++i)
+	//for (auto i = _cList.begin(); i != _cList.end(); ++i)
+	//{
+	//	if (ServerIocpCore._clients[*i] == nullptr || *i == sid) continue;
+	//	if (!ServerIocpCore._clients[*i]->DoSend(packet))
+	//	{
+	//		continue;
+	//	}
+	//}
+	for (auto i : _cArr)
 	{
-		if (ServerIocpCore._clients[*i] == nullptr || *i == sid) continue;
-		if (!ServerIocpCore._clients[*i]->DoSend(packet))
+		if (-1 == i.sid || sid == i.sid) continue;
+		else
 		{
-			continue;
+			if (ServerIocpCore._clients[i.sid] == nullptr) continue;
+			if (!ServerIocpCore._clients[i.sid]->DoSend(packet))
+			{
+				continue;
+			}
 		}
 	}
-	
 }
 
 // 방에 있는 유저에 대한 게임 로직 업데이트 진행 
@@ -240,8 +265,23 @@ void Room::SendRoomInfoPacket()
 	S2C_ROOM_INFO rmifpacket; // 게임 방에 현재 들어와 있는 멤버들의 리스트를 보내주기 위한 패킷, 방 유저에게만 전송
 	rmifpacket.size = sizeof(S2C_ROOM_INFO);
 	rmifpacket.type = (uint8)S_ROOM_PACKET_TYPE::ROOM_INFO;
-	for (int i = 0; i < PLAYERNUM; ++i) rmifpacket.sids[i] = _cArr[i].sid;
+	{
+		shared_lock<std::shared_mutex> rl(_listLock);
+		for (int i = 0; i < PLAYERNUM; ++i) rmifpacket.sids[i] = _cArr[i].sid;
+	}
 	BroadCasting(&rmifpacket);
+}
+void Room::UpdateReady(int32 idx, bool val)
+{
+	_readys[idx].store(val);
+	if (IsGameStartAvailable())
+	{
+		S2C_GAMESTART packet;
+		packet.size = sizeof(S2C_GAMESTART);
+		packet.type = (uint8)S_ROOM_PACKET_TYPE::GAME_START;
+		for (int i = 0; i < PLAYERNUM; ++i)packet.sids[i] = _cArr[i].sid;
+		BroadCasting(&packet);
+	}	
 }
 // ======= RoomManager ========
 
@@ -275,7 +315,7 @@ void RoomManager::CreateRoom(int32 sid)
 		if (_rooms[i]._status == (int8)ROOM_STATUS::EMPTY)
 		{
 			_rooms[i]._status = (int8)ROOM_STATUS::NOT_FULL;
-			_rooms[i].UserIn(sid);
+			EnterRoom(sid, i);
 			_rmCnt.fetch_add(1);
 			break;
 		}

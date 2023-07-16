@@ -24,7 +24,7 @@ class Room
 public:
 	Room();
 	~Room();
-	bool IsDestroyRoom() { return (_cList.size() == 0); } // false 반환 시 방 파괴 --> 호스트가 방을 나갔을 경우 파괴하도록함.
+	bool IsDestroyRoom() { return (_memCnt.load() == 0);/*(_cList.size() == 0);*/ } // false 반환 시 방 파괴 --> 호스트가 방을 나갔을 경우 파괴하도록함.
 	void UserOut(int32 sid);
 	void UserIn(int32 sid);
 	void BroadCasting(void* packet);
@@ -51,7 +51,8 @@ public:
 		}
 		return -1;
 	};
-	void UpdateReady(int32 idx,bool val) { _readys[idx].store(val); }
+	void UpdateReady(int32 idx, bool val);
+	bool IsGameStartAvailable() { int cnt = 0;  for (int i = 0; i < PLAYERNUM; ++i) if (i) ++cnt; return (PLAYERNUM == cnt); }
 private:
 	Rewinder<30> _history;
 private:

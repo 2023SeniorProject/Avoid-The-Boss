@@ -138,6 +138,7 @@ void ServerSession::ProcessPacket(char* packet)
 		case (uint8)C_ROOM_PACKET_TYPE::ACQ_ENTER_RM:
 		{
 			C2S_ROOM_ENTER* rep = reinterpret_cast<C2S_ROOM_ENTER*>(packet);
+			std::cout << "Enter Room\n";
 			ServerIocpCore._rmgr->EnterRoom(_sid, rep->rmNum);
 		}
 		break;
@@ -154,14 +155,13 @@ void ServerSession::ProcessPacket(char* packet)
 				std::cout << "SomeThing Error Detected\n";
 				break;
 			}
-			ServerIocpCore._rmgr->GetRoom(_myRm).UpdateReady(idx, true);
-			S2C_ROOM_READY packet;
 			
-			packet.size = sizeof(S2C_ROOM_EVENT);
+			S2C_ROOM_READY packet;
+			packet.size = sizeof(S2C_ROOM_READY);
 			packet.type = (uint8)S_ROOM_PACKET_TYPE::REP_READY;
 			packet.sid = _sid;
-
 			ServerIocpCore._rmgr->GetRoom(_myRm).BroadCastingExcept(&packet, _sid);
+			ServerIocpCore._rmgr->GetRoom(_myRm).UpdateReady(idx, true);
 		}
 		break;
 		case (uint8)C_ROOM_PACKET_TYPE::ACQ_READY_CANCEL:
@@ -173,8 +173,11 @@ void ServerSession::ProcessPacket(char* packet)
 			packet.size = sizeof(S2C_ROOM_EVENT);
 			packet.type = (uint8)S_ROOM_PACKET_TYPE::REP_READY_CANCEL;
 			packet.sid = _sid;
-			ServerIocpCore._rmgr->GetRoom(_myRm).BroadCastingExcept(&packet,_sid);
+			ServerIocpCore._rmgr->GetRoom(_myRm).BroadCastingExcept(&packet, _sid);
 		}
+		break;
+		case (uint8)C_ROOM_PACKET_TYPE::ACQ_EXIT_ROOM:
+			ServerIocpCore._rmgr->GetRoom(_myRm).UserOut(_sid);
 		break;
 
 		case (uint8)C_GAME_PACKET_TYPE::CKEY:

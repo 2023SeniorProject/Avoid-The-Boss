@@ -16,6 +16,11 @@ class SPlayer;
 // 방은 호스트가 요청하는 순간 생성한다.
 class Room
 {
+	struct Member
+	{
+		int16 sid = -1;
+		bool isReady;
+	};
 public:
 	Room();
 	~Room();
@@ -33,17 +38,32 @@ public:
 	{
 		_timer.Reset();
 	}
-	int32 GetMemersCnt() { return _mem; }
+	
+	void SendRoomListPacket();
+	void SendRoomInfoPacket();
+
+	int32 GetSidIndexBySid(int32 sid) 
+	{
+	
+		for (int32 i = 0; i < PLAYERNUM; ++i)
+		{
+			if (_cArr[i].sid == sid) return i;
+		}
+		return -1;
+	};
+	void UpdateReady(int32 idx,bool val) { _readys[idx].store(val); }
 private:
 	Rewinder<30> _history;
 private:
 	CGameManager _gameLogic;
 public:
 	std::shared_mutex _listLock;
-	std::list<int32> _cList; // 방에 속해있는 클라이언트 리스트
+	std::vector<int32> _cList; // 방에 속해있는 클라이언트 리스트
+	Member _cArr[4];
+	Atomic<bool> _readys[4];
 	int8 _status = (int8)ROOM_STATUS::EMPTY; // 방 상태
-	int32 _num = 0; // 방번호
-	Atomic<int32> _mem = 0;
+	int32 _rmNum = 0; // 방번호
+	Atomic<int32> _memCnt = 0;
 	Timer _timer;
 };
 

@@ -163,7 +163,7 @@ void CGameScene::BuildObjects(ID3D12Device5* pd3dDevice,ID3D12GraphicsCommandLis
 	XMFLOAT3 xmf3Scale(8.0f, 2.0f, 8.0f);
 	XMFLOAT4 xmf4Color(0.0f, 0.3f, 0.0f, 0.0f);
 
-	m_nShaders = 5;
+	m_nShaders = 6;
 	m_ppShaders = new CShader * [m_nShaders];
 
 	CMapObjectsShader* pMapShader = new CMapObjectsShader();
@@ -190,6 +190,11 @@ void CGameScene::BuildObjects(ID3D12Device5* pd3dDevice,ID3D12GraphicsCommandLis
 	pGeneratorObjectsShader->CreateShader(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature);
 	pGeneratorObjectsShader->BuildObjects(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, NULL, NULL);
 	m_ppShaders[4] = pGeneratorObjectsShader;
+
+	CHitEffectObjectsShader* pHitEffectObjectsShader = new CHitEffectObjectsShader();
+	pHitEffectObjectsShader->CreateShader(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature);
+	pHitEffectObjectsShader->BuildObjects(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, NULL, NULL);
+	m_ppShaders[5] = pHitEffectObjectsShader;
 
 	CBoundsObjectsShader* pBoundsMapShader = new CBoundsObjectsShader();
 	pBoundsMapShader->CreateShader(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature);
@@ -296,6 +301,8 @@ void CGameScene::Update(HWND& hWnd)
 	str.append(std::to_wstring(m_sid));
 	str.append(L"] (");
 	str.append(std::to_wstring(m_players[m_playerIdx]->GetPosition().x));
+	str.append(L" ");
+	str.append(std::to_wstring(m_players[m_playerIdx]->GetPosition().y));
 	str.append(L" ");
 	str.append(std::to_wstring(m_players[m_playerIdx]->GetPosition().z));
 	str.append(L")- FPS: ");

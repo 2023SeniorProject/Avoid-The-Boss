@@ -163,9 +163,8 @@ public:
 	CGeneratorObjectsShader();
 	virtual ~CGeneratorObjectsShader();
 
-	virtual void BuildObjects(ID3D12Device5* pd3dDevice, ID3D12GraphicsCommandList4 * pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, CLoadedModelInfo* pModel, void* pContext = NULL);
+	virtual void BuildObjects(ID3D12Device5* pd3dDevice, ID3D12GraphicsCommandList4* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, CLoadedModelInfo* pModel, void* pContext = NULL);
 };
-
 
 class CVirtualObjectsShader : public CStandardObjectsShader
 {
@@ -175,6 +174,16 @@ public:
 
 	virtual void BuildObjects(ID3D12Device5* pd3dDevice, ID3D12GraphicsCommandList4* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, CLoadedModelInfo* pModel, void* pContext = NULL);
 };
+
+class CHitEffectObjectsShader : public CStandardObjectsShader
+{
+public:
+	CHitEffectObjectsShader();
+	virtual ~CHitEffectObjectsShader();
+
+	virtual void BuildObjects(ID3D12Device5* pd3dDevice, ID3D12GraphicsCommandList4* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, CLoadedModelInfo* pModel, void* pContext = NULL);
+};
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //
 class CSkinnedAnimationStandardShader : public CStandardShader

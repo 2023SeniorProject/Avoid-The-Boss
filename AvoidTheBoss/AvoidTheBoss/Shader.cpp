@@ -784,3 +784,25 @@ void CVirtualObjectsShader::BuildObjects(ID3D12Device5* pd3dDevice, ID3D12Graphi
 
 }
 
+CHitEffectObjectsShader::CHitEffectObjectsShader()
+{
+}
+
+CHitEffectObjectsShader::~CHitEffectObjectsShader()
+{
+}
+
+void CHitEffectObjectsShader::BuildObjects(ID3D12Device5* pd3dDevice, ID3D12GraphicsCommandList4* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, CLoadedModelInfo* pModel, void* pContext)
+{
+	m_nObjects = 1;
+	m_ppObjects = new CGameObject * [m_nObjects];
+	
+	CGameObject* pHit = CGameObject::LoadGeometryFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "Model/HitMesh.bin", NULL, Layout::EFFECT);
+	pHit->m_type = 1;
+	m_ppObjects[0] = new CGameObject();
+	m_ppObjects[0]->SetChild(pHit);
+	pHit->AddRef();
+	//m_ppObjects[0]->SetPosition(XMFLOAT3(0.0f, 0.0f, 0.0f));
+
+	CreateShaderVariables(pd3dDevice, pd3dCommandList);
+}

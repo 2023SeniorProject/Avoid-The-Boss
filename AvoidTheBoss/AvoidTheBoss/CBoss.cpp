@@ -11,7 +11,7 @@ CBoss::CBoss(ID3D12Device5* pd3dDevice,
 	ID3D12GraphicsCommandList4  * pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature)
 {
 	m_type = 0;
-	m_pCamera = ChangeCamera(FIRST_PERSON_CAMERA, 0.0f);
+	m_pCamera = ChangeCamera(THIRD_PERSON_CAMERA, 0.0f);//FIRST_PERSON_CAMERA
 	m_ctype = (uint8)PLAYER_TYPE::BOSS;
 	m_nCharacterType = CHARACTER_TYPE::BOSS;
 
@@ -45,11 +45,11 @@ CBoss::CBoss(ID3D12Device5* pd3dDevice,
 	m_pSkinnedAnimationController1->SetTrackEnable(3, false);
 
 	if (m_pCamera->m_nMode == (DWORD)FIRST_PERSON_CAMERA)
-		SetPosition(XMFLOAT3(0.0f, 0.25f, 0.0f));
+		SetPosition(XMFLOAT3(0.0f, 0.0f, 0.0f));
 		//SetPosition(XMFLOAT3(-22.55f, 0.25f, -1.04f));
 
 	if(m_pCamera->m_nMode == (DWORD)THIRD_PERSON_CAMERA)
-		SetPosition(XMFLOAT3(23.0f, 0.25f, -30.0f));
+		SetPosition(XMFLOAT3(23.0f, 0.0f, -30.0f));
 	//Rotate(0.0f, 180.0f, 0.0f);
 
 	CreateShaderVariables(pd3dDevice, pd3dCommandList);

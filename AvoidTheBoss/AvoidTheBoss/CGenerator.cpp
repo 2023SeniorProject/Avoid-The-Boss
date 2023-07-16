@@ -49,7 +49,7 @@ void CGenerator::Update(float fTimeElapsed)
 	{
 		m_bGenActive = true;
 		SC_EVENTPACKET packet;
-		packet.type = (uint8)SC_PACKET_TYPE::GAMEEVENT;
+		packet.type = (uint8)SC_GAME_PACKET_TYPE::GAMEEVENT;
 		packet.size = sizeof(SC_EVENTPACKET);
 		packet.eventId = (uint8)EVENT_TYPE::SWITCH_ONE_ACTIVATE_EVENT + m_idx;
 		clientCore.DoSend(&packet);

@@ -115,7 +115,7 @@ void ServerSession::DoSendLoginPacket(bool isSuccess)
 	{
 		S2C_LOGIN_OK loginOkPacket;
 		loginOkPacket.size = sizeof(S2C_LOGIN_OK);
-		loginOkPacket.type = (uint8)S_PACKET_TYPE::LOGIN_OK;
+		loginOkPacket.type = (uint8)S_TITLE_PACKET_TYPE::LOGIN_OK;
 		loginOkPacket.cid = _cid;
 		loginOkPacket.sid = _sid;
 		DoSend(&loginOkPacket);
@@ -124,7 +124,7 @@ void ServerSession::DoSendLoginPacket(bool isSuccess)
 	{
 		S2C_LOGIN_OK loginFailPacket;
 		loginFailPacket.size = sizeof(S2C_LOGIN_OK);
-		loginFailPacket.type = (uint8)S_PACKET_TYPE::LOGIN_FAIL;
+		loginFailPacket.type = (uint8)S_TITLE_PACKET_TYPE::LOGIN_FAIL;
 		DoSend(&loginFailPacket);
 	}
 }
@@ -134,7 +134,52 @@ void ServerSession::ProcessPacket(char* packet)
 	
 	switch ((uint8)packet[1])
 	{
-		case (uint8)C_PACKET_TYPE::CKEY:
+		// ======== 방 시스템 패킷
+		case (uint8)C_ROOM_PACKET_TYPE::ACQ_ENTER_RM:
+		{
+			C2S_ROOM_ENTER* rep = reinterpret_cast<C2S_ROOM_ENTER*>(packet);
+			ServerIocpCore._rmgr->EnterRoom(_sid, rep->rmNum);
+		}
+		break;
+		case (uint8)C_ROOM_PACKET_TYPE::ACQ_MK_RM:
+		{
+			ServerIocpCore._rmgr->CreateRoom(_sid);
+		}
+		break;
+		case (uint8)C_ROOM_PACKET_TYPE::ACQ_READY:
+		{
+			int32 idx = ServerIocpCore._rmgr->GetRoom(_myRm).GetSidIndexBySid(_sid);
+			if (-1 == idx)
+			{
+				std::cout << "SomeThing Error Detected\n";
+				break;
+			}
+			
+			S2C_ROOM_READY packet;
+			packet.size = sizeof(S2C_ROOM_READY);
+			packet.type = (uint8)S_ROOM_PACKET_TYPE::REP_READY;
+			packet.sid = _sid;
+			ServerIocpCore._rmgr->GetRoom(_myRm).BroadCastingExcept(&packet, _sid);
+			ServerIocpCore._rmgr->GetRoom(_myRm).UpdateReady(idx, true);
+		}
+		break;
+		case (uint8)C_ROOM_PACKET_TYPE::ACQ_READY_CANCEL:
+		{
+			int32 idx = ServerIocpCore._rmgr->GetRoom(_myRm).GetSidIndexBySid(_sid);
+			ServerIocpCore._rmgr->GetRoom(_myRm).UpdateReady(idx, false);
+			S2C_ROOM_READY packet;
+
+			packet.size = sizeof(S2C_ROOM_EVENT);
+			packet.type = (uint8)S_ROOM_PACKET_TYPE::REP_READY_CANCEL;
+			packet.sid = _sid;
+			ServerIocpCore._rmgr->GetRoom(_myRm).BroadCastingExcept(&packet, _sid);
+		}
+		break;
+		case (uint8)C_ROOM_PACKET_TYPE::ACQ_EXIT_ROOM:
+			ServerIocpCore._rmgr->ExitRoom(_sid,_myRm);
+		break;
+
+		case (uint8)C_GAME_PACKET_TYPE::CKEY:
 		{
 			// 키 패킷 처리
 			C2S_KEY* movePacket = reinterpret_cast<C2S_KEY*>(packet);
@@ -144,7 +189,7 @@ void ServerSession::ProcessPacket(char* packet)
 			// 서버키 패킷 전송
 			S2C_KEY packet;
 			packet.size = sizeof(S2C_KEY);
-			packet.type = (uint8)S_PACKET_TYPE::SKEY;
+			packet.type = (uint8)S_GAME_PACKET_TYPE::SKEY;
 			packet.sid = _sid;
 			packet.key = movePacket->key;
 			packet.x = movePacket->x;
@@ -154,42 +199,31 @@ void ServerSession::ProcessPacket(char* packet)
 			ServerIocpCore._rmgr->GetRoom(_myRm).BroadCastingExcept(&packet, _sid);
 		}
 		break;
-		case (uint8)C_PACKET_TYPE::CROT:
+		case (uint8)C_GAME_PACKET_TYPE::CROT:
 		{
 			C2S_ROTATE* rotatePacket = reinterpret_cast<C2S_ROTATE*>(packet);
 			S2C_ROTATE packet;
 			packet.size = sizeof(S2C_ROTATE);
-			packet.type = (uint8)S_PACKET_TYPE::SROT;
+			packet.type = (uint8)S_GAME_PACKET_TYPE::SROT;
 			packet.sid = _sid;
 			packet.angle = rotatePacket->angle;
 			ServerIocpCore._rmgr->GetRoom(_myRm).BroadCastingExcept(&packet,_sid);
 
 		}
 		break;
-		case (uint8)C_PACKET_TYPE::CCHAT:
+		case (uint8)C_GAME_PACKET_TYPE::CCHAT:
 		{
 
 			_CHAT* cp = reinterpret_cast<_CHAT*>(packet);
 			_CHAT  np;
 			memcpy(&np, cp, sizeof(_CHAT));
-			np.type = (uint8)S_PACKET_TYPE::SCHAT;
+			np.type = (uint8)S_GAME_PACKET_TYPE::SCHAT;
 	
 			ServerIocpCore._rmgr->_rooms[_myRm].BroadCasting(&np);
 		}
 		break;
-		// ======== 방 시스템 패킷
-		case (uint8)C_ROOM_PACKET_TYPE::ACQ_ENTER_RM:
-		{
-			C2S_ROOM_ENTER* rep = reinterpret_cast<C2S_ROOM_ENTER*>(packet);
-			ServerIocpCore._rmgr->EnterRoom(_sid,rep->rmNum);
-		}
-		break;
-		case (uint8)C_ROOM_PACKET_TYPE::ACQ_MK_RM:
-		{
-			ServerIocpCore._rmgr->CreateRoom(_sid);
-		}
-		break;
-		case (uint8)C_PACKET_TYPE::CATTACK:
+
+		case (uint8)C_GAME_PACKET_TYPE::CATTACK:
 		{
 			C2S_ATTACK* ap = reinterpret_cast<C2S_ATTACK*>(packet);
 
@@ -200,7 +234,7 @@ void ServerSession::ProcessPacket(char* packet)
 			ServerIocpCore._rmgr->GetRoom(_myRm).AddEvent(ape, 0);
 		}
 			break;
-		case (uint8)SC_PACKET_TYPE::GAMEEVENT:
+		case (uint8)SC_GAME_PACKET_TYPE::GAMEEVENT:
 		{
 			SC_EVENTPACKET* ep = reinterpret_cast<SC_EVENTPACKET*>(packet);
 			InteractionEvent* swev = new InteractionEvent();

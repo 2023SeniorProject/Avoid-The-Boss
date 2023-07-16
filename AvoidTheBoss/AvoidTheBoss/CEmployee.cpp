@@ -159,7 +159,7 @@ void CEmployee::LateUpdate(float fTimeElapsed, CLIENT_TYPE ptype)
 			m_bIsRescuing = false;
 
 			SC_EVENTPACKET packet;
-			packet.type = (uint8)SC_PACKET_TYPE::GAMEEVENT;
+			packet.type = (uint8)SC_GAME_PACKET_TYPE::GAMEEVENT;
 			packet.size = sizeof(SC_EVENTPACKET);
 			packet.eventId = (int32)EVENT_TYPE::ALIVE_PLAYER_ONE + m_idx;
 			clientCore.DoSend(&packet);
@@ -487,7 +487,7 @@ bool CEmployee::GenTasking()
 				SC_EVENTPACKET packet;
 				packet.eventId = m_curInterGen + (int32)EVENT_TYPE::SWITCH_ONE_START_EVENT;
 				packet.size = sizeof(SC_EVENTPACKET);
-				packet.type = (uint8)SC_PACKET_TYPE::GAMEEVENT;
+				packet.type = (uint8)SC_GAME_PACKET_TYPE::GAMEEVENT;
 				clientCore.DoSend(&packet);
 			}
 			return true;
@@ -509,7 +509,7 @@ bool CEmployee::GenTasking()
 				SC_EVENTPACKET packet;
 				packet.eventId = m_curInterGen + (int32)EVENT_TYPE::SWITCH_ONE_END_EVENT;
 				packet.size = sizeof(SC_EVENTPACKET);
-				packet.type = (uint8)SC_PACKET_TYPE::GAMEEVENT;
+				packet.type = (uint8)SC_GAME_PACKET_TYPE::GAMEEVENT;
 				clientCore.DoSend(&packet);
 			}
 		}
@@ -533,7 +533,7 @@ bool CEmployee::RescueTasking()
 			SC_EVENTPACKET packet;
 			packet.eventId = pIdx + (int32)EVENT_TYPE::RESCUE_PLAYER_ONE;
 			packet.size = sizeof(SC_EVENTPACKET);
-			packet.type = (uint8)SC_PACKET_TYPE::GAMEEVENT;
+			packet.type = (uint8)SC_GAME_PACKET_TYPE::GAMEEVENT;
 			clientCore.DoSend(&packet);
 
 			//static_cast<CEmployee*>(mainGame.m_ppScene[mainGame.m_nSceneIndex]->GetScenePlayerByIdx(pIdx))->RescueOn(true);
@@ -557,7 +557,7 @@ bool CEmployee::RescueTasking()
 				SC_EVENTPACKET packet;
 				packet.eventId = pIdx + (int32)EVENT_TYPE::RESCUE_CANCEL_PLAYER_ONE;
 				packet.size = sizeof(SC_EVENTPACKET);
-				packet.type = (uint8)SC_PACKET_TYPE::GAMEEVENT;
+				packet.type = (uint8)SC_GAME_PACKET_TYPE::GAMEEVENT;
 				clientCore.DoSend(&packet);
 
 				std::cout << pIdx << " Rescue Cancel\n";

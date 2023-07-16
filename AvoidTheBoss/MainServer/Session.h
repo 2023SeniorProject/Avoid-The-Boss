@@ -7,8 +7,6 @@
 // 마찬가지로 Iocp에 등록할 대상이기 때문에 IocpObject에 해당된다
 
 
-enum class USER_STATUS: int8 { EMPTY,LOBBY,ROOM,INGAME};
-
 class ServerSession : public ASession
 {
 public:
@@ -27,9 +25,8 @@ public:
 	void ProcessPacket(char*);
 public:
 	int16 _myRm = -1;
+	int32 _curPage = 0;
 	int32 _prev_remain = 0;
-	Atomic<USER_STATUS> _status = USER_STATUS::EMPTY;
-	
 public:
 	
 };

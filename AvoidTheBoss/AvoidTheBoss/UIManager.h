@@ -3,6 +3,8 @@
 // UI매니저 개요
 // 게임 프레임워크 시작 시, 각 화면에 필요한 모든 UI 이미지를 로드한다. WCI 컨버터를 활용
 // D2D를 활용해서 이미지를 그린다.
+// LobbyButton
+
 
 struct UITextBlock
 {
@@ -10,12 +12,12 @@ struct UITextBlock
     D2D1_RECT_F                     m_d2dLayoutRect; // 출력할 레이아웃 영역
     IDWriteTextFormat*              m_pdwFormat; // 입력 포맷
     ID2D1SolidColorBrush*           m_pd2dTextBrush; // 텍스처를 출력할 브러쉬
+    bool                            m_hide = false;
 };
 struct UIButton
 {
     D2D1_RECT_F                     d2dLayoutRect; // 출력할 레이아웃 영역
     ID2D1Bitmap*                    resource = NULL;
-    int32 type; // 버튼 타입
 };
 struct UIBackGround
 {
@@ -28,14 +30,15 @@ class UIManager
     enum class ButtonType { MAKE_ROOM, ENTER_ROOM, EXIT_GAME, };
 
 public:
-    UIManager(UINT nFrames, UINT nTextBlocks, ID3D12Device5* pd3dDevice, ID3D12CommandQueue* pd3dCommandQueue, ID3D12Resource** ppd3dRenderTargets, UINT nWidth, UINT nHeight);
+    UIManager(UINT nFrames, ID3D12Device5* pd3dDevice, ID3D12CommandQueue* pd3dCommandQueue, ID3D12Resource** ppd3dRenderTargets, UINT nWidth, UINT nHeight);
 
     void CreateD2DDevice();
     ID2D1Bitmap1* LoadPngFromFile(const wchar_t* filePath);
     void CreateD3D11On12Device(ID3D12Device5* pd3dDevice, ID3D12CommandQueue* pd3dCommandQueue);
     void CreateRenderTarget(ID3D12Resource** ppd3dRenderTargets);
 
-    void UpdateTextOutputs(UINT nIndex, WCHAR* pstrUIText, D2D1_RECT_F* pd2dLayoutRect, IDWriteTextFormat* pdwFormat, ID2D1SolidColorBrush* pd2dTextBrush);
+    void UpdateRoomTextBlocks(UINT nIndex,const WCHAR* pstrUIText, const D2D1_RECT_F& pd2dLayoutRect, bool hide);
+    void UpdateRoomText();
     void Render2D(UINT nFrame,int32 curScene);
     void ReleaseResources();
     void DrawBackGround(int32 Scene);
@@ -73,25 +76,36 @@ public:
 
     // TextBlock
     UINT                           m_nTextBlocks = 0;
-   
+    IDWriteTextFormat*             m_TitleTextFormat;
+    IDWriteTextFormat*             m_LobbyTextFormat;
+    
     // BitmapResource
-    UINT                           m_nBitmaps = 20;
-    ID2D1Bitmap*                   m_bitmaps[20];
+    UIButton                   m_ReadyBitmaps[4];
     
     // 배경 레이어 비트맵들
     UIBackGround m_backGround[3];
 
     // 버튼 비트맵들
     UINT m_nButtons = 10;
+    UINT m_nRoomListPerPage = 5;
     UIButton m_TitleButtons[2];
+    
     UIButton m_LobbyButtons[3];
-    UIButton m_RoomButtons[3];
+    UITextBlock m_RoomListTextBlock[5];
+    
+    int32 m_lastRoomPage = 0;
+    int32 m_selectedLayout = -1;
+    D2D1_RECT_F m_RoomListLayout[5];
+
+    UIButton m_RoomButtons[2];
 
     // 동적으로 바뀌는 텍스트 버튼들 Id,PW 
-    UITextBlock* m_pTextBlocks;
+    UITextBlock m_pIDPWTextBlocks[2];
 
     // 레이어 위치 출력을 위한 브러시
     ID2D1SolidColorBrush* redBrush; // 빨강
     ID2D1SolidColorBrush* grayBrush; // 회색
+    ID2D1SolidColorBrush* blackBrush; // 회색
+    ID2D1SolidColorBrush* whiteBrush;
 };
 

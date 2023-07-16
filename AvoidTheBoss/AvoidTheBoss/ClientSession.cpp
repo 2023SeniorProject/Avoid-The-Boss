@@ -141,16 +141,21 @@ void CSession::ProcessPacket(char* packet)
 {
 
 	
-	CGameScene* gc =
+	CGameScene* gs =
 		static_cast<CGameScene*>(mainGame.m_SceneManager->GetSceneByIdx((int32)CGameFramework::SCENESTATE::INGAME));
-	if (!gc) return; // something error detected;
+	CLobbyScene* ls = static_cast<CLobbyScene*>(mainGame.m_SceneManager->GetSceneByIdx((int32)CGameFramework::SCENESTATE::LOBBY));
+	CRoomScene* rs = static_cast<CRoomScene*>(mainGame.m_SceneManager->GetSceneByIdx((int32)CGameFramework::SCENESTATE::ROOM));
+	
+	if (!gs) return; // something error detected;
+	if (!ls) return; // something error detected;
+	if (!rs) return;
 
 	switch ((uint8)packet[1])
 	{
 	
 	// ================ 로그인 관련 처리 ================
 #pragma region Title
-	case (uint8)S_PACKET_TYPE::LOGIN_OK:
+	case (uint8)S_TITLE_PACKET_TYPE::LOGIN_OK:
 	{
 		S2C_LOGIN_OK* lo = (S2C_LOGIN_OK*)packet;
 		_cid = lo->cid;
@@ -161,65 +166,108 @@ void CSession::ProcessPacket(char* packet)
 		mainGame.ChangeScene(CGameFramework::SCENESTATE::LOBBY);
 	}
 	break;
-	case (uint8)S_PACKET_TYPE::LOGIN_FAIL:
+	case (uint8)S_TITLE_PACKET_TYPE::LOGIN_FAIL:
 	{
 		S2C_LOGIN_FAIL* lo = (S2C_LOGIN_FAIL*)packet;
 		std::cout << "Login Fail" << std::endl;
-		::SendMessage(mainGame.m_hWnd, WM_QUIT, 0, 0);
 	}
 	break;
 #pragma endregion
 	// ================ 로비씬 패킷      ===============
 #pragma region  Lobby
 	// ============= 방 관련 패킷 ============
-	case (uint8)S_ROOM_PACKET_TYPE::REP_ENTER_RM:
+	case (uint8)S_ROOM_PACKET_TYPE::REP_ENTER_OK:
 	{
-		S2C_ROOM_ENTER* re = (S2C_ROOM_ENTER*)packet;
-		if (re->success)
-		{
-			//::system("cls");
-		}
-		else std::cout << "FAIL TO ENTER ROOM" << std::endl;
+		mainGame.ChangeScene(CGameFramework::SCENESTATE::ROOM);
 	}
 	break;
+	case (uint8)S_ROOM_PACKET_TYPE::REP_ENTER_FAIL:
+	{
+
+	}
+		break;
 	case (uint8)S_ROOM_PACKET_TYPE::MK_RM_FAIL:
 	{
 		std::cout << "Fail to Create Room!!(MAX_CAPACITY)" << std::endl;
 	}
 	break;
-	case (uint8)S_PACKET_TYPE::SCHAT:
+	case (uint8)S_ROOM_PACKET_TYPE::MK_RM_OK:
 	{
-		break;
+		mainGame.ChangeScene(CGameFramework::SCENESTATE::ROOM);
 	}
+		break;
+	case (uint8)S_ROOM_PACKET_TYPE::UPDATE_LIST:
+	{
+		
+		S2C_ROOM_LIST* rp = (S2C_ROOM_LIST*)packet;
+		std::cout << "Update" << (int32)rp->rmNum << ")" << (int32)(rp->member) << "\n";
+		ls->GetRoom(rp->rmNum).member = rp->member;
+		ls->UpdateRoomText(rp->rmNum, rp->member);
+	}
+		break;
+	
 #pragma endregion
 #pragma region Room
-	case (uint8)S_PACKET_TYPE::GAME_START:
+	case (uint8)S_ROOM_PACKET_TYPE::REP_READY:
 	{
-		S2C_GAMESTART* gsp = reinterpret_cast<S2C_GAMESTART*>(packet);
+		S2C_ROOM_READY* rp = (S2C_ROOM_READY*)packet;
+		rs->m_memLock.lock();
+		rs->UpdateReady(rp->sid, true);
+		rs->m_memLock.unlock();
 
+		std::cout << rp->sid << "Ready\n";
+	}
+		break;
+	case (uint8)S_ROOM_PACKET_TYPE::REP_READY_CANCEL:
+	{
+		S2C_ROOM_READY* rp = (S2C_ROOM_READY*)packet;
+		rs->m_memLock.lock();
+		rs->UpdateReady(rp->sid, false);
+		rs->m_memLock.unlock();
+		std::cout << rp->sid << "Cancel Ready\n";
+	}
+		break;
+	case (uint8)S_ROOM_PACKET_TYPE::ROOM_INFO:
+	{
+		
+		S2C_ROOM_INFO* rp = (S2C_ROOM_INFO*)packet;
+		
+		std::cout << "Get Room Info";
+		rs->m_memLock.lock();
+		for (int i = 0; i < PLAYERNUM; ++i)
+		{
+			 rs->m_members[i].m_sid = rp->sids[i];
+			 std::cout << rp->sids[i] << " ";
+		}
+		std::cout << "\n";
+		rs->m_memLock.unlock();
+	}
+	break;
+	case (uint8)S_ROOM_PACKET_TYPE::GAME_START:
+	{
 		// ================= 플레이어 초기 위치 초기화 ==================
-		 gc->InitGame(gsp, _sid);
+		 gs->InitGame(packet, _sid);
 		// ================= 자신의 클라이언트 IDX 확인 =================
-		std::cout << "MYPLAYER IDX : " << gc->m_playerIdx << "\n";
+		std::cout << "MYPLAYER IDX : " << gs->m_playerIdx << "\n";
 
 		// ================= 카메라 셋팅 ================================
-		CPlayer* myPlayer = gc->m_players[gc->m_playerIdx];
+		CPlayer* myPlayer = gs->m_players[gs->m_playerIdx];
 		std::wstring str = L"Client";
-		str.append(std::to_wstring(gc->m_playerIdx));
+		str.append(std::to_wstring(gs->m_playerIdx));
 		::SetConsoleTitle(str.c_str());
-		mainGame.ChangeScene(CGameFramework::SCENESTATE::INGAME);
-		gc->InitScene();
+		//mainGame.ChangeScene(CGameFramework::SCENESTATE::INGAME);
+		//gs->InitScene();
 	}
 	break;
 #pragma endregion
 	// ============== 인게임 관련 패킷 =============
 #pragma region InGame
-	case (uint8)S_PACKET_TYPE::SKEY:
+	case (uint8)S_GAME_PACKET_TYPE::SKEY:
 	{
 		S2C_KEY* movePacket = reinterpret_cast<S2C_KEY*>(packet);
 		moveEvent* mev = new moveEvent();
 
-		CPlayer* player = gc ->GetScenePlayerBySid(movePacket->sid);
+		CPlayer* player = gs ->GetScenePlayerBySid(movePacket->sid);
 		if (player == nullptr) break;
 
 		//mev->player = player;
@@ -228,14 +276,14 @@ void CSession::ProcessPacket(char* packet)
 		mev->_dir.z = movePacket->z;
 		mev->_key = movePacket->key;
 
-		gc->AddEvent(static_cast<queueEvent*>(mev), 0);
+		gs->AddEvent(static_cast<queueEvent*>(mev), 0);
 	}
 	break;
 
-	case (uint8)S_PACKET_TYPE::SROT:
+	case (uint8)S_GAME_PACKET_TYPE::SROT:
 	{
 		S2C_ROTATE* rotatePacket = reinterpret_cast<S2C_ROTATE*>(packet);
-		CPlayer* player = gc->GetScenePlayerBySid(rotatePacket->sid);
+		CPlayer* player = gs->GetScenePlayerBySid(rotatePacket->sid);
 		if (player != nullptr)
 		{
 			player->Rotate(0, rotatePacket->angle, 0);
@@ -243,10 +291,10 @@ void CSession::ProcessPacket(char* packet)
 
 	}
 	break;
-	case (uint8)S_PACKET_TYPE::SPOS: // 미리 계산한 좌표값을 보내준다.
+	case (uint8)S_GAME_PACKET_TYPE::SPOS: // 미리 계산한 좌표값을 보내준다.
 	{
 		S2C_POS* posPacket = reinterpret_cast<S2C_POS*>(packet);
-		CPlayer* player = gc->GetScenePlayerBySid(posPacket->sid);		
+		CPlayer* player = gs->GetScenePlayerBySid(posPacket->sid);		
 		if (player == nullptr) break;
 
 		XMFLOAT3 newPos = XMFLOAT3(posPacket->x, player->GetPosition().y, posPacket->z);
@@ -254,25 +302,25 @@ void CSession::ProcessPacket(char* packet)
 		pe->player = player;
 		pe->_pos = newPos;
 
-		gc->AddEvent(static_cast<queueEvent*>(pe), 0.f);
+		gs->AddEvent(static_cast<queueEvent*>(pe), 0.f);
 
 	}
 	break;
-	case (uint8)SC_PACKET_TYPE::GAMEEVENT:
+	case (uint8)SC_GAME_PACKET_TYPE::GAMEEVENT:
 	{
 		SC_EVENTPACKET* ev = (SC_EVENTPACKET*)packet;
 		InteractionEvent* gev = new InteractionEvent();
 		gev->eventId = ev->eventId;
-		gc->AddEvent(static_cast<queueEvent*>(gev), 0.f);
+		gs->AddEvent(static_cast<queueEvent*>(gev), 0.f);
 
 	}
 	break;
 	// ================= 플레이어 스위치 애니메이션 관련 패킷 ==================
-	case (uint8)S_PACKET_TYPE::ANIM:
+	case (uint8)S_GAME_PACKET_TYPE::ANIM:
 	{
 		S2C_ANIMPACKET* sw = (S2C_ANIMPACKET*)packet;
 		uint8 idx = sw->idx;
-		CEmployee* myPlayer = (CEmployee*)gc->GetScenePlayerBySid(idx);
+		CEmployee* myPlayer = (CEmployee*)gs->GetScenePlayerBySid(idx);
 		if (myPlayer != nullptr)
 		{
 			if (sw->track == (uint8)ANIMTRACK::GEN_ANIM) myPlayer->SetBehavior(PLAYER_BEHAVIOR::SWITCH_INTER);
@@ -280,11 +328,11 @@ void CSession::ProcessPacket(char* packet)
 		}
 	}
 	break;
-	case (uint8)S_PACKET_TYPE::FRAME:
+	case (uint8)S_GAME_PACKET_TYPE::FRAME:
 	{
 		S2C_FRAMEPACKET* fp = (S2C_FRAMEPACKET*)packet;
 		FrameEvent* fe = new FrameEvent(fp->wf);
-		gc->AddEvent(static_cast<queueEvent*>(fe),0);
+		gs->AddEvent(static_cast<queueEvent*>(fe),0);
 	}
 	break;
 #pragma endregion

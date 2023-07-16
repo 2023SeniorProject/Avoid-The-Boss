@@ -4,13 +4,19 @@
 #include "GameFramework.h"
 
 #include "InputManager.h"
+#include "SoundManager.h"
 #include "SceneManager.h"
 #include "UIManager.h"
 #include "OtherScenes.h"
 #include "clientIocpCore.h"
 #include "SoundManager.h"
 #include "CSound.h"
-#include <Windowsx.h>
+
+
+bool IntersectRectByPoint(const D2D1_RECT_F& rect, const POINT& mp)
+{
+	return ((rect.left <= mp.x && mp.x <= rect.right) && (rect.top <= mp.y && mp.y <= rect.bottom));
+}
 
 #pragma region Lobby
 
@@ -68,7 +74,6 @@ void CLobbyScene::Render(ID3D12GraphicsCommandList4* pd3dCommandList, CCamera* p
 	if (m_player) m_player->Render(pd3dCommandList, pCamera, Raster);
 
 }
-
 void CLobbyScene::BuildDefaultLightsAndMaterials()
 {
 	m_nLights = 5;
@@ -136,12 +141,72 @@ void CLobbyScene::BuildDefaultLightsAndMaterials()
 	m_pLights[4].m_xmf3Position = XMFLOAT3(600.0f, 250.0f, 700.0f);
 	m_pLights[4].m_xmf3Attenuation = XMFLOAT3(1.0f, 0.001f, 0.0001f);
 }
+void CLobbyScene::MouseAction(const POINT& mp)
+{
+	// 체크리스트 충돌체크 처리
+	for (int i = 0; i < mainGame.m_UIRenderer->m_nRoomListPerPage; ++i)
+	{
+		if (IntersectRectByPoint(mainGame.m_UIRenderer->m_RoomListLayout[i], mp))
+		{
+			if (m_rooms[m_curPage * 5 + i].status != ROOM_STATUS::EMPTY) m_selected_rm = m_curPage * 5 + i;
+			mainGame.m_UIRenderer->m_selectedLayout = i;
+			std::cout << "Selected RM:" << i << "\n";
+		}
+	}
+
+	if (IntersectRectByPoint(mainGame.m_UIRenderer->m_LobbyButtons[0].d2dLayoutRect, mp) )
+	{
+		//enter
+		if (m_selected_rm != -1)
+		{
+			C2S_ROOM_ENTER packet;
+			packet.size = sizeof(C2S_ROOM_ENTER);
+			packet.type = (uint8)C_ROOM_PACKET_TYPE::ACQ_ENTER_RM;
+			packet.rmNum = m_selected_rm;
+			m_selected_rm = -1;
+			clientCore.DoSend(&packet);
+		}
+		else std::cout << "There is No Any Room Available\n";
+	}
+	else if (IntersectRectByPoint(mainGame.m_UIRenderer->m_LobbyButtons[1].d2dLayoutRect, mp))
+	{
+		//create
+		C2S_ROOM_EVENT packet;
+		packet.size = sizeof(C2S_ROOM_EVENT);
+		packet.type = (uint8)C_ROOM_PACKET_TYPE::ACQ_MK_RM;
+		clientCore.DoSend(&packet);
+	}
+	else if (IntersectRectByPoint(mainGame.m_UIRenderer->m_LobbyButtons[2].d2dLayoutRect, mp))
+	{
+		//quit
+		clientCore.Disconnect(0);
+		mainGame.ChangeScene(CGameFramework::SCENESTATE::TITLE);
+	}
+}
+void CLobbyScene::ChangePage(int32 newPage)
+{
+	m_lastPage = m_curPage;
+	m_curPage = newPage;
+}
+void CLobbyScene::UpdateRoomText(int32 index = -1, int32 member = -1)
+{
+	
+	if (index >= 0 || member >= 0)
+	{
+		m_rooms[m_curPage * 5 + index].member = member;
+		if (PLAYERNUM == member) m_rooms[m_curPage * 5 + index].status = ROOM_STATUS::FULL;
+		else if (0 == member)	 m_rooms[m_curPage * 5 + index].status = ROOM_STATUS::EMPTY;
+		else m_rooms[m_curPage * 5 + index].status = ROOM_STATUS::NOT_FULL;
+	}
+	mainGame.m_UIRenderer->UpdateRoomText();
+}
+CLobbyScene::Room & CLobbyScene::GetRoom(int32 idx)
+{
+	return m_rooms[idx];
+}
 #pragma endregion
 
-bool IntersectRectByPoint(const D2D1_RECT_F& rect, const POINT& mp)
-{
-	return ((rect.left <= mp.x && mp.x <= rect.right) && (rect.top <= mp.y && mp.y <= rect.bottom));
-}
+
 #pragma region  Title
 void CTitleScene::BuildObjects(ID3D12Device5* pd3dDevice, ID3D12GraphicsCommandList4* pd3dCommandList)
 {
@@ -160,16 +225,17 @@ void CTitleScene::BuildObjects(ID3D12Device5* pd3dDevice, ID3D12GraphicsCommandL
 
 	SoundManager::GetInstance().PlayBackGroundSound(0);
 }
-
 void CTitleScene::MouseAction(const POINT& mp)
 {
+	SoundManager::GetInstance().SoundStop(10);
+	SoundManager::GetInstance().PlayObjectSound(20, 10);
 
-	if (IntersectRectByPoint(mainGame.m_UIRenderer->m_pTextBlocks[0].m_d2dLayoutRect, mp))
+	if (IntersectRectByPoint(mainGame.m_UIRenderer->m_pIDPWTextBlocks[0].m_d2dLayoutRect, mp))
 	{
 		std::cout << "Focus Change 0\n";
 		focus = 0;
 	}
-	else if (IntersectRectByPoint(mainGame.m_UIRenderer->m_pTextBlocks[1].m_d2dLayoutRect, mp))
+	else if (IntersectRectByPoint(mainGame.m_UIRenderer->m_pIDPWTextBlocks[1].m_d2dLayoutRect, mp))
 	{
 		std::cout << "Focus Change 1\n";
 		focus = 1;
@@ -177,13 +243,13 @@ void CTitleScene::MouseAction(const POINT& mp)
 
 	if (IntersectRectByPoint(mainGame.m_UIRenderer->GetButtonRect(0,0),mp))
 	{
-		if (mainGame.m_UIRenderer->m_pTextBlocks[0].m_pstrText.length() <= 3
-			|| mainGame.m_UIRenderer->m_pTextBlocks[1].m_pstrText.length() <= 3) return;
+		if (mainGame.m_UIRenderer->m_pIDPWTextBlocks[0].m_pstrText.length() <= 3
+			|| mainGame.m_UIRenderer->m_pIDPWTextBlocks[1].m_pstrText.length() <= 3) return;
 
 		clientCore.InitConnect("127.0.0.1");
 		C2S_LOGIN loginPacket;
-		lstrcpyn(loginPacket.name, mainGame.m_UIRenderer->m_pTextBlocks[0].m_pstrText.c_str(), 10);
-		lstrcpyn(loginPacket.pw, mainGame.m_UIRenderer->m_pTextBlocks[1].m_pstrText.c_str(), 10);
+		lstrcpyn(loginPacket.name, mainGame.m_UIRenderer->m_pIDPWTextBlocks[0].m_pstrText.c_str(), 10);
+		lstrcpyn(loginPacket.pw, mainGame.m_UIRenderer->m_pIDPWTextBlocks[1].m_pstrText.c_str(), 10);
 		clientCore.DoConnect(&loginPacket);
 		mainGame.ChangeScene(CGameFramework::SCENESTATE::LOBBY);
 	}
@@ -193,7 +259,6 @@ void CTitleScene::MouseAction(const POINT& mp)
 		mainGame.OnDestroy();
 	}
 }
-
 void CTitleScene::BuildDefaultLightsAndMaterials()
 {
 	m_nLights = 5;
@@ -261,7 +326,6 @@ void CTitleScene::BuildDefaultLightsAndMaterials()
 	m_pLights[4].m_xmf3Position = XMFLOAT3(600.0f, 250.0f, 700.0f);
 	m_pLights[4].m_xmf3Attenuation = XMFLOAT3(1.0f, 0.001f, 0.0001f);
 }
-
 void CTitleScene::ProcessInput(HWND& hWnd)
 {
 	InputManager::GetInstance().InputStatusUpdate();
@@ -288,10 +352,10 @@ void CTitleScene::ProcessInput(HWND& hWnd)
 			if (cap) str[0] = i;
 			else str[0] = i + 32;
 			str[1] = '\0';
-			if (focus == 0 && mainGame.m_UIRenderer->m_pTextBlocks[0].m_pstrText.length() <= 10)
-				mainGame.m_UIRenderer->m_pTextBlocks[0].m_pstrText.append(str);
-			else if( focus == 1 && mainGame.m_UIRenderer->m_pTextBlocks[1].m_pstrText.length() <= 10)
-				mainGame.m_UIRenderer->m_pTextBlocks[1].m_pstrText.append(str);
+			if (focus == 0 && mainGame.m_UIRenderer->m_pIDPWTextBlocks[0].m_pstrText.length() <= 10)
+				mainGame.m_UIRenderer->m_pIDPWTextBlocks[0].m_pstrText.append(str);
+			else if( focus == 1 && mainGame.m_UIRenderer->m_pIDPWTextBlocks[1].m_pstrText.length() <= 10)
+				mainGame.m_UIRenderer->m_pIDPWTextBlocks[1].m_pstrText.append(str);
 		}
 	}
 	
@@ -300,22 +364,21 @@ void CTitleScene::ProcessInput(HWND& hWnd)
 	{
 		if (1 == focus)
 		{
-			if (mainGame.m_UIRenderer->m_pTextBlocks[1].m_pstrText.length() > 3)
-				mainGame.m_UIRenderer->m_pTextBlocks[1].m_pstrText.
-				erase(mainGame.m_UIRenderer->m_pTextBlocks[1].m_pstrText.length() - 1,
+			if (mainGame.m_UIRenderer->m_pIDPWTextBlocks[1].m_pstrText.length() > 3)
+				mainGame.m_UIRenderer->m_pIDPWTextBlocks[1].m_pstrText.
+				erase(mainGame.m_UIRenderer->m_pIDPWTextBlocks[1].m_pstrText.length() - 1,
 					1);
 		}
 		else
-			if (mainGame.m_UIRenderer->m_pTextBlocks[0].m_pstrText.length() > 3)
-				mainGame.m_UIRenderer->m_pTextBlocks[0].m_pstrText.
-				erase(mainGame.m_UIRenderer->m_pTextBlocks[0].m_pstrText.length() - 1,
+			if (mainGame.m_UIRenderer->m_pIDPWTextBlocks[0].m_pstrText.length() > 3)
+				mainGame.m_UIRenderer->m_pIDPWTextBlocks[0].m_pstrText.
+				erase(mainGame.m_UIRenderer->m_pIDPWTextBlocks[0].m_pstrText.length() - 1,
 					1);
 	}
 }
 void CTitleScene::Update(HWND hWnd)
 {
 }
-
 void CTitleScene::Render(ID3D12GraphicsCommandList4* pd3dCommandList, CCamera* pCamera,bool Raster)
 {
 
@@ -349,70 +412,12 @@ void CTitleScene::Render(ID3D12GraphicsCommandList4* pd3dCommandList, CCamera* p
 
 	if (m_player) m_player->Render(pd3dCommandList, pCamera, Raster);
 }
-
-void CTitleScene::OnProcessingMouseMessage(HWND hWnd, UINT nMessageID, WPARAM wParam, LPARAM lParam)
-{
-	switch (nMessageID)
-	{
-	case WM_LBUTTONDOWN:
-	case WM_RBUTTONDOWN:
-		//마우스 캡쳐를 하고 현재 마우스 위치를 가져온다.
-	{
-		int xPos = GET_X_LPARAM(lParam);
-		int yPos = GET_Y_LPARAM(lParam);
-		POINT m_mousePos;
-		m_mousePos.x = xPos;
-		m_mousePos.y = yPos;
-		
-		MouseAction(m_mousePos);
-	}
-	break;
-	case WM_LBUTTONUP:
-	case WM_RBUTTONUP:
-		//마우스 캡쳐를 해제한다. 
-		::ReleaseCapture();
-		break;
-	case WM_MOUSEMOVE:
-	{
-		
-	}
-		break;
-	default:
-		break;
-	}
-}
-
-void CTitleScene::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPARAM wParam, LPARAM lParam)
-{
-
-	switch (nMessageID)
-	{
-	case WM_KEYUP:
-		switch (wParam)
-		{
-		case VK_ESCAPE:
-			::PostQuitMessage(0);
-			break;
-		case VK_BACK:
-			
-		
-			break;
-		default:
-			break;
-		}
-		break;
-	default:
-		break;
-	}
-}
 #pragma endregion
 
 #pragma region Room
 
 void CRoomScene::BuildObjects(ID3D12Device5* pd3dDevice, ID3D12GraphicsCommandList4* pd3dCommandList)
 {
-	
-
 }
 
 void CRoomScene::ProcessInput(HWND& hWnd)
@@ -425,6 +430,53 @@ void CRoomScene::Update(HWND hWnd)
 
 void CRoomScene::Render(ID3D12GraphicsCommandList4* pd3dCommandList, CCamera* pCamera, bool Raster)
 {
+}
+
+void CRoomScene::MouseAction(const POINT& mp)
+{
+	SoundManager::GetInstance().SoundStop(10);
+	SoundManager::GetInstance().PlayObjectSound(21, 10);
+
+	m_memLock.lock();
+	if (IntersectRectByPoint(mainGame.m_UIRenderer->m_RoomButtons[0].d2dLayoutRect, mp)) // Ready
+	{
+		
+		for (int i = 0; i < PLAYERNUM; ++i)
+		{
+			if (m_members[i].m_sid == CScene::m_sid)
+			{
+				if (!m_members[i].isReady)
+				{
+					m_members[i].isReady = true;
+					C2S_ROOM_EVENT packet;
+					packet.size = sizeof(C2S_ROOM_EVENT);
+					packet.type = (uint8)C_ROOM_PACKET_TYPE::ACQ_READY;
+					clientCore.DoSend(&packet);
+				}
+				else
+				{
+					m_members[i].isReady = false;
+					C2S_ROOM_EVENT packet;
+					packet.size = sizeof(C2S_ROOM_EVENT);
+					packet.type = (uint8)C_ROOM_PACKET_TYPE::ACQ_READY_CANCEL;
+					clientCore.DoSend(&packet);
+				}
+				break;
+			}
+		}
+		
+	}
+	else if (IntersectRectByPoint(mainGame.m_UIRenderer->m_RoomButtons[1].d2dLayoutRect, mp))
+	{
+		
+		C2S_ROOM_EVENT acpacket;
+		acpacket.size = sizeof(C2S_ROOM_EVENT);
+		acpacket.type = (uint8)C_ROOM_PACKET_TYPE::ACQ_EXIT_ROOM;
+		clientCore.DoSend(&acpacket);
+		
+		mainGame.ChangeScene(CGameFramework::SCENESTATE::LOBBY);
+	}
+	m_memLock.unlock();
 }
 
 void CRoomScene::BuildDefaultLightsAndMaterials()

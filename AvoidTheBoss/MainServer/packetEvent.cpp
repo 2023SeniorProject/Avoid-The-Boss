@@ -28,12 +28,12 @@ void InteractionEvent::Task()
 				targetGen.GenInteractionOn(true);
 				SC_EVENTPACKET packet;
 				packet.size = sizeof(SC_EVENTPACKET);
-				packet.type = (uint8)SC_PACKET_TYPE::GAMEEVENT;
+				packet.type = (uint8)SC_GAME_PACKET_TYPE::GAMEEVENT;
 				packet.eventId = eventId;
 
 				S2C_ANIMPACKET animPacket;
 				animPacket.size = sizeof(S2C_ANIMPACKET);
-				animPacket.type = (uint8)S_PACKET_TYPE::ANIM;
+				animPacket.type = (uint8)S_GAME_PACKET_TYPE::ANIM;
 				animPacket.idx =  gm.GetPlayerBySid(_sid).m_idx;
 				animPacket.track = (uint8)ANIMTRACK::GEN_ANIM;
 
@@ -55,12 +55,12 @@ void InteractionEvent::Task()
 			targetGen.GenInteractionOn(false);
 			SC_EVENTPACKET packet;
 			packet.size = sizeof(SC_EVENTPACKET);
-			packet.type = (uint8)SC_PACKET_TYPE::GAMEEVENT;
+			packet.type = (uint8)SC_GAME_PACKET_TYPE::GAMEEVENT;
 			packet.eventId = eventId; // 0: 발전기 시작 // 발전기 종료 // 1: 발전기 완료 // 2: 사장님 공격 처리 // 3: 사장님 공격 쿨타임
 
 			S2C_ANIMPACKET animPacket;
 			animPacket.size = sizeof(S2C_ANIMPACKET);
-			animPacket.type = (uint8)S_PACKET_TYPE::ANIM;
+			animPacket.type = (uint8)S_GAME_PACKET_TYPE::ANIM;
 			animPacket.idx = _sid;
 			animPacket.track = (uint8)ANIMTRACK::GEN_ANIM_CANCEL;
 
@@ -79,7 +79,7 @@ void InteractionEvent::Task()
 		targetGen.GenActivate(true);
 		SC_EVENTPACKET packet;
 		packet.size = sizeof(SC_EVENTPACKET);
-		packet.type = (uint8)SC_PACKET_TYPE::GAMEEVENT;
+		packet.type = (uint8)SC_GAME_PACKET_TYPE::GAMEEVENT;
 		packet.eventId = eventId;
 		targetRoom.BroadCasting(&packet);
 	}
@@ -98,7 +98,7 @@ void InteractionEvent::Task()
 			std::cout << "RESCUING\n";
 
 			SC_EVENTPACKET packet;
-			packet.type = (uint8)SC_PACKET_TYPE::GAMEEVENT;
+			packet.type = (uint8)SC_GAME_PACKET_TYPE::GAMEEVENT;
 			packet.size = sizeof(SC_EVENTPACKET);
 			packet.eventId = eventId;
 			targetRoom.BroadCastingExcept(&packet, _sid);
@@ -116,7 +116,7 @@ void InteractionEvent::Task()
 		std::cout << "RESCUE CANCEL\n";
 
 		SC_EVENTPACKET packet;
-		packet.type = (uint8)SC_PACKET_TYPE::GAMEEVENT;
+		packet.type = (uint8)SC_GAME_PACKET_TYPE::GAMEEVENT;
 		packet.size = sizeof(SC_EVENTPACKET);
 		packet.eventId = eventId;
 		targetRoom.BroadCastingExcept(&packet,_sid);
@@ -156,7 +156,7 @@ void moveEvent::Task()
 		S2C_POS packet;
 		packet.sid = _sid;
 		packet.size = sizeof(S2C_POS);
-		packet.type = (uint8)S_PACKET_TYPE::SPOS;
+		packet.type = (uint8)S_GAME_PACKET_TYPE::SPOS;
 		packet.x = targetPlayer.GetPosition().x;
 		packet.z = targetPlayer.GetPosition().z;
 		
@@ -178,12 +178,12 @@ void AttackEvent::Task()
 
 		S2C_ANIMPACKET apacket;
 		apacket.size = sizeof(S2C_ANIMPACKET);
-		apacket.type = (uint8)S_PACKET_TYPE::ANIM;
+		apacket.type = (uint8)S_GAME_PACKET_TYPE::ANIM;
 		apacket.track = 6;
 
 		SC_EVENTPACKET epacket;
 		epacket.size = sizeof(SC_EVENTPACKET);
-		epacket.type = (uint8)SC_PACKET_TYPE::GAMEEVENT;
+		epacket.type = (uint8)SC_GAME_PACKET_TYPE::GAMEEVENT;
 		epacket.eventId = (int32)EVENT_TYPE::ATTACKED_PLAYER_ONE + (int32)_tidx;
 
 		ServerIocpCore._rmgr->GetRoom(roomNum).BroadCasting(&epacket);

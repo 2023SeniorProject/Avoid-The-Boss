@@ -1,10 +1,20 @@
 #pragma once
 #include "CScene.h"
 
-class CSound;
+const int32 MAX_ROOM = 100;
 
 class CLobbyScene : public CScene
 {
+	struct Room
+	{
+		int32 member = 0;
+		int32 idx = 0;
+		ROOM_STATUS status = ROOM_STATUS::EMPTY;
+	};
+	int32	 m_curPage;
+	int32	 m_lastPage;
+	Room	 m_rooms[MAX_ROOM];
+	int32	 m_selected_rm = -1;
 	CPlayer* m_player = NULL;
 public:
 	CLobbyScene() {}
@@ -15,15 +25,19 @@ public:
 	virtual void Render(ID3D12GraphicsCommandList4* pd3dCommandList, CCamera* pCamera, bool);
 	void		 BuildDefaultLightsAndMaterials();
 
-	virtual void OnProcessingMouseMessage(HWND hWnd, UINT nMessageID, WPARAM wParam, LPARAM	lParam) {};
-	virtual void OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPARAM wParam, LPARAM lParam) {};
+	virtual void MouseAction(const POINT& mp) override;
+
+	void ChangePage(int32);
+	void UpdateRoomText(int32, int32);
+	Room& GetRoom(int32);
+	int32 GetCurPage() { return m_curPage; };
 };
 
 class CTitleScene : public CScene
 {
-	CPlayer* m_player = NULL;
 	int32 focus = 0;
 	bool cap = false;
+	CPlayer* m_player = NULL;
 public:
 	CTitleScene() {}
 	~CTitleScene() {}
@@ -31,27 +45,38 @@ public:
 	virtual void ProcessInput(HWND& hWnd);
 	virtual void Update(HWND hWnd);
 	virtual void Render(ID3D12GraphicsCommandList4* pd3dCommandList, CCamera* pCamera, bool);
-
-	virtual void OnProcessingMouseMessage(HWND hWnd, UINT nMessageID, WPARAM wParam, LPARAM	lParam);
-	virtual void OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPARAM wParam, LPARAM lParam);
-
-	void		 MouseAction(const POINT& mp);
+	virtual void MouseAction(const POINT& mp) override;
 	void		 BuildDefaultLightsAndMaterials();
 };
 
 class CRoomScene : public CScene
 {
-	CPlayer* m_player = NULL;
-	int32 m_nMembers = 0;
+	struct Member
+	{
+		int32 m_sid = -1;
+		bool isReady;
+	};
 public:
-	CRoomScene() {}
+	Member m_members[4];
+	std::mutex m_memLock;
+
+public:
+	CRoomScene() 
+	{
+		for (auto& i : m_members) i.isReady = false;
+	}
 	~CRoomScene() {}
 	virtual void BuildObjects(ID3D12Device5* pd3dDevice, ID3D12GraphicsCommandList4* pd3dCommandList);
 	virtual void ProcessInput(HWND& hWnd);
 	virtual void Update(HWND hWnd);
+	virtual void UpdateReady(int32 sid, bool val) 
+	{ 
+		for (auto& i : m_members)
+		{
+			if(sid == i.m_sid) i.isReady = val;
+		}
+	}
 	virtual void Render(ID3D12GraphicsCommandList4* pd3dCommandList, CCamera* pCamera,bool);
 	void		 BuildDefaultLightsAndMaterials();
-
-	virtual void OnProcessingMouseMessage(HWND hWnd, UINT nMessageID, WPARAM wParam, LPARAM	lParam) {};
-	virtual void OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPARAM wParam, LPARAM lParam) {};
+	virtual void MouseAction(const POINT& mp) override;
 };

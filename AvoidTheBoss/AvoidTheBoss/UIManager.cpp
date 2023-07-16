@@ -271,14 +271,18 @@ void UIManager::DrawButton(int32 Scene,int32 idx)
     }
     else if (Scene == 2) // 게임 룸 씬
     {
+        CRoomScene* rs = static_cast<CRoomScene*>(mainGame.m_SceneManager->GetSceneByIdx((int32)CGameFramework::SCENESTATE::ROOM));
         m_pd2dDeviceContext->DrawRectangle(m_RoomButtons[0].d2dLayoutRect, redBrush);
         m_pd2dDeviceContext->DrawBitmap(m_RoomButtons[0].resource, m_RoomButtons[0].d2dLayoutRect, 1.0f, D2D1_INTERPOLATION_MODE_LINEAR, (D2D1_RECT_F*)0);
         
         m_pd2dDeviceContext->DrawRectangle(m_RoomButtons[1].d2dLayoutRect, redBrush);
         m_pd2dDeviceContext->DrawBitmap(m_RoomButtons[1].resource, m_RoomButtons[1].d2dLayoutRect, 1.0f, D2D1_INTERPOLATION_MODE_LINEAR, (D2D1_RECT_F*)0);
       
-    //    m_pd2dDeviceContext->DrawRectangle(m_RoomButtons[2].d2dLayoutRect, redBrush);
-    //    m_pd2dDeviceContext->DrawBitmap(m_RoomButtons[2].resource, m_RoomButtons[2].d2dLayoutRect, 1.0f, D2D1_INTERPOLATION_MODE_LINEAR, (D2D1_RECT_F*)0);
+        for (int i = 0; i < PLAYERNUM; ++i)
+        {
+            if(rs->m_members[i].isReady)  
+                m_pd2dDeviceContext->DrawBitmap(m_ReadyBitmaps[i].resource, m_ReadyBitmaps[i].d2dLayoutRect, 1.0f, D2D1_INTERPOLATION_MODE_LINEAR, (D2D1_RECT_F*)0);
+        }
     }
 }
 
@@ -401,8 +405,34 @@ void UIManager::InitializeDevice(ID3D12Device5* pd3dDevice, ID3D12CommandQueue* 
 
     m_RoomButtons[0].resource = LoadPngFromFile(L"UI/Ready_Game.png");
     m_RoomButtons[1].resource = LoadPngFromFile(L"UI/Quit_Game.png");
-    m_RoomButtons[0].d2dLayoutRect = MakeLayoutRectByCorner(0,                        LOBBYBUTTON_Y_OFFSET, FRAME_BUFFER_WIDTH / 2.0f, FRAME_BUFFER_HEIGHT / 4.0);
-    m_RoomButtons[1].d2dLayoutRect = MakeLayoutRectByCorner(FRAME_BUFFER_WIDTH / 2.0, LOBBYBUTTON_Y_OFFSET, FRAME_BUFFER_WIDTH / 2.0f, FRAME_BUFFER_HEIGHT / 4.0);
+    m_RoomButtons[0].d2dLayoutRect = MakeLayoutRectByCorner(0,                        LOBBYBUTTON_Y_OFFSET, FRAME_BUFFER_WIDTH / 3.0f, FRAME_BUFFER_HEIGHT / 4.0);
+    m_RoomButtons[1].d2dLayoutRect = MakeLayoutRectByCorner(LOBBYBUTTON_X_OFFSET * 2.0f, LOBBYBUTTON_Y_OFFSET, FRAME_BUFFER_WIDTH / 3.0f, FRAME_BUFFER_HEIGHT / 4.0);
+
+    m_ReadyBitmaps[0].resource = LoadPngFromFile(L"UI/Ready1.png");
+    m_ReadyBitmaps[1].resource = LoadPngFromFile(L"UI/Ready2.png");
+    m_ReadyBitmaps[2].resource = LoadPngFromFile(L"UI/Ready3.png");
+    m_ReadyBitmaps[3].resource = LoadPngFromFile(L"UI/Ready1.png");
+
+    m_ReadyBitmaps[0].d2dLayoutRect = MakeLayoutRectByCorner(LOBBYROOMLIST_X_OFFSET, 
+        LOBBYROOMLIST_Y_OFFSET,
+        (FRAME_BUFFER_WIDTH - (LOBBYROOMLIST_X_OFFSET * 2.0)) / 2.0,
+        FRAME_BUFFER_HEIGHT / 2.0);
+    m_ReadyBitmaps[1].d2dLayoutRect = MakeLayoutRectByCorner(
+        LOBBYROOMLIST_X_OFFSET + (FRAME_BUFFER_WIDTH - (LOBBYROOMLIST_X_OFFSET * 2.0)) / 2.0,
+        LOBBYROOMLIST_Y_OFFSET,
+        (FRAME_BUFFER_WIDTH - (LOBBYROOMLIST_X_OFFSET * 2.0)) / 2.0,
+        FRAME_BUFFER_HEIGHT / 2.0);
+    
+    m_ReadyBitmaps[2].d2dLayoutRect = MakeLayoutRectByCorner(LOBBYROOMLIST_X_OFFSET,
+        LOBBYROOMLIST_Y_OFFSET + +FRAME_BUFFER_HEIGHT / 2.0,
+        (FRAME_BUFFER_WIDTH - (LOBBYROOMLIST_X_OFFSET * 2.0)) / 2.0,
+        FRAME_BUFFER_HEIGHT / 2.0);
+
+    m_ReadyBitmaps[3].d2dLayoutRect = MakeLayoutRectByCorner(
+        LOBBYROOMLIST_X_OFFSET + (FRAME_BUFFER_WIDTH - (LOBBYROOMLIST_X_OFFSET * 2.0)) / 2.0,
+        LOBBYROOMLIST_Y_OFFSET + FRAME_BUFFER_HEIGHT / 2.0,
+        (FRAME_BUFFER_WIDTH - (LOBBYROOMLIST_X_OFFSET * 2.0)) / 2.0,
+        FRAME_BUFFER_HEIGHT / 2.0);
 
     //로비에서 출력할 방 리스트 영역
     for (int i = 0; i < m_nRoomListPerPage; ++i)

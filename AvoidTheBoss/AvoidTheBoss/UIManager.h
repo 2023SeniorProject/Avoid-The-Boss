@@ -78,9 +78,9 @@ public:
     UINT                           m_nTextBlocks = 0;
     IDWriteTextFormat*             m_TitleTextFormat;
     IDWriteTextFormat*             m_LobbyTextFormat;
+    
     // BitmapResource
-    UINT                           m_nBitmaps = 20;
-    ID2D1Bitmap*                   m_bitmaps[20];
+    UIButton                   m_ReadyBitmaps[4];
     
     // 배경 레이어 비트맵들
     UIBackGround m_backGround[3];

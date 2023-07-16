@@ -217,8 +217,8 @@ void CTitleScene::BuildObjects(ID3D12Device5* pd3dDevice, ID3D12GraphicsCommandL
 
 	CreateShaderVariables(pd3dDevice, pd3dCommandList);
 
-	m_player = new CVirtualPlayer(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature);
-	m_pCamera = m_player->GetCamera();
+	//m_player = new CVirtualPlayer(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature);
+	//m_pCamera = m_player->GetCamera();
 	
 }
 void CTitleScene::MouseAction(const POINT& mp)
@@ -428,16 +428,51 @@ void CRoomScene::Render(ID3D12GraphicsCommandList4* pd3dCommandList, CCamera* pC
 
 void CRoomScene::MouseAction(const POINT& mp)
 {
-	if (IntersectRectByPoint(mainGame.m_UIRenderer->m_RoomButtons[0].d2dLayoutRect, mp))
+	m_memLock.lock();
+	if (IntersectRectByPoint(mainGame.m_UIRenderer->m_RoomButtons[0].d2dLayoutRect, mp)) // Ready
 	{
-
+		
+		for (int i = 0; i < PLAYERNUM; ++i)
+		{
+			if (m_members[i].m_sid == CScene::m_sid)
+			{
+				if (!m_members[i].isReady)
+				{
+					m_members[i].isReady = true;
+					C2S_ROOM_EVENT packet;
+					packet.size = sizeof(C2S_ROOM_EVENT);
+					packet.type = (uint8)C_ROOM_PACKET_TYPE::ACQ_READY;
+					clientCore.DoSend(&packet);
+				}
+				else
+				{
+					m_members[i].isReady = false;
+					C2S_ROOM_EVENT packet;
+					packet.size = sizeof(C2S_ROOM_EVENT);
+					packet.type = (uint8)C_ROOM_PACKET_TYPE::ACQ_READY_CANCEL;
+					clientCore.DoSend(&packet);
+				}
+				break;
+			}
+		}
+		
 	}
 	else if (IntersectRectByPoint(mainGame.m_UIRenderer->m_RoomButtons[1].d2dLayoutRect, mp))
 	{
-		C2S_ROOM_EVENT packet;
-		packet.size = sizeof(C2S_ROOM_EVENT);
-		packet.type = (uint8)C_ROOM_PACKET_TYPE::ACQ_EXIT_ROOM;
+		
+		C2S_ROOM_EVENT rcpacket;
+		rcpacket.size = sizeof(C2S_ROOM_EVENT);
+		rcpacket.type = (uint8)C_ROOM_PACKET_TYPE::ACQ_READY_CANCEL;
+		clientCore.DoSend(&rcpacket);
+
+		C2S_ROOM_EVENT acpacket;
+		acpacket.size = sizeof(C2S_ROOM_EVENT);
+		acpacket.type = (uint8)C_ROOM_PACKET_TYPE::ACQ_EXIT_ROOM;
+		clientCore.DoSend(&acpacket);
+		
+		mainGame.ChangeScene(CGameFramework::SCENESTATE::LOBBY);
 	}
+	m_memLock.unlock();
 }
 
 void CRoomScene::BuildDefaultLightsAndMaterials()

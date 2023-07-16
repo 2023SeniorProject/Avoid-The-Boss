@@ -6,7 +6,7 @@ using namespace FMOD;
 
 class CSound {
 	FMOD_SYSTEM* pSystem;
-	FMOD_SOUND* pSound[20];
+	FMOD_SOUND* pSound[22];
 	FMOD_CHANNEL* pChannel[5];
 public:
 	CSound();

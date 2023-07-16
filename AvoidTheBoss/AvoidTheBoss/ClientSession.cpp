@@ -200,7 +200,7 @@ void CSession::ProcessPacket(char* packet)
 	{
 		
 		S2C_ROOM_LIST* rp = (S2C_ROOM_LIST*)packet;
-		std::cout << "Update" << rp->rmNum << ")" << (int32)(rp->member) << "\n";
+		std::cout << "Update" << (int32)rp->rmNum << ")" << (int32)(rp->member) << "\n";
 		ls->GetRoom(rp->rmNum).member = rp->member;
 		ls->UpdateRoomText(rp->rmNum, rp->member);
 	}
@@ -229,18 +229,24 @@ void CSession::ProcessPacket(char* packet)
 		break;
 	case (uint8)S_ROOM_PACKET_TYPE::ROOM_INFO:
 	{
+		
 		S2C_ROOM_INFO* rp = (S2C_ROOM_INFO*)packet;
+		
+		std::cout << "Get Room Info";
 		rs->m_memLock.lock();
-		for (int i = 0; i < PLAYERNUM; ++i) rs->m_members[i].m_sid = rp->sids[i];
+		for (int i = 0; i < PLAYERNUM; ++i)
+		{
+			 rs->m_members[i].m_sid = rp->sids[i];
+			 std::cout << rp->sids[i] << " ";
+		}
+		std::cout << "\n";
 		rs->m_memLock.unlock();
 	}
 	break;
-	case (uint8)S_GAME_PACKET_TYPE::GAME_START:
+	case (uint8)S_ROOM_PACKET_TYPE::GAME_START:
 	{
-		S2C_GAMESTART* gsp = reinterpret_cast<S2C_GAMESTART*>(packet);
-
 		// ================= 플레이어 초기 위치 초기화 ==================
-		 gs->InitGame(gsp, _sid);
+		 gs->InitGame(packet, _sid);
 		// ================= 자신의 클라이언트 IDX 확인 =================
 		std::cout << "MYPLAYER IDX : " << gs->m_playerIdx << "\n";
 
@@ -250,7 +256,7 @@ void CSession::ProcessPacket(char* packet)
 		str.append(std::to_wstring(gs->m_playerIdx));
 		::SetConsoleTitle(str.c_str());
 		//mainGame.ChangeScene(CGameFramework::SCENESTATE::INGAME);
-		gs->InitScene();
+		//gs->InitScene();
 	}
 	break;
 #pragma endregion

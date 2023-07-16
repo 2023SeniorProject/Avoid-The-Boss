@@ -4,6 +4,7 @@
 #include "GameFramework.h"
 
 #include "InputManager.h"
+#include "SoundManager.h"
 #include "SceneManager.h"
 #include "UIManager.h"
 #include "OtherScenes.h"
@@ -162,6 +163,7 @@ void CLobbyScene::MouseAction(const POINT& mp)
 			packet.type = (uint8)C_ROOM_PACKET_TYPE::ACQ_ENTER_RM;
 			packet.rmNum = m_selected_rm;
 			m_selected_rm = -1;
+			clientCore.DoSend(&packet);
 		}
 		else std::cout << "There is No Any Room Available\n";
 	}
@@ -217,12 +219,14 @@ void CTitleScene::BuildObjects(ID3D12Device5* pd3dDevice, ID3D12GraphicsCommandL
 
 	CreateShaderVariables(pd3dDevice, pd3dCommandList);
 
-	//m_player = new CVirtualPlayer(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature);
-	//m_pCamera = m_player->GetCamera();
+	m_player = new CVirtualPlayer(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature);
+	m_pCamera = m_player->GetCamera();
 	
 }
 void CTitleScene::MouseAction(const POINT& mp)
 {
+	SoundManager::GetInstance().SoundStop(10);
+	SoundManager::GetInstance().PlayObjectSound(20, 10);
 
 	if (IntersectRectByPoint(mainGame.m_UIRenderer->m_pIDPWTextBlocks[0].m_d2dLayoutRect, mp))
 	{
@@ -428,6 +432,9 @@ void CRoomScene::Render(ID3D12GraphicsCommandList4* pd3dCommandList, CCamera* pC
 
 void CRoomScene::MouseAction(const POINT& mp)
 {
+	SoundManager::GetInstance().SoundStop(10);
+	SoundManager::GetInstance().PlayObjectSound(21, 10);
+
 	m_memLock.lock();
 	if (IntersectRectByPoint(mainGame.m_UIRenderer->m_RoomButtons[0].d2dLayoutRect, mp)) // Ready
 	{
@@ -460,11 +467,6 @@ void CRoomScene::MouseAction(const POINT& mp)
 	else if (IntersectRectByPoint(mainGame.m_UIRenderer->m_RoomButtons[1].d2dLayoutRect, mp))
 	{
 		
-		C2S_ROOM_EVENT rcpacket;
-		rcpacket.size = sizeof(C2S_ROOM_EVENT);
-		rcpacket.type = (uint8)C_ROOM_PACKET_TYPE::ACQ_READY_CANCEL;
-		clientCore.DoSend(&rcpacket);
-
 		C2S_ROOM_EVENT acpacket;
 		acpacket.size = sizeof(C2S_ROOM_EVENT);
 		acpacket.type = (uint8)C_ROOM_PACKET_TYPE::ACQ_EXIT_ROOM;

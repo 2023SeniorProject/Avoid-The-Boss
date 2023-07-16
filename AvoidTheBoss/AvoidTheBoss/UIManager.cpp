@@ -408,10 +408,10 @@ void UIManager::InitializeDevice(ID3D12Device5* pd3dDevice, ID3D12CommandQueue* 
     m_RoomButtons[0].d2dLayoutRect = MakeLayoutRectByCorner(0,                        LOBBYBUTTON_Y_OFFSET, FRAME_BUFFER_WIDTH / 3.0f, FRAME_BUFFER_HEIGHT / 4.0);
     m_RoomButtons[1].d2dLayoutRect = MakeLayoutRectByCorner(LOBBYBUTTON_X_OFFSET * 2.0f, LOBBYBUTTON_Y_OFFSET, FRAME_BUFFER_WIDTH / 3.0f, FRAME_BUFFER_HEIGHT / 4.0);
 
-    m_ReadyBitmaps[0].resource = LoadPngFromFile(L"UI/Ready1.png");
+    m_ReadyBitmaps[0].resource = LoadPngFromFile(L"UI/Ready.png");
     m_ReadyBitmaps[1].resource = LoadPngFromFile(L"UI/Ready2.png");
     m_ReadyBitmaps[2].resource = LoadPngFromFile(L"UI/Ready3.png");
-    m_ReadyBitmaps[3].resource = LoadPngFromFile(L"UI/Ready1.png");
+    m_ReadyBitmaps[3].resource = LoadPngFromFile(L"UI/Ready4.png");
 
     m_ReadyBitmaps[0].d2dLayoutRect = MakeLayoutRectByCorner(LOBBYROOMLIST_X_OFFSET, 
         LOBBYROOMLIST_Y_OFFSET,

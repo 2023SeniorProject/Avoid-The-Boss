@@ -42,10 +42,10 @@ public:
     void CreateRenderTarget(ID3D12Resource** ppd3dRenderTargets);
 
     void UpdateTextOutputs(UINT nIndex, WCHAR* pstrUIText, D2D1_RECT_F* pd2dLayoutRect, IDWriteTextFormat* pdwFormat, ID2D1SolidColorBrush* pd2dTextBrush);
-    void Render2D(UINT nFrame,int32 curScene);
+    void Render2D(UINT nFrame,int32 curScene,int playerType = 0);
     void ReleaseResources();
     void DrawBackGround(int32 Scene);
-    void DrawEffects(int32 Scene);
+    void DrawEffects(int32 Scene, int playerType);
     void DrawButton(int32, int32 idx);
     void DrawTextBlock(int32);
 
@@ -93,7 +93,7 @@ public:
     UIButton m_TitleButtons[2];
     UIButton m_LobbyButtons[3];
     UIButton m_RoomButtons[3];
-    UIEffect m_GameEffect[1];
+    UIEffect m_GameEffect[2];
 
     // 동적으로 바뀌는 텍스트 버튼들 Id,PW 
     UITextBlock* m_pTextBlocks;

@@ -178,12 +178,16 @@ void UIManager::DrawBackGround(int32 Scene)
         D2D1_RECT_F{ 0,0,m_fWidth,m_fHeight }, 1.0f, D2D1_INTERPOLATION_MODE_LINEAR,(D2D1_RECT_F*)0);
 }
 
-void UIManager::DrawEffects(int32 Scene)
+void UIManager::DrawEffects(int32 Scene, int playerType)
 {
     if (Scene == 3)
     {
+        if(playerType == 1)
         m_pd2dDeviceContext->DrawBitmap(m_GameEffect[0].resource,
             m_GameEffect[0].d2dLayoutRect, 1.0f, D2D1_INTERPOLATION_MODE_LINEAR, (D2D1_RECT_F*)0);
+        if (playerType == 2)
+            m_pd2dDeviceContext->DrawBitmap(m_GameEffect[1].resource,
+                m_GameEffect[1].d2dLayoutRect, 1.0f, D2D1_INTERPOLATION_MODE_LINEAR, (D2D1_RECT_F*)0);
     }
 }
 
@@ -317,12 +321,15 @@ void UIManager::InitializeDevice(ID3D12Device5* pd3dDevice, ID3D12CommandQueue* 
     m_GameEffect[0].resource = LoadPngFromFile(L"UI/crosshair.png");
     m_GameEffect[0].d2dLayoutRect = MakeLayoutRect(m_fWidth / 2.0f, m_fHeight / 2.0f ,225.0f*0.25f, 225.0f * 0.25f);
 
+    m_GameEffect[1].resource = LoadPngFromFile(L"UI/Hit.png");
+    m_GameEffect[1].d2dLayoutRect = MakeLayoutRect(m_fWidth / 2.0f, m_fHeight / 2.0f, m_fWidth, m_fHeight);
+
     // 브러시들
      redBrush = CreateBrush(D2D1::ColorF::Red);
      grayBrush = CreateBrush(D2D1::ColorF::Gray);
 }
 
-void UIManager::Render2D(UINT nFrame, int32 curScene)
+void UIManager::Render2D(UINT nFrame, int32 curScene, int playerType)
 {
 
     ID3D11Resource* ppResources[] = { m_ppd3d11WrappedRenderTargets[nFrame] };
@@ -332,7 +339,7 @@ void UIManager::Render2D(UINT nFrame, int32 curScene)
 
     m_pd2dDeviceContext->BeginDraw();
     DrawBackGround(curScene);
-    DrawEffects(curScene);
+    DrawEffects(curScene, playerType);
     DrawButton(curScene,0);
     DrawButton(curScene,1);
     DrawTextBlock(curScene);

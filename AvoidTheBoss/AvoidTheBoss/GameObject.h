@@ -381,6 +381,7 @@ public:
 	virtual void SetNormalVector(){}
 
 	const XMFLOAT3 GetPosition();
+
 	XMFLOAT3 GetLook();
 	XMFLOAT3 GetUp();
 	XMFLOAT3 GetRight();
@@ -494,10 +495,17 @@ public:
 	virtual void Animate(float fTimeElapsed);
 };
 
-#define HIT_EFFECT_ANIM_TIME 60
+#define HIT_EFFECT_ANIM_TIME 25
 class CHitEffect : public CGameObject
 {
 private:
+private:
+	float		m_fDistance = 0.0f;
+	XMFLOAT3	m_xmf3Look = XMFLOAT3(0.0f, 0.0f, 1.0f);
+	XMFLOAT3	m_xmf3Right = XMFLOAT3(1.0f, 0.0f, 0.0f);
+	XMFLOAT3	m_xmf3Up = XMFLOAT3(0.0f, 1.0f, 0.0f);
+	XMFLOAT3	m_xmf3Velocity = XMFLOAT3(0.0f, 0.0f, 0.0f);
+
 	int m_nAnimCount = 0;
 	bool m_bOnHit = false;
 	CGameObject* m_pHit = NULL;
@@ -511,4 +519,13 @@ public:
 
 	void SetOnHit(bool hit) { m_bOnHit = hit; }
 	bool GetOnHit() { return m_bOnHit; }
+
+	XMFLOAT3 GetLookVector() { return(m_xmf3Look); }
+	XMFLOAT3 GetUpVector() { return(m_xmf3Up); }
+	XMFLOAT3 GetRightVector() { return(m_xmf3Right); }
+	void SetDirection(const XMFLOAT3& look)
+	{
+		m_xmf3Look = look;
+		m_xmf3Right = Vector3::CrossProduct(m_xmf3Up, m_xmf3Look, true);
+	}
 };

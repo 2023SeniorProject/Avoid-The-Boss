@@ -2,7 +2,7 @@
 #include "GameObject.h"
 #define BUIIET_DISTANCE 2.5f
 #define BULLET_NUMBER 1
-#define BULLET_SPEED 0.5f
+#define BULLET_SPEED 0.1f
 
 
 class CBullet : public CGameObject
@@ -15,12 +15,11 @@ private:
 	XMFLOAT3	m_xmf3Velocity = XMFLOAT3(0.0f, 0.0f, 0.0f);
 
 	bool		m_OnShoot = false;
-	bool		m_OnHit = true;
+	bool		m_OnHit = false;
 public:
 	CHitEffect* m_pHitEffect = NULL;
 
 	CBullet();
-	//CBullet(ID3D12Device5* pd3dDevice, ID3D12GraphicsCommandList4* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature);
 	virtual ~CBullet();
 
 	virtual void Update(float fTimeElapsed);
@@ -34,6 +33,14 @@ public:
 	void SetHitEffect(CHitEffect* pHit) { m_pHitEffect = pHit; }
 
 	void SetBulletPosition(XMFLOAT3 Pos);
+	XMFLOAT3 GetLookVector() { return(m_xmf3Look); }
+	XMFLOAT3 GetUpVector() { return(m_xmf3Up); }
+	XMFLOAT3 GetRightVector() { return(m_xmf3Right); }
+	void SetDirection(const XMFLOAT3& look)
+	{
+		m_xmf3Look = look;
+		m_xmf3Right = Vector3::CrossProduct(m_xmf3Up, m_xmf3Look, true);
+	}
 };
 
 

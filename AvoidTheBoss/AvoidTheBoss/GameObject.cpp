@@ -1379,7 +1379,6 @@ void CEmergencyDoor::Animate(float fTimeElapsed)
 			m_AnimationDegree -= delta * fTimeElapsed;
 
 			std::cout << " EmergencyDoor " << m_AnimationDegree << std::endl;
-			//std::cout << "EmergencyDoor : " << GetPosition().x << " " << GetPosition().y << " " << GetPosition().z << std::endl;
 		}
 		else 
 		{
@@ -1445,7 +1444,8 @@ void CHitEffect::Update(float fTimeElapsed)
 {
 	if (m_bOnHit)
 	{
-		if (m_nAnimCount == HIT_EFFECT_ANIM_TIME)
+		// 이동, 회전 변환 코드 작성하기++
+		if (m_nAnimCount >= HIT_EFFECT_ANIM_TIME)
 		{
 			m_bOnHit = false;
 			m_nAnimCount = 0;

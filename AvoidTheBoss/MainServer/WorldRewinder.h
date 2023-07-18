@@ -96,8 +96,8 @@ public:
 			_lastWorldStatus._pPos[3] = players[3].GetPosition();
 			
 			++_lastWorldStatus._myWorldFrame;
-			_curFrame = _lastWorldStatus._myWorldFrame;
 			SetWorldStatusByFrame(_lastWorldStatus._myWorldFrame, _lastWorldStatus);
+			std::cout << "Add History" <<  _lastWorldStatus._pPos[0].z << " " << _frameIndex << "\n";
 	}
 	bool IsAttackAvailable(uint32 frame, int32 targetIdx)
 	{

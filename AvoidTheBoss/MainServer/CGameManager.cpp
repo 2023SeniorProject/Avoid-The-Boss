@@ -32,6 +32,7 @@ void CGameManager::InitGame()
 	_generators[2]._pos = XMFLOAT3(0.6774719, 1.083242, -23.05909);
 	
 	_gState = GAMESTATE::IN_GAME;
+	_history.Clear();
 	
 }
 

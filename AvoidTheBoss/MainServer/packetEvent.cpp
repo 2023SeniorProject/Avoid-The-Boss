@@ -159,7 +159,7 @@ void moveEvent::Task()
 		packet.type = (uint8)S_GAME_PACKET_TYPE::SPOS;
 		packet.x = targetPlayer.GetPosition().x;
 		packet.z = targetPlayer.GetPosition().z;
-		std::cout << packet.x << " " << packet.z << "\n";
+		
 		targetRoom.BroadCastingExcept(&packet, _sid);
 	}
 	

@@ -31,7 +31,7 @@ public:
 
 	// ========== 플레이어 조작 관련 ===================
 	virtual uint8 ProcessInput();
-	virtual void Move(const int8& dwDirection, float fDistance);
+	virtual void Move(const int16& dwDirection, float fDistance);
 	virtual void Update(float fTimeElapsed, CLIENT_TYPE ptype);
 	virtual void LateUpdate(float fTimeElapsed, CLIENT_TYPE ptype);
 
@@ -49,7 +49,7 @@ public:
 	}
 	bool IsSeMiBehavior() // 스탠드, 크라울, 다운 상태
 	{
-		return !(m_behavior == (int32)PLAYER_BEHAVIOR::DOWN || m_behavior == (int32)PLAYER_BEHAVIOR::CRAWL || m_behavior == (int32)PLAYER_BEHAVIOR::STAND);
+		return (m_behavior == (int32)PLAYER_BEHAVIOR::DOWN || m_behavior == (int32)PLAYER_BEHAVIOR::CRAWL || m_behavior == (int32)PLAYER_BEHAVIOR::STAND);
 	}
 	
 	// 깨우기

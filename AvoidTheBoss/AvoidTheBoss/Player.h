@@ -11,7 +11,7 @@ enum class PLAYER_TYPE
 	NONE = 0 ,BOSS = 1, EMPLOYEE = 2
 };
 
-enum class CHARACTER_TYPE: int32
+enum class CHARACTER_TYPE: uint8
 {
 	BOSS = 0, YELLOW_EMP = 1, MASK_EMP, CAP_EMP, GOGGLE_EMP, COUNT
 };
@@ -70,8 +70,9 @@ public:
 	bool m_hide = false;// 플레이어를 가릴 것이냐 그릴 것이냐
 	
 	// 05-21 추가
-	int32 m_hp = 5; // hp는 5로 설정
+	int32 m_hp = 3; // hp는 5로 설정
 	int32 m_idx = 0;
+	int32 m_chartype = -1; // 0 boss 1, emp;
 	// 05-22 추가
 	int32 m_behavior = (int32)PLAYER_BEHAVIOR::IDLE;
 public: 

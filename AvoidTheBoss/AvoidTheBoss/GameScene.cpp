@@ -202,7 +202,7 @@ void CGameScene::BuildObjects(ID3D12Device5* pd3dDevice,ID3D12GraphicsCommandLis
 	}
 	for (int i = 0; i < PLAYERNUM; ++i)
 	{
-		if (i == (int)CHARACTER_TYPE::BOSS)
+		if (i == (int)(CHARACTER_TYPE::CAP_EMP))
 		{
 			m_players[i] = new CBoss(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature);
 			if (m_ppShaders[1])
@@ -212,7 +212,7 @@ void CGameScene::BuildObjects(ID3D12Device5* pd3dDevice,ID3D12GraphicsCommandLis
 		}
 		else
 		{
-			m_players[i] = new CEmployee(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, (CHARACTER_TYPE)(i));
+			m_players[i] = new CEmployee(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, (CHARACTER_TYPE)(i + 1));
 			((CEmployee*)m_players[i])->m_pSwitches[0].position = XMFLOAT3(-23.12724, 1.146619, 1.814123);
 			((CEmployee*)m_players[i])->m_pSwitches[0].radius = 0.2f;
 			((CEmployee*)m_players[i])->m_pSwitches[1].position = XMFLOAT3(23.08867, 1.083242, 3.155997);

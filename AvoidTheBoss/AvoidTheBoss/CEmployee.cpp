@@ -12,7 +12,7 @@ CEmployee::CEmployee(ID3D12Device5* pd3dDevice, ID3D12GraphicsCommandList4* pd3d
 {
 	m_ctype = (uint8)PLAYER_TYPE::EMPLOYEE;
 	m_nCharacterType = nType;
-
+	
 	m_pCamera = ChangeCamera(FIRST_PERSON_CAMERA, 0.0f);
 
 	CLoadedModelInfo* pEmployeeModel = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, g_pstrCharactorRefernece[(int)m_nCharacterType], NULL, Layout::PLAYER);
@@ -94,7 +94,7 @@ uint8 CEmployee::ProcessInput()
 {
 	// 발전기 상호작용 관련 인풋 처리
 
-	int8 dir = 0;
+	uint8 dir = 0;
 	if (!IsSeMiBehavior())
 	{
 		if (InputManager::GetInstance().GetKeyBuffer(KEY_TYPE::W) > 0)  dir |= KEY_FORWARD;
@@ -106,15 +106,15 @@ uint8 CEmployee::ProcessInput()
 		else	 SetBehavior(PLAYER_BEHAVIOR::IDLE);
 
 		// 구조 작업이나 발전기 상호작용을 수행하고 있다면 
-		if (RescueTasking() || GenTasking()) { dir = 0; }
+		//if (RescueTasking() || GenTasking()) { dir = 0; }
 	}
-
 	Move(dir, EMPLOYEE_VELOCITY);
 	return dir;
 	
 }
-void CEmployee::Move(const int8& dwDirection, float fDistance)
+void CEmployee::Move(const int16& dwDirection, float fDistance)
 {
+	
 	switch (GetBehavior())
 	{
 	case (int32)PLAYER_BEHAVIOR::RESCUE:
@@ -123,6 +123,7 @@ void CEmployee::Move(const int8& dwDirection, float fDistance)
 	case (int32)PLAYER_BEHAVIOR::CRAWL:
 		CPlayer::Move(0, 0);
 		break;
+	case (int32)PLAYER_BEHAVIOR::IDLE:
 	case (int32)PLAYER_BEHAVIOR::ATTACKED:
 	case (int32)PLAYER_BEHAVIOR::RUN:
 		CPlayer::Move(dwDirection, EMPLOYEE_VELOCITY);
@@ -518,8 +519,6 @@ bool CEmployee::RescueTasking()
 			packet.size = sizeof(SC_EVENTPACKET);
 			packet.type = (uint8)SC_GAME_PACKET_TYPE::GAMEEVENT;
 			clientCore.DoSend(&packet);
-
-			//static_cast<CEmployee*>(mainGame.m_ppScene[mainGame.m_nSceneIndex]->GetScenePlayerByIdx(pIdx))->RescueOn(true);
 			std::cout << pIdx << " Rescuing\n";
 
 		}
@@ -533,10 +532,6 @@ bool CEmployee::RescueTasking()
 			{
 				SetBehavior(PLAYER_BEHAVIOR::IDLE);
 				SetRescueInteraction(false);
-				//static_cast<CEmployee*>(mainGame.m_ppScene[mainGame.m_nSceneIndex]->GetScenePlayerByIdx(pIdx))->RescueOn(false);
-				//static_cast<CEmployee*>(mainGame.m_ppScene[mainGame.m_nSceneIndex]->GetScenePlayerByIdx(pIdx))->ResetRescueGuage();
-
-
 				SC_EVENTPACKET packet;
 				packet.eventId = pIdx + (int32)EVENT_TYPE::RESCUE_CANCEL_PLAYER_ONE;
 				packet.size = sizeof(SC_EVENTPACKET);

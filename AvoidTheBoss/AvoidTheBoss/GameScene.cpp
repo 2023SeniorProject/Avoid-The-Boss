@@ -197,12 +197,12 @@ void CGameScene::BuildObjects(ID3D12Device5* pd3dDevice,ID3D12GraphicsCommandLis
 	m_ppGenerator = new CGenerator * [m_nGenerator];
 	for (int i = 0; i < m_nGenerator; ++i)
 	{
-		//m_ppGenerator[i] = ((CGenerator*)pGeneratorObjectsShader->m_ppObjects[i]);
-		//m_ppGenerator[i]->m_idx = i;
+		m_ppGenerator[i] = ((CGenerator*)pGeneratorObjectsShader->m_ppObjects[i]);
+		m_ppGenerator[i]->m_idx = i;
 	}
 	for (int i = 0; i < PLAYERNUM; ++i)
 	{
-		if (i == (int)(CHARACTER_TYPE::CAP_EMP))
+		if (i == (int)(CHARACTER_TYPE::BOSS))
 		{
 			m_players[i] = new CBoss(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature);
 			if (m_ppShaders[1])
@@ -212,7 +212,7 @@ void CGameScene::BuildObjects(ID3D12Device5* pd3dDevice,ID3D12GraphicsCommandLis
 		}
 		else
 		{
-			m_players[i] = new CEmployee(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, (CHARACTER_TYPE)(i + 1));
+			m_players[i] = new CEmployee(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, (CHARACTER_TYPE)(i));
 			((CEmployee*)m_players[i])->m_pSwitches[0].position = XMFLOAT3(-23.12724, 1.146619, 1.814123);
 			((CEmployee*)m_players[i])->m_pSwitches[0].radius = 0.2f;
 			((CEmployee*)m_players[i])->m_pSwitches[1].position = XMFLOAT3(23.08867, 1.083242, 3.155997);
@@ -220,6 +220,7 @@ void CGameScene::BuildObjects(ID3D12Device5* pd3dDevice,ID3D12GraphicsCommandLis
 			((CEmployee*)m_players[i])->m_pSwitches[2].position = XMFLOAT3(0.6774719, 1.083242, -23.05909);
 			((CEmployee*)m_players[i])->m_pSwitches[2].radius = 0.2f;
 		}
+		m_players[i]->m_idx = i;
 	}
 	m_pCamera = m_players[m_playerIdx]->GetCamera();
 	
@@ -293,7 +294,7 @@ void CGameScene::Update(HWND& hWnd)
 		if (k == m_playerIdx) m_players[k]->Update(m_timer.GetTimeElapsed(), CLIENT_TYPE::OWNER);
 		else m_players[k]->Update(m_timer.GetTimeElapsed(), CLIENT_TYPE::OTHER_PLAYER);
 	}
-	//for (int k = 0; k < m_nGenerator; ++k) m_ppGenerator[k]->Update(_timer.GetTimeElapsed());
+	for (int k = 0; k < m_nGenerator; ++k) m_ppGenerator[k]->Update(m_timer.GetTimeElapsed());
 
 	mainGame.m_UIRenderer->UpdateGameSceneUI(this);
 
@@ -406,6 +407,7 @@ void CGameScene::InitGame(void* packet, int32 sid)
 	if(m_players[1] != nullptr)m_players[1]->SetPosition(XMFLOAT3(10, 0.25, -18));
 	if(m_players[2] != nullptr)m_players[2]->SetPosition(XMFLOAT3(15, 0.25, -18));
 	if(m_players[3] != nullptr)m_players[3]->SetPosition(XMFLOAT3(20, 0.25, -18));
+	m_pCamera = m_players[m_playerIdx]->GetCamera();
 }
 
 void CGameScene::AddEvent(queueEvent* ev, float after)

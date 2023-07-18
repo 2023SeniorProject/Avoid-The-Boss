@@ -161,7 +161,7 @@ void CSession::ProcessPacket(char* packet)
 		S2C_LOGIN_OK* lo = (S2C_LOGIN_OK*)packet;
 		_cid = lo->cid;
 		_sid = lo->sid;
-
+		std::cout << lo->sid << "--> SID\n";
 		CScene::m_sid = lo->sid;
 		CScene::m_cid = lo->cid;
 		mainGame.ChangeScene(CGameFramework::SCENESTATE::LOBBY);
@@ -268,10 +268,10 @@ void CSession::ProcessPacket(char* packet)
 	{
 		S2C_KEY* movePacket = reinterpret_cast<S2C_KEY*>(packet);
 		moveEvent* mev = new moveEvent();
-
+		std::cout << movePacket->sid << "\n";
 		CPlayer* player = gs ->GetScenePlayerBySid(movePacket->sid);
 		if (player == nullptr) break;
-
+		
 		mev->player = player;
 		mev->_dir.x = movePacket->x;
 		mev->_dir.y = 0;
@@ -298,7 +298,7 @@ void CSession::ProcessPacket(char* packet)
 		S2C_POS* posPacket = reinterpret_cast<S2C_POS*>(packet);
 		CPlayer* player = gs->GetScenePlayerBySid(posPacket->sid);		
 		if (player == nullptr) break;
-		std::cout << "Pos\n";
+		
 		XMFLOAT3 newPos = XMFLOAT3(posPacket->x, player->GetPosition().y, posPacket->z);
 		posEvent* pe = new posEvent();
 		pe->player = player;

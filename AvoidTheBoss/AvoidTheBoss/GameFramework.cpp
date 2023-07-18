@@ -387,6 +387,7 @@ void CGameFramework::ReleaseScenes()
 
 void CGameFramework::ProcessInput()
 {
+	if (m_hWnd != ::GetActiveWindow()) return;
 	m_SceneManager->ProcessInput(m_hWnd, m_curScene);
 	
 }
@@ -412,6 +413,7 @@ void CGameFramework::FrameAdvance() // 여기서 업데이트랑 렌더링 동시에 진행하는 
 	//2 업데이트 처리
 	UpdateObject();
 	//3 애니메이트 처리
+	
 	AnimateObjects();
 	//4 렌더링 처리
 	Render();

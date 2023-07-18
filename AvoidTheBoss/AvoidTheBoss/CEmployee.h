@@ -1,6 +1,9 @@
 #pragma once
 #include "Player.h"
 
+
+class CGenerator;
+
 class CEmployee : public CPlayer
 {
 public:
@@ -80,8 +83,8 @@ public: // 05-23 추가 함수
 	
 	
 	bool GetIsInGenArea() { return m_bIsInGenArea; }
-	int32 GetAvailGenIdx();
-	int32 GetAvailEMPldx();
+	CGenerator* GetAvailGen();
+	CEmployee* GetAvailEMP();
 public: // 05-24 추가함수
 	GEN_INFO m_pSwitches[3];
 };

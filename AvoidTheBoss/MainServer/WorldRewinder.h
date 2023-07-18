@@ -96,6 +96,7 @@ public:
 			_lastWorldStatus._pPos[3] = players[3].GetPosition();
 			
 			++_lastWorldStatus._myWorldFrame;
+			_curFrame = _lastWorldStatus._myWorldFrame;
 			SetWorldStatusByFrame(_lastWorldStatus._myWorldFrame, _lastWorldStatus);
 	}
 	bool IsAttackAvailable(uint32 frame, int32 targetIdx)

@@ -453,28 +453,30 @@ void UIManager::UpdateGameSceneUI(CGameScene* gc)
 
     // 발전기
     
-        if (gc->GetScenePlayerByIdx(m_playerIdx))
+    if (gc->GetScenePlayerByIdx(m_playerIdx))
+    {
+        if (m_playerIdx != 0)
         {
-            if (gc->GetScenePlayerByIdx(m_playerIdx)->m_ctype == (uint8)CHARACTER_TYPE::YELLOW_EMP)
+            CEmployee* myPlayer = static_cast<CEmployee*>(gc->GetScenePlayerByIdx(m_playerIdx));
+            if (myPlayer->GetIsInGenArea())
             {
-                CEmployee* myPlayer = static_cast<CEmployee*>(gc->GetScenePlayerByIdx(m_playerIdx));
-                if (myPlayer->GetIsInGenArea())
-                {
-                    m_GenerateUIButtons[20].m_hide = false;
-                }
+               
+                m_GenerateUIButtons[20].m_hide = false;
+            }
+            else m_GenerateUIButtons[20].m_hide = true;
 
-                if (myPlayer->GetIsPlayerOnGenInter())
-                {
-                    int32 genIdx = myPlayer->GetAvailGenIdx();
-                    CGenerator* targetGen = gc->GetSceneGenByIdx(genIdx);
-                    m_GenerateUIButtons[((int32)targetGen->m_curGuage % 5)].m_hide = false;
-                }
-                else
-                {
-                    for (int i = 0; i < 20; ++i)  m_GenerateUIButtons[i].m_hide = false;
-                }
+            if (myPlayer->GetIsPlayerOnGenInter())
+            {
+                
+                CGenerator* targetGen = myPlayer->GetAvailGen();
+                if(targetGen) m_GenerateUIButtons[((int32)targetGen->m_curGuage % 5)].m_hide = false;
+            }
+            else
+            {
+                for (int i = 0; i < 20; ++i)  m_GenerateUIButtons[i].m_hide = true;
             }
         }
+    }
 }
 
 void UIManager::DrawGameSceneUI(int32 Scene)
@@ -496,7 +498,7 @@ void UIManager::DrawGameSceneUI(int32 Scene)
     // 큰 초상화 그리기
     m_pd2dDeviceContext->DrawBitmap(m_CharProfile[m_playerIdx].resource, m_myProfileLayout);
     // HP 그리기
-    if (1)
+    if (m_playerIdx != 0)
     {
         for(auto i : m_HPUi)  if (!i.m_hide) m_pd2dDeviceContext->DrawBitmap(i.resource, i.d2dLayoutRect);
     }
@@ -660,9 +662,11 @@ void UIManager::InitializeDevice(ID3D12Device5* pd3dDevice, ID3D12CommandQueue* 
         filename.append(L".png");
         m_GenerateUIButtons[i].resource = LoadPngFromFile(filename.c_str());
         m_GenerateUIButtons[i].d2dLayoutRect = MakeLayoutRect(FRAME_BUFFER_WIDTH / 2.0, FRAME_BUFFER_HEIGHT * 0.8, FRAME_BUFFER_WIDTH / 2, FRAME_BUFFER_HEIGHT / 4.f);
+        m_GenerateUIButtons[i].m_hide = true;
     }
     m_GenerateUIButtons[20].resource = LoadPngFromFile(L"UI/F.png");
-    m_GenerateUIButtons[20].d2dLayoutRect = MakeLayoutRect(FRAME_BUFFER_WIDTH / 2.0,    FRAME_BUFFER_HEIGHT * 0.85, FRAME_BUFFER_WIDTH * 0.1f, FRAME_BUFFER_HEIGHT * 0.1f);
+    m_GenerateUIButtons[20].d2dLayoutRect = MakeLayoutRect(FRAME_BUFFER_WIDTH / 2.0, FRAME_BUFFER_HEIGHT * 0.9, FRAME_BUFFER_WIDTH * 0.1f, FRAME_BUFFER_HEIGHT * 0.1f);
+    m_GenerateUIButtons[20].m_hide = true;
 }
 
 void UIManager::Render2D(UINT nFrame, int32 curScene)

@@ -2,9 +2,13 @@
 #include "CEmployee.h"
 #include "clientIocpCore.h"
 #include "GameFramework.h"
-#include "InputManager.h"
+
 #include "CGenerator.h"
 #include "CSound.h"
+
+#include "GameScene.h"
+#include "InputManager.h"
+#include "SceneManager.h"
 #include "SoundManager.h"
 
 
@@ -106,7 +110,7 @@ uint8 CEmployee::ProcessInput()
 		else	 SetBehavior(PLAYER_BEHAVIOR::IDLE);
 
 		// 구조 작업이나 발전기 상호작용을 수행하고 있다면 
-		//if (RescueTasking() || GenTasking()) { dir = 0; }
+		if (RescueTasking() || GenTasking()) { dir = 0; }
 	}
 	Move(dir, EMPLOYEE_VELOCITY);
 	return dir;
@@ -383,8 +387,10 @@ void CEmployee::AnimTrackUpdate()
 	}
 }
 
-int32 CEmployee::GetAvailGenIdx()
+CGenerator* CEmployee::GetAvailGen()
 {
+	
+	CGameScene* gs = static_cast<CGameScene*>(mainGame.m_SceneManager->GetSceneByIdx((int32)CGameFramework::SCENESTATE::INGAME));
 	for (int i = 0; i < 3; ++i)
 	{
 		XMFLOAT3 distanceVec = Vector3::Subtract(m_xmf3Position, m_pSwitches[i].position);
@@ -392,30 +398,33 @@ int32 CEmployee::GetAvailGenIdx()
 		float sumRange = m_playerBV.Radius + m_pSwitches[i].radius;
 		if (distance <= sumRange)
 		{
-			//CGenerator* targetGenerator = mainGame.m_ppScene[mainGame.m_nSceneIndex]->GetSceneGenByIdx(i);
-			/*if (targetGenerator)
+			CGenerator* targetGenerator = gs->GetSceneGenByIdx(i);
+				
+			if (targetGenerator)
 			{
-				if (targetGenerator->IsAvailable()) return i;
-			}*/
+				if (targetGenerator->IsAvailable()) return targetGenerator;
+			}
 		}
 	}
 	
-	return -1;
+	return nullptr;
 }
 
-int32 CEmployee::GetAvailEMPldx()
+CEmployee* CEmployee::GetAvailEMP()
 {
+
+	CGameScene* gs = static_cast<CGameScene*>(mainGame.m_SceneManager->GetSceneByIdx((int32)CGameFramework::SCENESTATE::INGAME));
 	for (int i = 1; i < PLAYERNUM; ++i)
 	{
 
-		//CEmployee* p = static_cast<CEmployee*>(mainGame.m_ppScene[mainGame.m_nSceneIndex]->GetScenePlayerByIdx(i));
-		//if (p == nullptr || i == m_idx) continue;
-		//XMFLOAT3 ppos = p->GetPosition();
-		//ppos = Vector3::Subtract(m_xmf3Position, ppos);
-		//float dist = Vector3::Length(ppos);
-		//if (dist < 1.5 && p->GetBehavior() == (int32)PLAYER_BEHAVIOR::CRAWL && !p->GetRescueOn()) return i;
+		CEmployee* p = static_cast<CEmployee*>(gs->GetScenePlayerByIdx(i));
+		if (p == nullptr || i == m_idx) continue;
+		XMFLOAT3 ppos = p->GetPosition();
+		ppos = Vector3::Subtract(m_xmf3Position, ppos);
+		float dist = Vector3::Length(ppos);
+		if (dist < 1.5 && p->GetBehavior() == (int32)PLAYER_BEHAVIOR::CRAWL && !p->GetRescueOn()) return p;
 	}
-	return -1;
+	return nullptr;
 }
 
 // ============== 플레이어 상태 변경 처리 ============ 05-23
@@ -447,9 +456,9 @@ void CEmployee::PlayerDown()
 bool CEmployee::GenTasking()
 {
 
-	int genIdx = GetAvailGenIdx();
-	CGenerator* targetGen = nullptr;
-	//if (genIdx >= 0) mainGame.m_ppScene[mainGame.m_nSceneIndex]->GetSceneGenByIdx(genIdx); // 반환된 idx가 0보다 클 때만 처리
+
+	CGenerator* targetGen = GetAvailGen();
+	
 
 	//  F키를 눌렀고, 구하기 상호작용 중이 아닐 때
 	if (InputManager::GetInstance().GetKeyBuffer(KEY_TYPE::F) && !GetIsPlayerOnRescueInter())
@@ -462,11 +471,13 @@ bool CEmployee::GenTasking()
 
 			targetGen->SetInteractionOn(true); // 발전기 애니메이션 재생을 시작한다.
 			
-			SoundManager::GetInstance().PlayObjectSound(17, 4);
-			SoundManager::GetInstance().PlayObjectSound(6, 4);
+			
 
 			if (InputManager::GetInstance().GetKeyBuffer(KEY_TYPE::F) == (int8)KEY_STATUS::KEY_PRESS)
 			{
+				SoundManager::GetInstance().PlayObjectSound(17, 4);
+				SoundManager::GetInstance().PlayObjectSound(6, 4);
+
 				SC_EVENTPACKET packet;
 				packet.eventId = m_curInterGen + (int32)EVENT_TYPE::SWITCH_ONE_START_EVENT;
 				packet.size = sizeof(SC_EVENTPACKET);
@@ -505,40 +516,45 @@ bool CEmployee::RescueTasking()
 {
 
 	// 구조 중인 플레이어가 아닌 쓰러진 플레이어의 인덱스를 가져온다.
-	int32 pIdx = GetAvailEMPldx();
+	CEmployee* targetPlayer = GetAvailEMP();
 	// 1. 현재 켜져 있지 않고, 다른 플레이어에 의해 상호작용 중이지 않은 발전기를 가져온다.
 
-	if (InputManager::GetInstance().GetKeyBuffer(KEY_TYPE::E) && !GetIsPlayerOnGenInter()) // 스위치 상호작용 중이 아닐 때
+	if (!GetIsPlayerOnGenInter()) // 스위치 상호작용 중이 아닐 때
 	{
 		// 구하는 이벤트에 관한 패킷을 전송하도록 한다.
-		if (InputManager::GetKeyBuffer(KEY_TYPE::E) == (int8)KEY_STATUS::KEY_PRESS && pIdx != -1)
+		if (InputManager::GetKeyBuffer(KEY_TYPE::E) == (int8)KEY_STATUS::KEY_PRESS)
 		{
-			SetRescueInteraction(true);
-			SC_EVENTPACKET packet;
-			packet.eventId = pIdx + (int32)EVENT_TYPE::RESCUE_PLAYER_ONE;
-			packet.size = sizeof(SC_EVENTPACKET);
-			packet.type = (uint8)SC_GAME_PACKET_TYPE::GAMEEVENT;
-			clientCore.DoSend(&packet);
-			std::cout << pIdx << " Rescuing\n";
-
-		}
-		return true;
-	}
-	else if (!InputManager::GetInstance().GetKeyBuffer(KEY_TYPE::E))
-	{
-		if (InputManager::GetKeyBuffer(KEY_TYPE::E) == (int8)KEY_STATUS::KEY_UP && pIdx != -1)
-		{
-			if (GetIsPlayerOnRescueInter())
+			if (targetPlayer)
 			{
-				SetBehavior(PLAYER_BEHAVIOR::IDLE);
-				SetRescueInteraction(false);
+				SetRescueInteraction(true);
 				SC_EVENTPACKET packet;
-				packet.eventId = pIdx + (int32)EVENT_TYPE::RESCUE_CANCEL_PLAYER_ONE;
+				packet.eventId = targetPlayer->m_idx + (int32)EVENT_TYPE::RESCUE_PLAYER_ONE;
 				packet.size = sizeof(SC_EVENTPACKET);
 				packet.type = (uint8)SC_GAME_PACKET_TYPE::GAMEEVENT;
 				clientCore.DoSend(&packet);
+				std::cout << targetPlayer->m_idx << " Rescuing\n";
+			}
+			return true;
+		}
+		else if (!InputManager::GetInstance().GetKeyBuffer(KEY_TYPE::E))
+		{
+			if (InputManager::GetKeyBuffer(KEY_TYPE::E) == (int8)KEY_STATUS::KEY_UP)
+			{
+				if (targetPlayer)
+				{
+					if (GetIsPlayerOnRescueInter())
+					{
+						SetBehavior(PLAYER_BEHAVIOR::IDLE);
+						SetRescueInteraction(false);
+						SC_EVENTPACKET packet;
+						packet.eventId = targetPlayer->m_idx + (int32)EVENT_TYPE::RESCUE_CANCEL_PLAYER_ONE;
+						packet.size = sizeof(SC_EVENTPACKET);
+						packet.type = (uint8)SC_GAME_PACKET_TYPE::GAMEEVENT;
+						clientCore.DoSend(&packet);
 
-				std::cout << pIdx << " Rescue Cancel\n";
+						std::cout << targetPlayer->m_idx << " Rescue Cancel\n";
+					}
+				}
 			}
 		}
 	}

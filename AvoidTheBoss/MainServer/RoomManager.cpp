@@ -30,9 +30,7 @@ void Room::UserOut(int32 sid)
 
 	{
 		// cList Lock 쓰기 호출	
-		//std::unique_lock<std::shared_mutex> wll(_listLock);
-		//auto i = std::find(_cList.begin(), _cList.end(), sid); // 리스트에 있는지 탐색 후
-		//if (i != _cList.end()) _cList.erase(i); // 리스트에서 제거
+		std::unique_lock<std::shared_mutex> wll(_listLock);
 		_memCnt.fetch_sub(1);
 		
 		for (int i = 0; i < PLAYERNUM; ++i)
@@ -54,8 +52,7 @@ void Room::UserOut(int32 sid)
 	}
 		
 	std::cout << "LEFT USER SID LIST [";
-	//for (auto i : _cList) std::cout << i << ", ";
-	for (auto i : _cArr) if(-1 != i.sid) std::cout << i.sid << ", ";
+	for (auto i : _cArr) if(-1 != i.sid) std::cout << (int32)i.sid << "|";
 	std::cout << " ]\n";
 	
 	// 인 게임중에  나간 플레이어는 숨기도록 한다.
@@ -139,7 +136,8 @@ void Room::BroadCasting(void* packet) // 방에 속하는 클라이언트에게만 전달하기
 {
 	// cList Lock 읽기 호출 
 	std::shared_lock<std::shared_mutex> rll(_listLock);
-	for (auto& i : _cArr)
+	
+	for (auto i : _cArr)
 	{
 		if (-1 == i.sid) continue;
 		else 
@@ -158,7 +156,8 @@ void Room::BroadCastingExcept(void* packet, int32 sid) // 방에 속하는 클라이언트
 {
 	// cList Lock 읽기 호출 
 	std::shared_lock<std::shared_mutex> rll(_listLock);
-	for (auto& i : _cArr)
+	
+	for (auto i : _cArr)
 	{
 		if (-1 == i.sid || sid == i.sid) continue;
 		else
@@ -181,9 +180,7 @@ void Room::Update()
 	_gameLogic.LateUpdate(_timer.GetTimeElapsed());
 
 	if (_timer.IsTimeToAddHistory())
-
 	{
-		
 		_gameLogic.AddHistory();
 		S2C_FRAMEPACKET packet;
 		packet.size = sizeof(S2C_FRAMEPACKET);
@@ -259,14 +256,14 @@ void Room::InitGame()
 		for (int i = 0; i < PLAYERNUM; ++i)
 		{
 			packet.sids[i] = _cArr[i].sid;
-			_gameLogic._players[i].m_sid = _cArr[i].sid;
+			_gameLogic.SetPlayerSidAndIdx(i, _cArr[i].sid);
 		}
 		BroadCasting(&packet);
 
 		std::cout << "GAME START\n";
 		std::cout << "TOTAL USER SID LIST[";
 		
-		for(int i = 0; i < 4; ++i) 
+		for (int i = 0; i < 4; ++i) std::cout << _gameLogic._players[i].m_sid << " | ";
 		std::cout << "]\n";
 		
 		

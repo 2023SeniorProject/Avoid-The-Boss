@@ -36,6 +36,9 @@ public:
 	friend class InteractionEvent;
 	friend class FrameEvent;
 	
+	friend class CEmployee;
+	friend class CBoss;
+
 	friend class CSession;
 
 	friend class CGameScene;

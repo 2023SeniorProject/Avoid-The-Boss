@@ -61,6 +61,9 @@ public:
 	CCamera* m_pCamera = nullptr;
 
 	uint8 m_ctype = -1; // 자신의 캐릭터 타입을 구현
+
+	CLIENT_TYPE m_clientType = CLIENT_TYPE::OTHER_PLAYER;
+
 	int16 m_sid = -1; // 자신으 Session Id
 	std::mutex m_lock; // 자신의 Lock
 

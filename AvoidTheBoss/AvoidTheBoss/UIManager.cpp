@@ -434,15 +434,16 @@ void UIManager::UpdateGameSceneUI(CGameScene* gc)
     for (int i = 1; i < 3; ++i)
     {
         if (!gc->GetScenePlayerByIdx(i)) continue;
-        if (MAX_HP == gc->GetScenePlayerByIdx(i)->m_hp)
+        if (i != m_playerIdx)
         {
-            for (auto& i : m_HPUi) i.m_hide = false;
-            m_CharStatus[i].resource = m_CharStatusBitmaps[0]; // normal
-        }
-        else if (0 == gc->GetScenePlayerByIdx(i)->m_hp)
-        {
-            for (auto& i : m_HPUi) i.m_hide = true;
-            m_CharStatus[i].resource = m_CharStatusBitmaps[2]; // death
+            if (MAX_HP == gc->GetScenePlayerByIdx(i)->m_hp)
+            {
+                m_CharStatus[i].resource = m_CharStatusBitmaps[0]; // normal
+            }
+            else if (0 == gc->GetScenePlayerByIdx(i)->m_hp)
+            {
+                m_CharStatus[i].resource = m_CharStatusBitmaps[2]; // death
+            }
         }
         else
         {

@@ -40,7 +40,6 @@ void CBullet::Update(float fTimeElapsed)
 		m_pHitEffect->SetOnHit(true);
 		m_OnHit = false;
 	}
-	m_pHitEffect->Update(fTimeElapsed);
 }
 
 void CBullet::SetBulletPosition(XMFLOAT3 playerPos)

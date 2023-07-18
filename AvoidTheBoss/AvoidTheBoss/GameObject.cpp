@@ -596,7 +596,6 @@ void CGameObject::AddRef()
 
 void CGameObject::Release() 
 { 
-
 	if (m_pChild) m_pChild->Release();
 	if (m_pSibling) m_pSibling->Release();
 
@@ -1432,24 +1431,30 @@ CHitEffect::~CHitEffect()
 
 void CHitEffect::OnPrepareAnimate()
 {
-	m_pHit = FindFrame("HitMesh");
+	m_pHit = FindFrame("hit");
 }
 
 void CHitEffect::Animate(float fTimeElapsed)
 {
-	CGameObject::Animate(fTimeElapsed);
+	if (m_bOnHit)
+	{
+		scaleFactor += HIT_EFFECT_SCALE_INCREMENT;
+		// 이동, 회전 변환 코드 작성하기++
+		if (scaleFactor >= HIT_EFFECT_SCALE_MAX)
+		{
+			m_bOnHit = false;
+			scaleFactor = 0.0f;
+		}
+		else if(scaleFactor > 0.0f)
+		{
+			//XMMATRIX mtxScale = XMMatrixScaling(scaleFactor, scaleFactor, scaleFactor);
+			//m_pHit->m_xmf4x4ToParent = Matrix4x4::Multiply(mtxScale, m_pHit->m_xmf4x4ToParent);
+		}
+		CGameObject::Animate(fTimeElapsed);
+	}
 }
 
 void CHitEffect::Update(float fTimeElapsed)
 {
-	if (m_bOnHit)
-	{
-		// 이동, 회전 변환 코드 작성하기++
-		if (m_nAnimCount >= HIT_EFFECT_ANIM_TIME)
-		{
-			m_bOnHit = false;
-			m_nAnimCount = 0;
-		}
-		m_nAnimCount++;
-	}
+
 }

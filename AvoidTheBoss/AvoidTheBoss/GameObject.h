@@ -495,7 +495,8 @@ public:
 	virtual void Animate(float fTimeElapsed);
 };
 
-#define HIT_EFFECT_ANIM_TIME 25
+#define HIT_EFFECT_SCALE_MAX 1.0f
+#define HIT_EFFECT_SCALE_INCREMENT 0.01f;
 class CHitEffect : public CGameObject
 {
 private:
@@ -506,7 +507,7 @@ private:
 	XMFLOAT3	m_xmf3Up = XMFLOAT3(0.0f, 1.0f, 0.0f);
 	XMFLOAT3	m_xmf3Velocity = XMFLOAT3(0.0f, 0.0f, 0.0f);
 
-	int m_nAnimCount = 0;
+	float scaleFactor = 0.0f;
 	bool m_bOnHit = false;
 	CGameObject* m_pHit = NULL;
 public:

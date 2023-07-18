@@ -801,7 +801,7 @@ void CHitEffectObjectsShader::BuildObjects(ID3D12Device5* pd3dDevice, ID3D12Grap
 	pHit->m_type = 1;
 	m_ppObjects[0] = new CHitEffect();
 	m_ppObjects[0]->SetChild(pHit);
-	//m_ppObjects[0]->Rotate(0.0f, 180.0f, 0.0f);
+	m_ppObjects[0]->OnPrepareAnimate();
 	m_ppObjects[0]->SetPosition(XMFLOAT3(0.0f, 1.0f, 2.5f));
 	pHit->AddRef();
 

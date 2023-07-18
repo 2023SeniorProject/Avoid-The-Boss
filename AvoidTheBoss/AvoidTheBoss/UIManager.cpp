@@ -1,9 +1,16 @@
 #include "pch.h"
 #include "GameFramework.h"
 #include "UIManager.h"
+
+#include "CBoss.h"
+#include "CEmployee.h"
+#include "CGenerator.h"
+
 #include "SceneManager.h"
+
 #include "OtherScenes.h"
 #include "GameScene.h"
+
 #include <d2d1_1.h>
 #include <wincodec.h>
 
@@ -13,7 +20,7 @@ const int32 PROFILE_UI_OFFSET_Y = FRAME_BUFFER_HEIGHT * 0.1;
 const int32 PROFILE_UI_WIDTH = FRAME_BUFFER_WIDTH * 0.1;
 const int32 PROFILE_UI_HEIGHT = FRAME_BUFFER_HEIGHT * 0.1;
 
-const int32 BIG_PROFILE_UI_OFFSET_Y = PROFILE_UI_OFFSET_Y * 6;
+const int32 BIG_PROFILE_UI_OFFSET_Y = PROFILE_UI_OFFSET_Y * 5;
 const int32 BIG_PROFILE_UI_WIDTH = FRAME_BUFFER_WIDTH * 0.2;
 const int32 BIG_PROFILE_UI_HEIGHT = FRAME_BUFFER_HEIGHT * 0.2;
 
@@ -415,7 +422,7 @@ void UIManager::InitGameSceneUI(CGameScene* gc)
         m_CharStatus[i].resource =  m_CharStatusBitmaps[0]; // normal status로 시작
     }
     
-    m_myProfileLayout = MakeLayoutRectByCorner(PROFILE_UI_OFFSET_X, BIG_PROFILE_UI_HEIGHT, BIG_PROFILE_UI_WIDTH, BIG_PROFILE_UI_HEIGHT);
+    m_myProfileLayout = MakeLayoutRectByCorner(PROFILE_UI_OFFSET_X,BIG_PROFILE_UI_OFFSET_Y, BIG_PROFILE_UI_WIDTH, BIG_PROFILE_UI_HEIGHT);
 
     // 플레이어 hp 출력
 
@@ -423,7 +430,51 @@ void UIManager::InitGameSceneUI(CGameScene* gc)
 
 void UIManager::UpdateGameSceneUI(CGameScene* gc)
 {
- 
+  // 동적 UI들 hp, status
+    for (int i = 1; i < 3; ++i)
+    {
+        if (!gc->GetScenePlayerByIdx(i)) continue;
+        if (MAX_HP == gc->GetScenePlayerByIdx(i)->m_hp)
+        {
+            for (auto& i : m_HPUi) i.m_hide = false;
+            m_CharStatus[i].resource = m_CharStatusBitmaps[0]; // normal
+        }
+        else if (0 == gc->GetScenePlayerByIdx(i)->m_hp)
+        {
+            for (auto& i : m_HPUi) i.m_hide = true;
+            m_CharStatus[i].resource = m_CharStatusBitmaps[2]; // death
+        }
+        else
+        {
+            m_HPUi[gc->GetScenePlayerByIdx(i)->m_hp + 1].m_hide = true;
+            m_CharStatus[i].resource = m_CharStatusBitmaps[1]; // injuried
+        }
+    }
+
+    // 발전기
+    
+        if (gc->GetScenePlayerByIdx(m_playerIdx))
+        {
+            if (gc->GetScenePlayerByIdx(m_playerIdx)->m_ctype == (uint8)CHARACTER_TYPE::YELLOW_EMP)
+            {
+                CEmployee* myPlayer = static_cast<CEmployee*>(gc->GetScenePlayerByIdx(m_playerIdx));
+                if (myPlayer->GetIsInGenArea())
+                {
+                    m_GenerateUIButtons[20].m_hide = false;
+                }
+
+                if (myPlayer->GetIsPlayerOnGenInter())
+                {
+                    int32 genIdx = myPlayer->GetAvailGenIdx();
+                    CGenerator* targetGen = gc->GetSceneGenByIdx(genIdx);
+                    m_GenerateUIButtons[((int32)targetGen->m_curGuage % 5)].m_hide = false;
+                }
+                else
+                {
+                    for (int i = 0; i < 20; ++i)  m_GenerateUIButtons[i].m_hide = false;
+                }
+            }
+        }
 }
 
 void UIManager::DrawGameSceneUI(int32 Scene)
@@ -595,7 +646,7 @@ void UIManager::InitializeDevice(ID3D12Device5* pd3dDevice, ID3D12CommandQueue* 
     {
         m_HPUi[i].resource = m_HpBitmap;
         m_HPUi[i].d2dLayoutRect = MakeLayoutRectByCorner(PROFILE_UI_OFFSET_X + BIG_PROFILE_UI_WIDTH + STATUS_UI_WIDTH * i,
-            BIG_PROFILE_UI_HEIGHT, STATUS_UI_WIDTH, STATUS_UI_HEIGHT);
+            BIG_PROFILE_UI_OFFSET_Y + BIG_PROFILE_UI_WIDTH / 4.0, STATUS_UI_WIDTH, STATUS_UI_HEIGHT);
     }
     // 발전기 게이지
     for (int i = 0; i < 20; ++i)

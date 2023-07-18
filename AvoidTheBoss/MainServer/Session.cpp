@@ -31,7 +31,6 @@ void ServerSession::Processing(IocpEvent* iocpEvent, int32 numOfBytes)
 	{
 		case EventType::Recv:
 		{
-			
 			RecvEvent* rev = static_cast<RecvEvent*>(iocpEvent);
 			int remain_data = numOfBytes + _prev_remain;
 			char* p = rev->_rbuf;
@@ -162,6 +161,7 @@ void ServerSession::ProcessPacket(char* packet)
 			ServerIocpCore._rmgr->GetRoom(_myRm).BroadCastingExcept(&packet, _sid);
 			ServerIocpCore._rmgr->GetRoom(_myRm).UpdateReady(idx, true);
 			ServerIocpCore._rmgr->GetRoom(_myRm).InitGame();
+			
 		}
 		break;
 		case (uint8)C_ROOM_PACKET_TYPE::ACQ_READY_CANCEL:

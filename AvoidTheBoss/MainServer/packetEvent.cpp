@@ -5,7 +5,7 @@ void InteractionEvent::Task()
 {
 	int16 roomNum = ServerIocpCore._clients[_sid]->_myRm;
 	Room& targetRoom = ServerIocpCore._rmgr->GetRoom(roomNum);
-	CGameManager& gm = targetRoom.GetGameManager();
+	CGameManager& gm = targetRoom._gameLogic;
 	switch ((EVENT_TYPE)eventId)
 	{
 		//============= 스위치 관련 이벤트 ===================
@@ -142,7 +142,7 @@ void moveEvent::Task()
 {
 	// to do move Player in gameLogic
 	int16 roomNum = ServerIocpCore._clients[_sid]->_myRm;
-	CGameManager& gm = ServerIocpCore._rmgr->GetRoom(roomNum).GetGameManager();
+	CGameManager& gm = ServerIocpCore._rmgr->GetRoom(roomNum)._gameLogic;
 	Room& targetRoom = ServerIocpCore._rmgr->GetRoom(roomNum);
 	SPlayer& targetPlayer = gm.GetPlayerBySid(_sid);
 	
@@ -159,16 +159,17 @@ void moveEvent::Task()
 		packet.type = (uint8)S_GAME_PACKET_TYPE::SPOS;
 		packet.x = targetPlayer.GetPosition().x;
 		packet.z = targetPlayer.GetPosition().z;
-		
+		std::cout << packet.x << " " << packet.z << "\n";
 		targetRoom.BroadCastingExcept(&packet, _sid);
 	}
+	
 };
 
 void AttackEvent::Task()
 {
 	int16 roomNum = ServerIocpCore._clients[_sid]->_myRm;
 
-	CGameManager& gm = ServerIocpCore._rmgr->GetRoom(roomNum).GetGameManager();
+	CGameManager& gm = ServerIocpCore._rmgr->GetRoom(roomNum)._gameLogic;
 	bool retVal = ServerIocpCore._rmgr->GetRoom(roomNum).ProcessAttackEvent(_wf, _tidx);
 	SPlayer& emp = gm.GetPlayerByIdx(_tidx);
 	

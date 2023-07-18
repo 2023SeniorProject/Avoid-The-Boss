@@ -14,7 +14,7 @@ void CSound::SoundSystem()
 {
 	FMOD_System_Create(&pSystem, FMOD_VERSION);
 
-	FMOD_System_Init(pSystem, 20, FMOD_INIT_NORMAL, nullptr);
+	FMOD_System_Init(pSystem, 22, FMOD_INIT_NORMAL, nullptr);
 
 	// πË∞Ê¿Ωæ«
 	FMOD_System_CreateSound(pSystem, "Sound/Danger_Background.mp3", FMOD_LOOP_NORMAL, nullptr, &pSound[0]); //0
@@ -43,8 +43,9 @@ void CSound::SoundSystem()
 	FMOD_System_CreateSound(pSystem, "Sound/Generator.mp3", FMOD_LOOP_NORMAL, nullptr, &pSound[17]);
 	FMOD_System_CreateSound(pSystem, "Sound/Hangar_Door_Open.mp3", FMOD_LOOP_NORMAL, nullptr, &pSound[18]);
 	FMOD_System_CreateSound(pSystem, "Sound/Shutter_Open.mp3", FMOD_LOOP_NORMAL, nullptr, &pSound[19]);
-	FMOD_System_CreateSound(pSystem, "Sound/UIButton.mp3", FMOD_LOOP_NORMAL, nullptr, &pSound[20]);
-	FMOD_System_CreateSound(pSystem, "Sound/UI_Click.wav", FMOD_LOOP_NORMAL, nullptr, &pSound[21]);
+	
+	FMOD_System_CreateSound(pSystem, "Sound/UIButton.mp3", FMOD_LOOP_OFF, nullptr, &pSound[20]);
+	FMOD_System_CreateSound(pSystem, "Sound/UI_Click.wav", FMOD_LOOP_OFF, nullptr, &pSound[21]);
 }
 
 void CSound::PlayBackGroundSound(int nSound, int nChannel)

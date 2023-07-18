@@ -217,8 +217,6 @@ void CGameScene::BuildObjects(ID3D12Device5* pd3dDevice,ID3D12GraphicsCommandLis
 			{
 				((CBullet*)(pBulletObjectShader->m_ppObjects[0]))->SetHitEffect((CHitEffect*)pHitEffectObjectsShader->m_ppObjects[0]);
 				((CBoss*)m_players[i])->m_pBullet = (CBullet*)pBulletObjectShader->m_ppObjects[0];
-				//((CBoss*)m_players[i])->m_pBullet->m_pHitEffect = (CHitEffect*)pHitEffectObjectsShader->m_ppObjects[0];
-
 			}
 		}
 		else

@@ -11,7 +11,7 @@ CBoss::CBoss(ID3D12Device5* pd3dDevice,
 	ID3D12GraphicsCommandList4  * pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature)
 {
 	m_type = 0;
-	m_pCamera = ChangeCamera(THIRD_PERSON_CAMERA, 0.0f);//FIRST_PERSON_CAMERA
+	m_pCamera = ChangeCamera(FIRST_PERSON_CAMERA, 0.0f);//FIRST_PERSON_CAMERA
 	m_ctype = (uint8)PLAYER_TYPE::BOSS;
 	m_nCharacterType = CHARACTER_TYPE::BOSS;
 
@@ -76,7 +76,7 @@ CCamera* CBoss::ChangeCamera(DWORD nNewCameraMode, float fTimeElapsed)
 	case FIRST_PERSON_CAMERA:
 		m_pCamera = OnChangeCamera(FIRST_PERSON_CAMERA, nCurrentCameraMode);
 		m_pCamera->SetTimeLag(0.0f);
-		m_pCamera->SetOffset(XMFLOAT3(0.0f, 1.2f, 0.1f));
+		m_pCamera->SetOffset(XMFLOAT3(0.0f, 1.2f, 0.0f));
 		m_pCamera->GenerateProjectionMatrix(0.01f, MaxDepthofMap, ASPECT_RATIO, 60.0f); //5000.f
 		m_pCamera->SetViewport(0, 0, FRAME_BUFFER_WIDTH, FRAME_BUFFER_HEIGHT, 0.0f, 1.0f);
 		m_pCamera->SetScissorRect(0, 0, FRAME_BUFFER_WIDTH, FRAME_BUFFER_HEIGHT);
@@ -105,6 +105,7 @@ void CBoss::Rotate(float x, float y, float z)
 {
 	CPlayer::Rotate(x, y, z);
 	m_pBullet->Rotate(x, y, z);
+	m_pBullet->m_pHitEffect->Rotate(x, y, z);
 }
 
 void CBoss::PrepareAnimate()
@@ -131,6 +132,7 @@ void CBoss::SetAttackAnimOtherClient()
 			SetAttackAnimTime();
 		}
 		SetOnAttack(true);
+		m_pBullet->SetStartShoot(true);
 	}
 }
 
@@ -140,7 +142,11 @@ void CBoss::Update(float fTimeElapsed, CLIENT_TYPE ptype)
 
 	if (m_pBullet)
 	{
-		m_pBullet->SetDirection(GetLook());
+		if(m_pBullet->GetStartShoot())
+		{
+			m_pBullet->SetDirection(GetLook());
+			m_pBullet->SetStartShoot(false);
+		}
 		m_pBullet->SetBulletPosition(GetPosition());
 		m_pBullet->Update(fTimeElapsed);
 	}
@@ -152,8 +158,6 @@ void CBoss::Update(float fTimeElapsed, CLIENT_TYPE ptype)
 	AnimTrackUpdate(); // 애니메이션 트랙 상태 변경
 
 	LateUpdate(fTimeElapsed, ptype);
-
-	//std::cout << GetPosition().y << std::endl;
 }
 
 void CBoss::LateUpdate(float fTimeElapsed, CLIENT_TYPE ptype)
@@ -345,6 +349,7 @@ uint8 CBoss::ProcessInput()
 	{
 		SetOnAttack(true);
 		m_pBullet->SetOnShoot(true);
+		m_pBullet->SetStartShoot(true);
 		SoundManager::GetInstance().PlayObjectSound(4, 3);
 	}
 	

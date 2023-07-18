@@ -1,6 +1,6 @@
 #pragma once
 #include "GameObject.h"
-#define BUIIET_DISTANCE 2.5f
+#define BUIIET_DISTANCE 5.5f
 #define BULLET_NUMBER 1
 #define BULLET_SPEED 0.1f
 
@@ -14,6 +14,7 @@ private:
 	XMFLOAT3	m_xmf3Up = XMFLOAT3(0.0f, 1.0f, 0.0f);
 	XMFLOAT3	m_xmf3Velocity = XMFLOAT3(0.0f, 0.0f, 0.0f);
 
+	bool		m_bStartShoot = false;
 	bool		m_OnShoot = false;
 	bool		m_OnHit = false;
 public:
@@ -23,6 +24,9 @@ public:
 	virtual ~CBullet();
 
 	virtual void Update(float fTimeElapsed);
+	void SetStartShoot(bool value) { m_bStartShoot = value; }
+	bool GetStartShoot() { return m_bStartShoot; }
+
 	void SetOnShoot(bool value) { m_OnShoot = value; }
 	bool GetOnShoot() { return m_OnShoot; }
 

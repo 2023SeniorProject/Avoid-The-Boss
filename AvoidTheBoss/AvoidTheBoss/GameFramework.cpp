@@ -41,10 +41,7 @@ CGameFramework::CGameFramework()
 	m_nWndClientWidth = FRAME_BUFFER_WIDTH;
 	m_nWndClientHeight = FRAME_BUFFER_HEIGHT;
 
-	for (int i = 0; i < m_nScene; i++)
-	{
-		m_ppScene[i] = NULL;
-	}
+	
 
 	
 	_tcscpy_s(m_pszFrameRate, _T("FPS : "));

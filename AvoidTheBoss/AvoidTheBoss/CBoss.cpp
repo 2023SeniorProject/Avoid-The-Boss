@@ -2,9 +2,13 @@
 #include "CBoss.h"
 #include "CBullet.h"
 #include "clientIocpCore.h"
+
+#include "GameFramework.h"
+
+#include "SceneManager.h"
 #include "InputManager.h"
 #include "SoundManager.h";
-
+#include "GameScene.h"
 
 CBoss::CBoss(ID3D12Device5* pd3dDevice, 
 	
@@ -173,7 +177,7 @@ void CBoss::Update(float fTimeElapsed, CLIENT_TYPE ptype)
 
 	LateUpdate(fTimeElapsed, ptype);
 
-	//std::cout << GetPosition().y << std::endl;
+	
 }
 
 void CBoss::LateUpdate(float fTimeElapsed, CLIENT_TYPE ptype)
@@ -345,6 +349,31 @@ uint8 CBoss::ProcessInput()
 	{
 		SetOnAttack(true);
 		SoundManager::GetInstance().PlayObjectSound(2, 3);
+
+		C2S_ATTACK packet;
+		packet.type = (uint8)C_GAME_PACKET_TYPE::CATTACK;
+		packet.size = sizeof(C2S_ATTACK);
+		packet.wf = mainGame.m_curFrame;
+
+
+		XMFLOAT3 bossPos = GetPosition();
+		XMFLOAT3 bossDir = GetLook();
+		float rayDist = 10.0f;
+
+		CGameScene* gs = static_cast<CGameScene*>(mainGame.m_SceneManager->GetSceneByIdx((int32)CGameFramework::SCENESTATE::INGAME));
+
+		if (PLAYERNUM > 1)
+		{
+			for (int i = 1; i < PLAYERNUM; ++i)
+			{
+				if (gs->GetScenePlayerByIdx(i)->m_playerBV.Intersects(XMLoadFloat3(&bossPos), XMLoadFloat3(&bossDir), rayDist))
+				{
+					packet.tidx = i;
+					clientCore.DoSend(&packet);
+					break;
+				}
+			}
+		}
 	}
 	
 	Move(dir, BOSS_VELOCITY);

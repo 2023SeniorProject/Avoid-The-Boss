@@ -48,11 +48,11 @@ public:
 	void SetRunAnimTrack(); // 달리기
 	bool IsMovable() 
 	{ 
-		return !(m_behavior == (int32)PLAYER_BEHAVIOR::RESCUE || m_behavior == (int32)PLAYER_BEHAVIOR::SWITCH_INTER);
+		return (m_behavior == (int32)PLAYER_BEHAVIOR::RESCUE || m_behavior == (int32)PLAYER_BEHAVIOR::SWITCH_INTER || m_behavior == (int32)PLAYER_BEHAVIOR::CRAWL);
 	}
 	bool IsSeMiBehavior() // 스탠드, 크라울, 다운 상태
 	{
-		return (m_behavior == (int32)PLAYER_BEHAVIOR::DOWN || m_behavior == (int32)PLAYER_BEHAVIOR::CRAWL || m_behavior == (int32)PLAYER_BEHAVIOR::STAND);
+		return (m_behavior == (int32)PLAYER_BEHAVIOR::DOWN  || m_behavior == (int32)PLAYER_BEHAVIOR::STAND);
 	}
 	
 	// 깨우기

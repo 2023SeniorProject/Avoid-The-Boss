@@ -99,7 +99,7 @@ uint8 CEmployee::ProcessInput()
 	// 발전기 상호작용 관련 인풋 처리
 
 	uint8 dir = 0;
-	if (!IsSeMiBehavior())
+	if (!IsSeMiBehavior() && !IsMovable())
 	{
 		if (InputManager::GetInstance().GetKeyBuffer(KEY_TYPE::W) > 0)  dir |= KEY_FORWARD;
 		if (InputManager::GetInstance().GetKeyBuffer(KEY_TYPE::A) > 0)  dir |= KEY_LEFT;
@@ -118,7 +118,15 @@ uint8 CEmployee::ProcessInput()
 }
 void CEmployee::Move(const int16& dwDirection, float fDistance)
 {
-	
+	if (m_clientType == CLIENT_TYPE::OTHER_PLAYER)
+	{
+		if (false == IsSeMiBehavior())
+		{
+			if ((int32)PLAYER_BEHAVIOR::ATTACKED == GetBehavior() && m_attackedAnimationCount >= 0);
+			else if (LOBYTE(dwDirection)) SetBehavior(PLAYER_BEHAVIOR::RUN);
+			else if(!LOBYTE(dwDirection)) SetBehavior(PLAYER_BEHAVIOR::IDLE);
+		}
+	}
 	switch (GetBehavior())
 	{
 	case (int32)PLAYER_BEHAVIOR::RESCUE:
@@ -128,8 +136,8 @@ void CEmployee::Move(const int16& dwDirection, float fDistance)
 		CPlayer::Move(0, 0);
 		break;
 	case (int32)PLAYER_BEHAVIOR::IDLE:
-	case (int32)PLAYER_BEHAVIOR::ATTACKED:
 	case (int32)PLAYER_BEHAVIOR::RUN:
+	case (int32)PLAYER_BEHAVIOR::ATTACKED:
 		CPlayer::Move(dwDirection, EMPLOYEE_VELOCITY);
 		break;
 	}
@@ -138,8 +146,10 @@ void CEmployee::Move(const int16& dwDirection, float fDistance)
 
 void CEmployee::Update(float fTimeElapsed, CLIENT_TYPE ptype)
 {
-	CPlayer::Update(fTimeElapsed, ptype);
-	LateUpdate(fTimeElapsed,ptype);
+	CPlayer::Update(fTimeElapsed, m_clientType);
+	LateUpdate(fTimeElapsed,m_clientType);
+
+
 }
 
 void CEmployee::LateUpdate(float fTimeElapsed, CLIENT_TYPE ptype)
@@ -158,10 +168,11 @@ void CEmployee::LateUpdate(float fTimeElapsed, CLIENT_TYPE ptype)
 		{
 			std::cout << "Alive\n";
 			m_curGuage = 0;
-			m_hp = 5;
+			m_hp = 3;
 			m_bIsRescuing = false;
-			SetBehavior(PLAYER_BEHAVIOR::IDLE);
-			m_bIsRescuing = false;
+			
+			SetBehavior(PLAYER_BEHAVIOR::STAND);
+			m_standAnimationCount = EMPLOYEE_STAND_TIME;
 
 			SC_EVENTPACKET packet;
 			packet.type = (uint8)SC_GAME_PACKET_TYPE::GAMEEVENT;
@@ -357,7 +368,7 @@ void CEmployee::AnimTrackUpdate()
 			SetDownAnimTrack();
 			m_downAnimationCount--;
 		}
-		else
+		else if (m_downAnimationCount < EMPLOYEE_DOWN_TIME)
 		{
 			m_downAnimationCount--;
 			if (m_downAnimationCount <= 0)
@@ -381,6 +392,7 @@ void CEmployee::AnimTrackUpdate()
 			if (m_standAnimationCount <= 0)
 			{
 				m_behavior = (int32)PLAYER_BEHAVIOR::IDLE;
+				mainGame.m_SceneManager->GetSceneByIdx(3)->m_pCamera->m_nMode = THIRD_PERSON_CAMERA;
 			}
 		}
 		break;
@@ -449,6 +461,7 @@ void CEmployee::PlayerAttacked()
 
 void CEmployee::PlayerDown()
 {
+	mainGame.m_SceneManager->GetSceneByIdx(3)->m_pCamera->m_nMode = THIRD_PERSON_CAMERA;
 	m_behavior = (int32)PLAYER_BEHAVIOR::DOWN;
 	m_downAnimationCount = EMPLOYEE_DOWN_TIME;
 }

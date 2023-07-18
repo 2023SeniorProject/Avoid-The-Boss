@@ -248,9 +248,6 @@ void CSession::ProcessPacket(char* packet)
 	{
 		// ================= 플레이어 초기 위치 초기화 ==================
 		 gs->InitGame(packet, _sid);
-		// ================= 자신의 클라이언트 IDX 확인 =================
-		std::cout << "MYPLAYER IDX : " << gs->m_playerIdx << "\n";
-
 		// ================= 카메라 셋팅 ================================
 		CPlayer* myPlayer = gs->m_players[gs->m_playerIdx];
 		std::wstring str = L"Client";

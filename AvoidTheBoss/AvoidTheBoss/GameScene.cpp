@@ -408,6 +408,7 @@ void CGameScene::InitGame(void* packet, int32 sid)
 	if(m_players[2] != nullptr)m_players[2]->SetPosition(XMFLOAT3(15, 0.25, -18));
 	if(m_players[3] != nullptr)m_players[3]->SetPosition(XMFLOAT3(20, 0.25, -18));
 	m_pCamera = m_players[m_playerIdx]->GetCamera();
+	m_players[m_playerIdx]->m_clientType = CLIENT_TYPE::OWNER;
 }
 
 void CGameScene::AddEvent(queueEvent* ev, float after)

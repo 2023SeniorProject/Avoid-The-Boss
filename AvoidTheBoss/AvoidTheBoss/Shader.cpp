@@ -510,7 +510,7 @@ void CBulletObjectsShader::BuildObjects(ID3D12Device5* pd3dDevice,ID3D12Graphics
 	m_nObjects = BULLET_NUMBER;
 	m_ppObjects = new CGameObject * [m_nObjects];
 
-	CGameObject* pBullet = CGameObject::LoadGeometryFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "Model/ÃÑ¾Ë/BigBullet.bin", NULL, Layout::BULLET);
+	CGameObject* pBullet = CGameObject::LoadGeometryFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "Model/ÃÑ¾Ë/Bullet.bin", NULL, Layout::BULLET);
 	for (int i = 0; i < m_nObjects; i++)
 	{
 		m_ppObjects[i] = new CBullet();
@@ -803,6 +803,8 @@ void CHitEffectObjectsShader::BuildObjects(ID3D12Device5* pd3dDevice, ID3D12Grap
 	m_ppObjects[0]->SetChild(pHit);
 	m_ppObjects[0]->OnPrepareAnimate();
 	m_ppObjects[0]->SetPosition(XMFLOAT3(0.0f, 1.0f, 2.5f));
+	m_ppObjects[0]->SetScale(0.5f, 0.5f, 0.5f);
+
 	pHit->AddRef();
 
 	CreateShaderVariables(pd3dDevice, pd3dCommandList);

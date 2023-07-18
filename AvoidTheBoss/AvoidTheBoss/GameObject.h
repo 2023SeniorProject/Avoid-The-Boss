@@ -496,7 +496,7 @@ public:
 };
 
 #define HIT_EFFECT_SCALE_MAX 1.0f
-#define HIT_EFFECT_SCALE_INCREMENT 0.01f;
+#define HIT_EFFECT_SCALE_INCREMENT 0.1f;
 class CHitEffect : public CGameObject
 {
 private:

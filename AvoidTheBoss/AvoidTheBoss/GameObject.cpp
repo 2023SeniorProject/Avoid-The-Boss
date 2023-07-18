@@ -1436,6 +1436,11 @@ void CHitEffect::OnPrepareAnimate()
 
 void CHitEffect::Animate(float fTimeElapsed)
 {
+	CGameObject::Animate(fTimeElapsed);
+}
+
+void CHitEffect::Update(float fTimeElapsed)
+{
 	if (m_bOnHit)
 	{
 		scaleFactor += HIT_EFFECT_SCALE_INCREMENT;
@@ -1445,16 +1450,11 @@ void CHitEffect::Animate(float fTimeElapsed)
 			m_bOnHit = false;
 			scaleFactor = 0.0f;
 		}
-		else if(scaleFactor > 0.0f)
+		else if (scaleFactor > 0.0f)
 		{
 			//XMMATRIX mtxScale = XMMatrixScaling(scaleFactor, scaleFactor, scaleFactor);
 			//m_pHit->m_xmf4x4ToParent = Matrix4x4::Multiply(mtxScale, m_pHit->m_xmf4x4ToParent);
+
 		}
-		CGameObject::Animate(fTimeElapsed);
 	}
-}
-
-void CHitEffect::Update(float fTimeElapsed)
-{
-
 }

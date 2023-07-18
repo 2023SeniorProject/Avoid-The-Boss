@@ -1,8 +1,8 @@
 #pragma once
 #include "GameObject.h"
-#define BUIIET_DISTANCE 2.5f
+#define BUIIET_DISTANCE 5.5f
 #define BULLET_NUMBER 1
-#define BULLET_SPEED 0.1f
+#define BULLET_SPEED 0.3f
 
 
 class CBullet : public CGameObject

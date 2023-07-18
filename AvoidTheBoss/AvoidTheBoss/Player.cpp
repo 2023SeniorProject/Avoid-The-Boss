@@ -267,17 +267,7 @@ uint8 CVirtualPlayer::ProcessInput()
 void CSoundCallbackHandler::HandleCallback(void* pCallbackData, float fTrackPosition)
 {
 	_TCHAR* pWavName = (_TCHAR*)pCallbackData;
-//#ifdef _WITH_DEBUG_CALLBACK_DATA
-//	TCHAR pstrDebug[256] = { 0 };
-//	_stprintf_s(pstrDebug, 256, _T("%s(%f)\n"), pWavName, fTrackPosition);
-//	OutputDebugString(pstrDebug);
-//#endif
-//#ifdef _WITH_SOUND_RESOURCE
-//	PlaySound(pWavName, ::ghAppInstance, SND_RESOURCE | SND_ASYNC);
-//#else
 	PlaySound(pWavName, NULL, SND_LOOP | SND_ASYNC);
-//#endif
-
 }
 
 

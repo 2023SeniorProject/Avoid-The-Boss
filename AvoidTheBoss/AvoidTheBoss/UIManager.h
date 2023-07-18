@@ -5,6 +5,7 @@
 // D2D를 활용해서 이미지를 그린다.
 // LobbyButton
 
+const int32 MAX_HP = 3;
 
 struct UITextBlock
 {
@@ -18,6 +19,7 @@ struct UIButton
 {
     D2D1_RECT_F                     d2dLayoutRect; // 출력할 레이아웃 영역
     ID2D1Bitmap*                    resource = NULL;
+    bool                            m_hide = false;
 };
 struct UIBackGround
 {
@@ -25,6 +27,14 @@ struct UIBackGround
     ID2D1Bitmap*                    resource = NULL;
 };
 
+struct InGameUI
+{
+    D2D1_RECT_F                     d2dLayoutRect; // 출력할 레이아웃 영역
+    ID2D1Bitmap*                    resource = NULL;
+    bool                            m_hide = false;
+};
+
+class CGameScene;
 class UIManager
 {
     enum class ButtonType { MAKE_ROOM, ENTER_ROOM, EXIT_GAME, };
@@ -39,11 +49,19 @@ public:
 
     void UpdateRoomTextBlocks(UINT nIndex,const WCHAR* pstrUIText, const D2D1_RECT_F& pd2dLayoutRect, bool hide);
     void UpdateRoomText();
+
+   
+
     void Render2D(UINT nFrame,int32 curScene);
     void ReleaseResources();
-    void DrawBackGround(int32 Scene);
-    void DrawButton(int32, int32 idx);
-    void DrawTextBlock(int32);
+
+    void DrawOtherSceneBackGround(int32 Scene);
+    void DrawOtherSceneUI(int32 Scene, int32 idx);
+    void DrawOtherSceneUITextBlock(int32 Scene);
+
+    void InitGameSceneUI(CGameScene*);
+    void UpdateGameSceneUI(CGameScene*);
+    void DrawGameSceneUI(int32 Scene);
 
     D2D1_RECT_F GetButtonRect(int32, int32);
 
@@ -79,17 +97,16 @@ public:
     IDWriteTextFormat*             m_TitleTextFormat;
     IDWriteTextFormat*             m_LobbyTextFormat;
     
-    // BitmapResource
-    UIButton                   m_ReadyBitmaps[4];
+    
     
     // 배경 레이어 비트맵들
     UIBackGround m_backGround[3];
 
     // 버튼 비트맵들
-    UINT m_nButtons = 10;
     UINT m_nRoomListPerPage = 5;
     UIButton m_TitleButtons[2];
     
+    // 로비 전용
     UIButton m_LobbyButtons[3];
     UITextBlock m_RoomListTextBlock[5];
     
@@ -97,10 +114,27 @@ public:
     int32 m_selectedLayout = -1;
     D2D1_RECT_F m_RoomListLayout[5];
 
+    // 방 전용
     UIButton m_RoomButtons[2];
 
+    // 인 게임 전용
+    int32                      m_playerIdx = -1;
+    UIButton                   m_GenerateUIButtons[21];
+    UIButton                   m_CharProfile[4]; // 다른 캐릭터 초상화 표시
+    
+    ID2D1Bitmap*               m_CharStatusBitmaps[3]; // 비트맵 리소스를 가져와서 공유한다.
+    ID2D1Bitmap*               m_HpBitmap;
+
+    D2D_RECT_F                 m_myProfileLayout; // 자기 캐릭터 레이아웃
+
+    InGameUI                   m_CharStatus[3]; // 캐릭터 상태
+    InGameUI                   m_HPUi[MAX_HP];    // 캐릭터 HP
+
+
     // 동적으로 바뀌는 텍스트 버튼들 Id,PW 
-    UITextBlock m_pIDPWTextBlocks[2];
+    UITextBlock                m_IDPWTextBlocks[2];
+    // 레디 버튼
+    UIButton                   m_ReadyBitmaps[4];
 
     // 레이어 위치 출력을 위한 브러시
     ID2D1SolidColorBrush* redBrush; // 빨강

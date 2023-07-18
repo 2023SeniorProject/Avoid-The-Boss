@@ -76,14 +76,14 @@
     <ClCompile Include="GameScene.cpp">
       <Filter>Scene\GameScene</Filter>
     </ClCompile>
-    <ClCompile Include="clientIocpCore.cpp">
-      <Filter>ForClient\IocpCore</Filter>
-    </ClCompile>
     <ClCompile Include="CSound.cpp">
       <Filter>Sound</Filter>
     </ClCompile>
     <ClCompile Include="SoundManager.cpp">
       <Filter>Mananger\SoundManager</Filter>
+    </ClCompile>
+    <ClCompile Include="clientIocpCore.cpp">
+      <Filter>ForClient\IocpCore</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

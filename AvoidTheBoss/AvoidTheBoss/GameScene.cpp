@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "GameScene.h"
 #include "GameFramework.h"
+#include "UIManager.h"
 #include "InputManager.h"
 #include "SoundManager.h"
 //네트워크 관련
@@ -284,6 +285,8 @@ void CGameScene::Update(HWND& hWnd)
 		std::unique_lock<std::shared_mutex> wl(m_jobQueueLock);
 		m_jobQueue->DoTasks();
 	}
+	
+	
 
 	for (int k = 0; k < PLAYERNUM; ++k)
 	{
@@ -292,7 +295,7 @@ void CGameScene::Update(HWND& hWnd)
 	}
 	//for (int k = 0; k < m_nGenerator; ++k) m_ppGenerator[k]->Update(_timer.GetTimeElapsed());
 
-	
+	mainGame.m_UIRenderer->UpdateGameSceneUI(this);
 
 	// 평균 프레임 레이트 출력
 	std::wstring str = L"[";

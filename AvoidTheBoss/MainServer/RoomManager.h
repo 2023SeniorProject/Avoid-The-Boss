@@ -51,8 +51,10 @@ public:
 		}
 		return -1;
 	};
+
+	void InitGame();
 	void UpdateReady(int32 idx, bool val);
-	bool IsGameStartAvailable() { int cnt = 0;  for (int i = 0; i < PLAYERNUM; ++i) if (i) ++cnt; return (PLAYERNUM == cnt); }
+	bool IsGameStartAvailable();
 private:
 	Rewinder<30> _history;
 private:

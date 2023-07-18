@@ -67,6 +67,14 @@ void Room::UserOut(int32 sid)
 		packet.eventId = (uint8)EVENT_TYPE::HIDE_PLAYER_ONE + idx;
 		BroadCasting(&packet);
 	}
+	else if (_status == (uint8)ROOM_STATUS::NOT_FULL)
+	{
+		S2C_ROOM_READY packet;
+		packet.size = sizeof(S2C_ROOM_READY);
+		packet.type = (uint8)S_ROOM_PACKET_TYPE::REP_READY_CANCEL;
+		packet.sid = sid;
+		BroadCastingExcept(&packet, sid);
+	}
 
 	if (IsDestroyRoom())
 	{
@@ -271,9 +279,10 @@ void Room::SendRoomInfoPacket()
 	}
 	BroadCasting(&rmifpacket);
 }
-void Room::UpdateReady(int32 idx, bool val)
+
+void Room::InitGame()
 {
-	_readys[idx].store(val);
+	
 	if (IsGameStartAvailable())
 	{
 		S2C_GAMESTART packet;
@@ -281,8 +290,32 @@ void Room::UpdateReady(int32 idx, bool val)
 		packet.type = (uint8)S_ROOM_PACKET_TYPE::GAME_START;
 		for (int i = 0; i < PLAYERNUM; ++i)packet.sids[i] = _cArr[i].sid;
 		BroadCasting(&packet);
-	}	
+
+		std::cout << "GAME START\n";
+		std::cout << "TOTAL USER SID LIST[";
+		
+		for (auto i : _cArr) if(i.sid != -1) std::cout << i.sid << " | ";
+		std::cout << "]";
+		
+		_gameLogic.InitGame();
+		_timer.Reset();
+		_status = (uint8)ROOM_STATUS::INGAME;
+
+	}
 }
+void Room::UpdateReady(int32 idx, bool val)
+{
+	_readys[idx].store(val);
+	
+}
+
+bool Room::IsGameStartAvailable()
+{
+	 int cnt = 0;  
+	 for (int i = 0; i < 4; ++i) if (_readys[i]) ++cnt; 
+	 return (PLAYERNUM == cnt); 
+}
+
 // ======= RoomManager ========
 
 // ============================

@@ -5,6 +5,7 @@
 // 프레임 워크 헤더
 #include "GameFramework.h"
 #include "SceneManager.h"
+#include "UIManager.h"
 // 이벤트 처리관련 헤더
 #include "IocpEvent.h"
 #include "ClientPacketEvent.h"
@@ -255,8 +256,9 @@ void CSession::ProcessPacket(char* packet)
 		std::wstring str = L"Client";
 		str.append(std::to_wstring(gs->m_playerIdx));
 		::SetConsoleTitle(str.c_str());
-		//mainGame.ChangeScene(CGameFramework::SCENESTATE::INGAME);
-		//gs->InitScene();
+		mainGame.m_UIRenderer->InitGameSceneUI(gs);
+		mainGame.ChangeScene(CGameFramework::SCENESTATE::INGAME);
+		gs->InitScene();
 	}
 	break;
 #pragma endregion

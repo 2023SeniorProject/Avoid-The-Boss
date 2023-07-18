@@ -154,13 +154,14 @@ void ServerSession::ProcessPacket(char* packet)
 				std::cout << "SomeThing Error Detected\n";
 				break;
 			}
-			
+			else std::cout << _sid << ") is OnReady\n";
 			S2C_ROOM_READY packet;
 			packet.size = sizeof(S2C_ROOM_READY);
 			packet.type = (uint8)S_ROOM_PACKET_TYPE::REP_READY;
 			packet.sid = _sid;
 			ServerIocpCore._rmgr->GetRoom(_myRm).BroadCastingExcept(&packet, _sid);
 			ServerIocpCore._rmgr->GetRoom(_myRm).UpdateReady(idx, true);
+			ServerIocpCore._rmgr->GetRoom(_myRm).InitGame();
 		}
 		break;
 		case (uint8)C_ROOM_PACKET_TYPE::ACQ_READY_CANCEL:

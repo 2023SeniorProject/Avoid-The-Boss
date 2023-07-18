@@ -3,8 +3,22 @@
 #include "UIManager.h"
 #include "SceneManager.h"
 #include "OtherScenes.h"
+#include "GameScene.h"
 #include <d2d1_1.h>
 #include <wincodec.h>
+
+const int32 PROFILE_UI_OFFSET_X = FRAME_BUFFER_WIDTH * 0.01;
+const int32 PROFILE_UI_OFFSET_Y = FRAME_BUFFER_HEIGHT * 0.1;
+
+const int32 PROFILE_UI_WIDTH = FRAME_BUFFER_WIDTH * 0.1;
+const int32 PROFILE_UI_HEIGHT = FRAME_BUFFER_HEIGHT * 0.1;
+
+const int32 BIG_PROFILE_UI_OFFSET_Y = PROFILE_UI_OFFSET_Y * 6;
+const int32 BIG_PROFILE_UI_WIDTH = FRAME_BUFFER_WIDTH * 0.2;
+const int32 BIG_PROFILE_UI_HEIGHT = FRAME_BUFFER_HEIGHT * 0.2;
+
+const int32 STATUS_UI_WIDTH = PROFILE_UI_WIDTH * 0.8;
+const int32 STATUS_UI_HEIGHT = PROFILE_UI_HEIGHT * 0.8;
 
 #pragma comment(lib,"windowscodecs.lib")
 
@@ -232,78 +246,79 @@ void UIManager::ReleaseResources()
     m_pd3d11On12Device->Release();
 }
 
-void UIManager::DrawBackGround(int32 Scene)
+void UIManager::DrawOtherSceneBackGround(int32 Scene)
 {
     switch (Scene)
     {
     case 0:
     case 1:
     case 2:
-        m_pd2dDeviceContext->DrawBitmap(m_backGround[Scene].resource,
-            D2D1_RECT_F{ 0,0,m_fWidth,m_fHeight }, 1.0f, D2D1_INTERPOLATION_MODE_LINEAR, (D2D1_RECT_F*)0);
+        m_pd2dDeviceContext->DrawBitmap(m_backGround[Scene].resource, D2D1_RECT_F{ 0,0,m_fWidth,m_fHeight });
         break;
     case 3:
         break;
     }
 }
 
-void UIManager::DrawButton(int32 Scene,int32 idx)
+void UIManager::DrawOtherSceneUI(int32 Scene,int32 idx)
 {
    
     if (Scene == 0) // 타이틀 씬
     {
         m_pd2dDeviceContext->DrawRectangle(m_TitleButtons[0].d2dLayoutRect, redBrush);
-        m_pd2dDeviceContext->DrawBitmap(m_TitleButtons[0].resource, m_TitleButtons[0].d2dLayoutRect, 1.0f, D2D1_INTERPOLATION_MODE_LINEAR, (D2D1_RECT_F*)0);
+        m_pd2dDeviceContext->DrawBitmap(m_TitleButtons[0].resource, m_TitleButtons[0].d2dLayoutRect);
         m_pd2dDeviceContext->DrawRectangle(m_TitleButtons[1].d2dLayoutRect, redBrush);
-        m_pd2dDeviceContext->DrawBitmap(m_TitleButtons[1].resource, m_TitleButtons[1].d2dLayoutRect, 1.0f, D2D1_INTERPOLATION_MODE_LINEAR, (D2D1_RECT_F*)0);
+        m_pd2dDeviceContext->DrawBitmap(m_TitleButtons[1].resource, m_TitleButtons[1].d2dLayoutRect);
 
     }
     else if (Scene == 1) // 로비 씬
     {
         m_pd2dDeviceContext->DrawRectangle(m_LobbyButtons[0].d2dLayoutRect, redBrush);
-        m_pd2dDeviceContext->DrawBitmap(m_LobbyButtons[0].resource, m_LobbyButtons[0].d2dLayoutRect, 1.0f, D2D1_INTERPOLATION_MODE_LINEAR, (D2D1_RECT_F*)0);
+        m_pd2dDeviceContext->DrawBitmap(m_LobbyButtons[0].resource, m_LobbyButtons[0].d2dLayoutRect);
         
         m_pd2dDeviceContext->DrawRectangle(m_LobbyButtons[1].d2dLayoutRect, redBrush);
-        m_pd2dDeviceContext->DrawBitmap(m_LobbyButtons[1].resource, m_LobbyButtons[1].d2dLayoutRect, 1.0f, D2D1_INTERPOLATION_MODE_LINEAR, (D2D1_RECT_F*)0);
+        m_pd2dDeviceContext->DrawBitmap(m_LobbyButtons[1].resource, m_LobbyButtons[1].d2dLayoutRect);
         
         m_pd2dDeviceContext->DrawRectangle(m_LobbyButtons[2].d2dLayoutRect, redBrush);
-        m_pd2dDeviceContext->DrawBitmap(m_LobbyButtons[2].resource, m_LobbyButtons[2].d2dLayoutRect, 1.0f, D2D1_INTERPOLATION_MODE_LINEAR, (D2D1_RECT_F*)0);
+        m_pd2dDeviceContext->DrawBitmap(m_LobbyButtons[2].resource, m_LobbyButtons[2].d2dLayoutRect);
     }
     else if (Scene == 2) // 게임 룸 씬
     {
         CRoomScene* rs = static_cast<CRoomScene*>(mainGame.m_SceneManager->GetSceneByIdx((int32)CGameFramework::SCENESTATE::ROOM));
         m_pd2dDeviceContext->DrawRectangle(m_RoomButtons[0].d2dLayoutRect, redBrush);
-        m_pd2dDeviceContext->DrawBitmap(m_RoomButtons[0].resource, m_RoomButtons[0].d2dLayoutRect, 1.0f, D2D1_INTERPOLATION_MODE_LINEAR, (D2D1_RECT_F*)0);
+        m_pd2dDeviceContext->DrawBitmap(m_RoomButtons[0].resource, m_RoomButtons[0].d2dLayoutRect);
         
         m_pd2dDeviceContext->DrawRectangle(m_RoomButtons[1].d2dLayoutRect, redBrush);
-        m_pd2dDeviceContext->DrawBitmap(m_RoomButtons[1].resource, m_RoomButtons[1].d2dLayoutRect, 1.0f, D2D1_INTERPOLATION_MODE_LINEAR, (D2D1_RECT_F*)0);
+        m_pd2dDeviceContext->DrawBitmap(m_RoomButtons[1].resource, m_RoomButtons[1].d2dLayoutRect);
       
-        for (int i = 0; i < PLAYERNUM; ++i)
+        for (int i = 0; i < 4; ++i)
         {
+            m_pd2dDeviceContext->DrawRectangle(m_ReadyBitmaps[i].d2dLayoutRect,blackBrush, 6.0f);
+            m_pd2dDeviceContext->FillRectangle(m_ReadyBitmaps[i].d2dLayoutRect, grayBrush);
             if(rs->m_members[i].isReady)  
-                m_pd2dDeviceContext->DrawBitmap(m_ReadyBitmaps[i].resource, m_ReadyBitmaps[i].d2dLayoutRect, 1.0f, D2D1_INTERPOLATION_MODE_LINEAR, (D2D1_RECT_F*)0);
+                m_pd2dDeviceContext->DrawBitmap(m_ReadyBitmaps[i].resource, m_ReadyBitmaps[i].d2dLayoutRect);
         }
     }
 }
 
-void UIManager::DrawTextBlock(int32 Scene)
+void UIManager::DrawOtherSceneUITextBlock(int32 Scene)
 {
 
     if (Scene == 0)
     {
-        m_pd2dDeviceContext->FillRectangle(m_pIDPWTextBlocks[0].m_d2dLayoutRect, grayBrush);
-        m_pd2dDeviceContext->FillRectangle(m_pIDPWTextBlocks[1].m_d2dLayoutRect, grayBrush);
+        m_pd2dDeviceContext->FillRectangle(m_IDPWTextBlocks[0].m_d2dLayoutRect, grayBrush);
+        m_pd2dDeviceContext->FillRectangle(m_IDPWTextBlocks[1].m_d2dLayoutRect, grayBrush);
         
-        m_pd2dDeviceContext->DrawRectangle(m_pIDPWTextBlocks[0].m_d2dLayoutRect, blackBrush,4.0);
-        m_pd2dDeviceContext->DrawRectangle(m_pIDPWTextBlocks[1].m_d2dLayoutRect, blackBrush,4.0);
+        m_pd2dDeviceContext->DrawRectangle(m_IDPWTextBlocks[0].m_d2dLayoutRect, blackBrush,4.0);
+        m_pd2dDeviceContext->DrawRectangle(m_IDPWTextBlocks[1].m_d2dLayoutRect, blackBrush,4.0);
 
-        if(!m_pIDPWTextBlocks[0].m_hide) m_pd2dDeviceContext->DrawText(m_pIDPWTextBlocks[0].m_pstrText.c_str(),
-            (UINT)wcslen(m_pIDPWTextBlocks[0].m_pstrText.c_str()), m_pIDPWTextBlocks[0].m_pdwFormat, 
-            m_pIDPWTextBlocks[0].m_d2dLayoutRect, m_pIDPWTextBlocks[0].m_pd2dTextBrush);
+        if(!m_IDPWTextBlocks[0].m_hide) m_pd2dDeviceContext->DrawText(m_IDPWTextBlocks[0].m_pstrText.c_str(),
+            (UINT)wcslen(m_IDPWTextBlocks[0].m_pstrText.c_str()), m_IDPWTextBlocks[0].m_pdwFormat, 
+            m_IDPWTextBlocks[0].m_d2dLayoutRect, m_IDPWTextBlocks[0].m_pd2dTextBrush);
 
-        if (!m_pIDPWTextBlocks[1].m_hide) m_pd2dDeviceContext->DrawText(m_pIDPWTextBlocks[1].m_pstrText.c_str(),
-            (UINT)wcslen(m_pIDPWTextBlocks[1].m_pstrText.c_str()), m_pIDPWTextBlocks[1].m_pdwFormat,
-            m_pIDPWTextBlocks[1].m_d2dLayoutRect, m_pIDPWTextBlocks[1].m_pd2dTextBrush);
+        if (!m_IDPWTextBlocks[1].m_hide) m_pd2dDeviceContext->DrawText(m_IDPWTextBlocks[1].m_pstrText.c_str(),
+            (UINT)wcslen(m_IDPWTextBlocks[1].m_pstrText.c_str()), m_IDPWTextBlocks[1].m_pdwFormat,
+            m_IDPWTextBlocks[1].m_d2dLayoutRect, m_IDPWTextBlocks[1].m_pd2dTextBrush);
     }
     else if (Scene == 1)
     {
@@ -316,6 +331,123 @@ void UIManager::DrawTextBlock(int32 Scene)
                 , m_RoomListTextBlock[i].m_d2dLayoutRect, blackBrush);  
         }
         if (m_selectedLayout >= 0)  m_pd2dDeviceContext->DrawRectangle(m_RoomListLayout[m_selectedLayout], redBrush, 4.0f);
+    }
+}
+
+void UIManager::InitGameSceneUI(CGameScene* gc)
+{
+    m_CharProfile[gc->m_playerIdx].m_hide = true;
+    for (auto& i : m_GenerateUIButtons) i.m_hide = true;
+    m_playerIdx = gc->m_playerIdx;
+    // 플레이어 상태 UI 출력
+    switch (m_playerIdx)
+    {
+        case 0:
+        {
+           // 사장님은 3명 모두 출력
+            for (int i = 1; i < 4; ++i)
+            {
+                m_CharProfile[i].d2dLayoutRect =
+                    MakeLayoutRectByCorner(PROFILE_UI_OFFSET_X, PROFILE_UI_OFFSET_Y + PROFILE_UI_OFFSET_Y * (i - 1),
+                        PROFILE_UI_WIDTH, PROFILE_UI_HEIGHT);
+            }
+            m_CharStatus[0].d2dLayoutRect =
+                MakeLayoutRectByCorner(PROFILE_UI_OFFSET_X + PROFILE_UI_WIDTH, PROFILE_UI_OFFSET_Y, STATUS_UI_WIDTH, STATUS_UI_HEIGHT);
+            m_CharStatus[1].d2dLayoutRect =
+                MakeLayoutRectByCorner(PROFILE_UI_OFFSET_X + PROFILE_UI_WIDTH, PROFILE_UI_OFFSET_Y * 2, STATUS_UI_WIDTH, STATUS_UI_HEIGHT);
+            m_CharStatus[2].d2dLayoutRect =
+                MakeLayoutRectByCorner(PROFILE_UI_OFFSET_X + PROFILE_UI_WIDTH, PROFILE_UI_OFFSET_Y * 3, STATUS_UI_WIDTH, STATUS_UI_HEIGHT);
+            break;
+        }
+        // 나머지는 자신을 제외한 2명만 출력
+        case 1:
+        {
+       
+            m_CharProfile[2].d2dLayoutRect =
+                MakeLayoutRectByCorner(PROFILE_UI_OFFSET_X, PROFILE_UI_OFFSET_Y, PROFILE_UI_WIDTH, PROFILE_UI_HEIGHT);
+            
+            m_CharProfile[3].d2dLayoutRect =
+                MakeLayoutRectByCorner(PROFILE_UI_OFFSET_X, PROFILE_UI_OFFSET_Y * 2, PROFILE_UI_WIDTH, PROFILE_UI_HEIGHT);
+            
+            // 1 2 3 --> 0 1 2
+            m_CharStatus[0].m_hide = true;
+            m_CharStatus[1].d2dLayoutRect =
+                MakeLayoutRectByCorner(PROFILE_UI_OFFSET_X + PROFILE_UI_WIDTH, PROFILE_UI_OFFSET_Y, STATUS_UI_WIDTH, STATUS_UI_HEIGHT);
+            m_CharStatus[2].d2dLayoutRect =
+                MakeLayoutRectByCorner(PROFILE_UI_OFFSET_X + PROFILE_UI_WIDTH, PROFILE_UI_OFFSET_Y * 2, STATUS_UI_WIDTH, STATUS_UI_HEIGHT);
+        }
+        break;
+        case 2:
+        {
+   
+            m_CharProfile[1].d2dLayoutRect = 
+                MakeLayoutRectByCorner(PROFILE_UI_OFFSET_X, PROFILE_UI_OFFSET_Y, PROFILE_UI_WIDTH, PROFILE_UI_HEIGHT);
+            m_CharProfile[3].d2dLayoutRect =
+                MakeLayoutRectByCorner(PROFILE_UI_OFFSET_X, PROFILE_UI_OFFSET_Y * 2, PROFILE_UI_WIDTH, PROFILE_UI_HEIGHT);
+            
+            m_CharStatus[1].m_hide = true;
+            m_CharStatus[0].d2dLayoutRect =
+                MakeLayoutRectByCorner(PROFILE_UI_OFFSET_X + PROFILE_UI_WIDTH, PROFILE_UI_OFFSET_Y, STATUS_UI_WIDTH, STATUS_UI_HEIGHT);
+            m_CharStatus[2].d2dLayoutRect =
+                MakeLayoutRectByCorner(PROFILE_UI_OFFSET_X + PROFILE_UI_WIDTH, PROFILE_UI_OFFSET_Y * 2, STATUS_UI_WIDTH, STATUS_UI_HEIGHT);
+        }
+        break;
+        
+        case 3:
+        {
+            m_CharProfile[1].d2dLayoutRect = 
+                MakeLayoutRectByCorner(PROFILE_UI_OFFSET_X, PROFILE_UI_OFFSET_Y, PROFILE_UI_WIDTH, PROFILE_UI_HEIGHT);
+            m_CharProfile[2].d2dLayoutRect = 
+                MakeLayoutRectByCorner(PROFILE_UI_OFFSET_X, PROFILE_UI_OFFSET_Y * 2, PROFILE_UI_WIDTH, PROFILE_UI_HEIGHT);
+
+            m_CharStatus[2].m_hide = true;
+            
+            m_CharStatus[0].d2dLayoutRect =
+                MakeLayoutRectByCorner(PROFILE_UI_OFFSET_X + PROFILE_UI_WIDTH, PROFILE_UI_OFFSET_Y, STATUS_UI_WIDTH, STATUS_UI_HEIGHT);
+            m_CharStatus[1].d2dLayoutRect =
+                MakeLayoutRectByCorner(PROFILE_UI_OFFSET_X + PROFILE_UI_WIDTH, PROFILE_UI_OFFSET_Y * 2, STATUS_UI_WIDTH, STATUS_UI_HEIGHT);
+        }
+        break;
+    }
+
+    for (int i = 0; i < 3; ++i)
+    {
+        m_CharStatus[i].resource =  m_CharStatusBitmaps[0]; // normal status로 시작
+    }
+    
+    m_myProfileLayout = MakeLayoutRectByCorner(PROFILE_UI_OFFSET_X, BIG_PROFILE_UI_HEIGHT, BIG_PROFILE_UI_WIDTH, BIG_PROFILE_UI_HEIGHT);
+
+    // 플레이어 hp 출력
+
+}
+
+void UIManager::UpdateGameSceneUI(CGameScene* gc)
+{
+ 
+}
+
+void UIManager::DrawGameSceneUI(int32 Scene)
+{
+    if (3 != Scene) return;
+    // 고정 렌더링
+    // 다른 캐릭터 초상화 , 내 캐릭터 초상화
+    for (auto i : m_CharProfile)
+    {
+        if(!i.m_hide) m_pd2dDeviceContext->DrawBitmap(i.resource, i.d2dLayoutRect);
+    }
+
+    for (auto i : m_GenerateUIButtons)
+        if(!i.m_hide) m_pd2dDeviceContext->DrawBitmap(i.resource, i.d2dLayoutRect);
+
+    for(auto i : m_CharStatus)
+        if(!i.m_hide) m_pd2dDeviceContext->DrawBitmap(i.resource, i.d2dLayoutRect);
+    
+    // 큰 초상화 그리기
+    m_pd2dDeviceContext->DrawBitmap(m_CharProfile[m_playerIdx].resource, m_myProfileLayout);
+    // HP 그리기
+    if (1)
+    {
+        for(auto i : m_HPUi)  if (!i.m_hide) m_pd2dDeviceContext->DrawBitmap(i.resource, i.d2dLayoutRect);
     }
 }
 
@@ -380,17 +512,17 @@ void UIManager::InitializeDevice(ID3D12Device5* pd3dDevice, ID3D12CommandQueue* 
     m_TitleButtons[0].d2dLayoutRect = MakeLayoutRect(CENTER_X + TITLEBUTTON_X_OFFSET, CENTER_Y + TITLEBUTTON_Y_OFFSET,     200, 50);
     m_TitleButtons[1].d2dLayoutRect = MakeLayoutRect(CENTER_X + TITLEBUTTON_X_OFFSET, CENTER_Y + TITLEBUTTON_Y_OFFSET * 2, 200, 50);
     // ID / PW 입력 창
-    m_pIDPWTextBlocks[0].m_pd2dTextBrush = CreateBrush(D2D1::ColorF::White);
-    m_pIDPWTextBlocks[0].m_pdwFormat = m_TitleTextFormat;
-    m_pIDPWTextBlocks[0].m_pstrText = L"ID:";
+    m_IDPWTextBlocks[0].m_pd2dTextBrush = CreateBrush(D2D1::ColorF::White);
+    m_IDPWTextBlocks[0].m_pdwFormat = m_TitleTextFormat;
+    m_IDPWTextBlocks[0].m_pstrText = L"ID:";
     
 
-    m_pIDPWTextBlocks[1].m_pd2dTextBrush = CreateBrush(D2D1::ColorF::White);
-    m_pIDPWTextBlocks[1].m_pdwFormat = m_TitleTextFormat;
-    m_pIDPWTextBlocks[1].m_pstrText = L"PW:";
+    m_IDPWTextBlocks[1].m_pd2dTextBrush = CreateBrush(D2D1::ColorF::White);
+    m_IDPWTextBlocks[1].m_pdwFormat = m_TitleTextFormat;
+    m_IDPWTextBlocks[1].m_pstrText = L"PW:";
 
-    m_pIDPWTextBlocks[0].m_d2dLayoutRect = MakeLayoutRect(CENTER_X, CENTER_Y + 150, 200, FontSize);
-    m_pIDPWTextBlocks[1].m_d2dLayoutRect = MakeLayoutRect(CENTER_X, CENTER_Y + 200, 200, FontSize);
+    m_IDPWTextBlocks[0].m_d2dLayoutRect = MakeLayoutRect(CENTER_X, CENTER_Y + 150, 200, FontSize);
+    m_IDPWTextBlocks[1].m_d2dLayoutRect = MakeLayoutRect(CENTER_X, CENTER_Y + 200, 200, FontSize);
     
 
     // 로비 씬에 필요한 버튼
@@ -416,23 +548,22 @@ void UIManager::InitializeDevice(ID3D12Device5* pd3dDevice, ID3D12CommandQueue* 
     m_ReadyBitmaps[0].d2dLayoutRect = MakeLayoutRectByCorner(LOBBYROOMLIST_X_OFFSET, 
         LOBBYROOMLIST_Y_OFFSET,
         (FRAME_BUFFER_WIDTH - (LOBBYROOMLIST_X_OFFSET * 2.0)) / 2.0,
-        FRAME_BUFFER_HEIGHT / 2.0);
-    m_ReadyBitmaps[1].d2dLayoutRect = MakeLayoutRectByCorner(
-        LOBBYROOMLIST_X_OFFSET + (FRAME_BUFFER_WIDTH - (LOBBYROOMLIST_X_OFFSET * 2.0)) / 2.0,
+        FRAME_BUFFER_HEIGHT / 4.0);
+    m_ReadyBitmaps[1].d2dLayoutRect = MakeLayoutRectByCorner( LOBBYROOMLIST_X_OFFSET + ((FRAME_BUFFER_WIDTH - (LOBBYROOMLIST_X_OFFSET * 2.0)) / 2.0),
         LOBBYROOMLIST_Y_OFFSET,
         (FRAME_BUFFER_WIDTH - (LOBBYROOMLIST_X_OFFSET * 2.0)) / 2.0,
-        FRAME_BUFFER_HEIGHT / 2.0);
+        FRAME_BUFFER_HEIGHT / 4.0);
     
     m_ReadyBitmaps[2].d2dLayoutRect = MakeLayoutRectByCorner(LOBBYROOMLIST_X_OFFSET,
-        LOBBYROOMLIST_Y_OFFSET + +FRAME_BUFFER_HEIGHT / 2.0,
+        LOBBYROOMLIST_Y_OFFSET + FRAME_BUFFER_HEIGHT / 4.0,
         (FRAME_BUFFER_WIDTH - (LOBBYROOMLIST_X_OFFSET * 2.0)) / 2.0,
-        FRAME_BUFFER_HEIGHT / 2.0);
+        FRAME_BUFFER_HEIGHT / 4.0);
 
     m_ReadyBitmaps[3].d2dLayoutRect = MakeLayoutRectByCorner(
         LOBBYROOMLIST_X_OFFSET + (FRAME_BUFFER_WIDTH - (LOBBYROOMLIST_X_OFFSET * 2.0)) / 2.0,
-        LOBBYROOMLIST_Y_OFFSET + FRAME_BUFFER_HEIGHT / 2.0,
+        LOBBYROOMLIST_Y_OFFSET + FRAME_BUFFER_HEIGHT / 4.0,
         (FRAME_BUFFER_WIDTH - (LOBBYROOMLIST_X_OFFSET * 2.0)) / 2.0,
-        FRAME_BUFFER_HEIGHT / 2.0);
+        FRAME_BUFFER_HEIGHT / 4.0);
 
     //로비에서 출력할 방 리스트 영역
     for (int i = 0; i < m_nRoomListPerPage; ++i)
@@ -445,6 +576,42 @@ void UIManager::InitializeDevice(ID3D12Device5* pd3dDevice, ID3D12CommandQueue* 
         m_RoomListTextBlock[i].m_pstrText =  L"ROOMNUM:   MEMBER:   0/4";
     }
 
+    // 인게임 비트맵 로드
+    // 캐릭터 프로필
+    m_CharProfile[0].resource = LoadPngFromFile(L"UI/Char_UI_1.png"); // Boss
+    m_CharProfile[1].resource = LoadPngFromFile(L"UI/Char_UI_2.png"); // Yellow
+    m_CharProfile[2].resource = LoadPngFromFile(L"UI/Char_UI_3.png"); // Mask 
+    m_CharProfile[3].resource = LoadPngFromFile(L"UI/Char_UI_5.png"); // Goggle
+    for (int i = 0; i < PLAYERNUM; ++i)
+        m_CharProfile[i].d2dLayoutRect = MakeLayoutRectByCorner(FRAME_BUFFER_WIDTH * 0.01, FRAME_BUFFER_HEIGHT * 0.1 * i, FRAME_BUFFER_WIDTH * 0.1, FRAME_BUFFER_HEIGHT * 0.1);
+
+    // 상태 --> 동적으로 변하는 것이므로 그때 그때 위치를 업데이트하기로 한다. 일단 비트맵 리소스만 로드한다.
+    m_CharStatusBitmaps[0] = LoadPngFromFile(L"UI/Normal.png");
+    m_CharStatusBitmaps[1] = LoadPngFromFile(L"UI/Danger.png");
+    m_CharStatusBitmaps[2] = LoadPngFromFile(L"UI/Danger.png");
+    
+    m_HpBitmap = LoadPngFromFile(L"UI/HP.png");
+    for (int i = 0; i < MAX_HP; ++i)
+    {
+        m_HPUi[i].resource = m_HpBitmap;
+        m_HPUi[i].d2dLayoutRect = MakeLayoutRectByCorner(PROFILE_UI_OFFSET_X + BIG_PROFILE_UI_WIDTH + STATUS_UI_WIDTH * i,
+            BIG_PROFILE_UI_HEIGHT, STATUS_UI_WIDTH, STATUS_UI_HEIGHT);
+    }
+    // 발전기 게이지
+    for (int i = 0; i < 20; ++i)
+    {
+        std::wstring filename;
+        filename = L"UI/Generator_Gauge_";
+        WCHAR num[3];
+        _itow_s(i + 1, num, 10);
+        num[2] = L'\0';
+        filename.append(num);
+        filename.append(L".png");
+        m_GenerateUIButtons[i].resource = LoadPngFromFile(filename.c_str());
+        m_GenerateUIButtons[i].d2dLayoutRect = MakeLayoutRect(FRAME_BUFFER_WIDTH / 2.0, FRAME_BUFFER_HEIGHT * 0.8, FRAME_BUFFER_WIDTH / 2, FRAME_BUFFER_HEIGHT / 4.f);
+    }
+    m_GenerateUIButtons[20].resource = LoadPngFromFile(L"UI/F.png");
+    m_GenerateUIButtons[20].d2dLayoutRect = MakeLayoutRect(FRAME_BUFFER_WIDTH / 2.0,    FRAME_BUFFER_HEIGHT * 0.85, FRAME_BUFFER_WIDTH * 0.1f, FRAME_BUFFER_HEIGHT * 0.1f);
 }
 
 void UIManager::Render2D(UINT nFrame, int32 curScene)
@@ -456,10 +623,11 @@ void UIManager::Render2D(UINT nFrame, int32 curScene)
     m_pd3d11On12Device->AcquireWrappedResources(ppResources, _countof(ppResources));
 
     m_pd2dDeviceContext->BeginDraw();
-    DrawBackGround(curScene);
-    DrawButton(curScene,0);
-    DrawButton(curScene,1);
-    DrawTextBlock(curScene);
+    DrawOtherSceneBackGround(curScene);
+    DrawOtherSceneUI(curScene,0);
+    DrawOtherSceneUI(curScene,1);
+    DrawOtherSceneUITextBlock(curScene);
+    DrawGameSceneUI(curScene);
     m_pd2dDeviceContext->EndDraw();
     m_pd3d11On12Device->ReleaseWrappedResources(ppResources, _countof(ppResources));
     m_pd3d11DeviceContext->Flush();

@@ -10,58 +10,37 @@
 #include "InputManager.h"
 #include "SceneManager.h"
 #include "SoundManager.h"
-
+#include "UIManager.h"
 
 CEmployee::CEmployee(ID3D12Device5* pd3dDevice, ID3D12GraphicsCommandList4* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, CHARACTER_TYPE nType)
 {
 	m_ctype = (uint8)PLAYER_TYPE::EMPLOYEE;
 	m_nCharacterType = nType;
+	m_pCamera = ChangeCamera(THIRD_PERSON_CAMERA, 0.0f);
+
+
+	CLoadedModelInfo* pEmployeeModel = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, g_pstrThirdCharactorRefernece[(int)m_nCharacterType], NULL, Layout::PLAYER);
+	SetChild(pEmployeeModel->m_pModelRootObject, true);
+
+	m_pSkinnedAnimationController = new CAnimationController(pd3dDevice, pd3dCommandList, 7, pEmployeeModel);
+
+	//필요없는 애니메이션
+	m_pSkinnedAnimationController->SetTrackAnimationSet(0, 2);//idle x
+	m_pSkinnedAnimationController->SetTrackAnimationSet(1, 3);//run x
+	m_pSkinnedAnimationController->SetTrackAnimationSet(2, 0);//faint_down (피격) x 
+	m_pSkinnedAnimationController->SetTrackAnimationSet(3, 1);//down_idle (기어가기) ㅇ
+	m_pSkinnedAnimationController->SetTrackAnimationSet(4, 4);//slow_walk (절뚝거리기) x
+	m_pSkinnedAnimationController->SetTrackAnimationSet(5, 5);//awake (일어나기) ㅇ
+	m_pSkinnedAnimationController->SetTrackAnimationSet(6, 6);//button ㅇ
+
+	m_pSkinnedAnimationController->SetTrackEnable(0, true);
+	m_pSkinnedAnimationController->SetTrackEnable(1, false);
+	m_pSkinnedAnimationController->SetTrackEnable(2, false);
+	m_pSkinnedAnimationController->SetTrackEnable(3, false);
+	m_pSkinnedAnimationController->SetTrackEnable(4, false);
+	m_pSkinnedAnimationController->SetTrackEnable(5, false);
+	m_pSkinnedAnimationController->SetTrackEnable(6, false);
 	
-	m_pCamera = ChangeCamera(FIRST_PERSON_CAMERA, 0.0f);
-
-	if (m_pCamera->m_nMode == (DWORD)FIRST_PERSON_CAMERA)
-	{
-		CLoadedModelInfo* pEmployeeModel = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, g_pstrFirstCharactorRefernece[(int)m_nCharacterType], NULL, Layout::PLAYER);
-		SetChild(pEmployeeModel->m_pModelRootObject, true);
-
-		m_pSkinnedAnimationController = new CAnimationController(pd3dDevice, pd3dCommandList, 4, pEmployeeModel);
-
-		m_pSkinnedAnimationController->SetTrackAnimationSet(0, 3);//idle
-		m_pSkinnedAnimationController->SetTrackAnimationSet(1, 0);//run
-		m_pSkinnedAnimationController->SetTrackAnimationSet(2, 2);//slow_walk (절뚝거리기)
-		m_pSkinnedAnimationController->SetTrackAnimationSet(3, 1);//button
-
-		//달리기, 버튼, 느리게 걷기, 대기
-		m_pSkinnedAnimationController->SetTrackEnable(0, true);
-		m_pSkinnedAnimationController->SetTrackEnable(1, false);
-		m_pSkinnedAnimationController->SetTrackEnable(2, false);
-		m_pSkinnedAnimationController->SetTrackEnable(3, false);
-
-	}
-	//if (m_pCamera->m_nMode == (DWORD)THIRD_PERSON_CAMERA)
-	{
-		CLoadedModelInfo* pEmployeeModel = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, g_pstrThirdCharactorRefernece[(int)m_nCharacterType], NULL, Layout::PLAYER);
-		SetChild(pEmployeeModel->m_pModelRootObject, true);
-
-		m_pSkinnedAnimationController1 = new CAnimationController(pd3dDevice, pd3dCommandList, 7, pEmployeeModel);
-
-		//필요없는 애니메이션
-		m_pSkinnedAnimationController1->SetTrackAnimationSet(0, 2);//idle x
-		m_pSkinnedAnimationController1->SetTrackAnimationSet(1, 3);//run x
-		m_pSkinnedAnimationController1->SetTrackAnimationSet(2, 0);//faint_down (피격) x 
-		m_pSkinnedAnimationController1->SetTrackAnimationSet(3, 1);//down_idle (기어가기) ㅇ
-		m_pSkinnedAnimationController1->SetTrackAnimationSet(4, 4);//slow_walk (절뚝거리기) x
-		m_pSkinnedAnimationController1->SetTrackAnimationSet(5, 5);//awake (일어나기) ㅇ
-		m_pSkinnedAnimationController1->SetTrackAnimationSet(6, 6);//button ㅇ
-
-		m_pSkinnedAnimationController1->SetTrackEnable(0, false);
-		m_pSkinnedAnimationController1->SetTrackEnable(1, false);
-		m_pSkinnedAnimationController1->SetTrackEnable(2, false);
-		m_pSkinnedAnimationController1->SetTrackEnable(3, false);
-		m_pSkinnedAnimationController1->SetTrackEnable(4, false);
-		m_pSkinnedAnimationController1->SetTrackEnable(5, false);
-		m_pSkinnedAnimationController1->SetTrackEnable(6, false);
-	}
 	CreateShaderVariables(pd3dDevice, pd3dCommandList);
 }
 
@@ -85,7 +64,6 @@ CCamera* CEmployee::ChangeCamera(DWORD nNewCameraMode, float fTimeElapsed)
 		m_pCamera->GenerateProjectionMatrix(0.01f, MaxDepthofMap, ASPECT_RATIO, 60.0f); //5000.f
 		m_pCamera->SetViewport(0, 0, FRAME_BUFFER_WIDTH, FRAME_BUFFER_HEIGHT, 0.0f, 1.0f);
 		m_pCamera->SetScissorRect(0, 0, FRAME_BUFFER_WIDTH, FRAME_BUFFER_HEIGHT);
-		//m_pCamera->SetPosition(XMFLOAT3(0, 2.25, 0));
 		break;
 	case THIRD_PERSON_CAMERA:
 		m_pCamera = OnChangeCamera(THIRD_PERSON_CAMERA, nCurrentCameraMode);
@@ -100,7 +78,7 @@ CCamera* CEmployee::ChangeCamera(DWORD nNewCameraMode, float fTimeElapsed)
 	}
 	m_pCamera->SetPosition(Vector3::Add(m_xmf3Position, m_pCamera->GetOffset()));
 
-	Update(fTimeElapsed, CLIENT_TYPE::OWNER);
+	Update(fTimeElapsed, m_clientType);
 
 	return(m_pCamera);
 }
@@ -123,8 +101,11 @@ uint8 CEmployee::ProcessInput()
 		else	 SetBehavior(PLAYER_BEHAVIOR::IDLE);
 
 		// 구조 작업이나 발전기 상호작용을 수행하고 있다면 
-		if (RescueTasking() || GenTasking()) { dir = 0; }
+		
+		//if (RescueTasking() || GenTasking()) { dir = 0; }
 	}
+	GenTasking();
+	RescueTasking();
 
 	Move(dir, EMPLOYEE_VELOCITY);
 	return dir;
@@ -162,8 +143,10 @@ void CEmployee::Move(const int16& dwDirection, float fDistance)
 
 void CEmployee::Update(float fTimeElapsed, CLIENT_TYPE ptype)
 {
-	CPlayer::Update(fTimeElapsed, m_clientType);
-	LateUpdate(fTimeElapsed,m_clientType);
+	
+
+	CPlayer::Update(fTimeElapsed, ptype);
+	LateUpdate(fTimeElapsed,ptype);
 }
 
 void CEmployee::LateUpdate(float fTimeElapsed, CLIENT_TYPE ptype)
@@ -213,28 +196,17 @@ void CEmployee::SetIdleAnimTrack()
 	m_pSkinnedAnimationController->SetTrackEnable(1, false);
 	m_pSkinnedAnimationController->SetTrackEnable(2, false);
 	m_pSkinnedAnimationController->SetTrackEnable(3, false);
-
-	if (m_pSkinnedAnimationController1 == nullptr) return;
-	m_pSkinnedAnimationController1->SetTrackEnable(0, false);
-	m_pSkinnedAnimationController1->SetTrackEnable(1, false);
-	m_pSkinnedAnimationController1->SetTrackEnable(2, false);
-	m_pSkinnedAnimationController1->SetTrackEnable(3, false);
-	m_pSkinnedAnimationController1->SetTrackEnable(4, false);
-	m_pSkinnedAnimationController1->SetTrackEnable(5, false);
-	m_pSkinnedAnimationController1->SetTrackEnable(6, false);
+	m_pSkinnedAnimationController->SetTrackEnable(4, false);
+	m_pSkinnedAnimationController->SetTrackEnable(5, false);
+	m_pSkinnedAnimationController->SetTrackEnable(6, false);
 
 	m_pSkinnedAnimationController->SetTrackPosition(0, 0);
 	m_pSkinnedAnimationController->SetTrackPosition(1, 0);
 	m_pSkinnedAnimationController->SetTrackPosition(2, 0);
 	m_pSkinnedAnimationController->SetTrackPosition(3, 0);
-
-	m_pSkinnedAnimationController1->SetTrackPosition(0, 0);
-	m_pSkinnedAnimationController1->SetTrackPosition(1, 0);
-	m_pSkinnedAnimationController1->SetTrackPosition(2, 0);
-	m_pSkinnedAnimationController1->SetTrackPosition(3, 0);
-	m_pSkinnedAnimationController1->SetTrackPosition(4, 0);
-	m_pSkinnedAnimationController1->SetTrackPosition(5, 0);
-	m_pSkinnedAnimationController1->SetTrackPosition(6, 0);
+	m_pSkinnedAnimationController->SetTrackPosition(4, 0);
+	m_pSkinnedAnimationController->SetTrackPosition(5, 0);
+	m_pSkinnedAnimationController->SetTrackPosition(6, 0);
 }
 
 void CEmployee::SetRunAnimTrack()
@@ -244,28 +216,17 @@ void CEmployee::SetRunAnimTrack()
 	m_pSkinnedAnimationController->SetTrackEnable(1, true);
 	m_pSkinnedAnimationController->SetTrackEnable(2, false);
 	m_pSkinnedAnimationController->SetTrackEnable(3, false);
-
-	if (m_pSkinnedAnimationController1 == nullptr) return;
-	m_pSkinnedAnimationController1->SetTrackEnable(0, false);
-	m_pSkinnedAnimationController1->SetTrackEnable(1, false);
-	m_pSkinnedAnimationController1->SetTrackEnable(2, false);
-	m_pSkinnedAnimationController1->SetTrackEnable(3, false);
-	m_pSkinnedAnimationController1->SetTrackEnable(4, false);
-	m_pSkinnedAnimationController1->SetTrackEnable(5, false);
-	m_pSkinnedAnimationController1->SetTrackEnable(6, false);
+	m_pSkinnedAnimationController->SetTrackEnable(4, false);
+	m_pSkinnedAnimationController->SetTrackEnable(5, false);
+	m_pSkinnedAnimationController->SetTrackEnable(6, false);
 
 	m_pSkinnedAnimationController->SetTrackPosition(0, 0);
 	m_pSkinnedAnimationController->SetTrackPosition(1, 0);
 	m_pSkinnedAnimationController->SetTrackPosition(2, 0);
 	m_pSkinnedAnimationController->SetTrackPosition(3, 0);
-
-	m_pSkinnedAnimationController1->SetTrackPosition(0, 0);
-	m_pSkinnedAnimationController1->SetTrackPosition(1, 0);
-	m_pSkinnedAnimationController1->SetTrackPosition(2, 0);
-	m_pSkinnedAnimationController1->SetTrackPosition(3, 0);
-	m_pSkinnedAnimationController1->SetTrackPosition(4, 0);
-	m_pSkinnedAnimationController1->SetTrackPosition(5, 0);
-	m_pSkinnedAnimationController1->SetTrackPosition(6, 0);
+	m_pSkinnedAnimationController->SetTrackPosition(4, 0);
+	m_pSkinnedAnimationController->SetTrackPosition(5, 0);
+	m_pSkinnedAnimationController->SetTrackPosition(6, 0);
 }
 
 void CEmployee::SetDownAnimTrack()
@@ -273,30 +234,19 @@ void CEmployee::SetDownAnimTrack()
 	if (m_pSkinnedAnimationController == nullptr) return;
 	m_pSkinnedAnimationController->SetTrackEnable(0, false);
 	m_pSkinnedAnimationController->SetTrackEnable(1, false);
-	m_pSkinnedAnimationController->SetTrackEnable(2, false);
+	m_pSkinnedAnimationController->SetTrackEnable(2, true);
 	m_pSkinnedAnimationController->SetTrackEnable(3, false);
-
-	if (m_pSkinnedAnimationController1 == nullptr) return;
-	m_pSkinnedAnimationController1->SetTrackEnable(0, false);
-	m_pSkinnedAnimationController1->SetTrackEnable(1, false);
-	m_pSkinnedAnimationController1->SetTrackEnable(2, false);
-	m_pSkinnedAnimationController1->SetTrackEnable(3, true);
-	m_pSkinnedAnimationController1->SetTrackEnable(4, false);
-	m_pSkinnedAnimationController1->SetTrackEnable(5, false);
-	m_pSkinnedAnimationController1->SetTrackEnable(6, false);
+	m_pSkinnedAnimationController->SetTrackEnable(4, false);
+	m_pSkinnedAnimationController->SetTrackEnable(5, false);
+	m_pSkinnedAnimationController->SetTrackEnable(6, false);
 
 	m_pSkinnedAnimationController->SetTrackPosition(0, 0);
 	m_pSkinnedAnimationController->SetTrackPosition(1, 0);
 	m_pSkinnedAnimationController->SetTrackPosition(2, 0);
 	m_pSkinnedAnimationController->SetTrackPosition(3, 0);
-
-	m_pSkinnedAnimationController1->SetTrackPosition(0, 0);
-	m_pSkinnedAnimationController1->SetTrackPosition(1, 0);
-	m_pSkinnedAnimationController1->SetTrackPosition(2, 0);
-	m_pSkinnedAnimationController1->SetTrackPosition(3, 0);
-	m_pSkinnedAnimationController1->SetTrackPosition(4, 0);
-	m_pSkinnedAnimationController1->SetTrackPosition(5, 0);
-	m_pSkinnedAnimationController1->SetTrackPosition(6, 0);
+	m_pSkinnedAnimationController->SetTrackPosition(4, 0);
+	m_pSkinnedAnimationController->SetTrackPosition(5, 0);
+	m_pSkinnedAnimationController->SetTrackPosition(6, 0);
 }
 
 void CEmployee::SetCrawlAnimTrack()
@@ -304,63 +254,39 @@ void CEmployee::SetCrawlAnimTrack()
 	if (m_pSkinnedAnimationController == nullptr) return;
 	m_pSkinnedAnimationController->SetTrackEnable(0, false);
 	m_pSkinnedAnimationController->SetTrackEnable(1, false);
-	m_pSkinnedAnimationController->SetTrackEnable(2, true);
-	m_pSkinnedAnimationController->SetTrackEnable(3, false);
-
-	if (m_pSkinnedAnimationController1 == nullptr) return;
-	m_pSkinnedAnimationController1->SetTrackEnable(0, false);
-	m_pSkinnedAnimationController1->SetTrackEnable(1, false);
-	m_pSkinnedAnimationController1->SetTrackEnable(2, false);
-	m_pSkinnedAnimationController1->SetTrackEnable(3, false);
-	m_pSkinnedAnimationController1->SetTrackEnable(4, false);
-	m_pSkinnedAnimationController1->SetTrackEnable(5, false);
-	m_pSkinnedAnimationController1->SetTrackEnable(6, false);
+	m_pSkinnedAnimationController->SetTrackEnable(2, false);
+	m_pSkinnedAnimationController->SetTrackEnable(3, true); // CRAWL
+	m_pSkinnedAnimationController->SetTrackEnable(4, false);
+	m_pSkinnedAnimationController->SetTrackEnable(5, false);
+	m_pSkinnedAnimationController->SetTrackEnable(6, false);
 
 	m_pSkinnedAnimationController->SetTrackPosition(0, 0);
 	m_pSkinnedAnimationController->SetTrackPosition(1, 0);
 	m_pSkinnedAnimationController->SetTrackPosition(2, 0);
 	m_pSkinnedAnimationController->SetTrackPosition(3, 0);
-
-	m_pSkinnedAnimationController1->SetTrackPosition(0, 0);
-	m_pSkinnedAnimationController1->SetTrackPosition(1, 0);
-	m_pSkinnedAnimationController1->SetTrackPosition(2, 0);
-	m_pSkinnedAnimationController1->SetTrackPosition(3, 0);
-	m_pSkinnedAnimationController1->SetTrackPosition(4, 0);
-	m_pSkinnedAnimationController1->SetTrackPosition(5, 0);
-	m_pSkinnedAnimationController1->SetTrackPosition(6, 0);
+	m_pSkinnedAnimationController->SetTrackPosition(4, 0);
+	m_pSkinnedAnimationController->SetTrackPosition(5, 0);
+	m_pSkinnedAnimationController->SetTrackPosition(6, 0);
 }
 
 void CEmployee::SetAttackedAnimTrack()
 {
 	if (m_pSkinnedAnimationController == nullptr) return;
-	if (m_pSkinnedAnimationController1 == nullptr) return;
-
 	m_pSkinnedAnimationController->SetTrackEnable(0, false);
 	m_pSkinnedAnimationController->SetTrackEnable(1, false);
 	m_pSkinnedAnimationController->SetTrackEnable(2, false);
 	m_pSkinnedAnimationController->SetTrackEnable(3, false);
-
-	
-	m_pSkinnedAnimationController1->SetTrackEnable(0, false);
-	m_pSkinnedAnimationController1->SetTrackEnable(1, false);
-	m_pSkinnedAnimationController1->SetTrackEnable(2, true);
-	m_pSkinnedAnimationController1->SetTrackEnable(3, false);
-	m_pSkinnedAnimationController1->SetTrackEnable(4, false);
-	m_pSkinnedAnimationController1->SetTrackEnable(5, false);
-	m_pSkinnedAnimationController1->SetTrackEnable(6, false);
+	m_pSkinnedAnimationController->SetTrackEnable(4, true);
+	m_pSkinnedAnimationController->SetTrackEnable(5, false);
+	m_pSkinnedAnimationController->SetTrackEnable(6, false);
 
 	m_pSkinnedAnimationController->SetTrackPosition(0, 0);
 	m_pSkinnedAnimationController->SetTrackPosition(1, 0);
 	m_pSkinnedAnimationController->SetTrackPosition(2, 0);
 	m_pSkinnedAnimationController->SetTrackPosition(3, 0);
-
-	m_pSkinnedAnimationController1->SetTrackPosition(0, 0);
-	m_pSkinnedAnimationController1->SetTrackPosition(1, 0);
-	m_pSkinnedAnimationController1->SetTrackPosition(2, 0);
-	m_pSkinnedAnimationController1->SetTrackPosition(3, 0);
-	m_pSkinnedAnimationController1->SetTrackPosition(4, 0);
-	m_pSkinnedAnimationController1->SetTrackPosition(5, 0);
-	m_pSkinnedAnimationController1->SetTrackPosition(6, 0);
+	m_pSkinnedAnimationController->SetTrackPosition(4, 0);
+	m_pSkinnedAnimationController->SetTrackPosition(5, 0);
+	m_pSkinnedAnimationController->SetTrackPosition(6, 0);
 }
 
 void CEmployee::SetStandAnimTrack()
@@ -370,28 +296,17 @@ void CEmployee::SetStandAnimTrack()
 	m_pSkinnedAnimationController->SetTrackEnable(1, false);
 	m_pSkinnedAnimationController->SetTrackEnable(2, false);
 	m_pSkinnedAnimationController->SetTrackEnable(3, false);
-
-	if (m_pSkinnedAnimationController1 == nullptr) return;
-	m_pSkinnedAnimationController1->SetTrackEnable(0, false);
-	m_pSkinnedAnimationController1->SetTrackEnable(1, false);
-	m_pSkinnedAnimationController1->SetTrackEnable(2, false);
-	m_pSkinnedAnimationController1->SetTrackEnable(3, false);
-	m_pSkinnedAnimationController1->SetTrackEnable(4, false);
-	m_pSkinnedAnimationController1->SetTrackEnable(5, true);
-	m_pSkinnedAnimationController1->SetTrackEnable(6, false);
+	m_pSkinnedAnimationController->SetTrackEnable(4, false);
+	m_pSkinnedAnimationController->SetTrackEnable(5, true);
+	m_pSkinnedAnimationController->SetTrackEnable(6, false);
 
 	m_pSkinnedAnimationController->SetTrackPosition(0, 0);
 	m_pSkinnedAnimationController->SetTrackPosition(1, 0);
 	m_pSkinnedAnimationController->SetTrackPosition(2, 0);
 	m_pSkinnedAnimationController->SetTrackPosition(3, 0);
-
-	m_pSkinnedAnimationController1->SetTrackPosition(0, 0);
-	m_pSkinnedAnimationController1->SetTrackPosition(1, 0);
-	m_pSkinnedAnimationController1->SetTrackPosition(2, 0);
-	m_pSkinnedAnimationController1->SetTrackPosition(3, 0);
-	m_pSkinnedAnimationController1->SetTrackPosition(4, 0);
-	m_pSkinnedAnimationController1->SetTrackPosition(5, 0);
-	m_pSkinnedAnimationController1->SetTrackPosition(6, 0);
+	m_pSkinnedAnimationController->SetTrackPosition(4, 0);
+	m_pSkinnedAnimationController->SetTrackPosition(5, 0);
+	m_pSkinnedAnimationController->SetTrackPosition(6, 0);
 }
 
 void CEmployee::SetInteractionAnimTrack()
@@ -400,30 +315,20 @@ void CEmployee::SetInteractionAnimTrack()
 	m_pSkinnedAnimationController->SetTrackEnable(0, false);
 	m_pSkinnedAnimationController->SetTrackEnable(1, false);
 	m_pSkinnedAnimationController->SetTrackEnable(2, false);
-	m_pSkinnedAnimationController->SetTrackEnable(3, true);
-
-	if (m_pSkinnedAnimationController1 == nullptr) return;
-	m_pSkinnedAnimationController1->SetTrackEnable(0, false);
-	m_pSkinnedAnimationController1->SetTrackEnable(1, false);
-	m_pSkinnedAnimationController1->SetTrackEnable(2, false);
-	m_pSkinnedAnimationController1->SetTrackEnable(3, false);
-	m_pSkinnedAnimationController1->SetTrackEnable(4, false);
-	m_pSkinnedAnimationController1->SetTrackEnable(5, false);
-	m_pSkinnedAnimationController1->SetTrackEnable(6, false);
+	m_pSkinnedAnimationController->SetTrackEnable(3, false);
+	m_pSkinnedAnimationController->SetTrackEnable(4, false);
+	m_pSkinnedAnimationController->SetTrackEnable(5, false);
+	m_pSkinnedAnimationController->SetTrackEnable(6, true);
 
 	m_pSkinnedAnimationController->SetTrackPosition(0, 0);
 	m_pSkinnedAnimationController->SetTrackPosition(1, 0);
 	m_pSkinnedAnimationController->SetTrackPosition(2, 0);
 	m_pSkinnedAnimationController->SetTrackPosition(3, 0);
-
-	m_pSkinnedAnimationController1->SetTrackPosition(0, 0);
-	m_pSkinnedAnimationController1->SetTrackPosition(1, 0);
-	m_pSkinnedAnimationController1->SetTrackPosition(2, 0);
-	m_pSkinnedAnimationController1->SetTrackPosition(3, 0);
-	m_pSkinnedAnimationController1->SetTrackPosition(4, 0);
-	m_pSkinnedAnimationController1->SetTrackPosition(5, 0);
-	m_pSkinnedAnimationController1->SetTrackPosition(6, 0);
+	m_pSkinnedAnimationController->SetTrackPosition(4, 0);
+	m_pSkinnedAnimationController->SetTrackPosition(5, 0);
+	m_pSkinnedAnimationController->SetTrackPosition(6, 0);
 }
+
 
 void CEmployee::AnimTrackUpdate()
 {
@@ -500,7 +405,7 @@ void CEmployee::AnimTrackUpdate()
 			if (m_standAnimationCount <= 0)
 			{
 				m_behavior = (int32)PLAYER_BEHAVIOR::IDLE;
-				mainGame.m_SceneManager->GetSceneByIdx(3)->m_pCamera->m_nMode = THIRD_PERSON_CAMERA;
+			
 			}
 		}
 		break;
@@ -522,8 +427,19 @@ CGenerator* CEmployee::GetAvailGen()
 				
 			if (targetGenerator)
 			{
-				if (targetGenerator->IsAvailable()) return targetGenerator;
+				if (targetGenerator->IsAvailable())
+				{
+					m_bIsInGenArea = true;
+					m_curInterGen = i;
+					return targetGenerator;
+				}
+				else
+				{
+					m_bIsInGenArea = false;
+					return nullptr;
+				}
 			}
+			else m_bIsInGenArea = false;
 		}
 	}
 	
@@ -567,7 +483,7 @@ void CEmployee::PlayerAttacked()
 		if (m_hp == 0)
 		{
 			PlayerDown();
-			m_pCamera = ChangeCamera(THIRD_PERSON_CAMERA, 0.0f);
+			
 			
 		}
 		else
@@ -591,9 +507,9 @@ bool CEmployee::GenTasking()
 
 	CGenerator* targetGen = GetAvailGen();
 	
-
+	
 	//  F키를 눌렀고, 구하기 상호작용 중이 아닐 때
-	if (InputManager::GetInstance().GetKeyBuffer(KEY_TYPE::F) && !GetIsPlayerOnRescueInter())
+	if (InputManager::GetInstance().GetKeyBuffer(KEY_TYPE::F) > 0 && !GetIsPlayerOnRescueInter())
 	{
 		SetBehavior(PLAYER_BEHAVIOR::IDLE);
 		if (targetGen)
@@ -620,24 +536,24 @@ bool CEmployee::GenTasking()
 	}
 	else if (!InputManager::GetInstance().GetKeyBuffer(KEY_TYPE::F))
 	{
-		if (GetIsPlayerOnGenInter()) // 내가 상호작용 도중이였다면
-		{
-			
-			if (InputManager::GetInstance().GetKeyBuffer(KEY_TYPE::F) == (int8)KEY_STATUS::KEY_UP)
+			if (InputManager::GetInstance().GetKeyBuffer(KEY_TYPE::F) == (int8)KEY_STATUS::KEY_UP || !targetGen)
 			{
-				SetGenInteraction(false);
-				SetBehavior(PLAYER_BEHAVIOR::IDLE);
-				targetGen->SetInteractionOn(false); // 애니메이션 재생을 정지한다.
-			
-				SoundManager::GetInstance().SoundStop(6);
-				//========= 패킷 송신 처리 ==============
-				SC_EVENTPACKET packet;
-				packet.eventId = m_curInterGen + (int32)EVENT_TYPE::SWITCH_ONE_END_EVENT;
-				packet.size = sizeof(SC_EVENTPACKET);
-				packet.type = (uint8)SC_GAME_PACKET_TYPE::GAMEEVENT;
-				clientCore.DoSend(&packet);
+				if (GetIsPlayerOnGenInter()) // 내가 상호작용 도중이였다면
+				{
+					std::cout << "Cancel\n";
+					SetGenInteraction(false);
+					SetBehavior(PLAYER_BEHAVIOR::IDLE);
+					
+					SoundManager::GetInstance().SoundStop(6);
+					//========= 패킷 송신 처리 ==============
+					SC_EVENTPACKET packet;
+					packet.eventId = m_curInterGen + (int32)EVENT_TYPE::SWITCH_ONE_END_EVENT;
+					packet.size = sizeof(SC_EVENTPACKET);
+					packet.type = (uint8)SC_GAME_PACKET_TYPE::GAMEEVENT;
+					clientCore.DoSend(&packet);
+				}
 			}
-		}
+		
 	}
 	return false;
 }

@@ -441,20 +441,20 @@ void UIManager::UpdateGameSceneUI(CGameScene* gc)
         {
             if (MAX_HP == gc->GetScenePlayerByIdx(i)->m_hp)
             {
-                m_CharStatus[i - 1].resource = m_CharStatusBitmaps[0]; // normal
+                m_CharStatus[gc->GetScenePlayerByIdx(i)->m_idx - 1].resource = m_CharStatusBitmaps[0]; // normal
             }
             else if (0 == gc->GetScenePlayerByIdx(i)->m_hp)
             {
-                m_CharStatus[i - 1].resource = m_CharStatusBitmaps[2]; // death
+                m_CharStatus[gc->GetScenePlayerByIdx(i)->m_idx - 1].resource = m_CharStatusBitmaps[2]; // death
             }
-            else m_CharStatus[i - 1].resource = m_CharStatusBitmaps[1]; // death
+            else m_CharStatus[gc->GetScenePlayerByIdx(i)->m_idx - 1].resource = m_CharStatusBitmaps[1]; // death
         }
         else if (i == m_playerIdx)
         {
             for (auto& i : m_HPUi) i.m_hide = true;
             for (int k = 0; k < gc->GetScenePlayerByIdx(i)->m_hp; ++k)
             {
-                m_HPUi[i].m_hide = false;
+                m_HPUi[k].m_hide = false;
             }
 
         }
@@ -467,18 +467,19 @@ void UIManager::UpdateGameSceneUI(CGameScene* gc)
         if (m_playerIdx != 0)
         {
             CEmployee* myPlayer = static_cast<CEmployee*>(gc->GetScenePlayerByIdx(m_playerIdx));
+           
             if (myPlayer->GetIsInGenArea())
             {
-               
                 m_GenerateUIButtons[20].m_hide = false;
             }
-            else m_GenerateUIButtons[20].m_hide = true;
+            else if (myPlayer->GetIsInGenArea() == false) m_GenerateUIButtons[20].m_hide = true;
 
             if (myPlayer->GetIsPlayerOnGenInter())
             {
                 
                 CGenerator* targetGen = myPlayer->GetAvailGen();
-                if(targetGen) m_GenerateUIButtons[((int32)targetGen->m_curGuage % 5)].m_hide = false;
+                if(targetGen && (int32)((((int32)targetGen->m_curGuage) % 100) / 5) <= 19) 
+                    m_GenerateUIButtons[(int32)((((int32)targetGen->m_curGuage ) % 100) / 5)].m_hide = false;
             }
             else
             {
@@ -653,7 +654,7 @@ void UIManager::InitializeDevice(ID3D12Device5* pd3dDevice, ID3D12CommandQueue* 
     // 상태 --> 동적으로 변하는 것이므로 그때 그때 위치를 업데이트하기로 한다. 일단 비트맵 리소스만 로드한다.
     m_CharStatusBitmaps[0] = LoadPngFromFile(L"UI/Normal.png");
     m_CharStatusBitmaps[1] = LoadPngFromFile(L"UI/Danger.png");
-    m_CharStatusBitmaps[2] = LoadPngFromFile(L"UI/Death.png");
+    m_CharStatusBitmaps[2] = LoadPngFromFile(L"UI/Dead.png");
     
     m_HpBitmap = LoadPngFromFile(L"UI/HP.png");
     for (int i = 0; i < MAX_HP; ++i)

@@ -15,35 +15,30 @@ CBoss::CBoss(ID3D12Device5* pd3dDevice,
 	ID3D12GraphicsCommandList4  * pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature)
 {
 	m_type = 0;
-	m_pCamera = ChangeCamera(FIRST_PERSON_CAMERA, 0.0f);//FIRST_PERSON_CAMERA
+
 	m_ctype = (uint8)PLAYER_TYPE::BOSS;
 	m_nCharacterType = CHARACTER_TYPE::BOSS;
-	
+	m_pCamera = ChangeCamera(THIRD_PERSON_CAMERA, 0.0f);
+
 	SetIsOnUIActive(true);
-	if (m_pCamera->m_nMode == (DWORD)FIRST_PERSON_CAMERA)
-	{
-		CLoadedModelInfo* pBossArmModel = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "Model/Character/Boss_Idle_First.bin", NULL, Layout::PLAYER);
-		SetChild(pBossArmModel->m_pModelRootObject, true);
 
-		m_pSkinnedAnimationController = new CAnimationController(pd3dDevice, pd3dCommandList, 4, pBossArmModel);
+	//{
+	//	CLoadedModelInfo* pBossArmModel = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "Model/Character/Boss_Idle_First.bin", NULL, Layout::PLAYER);
+	//	SetChild(pBossArmModel->m_pModelRootObject, true);
 
-		m_pSkinnedAnimationController->SetTrackAnimationSet(0, 0);//Idle
-		m_pSkinnedAnimationController->SetTrackAnimationSet(1, 1);//Run
-		m_pSkinnedAnimationController->SetTrackAnimationSet(2, 2);//Shoot
-		m_pSkinnedAnimationController->SetTrackAnimationSet(3, 3);//RunningShoot 
+	//	m_pSkinnedAnimationController2 = new CAnimationController(pd3dDevice, pd3dCommandList, 4, pBossArmModel);
 
-		m_pSkinnedAnimationController->SetTrackEnable(0, true);
-		m_pSkinnedAnimationController->SetTrackEnable(1, false); 
-		m_pSkinnedAnimationController->SetTrackEnable(2, false);
-		m_pSkinnedAnimationController->SetTrackEnable(3, false);
+	//	m_pSkinnedAnimationController2->SetTrackAnimationSet(0, 0);//Idle
+	//	m_pSkinnedAnimationController2->SetTrackAnimationSet(1, 1);//Run
+	//	m_pSkinnedAnimationController2->SetTrackAnimationSet(2, 2);//Shoot
+	//	m_pSkinnedAnimationController2->SetTrackAnimationSet(3, 3);//RunningShoot 
 
-		
-		CreateShaderVariables(pd3dDevice, pd3dCommandList);
+	//	m_pSkinnedAnimationController2->SetTrackEnable(0, true);
+	//	m_pSkinnedAnimationController2->SetTrackEnable(1, false); 
+	//	m_pSkinnedAnimationController2->SetTrackEnable(2, false);
+	//	m_pSkinnedAnimationController2->SetTrackEnable(3, false);
+	//}
 
-		if (pBossArmModel) delete pBossArmModel;
-	}
-
-	if (m_pCamera->m_nMode == (DWORD)THIRD_PERSON_CAMERA)
 	{
 		CLoadedModelInfo* pBossUpperModel = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "Model/Character/Boss_Shooting_Run_UpperBody.bin", NULL, Layout::PLAYER);
 		SetChild(pBossUpperModel->m_pModelRootObject, true);
@@ -51,24 +46,26 @@ CBoss::CBoss(ID3D12Device5* pd3dDevice,
 		CLoadedModelInfo* pBossLowerModel = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "Model/Character/Boss_Shooting_Run_LowerBody.bin", NULL, Layout::PLAYER);
 		SetChild(pBossLowerModel->m_pModelRootObject, true);
 
-		m_pSkinnedAnimationController = new CAnimationController(pd3dDevice, pd3dCommandList, 4, pBossUpperModel);
+		m_pSkinnedAnimationController =  new CAnimationController(pd3dDevice, pd3dCommandList, 4, pBossUpperModel);
 		m_pSkinnedAnimationController1 = new CAnimationController(pd3dDevice, pd3dCommandList, 4, pBossLowerModel);
 
 		m_pSkinnedAnimationController->SetTrackAnimationSet(0, 1);//Idle
 		m_pSkinnedAnimationController->SetTrackAnimationSet(1, 2);//Run
 		m_pSkinnedAnimationController->SetTrackAnimationSet(2, 3);//Shoot 2
 		m_pSkinnedAnimationController->SetTrackAnimationSet(3, 0);//RunningShoot 
+		
+		m_pSkinnedAnimationController->SetTrackEnable(0, true);
+		m_pSkinnedAnimationController->SetTrackEnable(1, false);
+		m_pSkinnedAnimationController->SetTrackEnable(2, false);
+		m_pSkinnedAnimationController->SetTrackEnable(3, false);
+
 
 		m_pSkinnedAnimationController1->SetTrackAnimationSet(0, 1);//Idle
 		m_pSkinnedAnimationController1->SetTrackAnimationSet(1, 0);//Run
 		m_pSkinnedAnimationController1->SetTrackAnimationSet(2, 2);//Run
 		m_pSkinnedAnimationController1->SetTrackAnimationSet(3, 3);//Run
 
-		m_pSkinnedAnimationController->SetTrackEnable(0, true);
-		m_pSkinnedAnimationController->SetTrackEnable(1, false);
-		m_pSkinnedAnimationController->SetTrackEnable(2, false);
-		m_pSkinnedAnimationController->SetTrackEnable(3, false);
-
+		
 		m_pSkinnedAnimationController1->SetTrackEnable(0, true);
 		m_pSkinnedAnimationController1->SetTrackEnable(1, false);
 		m_pSkinnedAnimationController1->SetTrackEnable(2, false);
@@ -76,11 +73,10 @@ CBoss::CBoss(ID3D12Device5* pd3dDevice,
 
 		
 
-		CreateShaderVariables(pd3dDevice, pd3dCommandList);
-
 		if (pBossUpperModel) delete pBossUpperModel;
 		if (pBossLowerModel) delete pBossLowerModel;
 	}
+	CreateShaderVariables(pd3dDevice, pd3dCommandList);
 }
 
 CBoss::~CBoss()
@@ -107,7 +103,7 @@ CCamera* CBoss::ChangeCamera(DWORD nNewCameraMode, float fTimeElapsed)
 	case THIRD_PERSON_CAMERA:
 		m_pCamera = OnChangeCamera(THIRD_PERSON_CAMERA, nCurrentCameraMode);
 		m_pCamera->SetTimeLag(0.0f);
-		m_pCamera->SetOffset(XMFLOAT3(0.0f, 1.7f * UNIT, 5 * UNIT));
+		m_pCamera->SetOffset(XMFLOAT3(0.0f, 1.7f * UNIT, -5 * UNIT));
 		m_pCamera->GenerateProjectionMatrix(1.01f, MaxDepthofMap, ASPECT_RATIO, 60.0f);
 		m_pCamera->SetViewport(0, 0, FRAME_BUFFER_WIDTH, FRAME_BUFFER_HEIGHT, 0.0f, 1.0f);
 		m_pCamera->SetScissorRect(0, 0, FRAME_BUFFER_WIDTH, FRAME_BUFFER_HEIGHT);
@@ -117,7 +113,7 @@ CCamera* CBoss::ChangeCamera(DWORD nNewCameraMode, float fTimeElapsed)
 	}
 	m_pCamera->SetPosition(Vector3::Add(m_xmf3Position, m_pCamera->GetOffset()));
 	
-	Update(fTimeElapsed, CLIENT_TYPE::NONE);
+	Update(fTimeElapsed, m_clientType);
 
 	return(m_pCamera);
 }
@@ -161,6 +157,7 @@ void CBoss::SetAttackAnimOtherClient()
 
 void CBoss::Update(float fTimeElapsed, CLIENT_TYPE ptype)
 {
+
 	CPlayer::Update(fTimeElapsed, ptype);
 
 	if (m_pBullet)
@@ -232,92 +229,113 @@ void CBoss::AimationStateUpdate()
 
 void CBoss::SetIdleAnimTrack()
 {
-	if (m_pSkinnedAnimationController == nullptr ) return;
-	m_pSkinnedAnimationController->SetTrackEnable(0, true); // 아이들
-	m_pSkinnedAnimationController->SetTrackEnable(1, false);
-	m_pSkinnedAnimationController->SetTrackEnable(2, false);
-	m_pSkinnedAnimationController->SetTrackEnable(3, false);
 
-	m_pSkinnedAnimationController->SetTrackPosition(0, 0.0f);
-	m_pSkinnedAnimationController->SetTrackPosition(1, 0.0f);
-	m_pSkinnedAnimationController->SetTrackPosition(2, 0.0f);
-	m_pSkinnedAnimationController->SetTrackPosition(3, 0.0f);
+	if (m_pSkinnedAnimationController == nullptr) return;
+	if (m_pSkinnedAnimationController1 == nullptr) return;
 
-	// ===============  하체 ===========================
-	if(m_pSkinnedAnimationController1 == nullptr) return;
-	m_pSkinnedAnimationController1->SetTrackEnable(0, true); // IDLE
-	m_pSkinnedAnimationController1->SetTrackEnable(1, false);  // Run
+	{
+		
+		m_pSkinnedAnimationController->SetTrackEnable(0, true); // 아이들
+		m_pSkinnedAnimationController->SetTrackEnable(1, false);
+		m_pSkinnedAnimationController->SetTrackEnable(2, false);
+		m_pSkinnedAnimationController->SetTrackEnable(3, false);
 
-	m_pSkinnedAnimationController1->SetTrackPosition(0, 0.0f);
-	m_pSkinnedAnimationController1->SetTrackPosition(1, 0.0f);
+		m_pSkinnedAnimationController->SetTrackPosition(0, 0.0f);
+		m_pSkinnedAnimationController->SetTrackPosition(1, 0.0f);
+		m_pSkinnedAnimationController->SetTrackPosition(2, 0.0f);
+		m_pSkinnedAnimationController->SetTrackPosition(3, 0.0f);
+
+		// ===============  하체 ===========================
+		
+		m_pSkinnedAnimationController1->SetTrackEnable(0, true); // IDLE
+		m_pSkinnedAnimationController1->SetTrackEnable(1, false);  // Run
+
+		m_pSkinnedAnimationController1->SetTrackPosition(0, 0.0f);
+		m_pSkinnedAnimationController1->SetTrackPosition(1, 0.0f);
+	}
 }
 
 void CBoss::SetRunAnimTrack()
 {
 	if (m_pSkinnedAnimationController == nullptr) return;
-	// ================= 상체 =========================
-	m_pSkinnedAnimationController->SetTrackEnable(0, false);
-	m_pSkinnedAnimationController->SetTrackEnable(1, true); // 달리기
-	m_pSkinnedAnimationController->SetTrackEnable(2, false);
-	m_pSkinnedAnimationController->SetTrackEnable(3, false);
+	if (m_pSkinnedAnimationController1 == nullptr) return;
+	
+	{
+	
+		// ================= 상체 =========================
+		m_pSkinnedAnimationController->SetTrackEnable(0, false);
+		m_pSkinnedAnimationController->SetTrackEnable(1, true); // 달리기
+		m_pSkinnedAnimationController->SetTrackEnable(2, false);
+		m_pSkinnedAnimationController->SetTrackEnable(3, false);
+									 
+		m_pSkinnedAnimationController->SetTrackPosition(0, 0.0f);
+		m_pSkinnedAnimationController->SetTrackPosition(1, 0.0f);
+		m_pSkinnedAnimationController->SetTrackPosition(2, 0.0f);
+		m_pSkinnedAnimationController->SetTrackPosition(3, 0.0f);
 
-	m_pSkinnedAnimationController->SetTrackPosition(0, 0.0f);
-	m_pSkinnedAnimationController->SetTrackPosition(1, 0.0f);
-	m_pSkinnedAnimationController->SetTrackPosition(2, 0.0f);
-	m_pSkinnedAnimationController->SetTrackPosition(3, 0.0f);
+		// ===============  하체 ===========================
+		if (m_pSkinnedAnimationController1 == nullptr) return;
+		m_pSkinnedAnimationController1->SetTrackEnable(0, false); // IDLE
+		m_pSkinnedAnimationController1->SetTrackEnable(1, true);  // Run
 
-	// ===============  하체 ===========================
-	if(m_pSkinnedAnimationController1 == nullptr) return;
-	m_pSkinnedAnimationController1->SetTrackEnable(0, false); // IDLE
-	m_pSkinnedAnimationController1->SetTrackEnable(1, true);  // Run
-
-	m_pSkinnedAnimationController1->SetTrackPosition(0, 0.0f); 
-	m_pSkinnedAnimationController1->SetTrackPosition(1, 0.0f);
+		m_pSkinnedAnimationController1->SetTrackPosition(0, 0.0f);
+		m_pSkinnedAnimationController1->SetTrackPosition(1, 0.0f);
+	}
 	
 }
 
 void CBoss::SetAttackAnimTrack()
 {
 	if (m_pSkinnedAnimationController == nullptr) return;
-	m_pSkinnedAnimationController->SetTrackEnable(0, false);
-	m_pSkinnedAnimationController->SetTrackEnable(1, false);
-	m_pSkinnedAnimationController->SetTrackEnable(2, true); // 공격
-	m_pSkinnedAnimationController->SetTrackEnable(3, false);
+	if (m_pSkinnedAnimationController1 == nullptr) return;
 
-	m_pSkinnedAnimationController->SetTrackPosition(0, 0.0f);
-	m_pSkinnedAnimationController->SetTrackPosition(1, 0.0f);
-	m_pSkinnedAnimationController->SetTrackPosition(2, 0.0f);
-	m_pSkinnedAnimationController->SetTrackPosition(3, 0.0f);
+	{
+		
+		m_pSkinnedAnimationController->SetTrackEnable(0, false);
+		m_pSkinnedAnimationController->SetTrackEnable(1, false);
+		m_pSkinnedAnimationController->SetTrackEnable(2, true); // 공격
+		m_pSkinnedAnimationController->SetTrackEnable(3, false);
 
-	// ===============  하체 ===========================
-	if(m_pSkinnedAnimationController1 == nullptr) return;
-	m_pSkinnedAnimationController1->SetTrackEnable(0, true); // IDLE
-	m_pSkinnedAnimationController1->SetTrackEnable(1, false);  // Run
+		m_pSkinnedAnimationController->SetTrackPosition(0, 0.0f);
+		m_pSkinnedAnimationController->SetTrackPosition(1, 0.0f);
+		m_pSkinnedAnimationController->SetTrackPosition(2, 0.0f);
+		m_pSkinnedAnimationController->SetTrackPosition(3, 0.0f);
 
-	m_pSkinnedAnimationController1->SetTrackPosition(0, 0.0f);
-	m_pSkinnedAnimationController1->SetTrackPosition(1, 0.0f);
+		// ===============  하체 ===========================
+		
+		m_pSkinnedAnimationController1->SetTrackEnable(0, true); // IDLE
+		m_pSkinnedAnimationController1->SetTrackEnable(1, false);  // Run
+
+		m_pSkinnedAnimationController1->SetTrackPosition(0, 0.0f);
+		m_pSkinnedAnimationController1->SetTrackPosition(1, 0.0f);
+	}
 }
 
 void CBoss::SetRunAttackAnimTrack()
 {
 	if (m_pSkinnedAnimationController == nullptr) return;
-	m_pSkinnedAnimationController->SetTrackEnable(0, false);
-	m_pSkinnedAnimationController->SetTrackEnable(1, false);
-	m_pSkinnedAnimationController->SetTrackEnable(2, false);
-	m_pSkinnedAnimationController->SetTrackEnable(3, true);
-
-	m_pSkinnedAnimationController->SetTrackPosition(0, 0.0f);
-	m_pSkinnedAnimationController->SetTrackPosition(1, 0.0f);
-	m_pSkinnedAnimationController->SetTrackPosition(2, 0.0f);
-	m_pSkinnedAnimationController->SetTrackPosition(3, 0.0f);
-
 	if(m_pSkinnedAnimationController1 == nullptr) return;
-	// ===============  하체 ===========================
-	m_pSkinnedAnimationController1->SetTrackEnable(0, false); // IDLE
-	m_pSkinnedAnimationController1->SetTrackEnable(1, true);  // Run
+	
+	{
+		
+		m_pSkinnedAnimationController->SetTrackEnable(0, false);
+		m_pSkinnedAnimationController->SetTrackEnable(1, false);
+		m_pSkinnedAnimationController->SetTrackEnable(2, false);
+		m_pSkinnedAnimationController->SetTrackEnable(3, true);
 
-	m_pSkinnedAnimationController1->SetTrackPosition(0, 0.0f);
-	m_pSkinnedAnimationController1->SetTrackPosition(1, 0.0f);
+		m_pSkinnedAnimationController->SetTrackPosition(0, 0.0f);
+		m_pSkinnedAnimationController->SetTrackPosition(1, 0.0f);
+		m_pSkinnedAnimationController->SetTrackPosition(2, 0.0f);
+		m_pSkinnedAnimationController->SetTrackPosition(3, 0.0f);
+
+	
+		// ===============  하체 ===========================
+		m_pSkinnedAnimationController1->SetTrackEnable(0, false); // IDLE
+		m_pSkinnedAnimationController1->SetTrackEnable(1, true);  // Run
+
+		m_pSkinnedAnimationController1->SetTrackPosition(0, 0.0f);
+		m_pSkinnedAnimationController1->SetTrackPosition(1, 0.0f);
+	}
 }
 
 void CBoss::AnimTrackUpdate()

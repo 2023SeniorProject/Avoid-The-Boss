@@ -220,11 +220,11 @@ void CGameScene::BuildObjects(ID3D12Device5* pd3dDevice,ID3D12GraphicsCommandLis
 		{
 			m_players[i] = new CEmployee(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, (CHARACTER_TYPE)(i));
 			((CEmployee*)m_players[i])->m_pSwitches[0].position = XMFLOAT3(-23.12724, 1.146619, 1.814123);
-			((CEmployee*)m_players[i])->m_pSwitches[0].radius = 0.2f;
+			((CEmployee*)m_players[i])->m_pSwitches[0].radius = 0.5f;
 			((CEmployee*)m_players[i])->m_pSwitches[1].position = XMFLOAT3(23.08867, 1.083242, 3.155997);
-			((CEmployee*)m_players[i])->m_pSwitches[1].radius = 0.2f;
+			((CEmployee*)m_players[i])->m_pSwitches[1].radius = 0.5f;
 			((CEmployee*)m_players[i])->m_pSwitches[2].position = XMFLOAT3(0.6774719, 1.083242, -23.05909);
-			((CEmployee*)m_players[i])->m_pSwitches[2].radius = 0.2f;
+			((CEmployee*)m_players[i])->m_pSwitches[2].radius = 0.5f;
 			// 피격 이펙트 코드
 
 		}
@@ -301,6 +301,7 @@ void CGameScene::Update(HWND& hWnd)
 
 	mainGame.m_UIRenderer->UpdateGameSceneUI(this);
 
+	if (m_bEmpExit) Exit();
 	// 평균 프레임 레이트 출력
 	std::wstring str = L"[";
 	str.append(std::to_wstring(m_sid));
@@ -316,12 +317,7 @@ void CGameScene::Update(HWND& hWnd)
 	::SetWindowText(hWnd, str.c_str());
 }
 
-void CGameScene::ChangeMyPlayerCamera()
-{
-	m_players[m_playerIdx]->OnChangeCamera(FIRST_PERSON_CAMERA, 0.f);
-	m_pCamera = m_players[m_playerIdx]->GetCamera();
-	m_pd3dcbLights->Map(0, NULL, (void**)&m_pcbMappedLights);
-}
+
 
 void CGameScene::AnimateObjects()
 { 
@@ -368,6 +364,7 @@ void CGameScene::Render(ID3D12GraphicsCommandList4* pd3dCommandList, CCamera* pC
 		}
 	}
 
+	for (int i = 0; i < m_nGenerator; ++i)	m_ppGenerator[i]->Animate(m_fElapsedTime);
 	for (int i = 0; i < PLAYERNUM; ++i)
 	{
 		if(!m_players[i]->m_hide) m_players[i]->Render(pd3dCommandList, pCamera, bRaster);
@@ -413,7 +410,6 @@ void CGameScene::InitGame(void* packet, int32 sid)
 	if(m_players[2] != nullptr)m_players[2]->SetPosition(XMFLOAT3(15, 0, -18));
 	if(m_players[3] != nullptr)m_players[3]->SetPosition(XMFLOAT3(20, 0, -18));
 	m_pCamera = m_players[m_playerIdx]->GetCamera();
-	std::cout << m_pCamera->GetPosition().x << " " << m_pCamera->GetPosition().z << "\n";
 	m_players[m_playerIdx]->m_clientType = CLIENT_TYPE::OWNER;
 }
 

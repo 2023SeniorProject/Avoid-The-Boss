@@ -19,7 +19,7 @@ public: //06-03 추가
 	int m_idx = -1;
 	float m_maxGuage = 100;
 	float m_curGuage = 0;
-	float m_guageSpeed = 50.0f;
+	float m_guageSpeed = 10.0f;
 public:
 	std::mutex m_lock;
 	bool m_bGenActive = false; // --> 발전기가 활성화 되었는가

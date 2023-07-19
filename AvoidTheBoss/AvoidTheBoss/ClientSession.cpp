@@ -248,7 +248,6 @@ void CSession::ProcessPacket(char* packet)
 		// ================= 플레이어 초기 위치 초기화 ==================
 		 gs->InitGame(packet, _sid);
 		// ================= 카메라 셋팅 ================================
-		CPlayer* myPlayer = gs->m_players[gs->m_playerIdx];
 		std::wstring str = L"Client";
 		str.append(std::to_wstring(gs->m_playerIdx));
 		::SetConsoleTitle(str.c_str());
@@ -264,7 +263,6 @@ void CSession::ProcessPacket(char* packet)
 	{
 		S2C_KEY* movePacket = reinterpret_cast<S2C_KEY*>(packet);
 		moveEvent* mev = new moveEvent();
-		std::cout << movePacket->sid << "\n";
 		CPlayer* player = gs ->GetScenePlayerBySid(movePacket->sid);
 		if (player == nullptr) break;
 		

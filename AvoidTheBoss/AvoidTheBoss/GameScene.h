@@ -32,7 +32,7 @@ public:
 	
 
 	virtual void AnimateObjects();
-	void		 ChangeMyPlayerCamera();
+
 	
 public : // SceneInterface 상속 함수
 	virtual void ProcessInput(HWND& hWnd);

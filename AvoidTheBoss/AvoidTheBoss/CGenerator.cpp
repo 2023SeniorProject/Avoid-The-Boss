@@ -43,11 +43,18 @@ void CGenerator::LogicUpdate()
 
 void CGenerator::Update(float fTimeElapsed)
 {
-	if (m_bOnInteraction && !m_bGenActive) m_curGuage += m_guageSpeed * fTimeElapsed;
+	if (m_bOnInteraction && !m_bGenActive)
+	{
+		m_curGuage += m_guageSpeed * fTimeElapsed;
+		std::cout << m_curGuage << "\n";
+	}
 
 	if (m_curGuage > m_maxGuage && !m_bGenActive)
 	{
 		m_bGenActive = true;
+		m_bOnInteraction = false;
+		m_bAlreadyOn = true;
+
 		SC_EVENTPACKET packet;
 		packet.type = (uint8)SC_GAME_PACKET_TYPE::GAMEEVENT;
 		packet.size = sizeof(SC_EVENTPACKET);
@@ -136,7 +143,6 @@ void CGenerator::Animate(float fTimeElapsed)
 	LogicUpdate();
 
 	PipelineAnimate(fTimeElapsed);
-
 	BodyAnimate(fTimeElapsed);
 
 	CGameObject::Animate(fTimeElapsed);

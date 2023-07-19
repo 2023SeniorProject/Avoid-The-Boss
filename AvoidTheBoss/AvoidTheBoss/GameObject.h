@@ -333,7 +333,7 @@ public:
 
 public:
 	//CSound*							m_pSound;
-
+	bool							m_IsFirst = true;
 	Layout							objLayer;
 	bool							m_bEmpExit = false;
 
@@ -405,8 +405,10 @@ public:
 	UINT GetMeshType() { return((m_pMesh) ? m_pMesh->GetType() : 0x00); }
 
 public:
+	int	m_nAnimControllerIndex = 0;
 	CAnimationController 			*m_pSkinnedAnimationController = NULL;
 	CAnimationController			*m_pSkinnedAnimationController1 = NULL;
+	CAnimationController			*m_pSkinnedAnimationController2 = NULL;
 
 	CSkinnedMesh *FindSkinnedMesh(char *pstrSkinnedMeshName);
 	void FindAndSetSkinnedMesh(CSkinnedMesh **ppSkinnedMeshes, int *pnSkinnedMesh);

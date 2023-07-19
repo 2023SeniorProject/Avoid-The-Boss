@@ -408,7 +408,7 @@ void CGameScene::InitGame(void* packet, int32 sid)
 	}
 
 	std::cout << "PLAYER_IDX: " << m_playerIdx << "\n";
-	m_players[0]->SetPosition(XMFLOAT3(0, 0.25, -18)); >>> 여기 위치 수정하기
+	m_players[0]->SetPosition(XMFLOAT3(0, 0.25, -18)); //>>> 여기 위치 수정하기
 	if(m_players[1] != nullptr)m_players[1]->SetPosition(XMFLOAT3(10, 0.25, -18));
 	if(m_players[2] != nullptr)m_players[2]->SetPosition(XMFLOAT3(15, 0.25, -18));
 	if(m_players[3] != nullptr)m_players[3]->SetPosition(XMFLOAT3(20, 0.25, -18));

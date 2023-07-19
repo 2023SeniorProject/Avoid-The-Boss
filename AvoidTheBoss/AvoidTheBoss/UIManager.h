@@ -26,11 +26,7 @@ struct UIBackGround
     D2D1_RECT_F                     d2dLayoutRect; // 출력할 레이아웃 영역
     ID2D1Bitmap*                    resource = NULL;
 };
-struct UIEffect
-{
-    D2D1_RECT_F                     d2dLayoutRect; // 출력할 레이아웃 영역
-    ID2D1Bitmap* resource = NULL;
-};
+
 
 struct InGameUI
 {
@@ -63,7 +59,6 @@ public:
     void DrawOtherSceneBackGround(int32 Scene);
     void DrawOtherSceneUI(int32 Scene, int32 idx);
     void DrawOtherSceneUITextBlock(int32 Scene);
-    void DrawEffects(int32 Scene, int playerType, bool IsRender);
     void InitGameSceneUI(CGameScene*);
     void UpdateGameSceneUI(CGameScene*);
     void DrawGameSceneUI(int32 Scene);
@@ -121,7 +116,7 @@ public:
 
     // 방 전용
     UIButton m_RoomButtons[2];
-    UIEffect m_GameEffect[2];
+    InGameUI m_CharCrossHead;
 
     // 인 게임 전용
     int32                      m_playerIdx = -1;

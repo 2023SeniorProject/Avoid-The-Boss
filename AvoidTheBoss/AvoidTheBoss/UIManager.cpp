@@ -267,23 +267,9 @@ void UIManager::DrawOtherSceneBackGround(int32 Scene)
     }
 }
 
-void UIManager::DrawEffects(int32 Scene, int playerType, bool IsRender)
-{
-    if (IsRender)
-    {
-        if (Scene == 3)
-        {
-            if (playerType == 1)
-                m_pd2dDeviceContext->DrawBitmap(m_GameEffect[0].resource,
-                    m_GameEffect[0].d2dLayoutRect, 1.0f, D2D1_INTERPOLATION_MODE_LINEAR, (D2D1_RECT_F*)0);
-            if (playerType == 2)
-                m_pd2dDeviceContext->DrawBitmap(m_GameEffect[1].resource,
-                    m_GameEffect[1].d2dLayoutRect, 1.0f, D2D1_INTERPOLATION_MODE_LINEAR, (D2D1_RECT_F*)0);
-        }
-    }
-}
 
-void UIManager::DrawButton(int32 Scene,int32 idx)
+
+void UIManager::DrawOtherSceneUI(int32 Scene,int32 idx)
 {
     if (Scene == 0) // 타이틀 씬
     {
@@ -525,6 +511,9 @@ void UIManager::DrawGameSceneUI(int32 Scene)
     {
         for(auto i : m_HPUi)  if (!i.m_hide) m_pd2dDeviceContext->DrawBitmap(i.resource, i.d2dLayoutRect);
     }
+
+    if (m_playerIdx == 0) m_pd2dDeviceContext->DrawBitmap(m_CharCrossHead.resource, m_CharCrossHead.d2dLayoutRect);
+  
 }
 
 D2D1_RECT_F UIManager::GetButtonRect(int32 Scene, int32 idx)
@@ -673,6 +662,11 @@ void UIManager::InitializeDevice(ID3D12Device5* pd3dDevice, ID3D12CommandQueue* 
         m_HPUi[i].d2dLayoutRect = MakeLayoutRectByCorner(PROFILE_UI_OFFSET_X + BIG_PROFILE_UI_WIDTH + STATUS_UI_WIDTH * i,
             BIG_PROFILE_UI_OFFSET_Y + BIG_PROFILE_UI_WIDTH / 4.0, STATUS_UI_WIDTH, STATUS_UI_HEIGHT);
     }
+    // 크로스 헤드
+    m_CharCrossHead.resource = LoadPngFromFile(L"UI/crossHair.png");
+    m_CharCrossHead.d2dLayoutRect = MakeLayoutRect(CENTER_X, CENTER_Y,10.f,10.f);
+    m_CharCrossHead.m_hide = false;
+
     // 발전기 게이지
     for (int i = 0; i < 20; ++i)
     {
@@ -692,7 +686,7 @@ void UIManager::InitializeDevice(ID3D12Device5* pd3dDevice, ID3D12CommandQueue* 
     m_GenerateUIButtons[20].m_hide = true;
 }
 
-void UIManager::Render2D(UINT nFrame, int32 curScene, int playerType, bool IsRender)
+void UIManager::Render2D(UINT nFrame, int32 curScene)
 {
 
     ID3D11Resource* ppResources[] = { m_ppd3d11WrappedRenderTargets[nFrame] };
@@ -706,7 +700,6 @@ void UIManager::Render2D(UINT nFrame, int32 curScene, int playerType, bool IsRen
     DrawOtherSceneUI(curScene,1);
     DrawOtherSceneUITextBlock(curScene);
     DrawGameSceneUI(curScene);
-    DrawEffects(curScene, playerType, IsRender);
     m_pd2dDeviceContext->EndDraw();
     m_pd3d11On12Device->ReleaseWrappedResources(ppResources, _countof(ppResources));
     m_pd3d11DeviceContext->Flush();

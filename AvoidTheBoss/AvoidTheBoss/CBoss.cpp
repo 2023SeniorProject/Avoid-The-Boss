@@ -15,7 +15,7 @@ CBoss::CBoss(ID3D12Device5* pd3dDevice,
 	ID3D12GraphicsCommandList4  * pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature)
 {
 	m_type = 0;
-	m_pCamera = ChangeCamera(FIRST_PERSON_CAMERA, 0.0f);//FIRST_PERSON_CAMERA
+	m_pCamera = ChangeCamera(THIRD_PERSON_CAMERA, 0.0f);//FIRST_PERSON_CAMERA
 	m_ctype = (uint8)PLAYER_TYPE::BOSS;
 	m_nCharacterType = CHARACTER_TYPE::BOSS;
 	
@@ -37,7 +37,7 @@ CBoss::CBoss(ID3D12Device5* pd3dDevice,
 		m_pSkinnedAnimationController->SetTrackEnable(2, false);
 		m_pSkinnedAnimationController->SetTrackEnable(3, false);
 
-		//SetPosition(XMFLOAT3(0.0f, 0.0f, 0.0f));
+		
 		CreateShaderVariables(pd3dDevice, pd3dCommandList);
 
 		if (pBossArmModel) delete pBossArmModel;
@@ -74,7 +74,7 @@ CBoss::CBoss(ID3D12Device5* pd3dDevice,
 		m_pSkinnedAnimationController1->SetTrackEnable(2, false);
 		m_pSkinnedAnimationController1->SetTrackEnable(3, false);
 
-		//SetPosition(XMFLOAT3(0.0f, 0.0f, 0.0f));
+		
 
 		CreateShaderVariables(pd3dDevice, pd3dCommandList);
 
@@ -116,7 +116,7 @@ CCamera* CBoss::ChangeCamera(DWORD nNewCameraMode, float fTimeElapsed)
 		break;
 	}
 	m_pCamera->SetPosition(Vector3::Add(m_xmf3Position, m_pCamera->GetOffset()));
-
+	
 	Update(fTimeElapsed, CLIENT_TYPE::NONE);
 
 	return(m_pCamera);

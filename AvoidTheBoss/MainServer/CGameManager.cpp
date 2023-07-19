@@ -17,10 +17,10 @@ CGameManager::~CGameManager()
 void CGameManager::InitGame()
 {
 	// 플레이어 초기 위치 셋팅
-	_players[0].SetPosition(XMFLOAT3(0, 0.25, -18));
-	_players[1].SetPosition(XMFLOAT3(10, 0.25, -18));
-	_players[2].SetPosition(XMFLOAT3(15, 0.25, -18));
-	_players[3].SetPosition(XMFLOAT3(20, 0.25, -18));
+	_players[0].SetPosition(XMFLOAT3(0,  0, -18));
+	_players[1].SetPosition(XMFLOAT3(10, 0, -18));
+	_players[2].SetPosition(XMFLOAT3(15, 0, -18));
+	_players[3].SetPosition(XMFLOAT3(20, 0, -18));
 
 	for (int i = 0; i < PLAYERNUM; ++i)
 	{

@@ -113,13 +113,7 @@ void CGameScene::BuildDefaultLightsAndMaterials()
 	m_pLights[1].m_fTheta = (float)cos(XMConvertToRadians(20.0f));
 
 
-	//m_pLights[2].m_bEnable = true;
-	//m_pLights[2].m_nType = DIRECTIONAL_LIGHT;
-	//m_pLights[2].m_xmf4Ambient = XMFLOAT4(0.3f, 0.3f, 0.3f, 1.0f);
-	//m_pLights[2].m_xmf4Diffuse = XMFLOAT4(0.3f, 0.3f, 0.3f, 1.0f);
-	//m_pLights[2].m_xmf4Specular = XMFLOAT4(0.4f, 0.4f, 0.4f, 0.0f);
-	//m_pLights[2].m_xmf3Direction = XMFLOAT3(1.0f, -1.0f, 0.0f);
-
+	
 	m_pLights[2].m_bEnable = true;
 	m_pLights[2].m_nType = DIRECTIONAL_LIGHT;
 	m_pLights[2].m_xmf4Ambient = XMFLOAT4(0.3f, 0.3f, 0.3f, 1.0f);
@@ -204,11 +198,13 @@ void CGameScene::BuildObjects(ID3D12Device5* pd3dDevice,ID3D12GraphicsCommandLis
 	pBoundsMapShader->BuildObjects(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, NULL, NULL);
 
 	m_ppGenerator = new CGenerator * [m_nGenerator];
+	
 	for (int i = 0; i < m_nGenerator; ++i)
 	{
 		m_ppGenerator[i] = ((CGenerator*)pGeneratorObjectsShader->m_ppObjects[i]);
 		m_ppGenerator[i]->m_idx = i;
 	}
+
 	for (int i = 0; i < PLAYERNUM; ++i)
 	{
 		if (i == (int)(CHARACTER_TYPE::BOSS))
@@ -329,7 +325,7 @@ void CGameScene::ChangeMyPlayerCamera()
 
 void CGameScene::AnimateObjects()
 { 
-	//for (int i = 0; i < m_nGameObjects; i++) if (m_ppGameObjects[i]) m_ppGameObjects[i]->Animate(_timer.GetTimeElapsed());
+	
 	for (int i = 0; i < m_nShaders; i++) if (m_ppShaders[i]) m_ppShaders[i]->AnimateObjects(m_timer.GetTimeElapsed());
 
 	for (int i = 0; i < PLAYERNUM; i++)
@@ -412,10 +408,10 @@ void CGameScene::InitGame(void* packet, int32 sid)
 	}
 
 	std::cout << "PLAYER_IDX: " << m_playerIdx << "\n";
-	m_players[0]->SetPosition(XMFLOAT3(0, 0.25, -18)); //>>> 여기 위치 수정하기
-	if(m_players[1] != nullptr)m_players[1]->SetPosition(XMFLOAT3(10, 0.25, -18));
-	if(m_players[2] != nullptr)m_players[2]->SetPosition(XMFLOAT3(15, 0.25, -18));
-	if(m_players[3] != nullptr)m_players[3]->SetPosition(XMFLOAT3(20, 0.25, -18));
+	m_players[0]->SetPosition(XMFLOAT3(0, 0, -18));
+	if(m_players[1] != nullptr)m_players[1]->SetPosition(XMFLOAT3(10, 0, -18));
+	if(m_players[2] != nullptr)m_players[2]->SetPosition(XMFLOAT3(15, 0, -18));
+	if(m_players[3] != nullptr)m_players[3]->SetPosition(XMFLOAT3(20, 0, -18));
 	m_pCamera = m_players[m_playerIdx]->GetCamera();
 	m_players[m_playerIdx]->m_clientType = CLIENT_TYPE::OWNER;
 }

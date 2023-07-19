@@ -125,6 +125,7 @@ uint8 CEmployee::ProcessInput()
 		// 구조 작업이나 발전기 상호작용을 수행하고 있다면 
 		if (RescueTasking() || GenTasking()) { dir = 0; }
 	}
+
 	Move(dir, EMPLOYEE_VELOCITY);
 	return dir;
 	
@@ -140,6 +141,7 @@ void CEmployee::Move(const int16& dwDirection, float fDistance)
 			else if(!LOBYTE(dwDirection)) SetBehavior(PLAYER_BEHAVIOR::IDLE);
 		}
 	}
+
 	switch (GetBehavior())
 	{
 	case (int32)PLAYER_BEHAVIOR::RESCUE:
@@ -161,8 +163,6 @@ void CEmployee::Update(float fTimeElapsed, CLIENT_TYPE ptype)
 {
 	CPlayer::Update(fTimeElapsed, m_clientType);
 	LateUpdate(fTimeElapsed,m_clientType);
-
-
 }
 
 void CEmployee::LateUpdate(float fTimeElapsed, CLIENT_TYPE ptype)
@@ -453,8 +453,6 @@ void CEmployee::AnimTrackUpdate()
 			m_attackedAnimationCount--;
 
 			SoundManager::GetInstance().PlayObjectSound(8, 4); // 총알 충돌 시
-			//SoundManager::GetInstance().PlayObjectSound(9, 4); // 총알 2번 째 충돌 시
-
 			SoundManager::GetInstance().PlayObjectSound(13, 3);
 		}
 		else 
@@ -551,7 +549,7 @@ void CEmployee::PlayerAttacked()
 {
 	if (m_hp > 0)
 	{
-		if (m_hp <= 70)
+		if (m_hp <= 3)
 		{
 			if(!GetIsOnUIActive())
 				SetIsOnUIActive(true);
@@ -562,11 +560,12 @@ void CEmployee::PlayerAttacked()
 				SetIsOnUIActive(false);
 		}
 		m_hp -= 1;
+
 		if (m_hp == 0)
 		{
 			PlayerDown();
 			m_pCamera = ChangeCamera(THIRD_PERSON_CAMERA, 0.0f);
-			//SoundManager::GetInstance().PlayObjectSound(9, 4); // 총알 2번 째 충돌 시
+			
 		}
 		else
 		{
@@ -601,8 +600,7 @@ bool CEmployee::GenTasking()
 
 			targetGen->SetInteractionOn(true); // 발전기 애니메이션 재생을 시작한다.
 			
-			
-
+		
 			if (InputManager::GetInstance().GetKeyBuffer(KEY_TYPE::F) == (int8)KEY_STATUS::KEY_PRESS)
 			{
 				SoundManager::GetInstance().PlayObjectSound(17, 4);

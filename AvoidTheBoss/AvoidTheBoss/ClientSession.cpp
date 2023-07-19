@@ -161,7 +161,6 @@ void CSession::ProcessPacket(char* packet)
 		S2C_LOGIN_OK* lo = (S2C_LOGIN_OK*)packet;
 		_cid = lo->cid;
 		_sid = lo->sid;
-		std::cout << lo->sid << "--> SID\n";
 		CScene::m_sid = lo->sid;
 		CScene::m_cid = lo->cid;
 		mainGame.ChangeScene(CGameFramework::SCENESTATE::LOBBY);
@@ -278,7 +277,6 @@ void CSession::ProcessPacket(char* packet)
 		gs->AddEvent(static_cast<queueEvent*>(mev), 0);
 	}
 	break;
-
 	case (uint8)S_GAME_PACKET_TYPE::SROT:
 	{
 		S2C_ROTATE* rotatePacket = reinterpret_cast<S2C_ROTATE*>(packet);

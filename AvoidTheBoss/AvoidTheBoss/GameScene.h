@@ -28,8 +28,7 @@ public:
 
 	
 	void BuildDefaultLightsAndMaterials();
-	virtual void BuildObjects(ID3D12Device5* pd3dDevice, ID3D12GraphicsCommandList4
-		* pd3dCommandList);
+	virtual void BuildObjects(ID3D12Device5* pd3dDevice, ID3D12GraphicsCommandList4* pd3dCommandList);
 	
 
 	virtual void AnimateObjects();
@@ -54,7 +53,7 @@ public:
 	//마지막으로 마우스 버튼을 클릭할 때의 마우스 커서의 위치이다. 
 	POINT								m_ptOldCursorPos;
 private:
-	Timer m_timer;
+	Timer								m_timer;
 // ========== 서버 처리를 위해 사용하는 변수들 ==============
 public: 
 	// 씬에 있는 오브젝트 관련 변수
@@ -72,9 +71,9 @@ public:
 	bool						m_bEmpExit = false;
 	bool						m_bBossWin = false;
 public:
-	Scheduler* m_jobQueue;
-	std::shared_mutex m_jobQueueLock;
+	Scheduler*					m_jobQueue;
+	std::shared_mutex			m_jobQueueLock;
 public:
-	int32				m_curFrame;
+	int32						m_curFrame;
 };
 

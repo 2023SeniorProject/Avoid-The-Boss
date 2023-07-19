@@ -62,8 +62,7 @@ protected:
 	XMFLOAT3 m_xmf3Gravity;  // 중력
 	float m_fFriction;       // 마찰력
 
-	// 플레이어 카메라
-	//CCamera* m_pCamera = nullptr;
+
 
 public:
 	// 플레이어 카메라
@@ -89,10 +88,12 @@ public:
 	int32 m_behavior = (int32)PLAYER_BEHAVIOR::IDLE;
 
 	bool m_bOnMoveSound = false;
-	virtual void SetOnMoveSound(bool bOnMoveSound) {
+	virtual void SetOnMoveSound(bool bOnMoveSound) 
+	{
 		m_bOnMoveSound = bOnMoveSound;
 	}
-	virtual bool GetOnMoveSound() {
+	virtual bool GetOnMoveSound() 
+	{
 		return m_bOnMoveSound;
 	}
 

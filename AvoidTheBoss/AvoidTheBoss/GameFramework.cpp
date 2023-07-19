@@ -10,6 +10,7 @@
 #include "CScene.h"
 #include "GameScene.h"
 #include "OtherScenes.h"
+#include "CEmployee.h"
 
 CGameFramework mainGame;
 //#define _WITH_PLAYER_TOP // 플레이어 깊이 버퍼값 1.0f
@@ -420,10 +421,10 @@ void CGameFramework::FrameAdvance() // 여기서 업데이트랑 렌더링 동시에 진행하는 
 	if (m_curScene == 3)
 	{
 		CGameScene* pScene = (CGameScene*)(m_SceneManager->GetSceneByIdx(m_curScene));
-		m_UIRenderer->Render2D(m_nSwapChainBufferIndex, m_curScene, pScene->m_players[pScene->m_playerIdx]->m_ctype);
+		m_UIRenderer->Render2D(m_nSwapChainBufferIndex, m_curScene, pScene->m_players[pScene->m_playerIdx]->m_ctype, pScene->m_players[pScene->m_playerIdx]->GetIsOnUIActive());
 	}
 	else
-		m_UIRenderer->Render2D(m_nSwapChainBufferIndex, 0);
+		m_UIRenderer->Render2D(m_nSwapChainBufferIndex, m_curScene, 0,false);
 
 #ifdef _WITH_PRESENT_PARAMETERS
 	DXGI_PRESENT_PARAMETERS dxgiPresentParameters;

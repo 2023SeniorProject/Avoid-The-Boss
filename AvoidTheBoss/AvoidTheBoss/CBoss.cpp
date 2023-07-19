@@ -15,6 +15,7 @@ CBoss::CBoss(ID3D12Device5* pd3dDevice,
 	m_ctype = (uint8)PLAYER_TYPE::BOSS;
 	m_nCharacterType = CHARACTER_TYPE::BOSS;
 	
+	SetIsOnUIActive(true);
 	if (m_pCamera->m_nMode == (DWORD)FIRST_PERSON_CAMERA)
 	{
 		CLoadedModelInfo* pBossArmModel = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "Model/Character/Boss_Idle_First.bin", NULL, Layout::PLAYER);
@@ -32,7 +33,7 @@ CBoss::CBoss(ID3D12Device5* pd3dDevice,
 		m_pSkinnedAnimationController->SetTrackEnable(2, false);
 		m_pSkinnedAnimationController->SetTrackEnable(3, false);
 
-		SetPosition(XMFLOAT3(0.0f, 0.0f, 0.0f));
+		//SetPosition(XMFLOAT3(0.0f, 0.0f, 0.0f));
 		CreateShaderVariables(pd3dDevice, pd3dCommandList);
 
 		if (pBossArmModel) delete pBossArmModel;
@@ -69,7 +70,7 @@ CBoss::CBoss(ID3D12Device5* pd3dDevice,
 		m_pSkinnedAnimationController1->SetTrackEnable(2, false);
 		m_pSkinnedAnimationController1->SetTrackEnable(3, false);
 
-		SetPosition(XMFLOAT3(0.0f, 0.0f, 0.0f));
+		//SetPosition(XMFLOAT3(0.0f, 0.0f, 0.0f));
 
 		CreateShaderVariables(pd3dDevice, pd3dCommandList);
 
@@ -94,7 +95,7 @@ CCamera* CBoss::ChangeCamera(DWORD nNewCameraMode, float fTimeElapsed)
 	case FIRST_PERSON_CAMERA:
 		m_pCamera = OnChangeCamera(FIRST_PERSON_CAMERA, nCurrentCameraMode);
 		m_pCamera->SetTimeLag(0.0f);
-		m_pCamera->SetOffset(XMFLOAT3(0.0f, 1.0f,-0.0f));
+		m_pCamera->SetOffset(XMFLOAT3(0.0f, 1.2f,-0.0f));
 		m_pCamera->GenerateProjectionMatrix(0.01f, MaxDepthofMap, ASPECT_RATIO, 60.0f); //5000.f
 		m_pCamera->SetViewport(0, 0, FRAME_BUFFER_WIDTH, FRAME_BUFFER_HEIGHT, 0.0f, 1.0f);
 		m_pCamera->SetScissorRect(0, 0, FRAME_BUFFER_WIDTH, FRAME_BUFFER_HEIGHT);
@@ -168,7 +169,7 @@ void CBoss::Update(float fTimeElapsed, CLIENT_TYPE ptype)
 		m_pBullet->SetBulletPosition(GetPosition());
 		m_pBullet->Update(fTimeElapsed);
 	}
-
+	
 	AnimationLogicUpdate(); // 쿨타임 계산
 
 	AimationStateUpdate(); // 애니메이션 트랙 상태 결정

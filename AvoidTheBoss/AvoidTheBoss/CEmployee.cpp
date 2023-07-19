@@ -439,13 +439,16 @@ void CEmployee::PlayerAttacked()
 {
 	if (m_hp > 0)
 	{
-		// 피격 이펙트 코드
-		//if (!m_bIsAttacked)
-		//{
-		//	m_pHitEffect->SetOnHit(true);
-		//	m_pHitEffect->SetPosition(GetPosition()); //SetPosition() 파//라미터에 총알 충돌 지점 값을 넣으면 된다.
-		//	m_bIsAttacked = true;
-		//}
+		if (m_hp <= 70)
+		{
+			if(!GetIsOnUIActive())
+				SetIsOnUIActive(true);
+		}
+		else
+		{
+			if (GetIsOnUIActive())
+				SetIsOnUIActive(false);
+		}
 		m_hp -= 1;
 		if (m_hp == 0)
 		{

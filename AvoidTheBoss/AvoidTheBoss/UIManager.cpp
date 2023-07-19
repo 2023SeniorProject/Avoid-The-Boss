@@ -178,16 +178,19 @@ void UIManager::DrawBackGround(int32 Scene)
         D2D1_RECT_F{ 0,0,m_fWidth,m_fHeight }, 1.0f, D2D1_INTERPOLATION_MODE_LINEAR,(D2D1_RECT_F*)0);
 }
 
-void UIManager::DrawEffects(int32 Scene, int playerType)
+void UIManager::DrawEffects(int32 Scene, int playerType, bool IsRender)
 {
-    if (Scene == 3)
+    if (IsRender)
     {
-        if(playerType == 1)
-        m_pd2dDeviceContext->DrawBitmap(m_GameEffect[0].resource,
-            m_GameEffect[0].d2dLayoutRect, 1.0f, D2D1_INTERPOLATION_MODE_LINEAR, (D2D1_RECT_F*)0);
-        if (playerType == 2)
-            m_pd2dDeviceContext->DrawBitmap(m_GameEffect[1].resource,
-                m_GameEffect[1].d2dLayoutRect, 1.0f, D2D1_INTERPOLATION_MODE_LINEAR, (D2D1_RECT_F*)0);
+        if (Scene == 3)
+        {
+            if (playerType == 1)
+                m_pd2dDeviceContext->DrawBitmap(m_GameEffect[0].resource,
+                    m_GameEffect[0].d2dLayoutRect, 1.0f, D2D1_INTERPOLATION_MODE_LINEAR, (D2D1_RECT_F*)0);
+            if (playerType == 2)
+                m_pd2dDeviceContext->DrawBitmap(m_GameEffect[1].resource,
+                    m_GameEffect[1].d2dLayoutRect, 1.0f, D2D1_INTERPOLATION_MODE_LINEAR, (D2D1_RECT_F*)0);
+        }
     }
 }
 
@@ -329,7 +332,7 @@ void UIManager::InitializeDevice(ID3D12Device5* pd3dDevice, ID3D12CommandQueue* 
      grayBrush = CreateBrush(D2D1::ColorF::Gray);
 }
 
-void UIManager::Render2D(UINT nFrame, int32 curScene, int playerType)
+void UIManager::Render2D(UINT nFrame, int32 curScene, int playerType, bool IsRender)
 {
 
     ID3D11Resource* ppResources[] = { m_ppd3d11WrappedRenderTargets[nFrame] };
@@ -339,7 +342,7 @@ void UIManager::Render2D(UINT nFrame, int32 curScene, int playerType)
 
     m_pd2dDeviceContext->BeginDraw();
     DrawBackGround(curScene);
-    DrawEffects(curScene, playerType);
+    DrawEffects(curScene, playerType, IsRender);
     DrawButton(curScene,0);
     DrawButton(curScene,1);
     DrawTextBlock(curScene);

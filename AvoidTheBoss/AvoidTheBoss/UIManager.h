@@ -42,10 +42,10 @@ public:
     void CreateRenderTarget(ID3D12Resource** ppd3dRenderTargets);
 
     void UpdateTextOutputs(UINT nIndex, WCHAR* pstrUIText, D2D1_RECT_F* pd2dLayoutRect, IDWriteTextFormat* pdwFormat, ID2D1SolidColorBrush* pd2dTextBrush);
-    void Render2D(UINT nFrame,int32 curScene,int playerType = 0);
+    void Render2D(UINT nFrame,int32 curScene,int playerType, bool IsRender);
     void ReleaseResources();
     void DrawBackGround(int32 Scene);
-    void DrawEffects(int32 Scene, int playerType);
+    void DrawEffects(int32 Scene, int playerType, bool IsRender);
     void DrawButton(int32, int32 idx);
     void DrawTextBlock(int32);
 

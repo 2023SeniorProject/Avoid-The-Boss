@@ -130,6 +130,7 @@ uint8 CEmployee::ProcessInput()
 	return dir;
 	
 }
+
 void CEmployee::Move(const int16& dwDirection, float fDistance)
 {
 	if (m_clientType == CLIENT_TYPE::OTHER_PLAYER)
@@ -332,12 +333,14 @@ void CEmployee::SetCrawlAnimTrack()
 void CEmployee::SetAttackedAnimTrack()
 {
 	if (m_pSkinnedAnimationController == nullptr) return;
+	if (m_pSkinnedAnimationController1 == nullptr) return;
+
 	m_pSkinnedAnimationController->SetTrackEnable(0, false);
 	m_pSkinnedAnimationController->SetTrackEnable(1, false);
 	m_pSkinnedAnimationController->SetTrackEnable(2, false);
 	m_pSkinnedAnimationController->SetTrackEnable(3, false);
 
-	if (m_pSkinnedAnimationController1 == nullptr) return;
+	
 	m_pSkinnedAnimationController1->SetTrackEnable(0, false);
 	m_pSkinnedAnimationController1->SetTrackEnable(1, false);
 	m_pSkinnedAnimationController1->SetTrackEnable(2, true);

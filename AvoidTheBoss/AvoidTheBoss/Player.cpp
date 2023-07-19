@@ -66,10 +66,8 @@ void CPlayer::Update(float fTimeElapsed, CLIENT_TYPE ptype)
 		m_pCamera->Move(vel);
 		m_pCamera->Update(m_xmf3Position, fTimeElapsed);
 	}
-	if (nCameraMode == THIRD_PERSON_CAMERA)
-		m_pCamera->SetLookAt(m_xmf3Position);
-	//else 
-	//	m_pCamera->SetPosition(Vector3::Add(m_xmf3Position, m_pCamera->GetPosition());); //카메라 offset
+	if (nCameraMode == THIRD_PERSON_CAMERA) m_pCamera->SetLookAt(m_xmf3Position);
+	else m_pCamera->SetPosition(Vector3::Add(m_xmf3Position, m_pCamera->GetOffset())); //카메라 offset
 	m_pCamera->RegenerateViewMatrix();
 }
 
@@ -159,9 +157,10 @@ CCamera* CPlayer::OnChangeCamera(DWORD nNewCameraMode, DWORD nCurrentCameraMode)
 		//현재 카메라를 사용하는 플레이어 객체를 설정한다. 
 		pNewCamera->SetPlayer(this);
 	}
-	//if (m_pCamera) delete m_pCamera;
-	m_pCamera = pNewCamera;
 	
+	m_pCamera = pNewCamera;
+	if (m_pCamera) delete m_pCamera;
+
 	return(pNewCamera);
 }
 

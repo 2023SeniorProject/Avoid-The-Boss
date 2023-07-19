@@ -726,6 +726,8 @@ void CGameObject::Render(ID3D12GraphicsCommandList4* pd3dCommandList, CCamera* p
 	{
 		if (m_pSkinnedAnimationController) m_pSkinnedAnimationController->UpdateShaderVariables(pd3dCommandList);
 		if (m_pSkinnedAnimationController1) m_pSkinnedAnimationController1->UpdateShaderVariables(pd3dCommandList);
+		if (m_pSkinnedAnimationController2) m_pSkinnedAnimationController2->UpdateShaderVariables(pd3dCommandList);
+
 	}
 	else 
 	{

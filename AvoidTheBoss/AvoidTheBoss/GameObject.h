@@ -333,7 +333,7 @@ public:
 
 public:
 	//CSound*							m_pSound;
-	bool							m_IsFirst = true;
+	bool							m_IsFirst = false;
 	Layout							objLayer;
 	bool							m_bEmpExit = false;
 

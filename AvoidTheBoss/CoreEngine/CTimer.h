@@ -54,7 +54,7 @@ public:
 	{
 		if (_accumulateTimeForHistory >= 16)
 		{
-			_accumulateTimeForHistory;
+			_accumulateTimeForHistory = 0.f;
 			return true;
 		}
 		else return false;

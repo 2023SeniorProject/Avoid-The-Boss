@@ -143,6 +143,8 @@ void CLobbyScene::BuildDefaultLightsAndMaterials()
 }
 void CLobbyScene::MouseAction(const POINT& mp)
 {
+	SoundManager::GetInstance().SoundStop(21);
+	SoundManager::GetInstance().PlayObjectSound(21, 21);
 	// 眉农府胶飘 面倒眉农 贸府
 	for (int i = 0; i < mainGame.m_UIRenderer->m_nRoomListPerPage; ++i)
 	{
@@ -227,15 +229,15 @@ void CTitleScene::BuildObjects(ID3D12Device5* pd3dDevice, ID3D12GraphicsCommandL
 }
 void CTitleScene::MouseAction(const POINT& mp)
 {
-	SoundManager::GetInstance().SoundStop(10);
-	SoundManager::GetInstance().PlayObjectSound(20, 10);
+	SoundManager::GetInstance().SoundStop(20);
+	SoundManager::GetInstance().PlayObjectSound(20, 20);
 
-	if (IntersectRectByPoint(mainGame.m_UIRenderer->m_pIDPWTextBlocks[0].m_d2dLayoutRect, mp))
+	if (IntersectRectByPoint(mainGame.m_UIRenderer->m_IDPWTextBlocks[0].m_d2dLayoutRect, mp))
 	{
 		std::cout << "Focus Change 0\n";
 		focus = 0;
 	}
-	else if (IntersectRectByPoint(mainGame.m_UIRenderer->m_pIDPWTextBlocks[1].m_d2dLayoutRect, mp))
+	else if (IntersectRectByPoint(mainGame.m_UIRenderer->m_IDPWTextBlocks[1].m_d2dLayoutRect, mp))
 	{
 		std::cout << "Focus Change 1\n";
 		focus = 1;
@@ -243,13 +245,13 @@ void CTitleScene::MouseAction(const POINT& mp)
 
 	if (IntersectRectByPoint(mainGame.m_UIRenderer->GetButtonRect(0,0),mp))
 	{
-		if (mainGame.m_UIRenderer->m_pIDPWTextBlocks[0].m_pstrText.length() <= 3
-			|| mainGame.m_UIRenderer->m_pIDPWTextBlocks[1].m_pstrText.length() <= 3) return;
+		if (mainGame.m_UIRenderer->m_IDPWTextBlocks[0].m_pstrText.length() <= 3
+			|| mainGame.m_UIRenderer->m_IDPWTextBlocks[1].m_pstrText.length() <= 3) return;
 
 		clientCore.InitConnect("127.0.0.1");
 		C2S_LOGIN loginPacket;
-		lstrcpyn(loginPacket.name, mainGame.m_UIRenderer->m_pIDPWTextBlocks[0].m_pstrText.c_str(), 10);
-		lstrcpyn(loginPacket.pw, mainGame.m_UIRenderer->m_pIDPWTextBlocks[1].m_pstrText.c_str(), 10);
+		lstrcpyn(loginPacket.name, mainGame.m_UIRenderer->m_IDPWTextBlocks[0].m_pstrText.c_str(), 10);
+		lstrcpyn(loginPacket.pw, mainGame.m_UIRenderer->m_IDPWTextBlocks[1].m_pstrText.c_str(), 10);
 		clientCore.DoConnect(&loginPacket);
 		mainGame.ChangeScene(CGameFramework::SCENESTATE::LOBBY);
 	}
@@ -352,10 +354,10 @@ void CTitleScene::ProcessInput(HWND& hWnd)
 			if (cap) str[0] = i;
 			else str[0] = i + 32;
 			str[1] = '\0';
-			if (focus == 0 && mainGame.m_UIRenderer->m_pIDPWTextBlocks[0].m_pstrText.length() <= 10)
-				mainGame.m_UIRenderer->m_pIDPWTextBlocks[0].m_pstrText.append(str);
-			else if( focus == 1 && mainGame.m_UIRenderer->m_pIDPWTextBlocks[1].m_pstrText.length() <= 10)
-				mainGame.m_UIRenderer->m_pIDPWTextBlocks[1].m_pstrText.append(str);
+			if (focus == 0 && mainGame.m_UIRenderer->m_IDPWTextBlocks[0].m_pstrText.length() <= 10)
+				mainGame.m_UIRenderer->m_IDPWTextBlocks[0].m_pstrText.append(str);
+			else if( focus == 1 && mainGame.m_UIRenderer->m_IDPWTextBlocks[1].m_pstrText.length() <= 10)
+				mainGame.m_UIRenderer->m_IDPWTextBlocks[1].m_pstrText.append(str);
 		}
 	}
 	
@@ -364,15 +366,15 @@ void CTitleScene::ProcessInput(HWND& hWnd)
 	{
 		if (1 == focus)
 		{
-			if (mainGame.m_UIRenderer->m_pIDPWTextBlocks[1].m_pstrText.length() > 3)
-				mainGame.m_UIRenderer->m_pIDPWTextBlocks[1].m_pstrText.
-				erase(mainGame.m_UIRenderer->m_pIDPWTextBlocks[1].m_pstrText.length() - 1,
+			if (mainGame.m_UIRenderer->m_IDPWTextBlocks[1].m_pstrText.length() > 3)
+				mainGame.m_UIRenderer->m_IDPWTextBlocks[1].m_pstrText.
+				erase(mainGame.m_UIRenderer->m_IDPWTextBlocks[1].m_pstrText.length() - 1,
 					1);
 		}
 		else
-			if (mainGame.m_UIRenderer->m_pIDPWTextBlocks[0].m_pstrText.length() > 3)
-				mainGame.m_UIRenderer->m_pIDPWTextBlocks[0].m_pstrText.
-				erase(mainGame.m_UIRenderer->m_pIDPWTextBlocks[0].m_pstrText.length() - 1,
+			if (mainGame.m_UIRenderer->m_IDPWTextBlocks[0].m_pstrText.length() > 3)
+				mainGame.m_UIRenderer->m_IDPWTextBlocks[0].m_pstrText.
+				erase(mainGame.m_UIRenderer->m_IDPWTextBlocks[0].m_pstrText.length() - 1,
 					1);
 	}
 }
@@ -434,8 +436,8 @@ void CRoomScene::Render(ID3D12GraphicsCommandList4* pd3dCommandList, CCamera* pC
 
 void CRoomScene::MouseAction(const POINT& mp)
 {
-	SoundManager::GetInstance().SoundStop(10);
-	SoundManager::GetInstance().PlayObjectSound(21, 10);
+	SoundManager::GetInstance().SoundStop(21);
+	SoundManager::GetInstance().PlayObjectSound(21, 21);
 
 	m_memLock.lock();
 	if (IntersectRectByPoint(mainGame.m_UIRenderer->m_RoomButtons[0].d2dLayoutRect, mp)) // Ready

@@ -7,7 +7,7 @@ using namespace FMOD;
 class CSound {
 	FMOD_SYSTEM* pSystem;
 	FMOD_SOUND* pSound[22];
-	FMOD_CHANNEL* pChannel[6];
+	FMOD_CHANNEL* pChannel[22];
 	// 0 : 배경음악
 	// 1 : 배경음악 temp
 	// 2 : UI 버튼

@@ -42,10 +42,7 @@ CGameFramework::CGameFramework()
 	m_nWndClientWidth = FRAME_BUFFER_WIDTH;
 	m_nWndClientHeight = FRAME_BUFFER_HEIGHT;
 
-	for (int i = 0; i < m_nScene; i++)
-	{
-		m_ppScene[i] = NULL;
-	}
+	
 
 	
 	_tcscpy_s(m_pszFrameRate, _T("FPS : "));
@@ -388,6 +385,7 @@ void CGameFramework::ReleaseScenes()
 
 void CGameFramework::ProcessInput()
 {
+	if (m_hWnd != ::GetActiveWindow()) return;
 	m_SceneManager->ProcessInput(m_hWnd, m_curScene);
 	
 }
@@ -413,6 +411,7 @@ void CGameFramework::FrameAdvance() // 여기서 업데이트랑 렌더링 동시에 진행하는 
 	//2 업데이트 처리
 	UpdateObject();
 	//3 애니메이트 처리
+	
 	AnimateObjects();
 	//4 렌더링 처리
 	Render();

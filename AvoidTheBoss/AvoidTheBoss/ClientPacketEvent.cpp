@@ -10,8 +10,7 @@
 void InteractionEvent::Task()
 {
 	if ((int32)CGameFramework::SCENESTATE::INGAME != mainGame.m_curScene) return; // something error detected;
-	CGameScene* gc =
-		static_cast<CGameScene*>(mainGame.m_SceneManager->GetSceneByIdx((int32)CGameFramework::SCENESTATE::INGAME));
+	CGameScene* gc = static_cast<CGameScene*>(mainGame.m_SceneManager->GetSceneByIdx((int32)CGameFramework::SCENESTATE::INGAME));
 	if (!gc) return; // something error detected;
 
 	switch ((EVENT_TYPE)eventId)
@@ -75,8 +74,8 @@ void InteractionEvent::Task()
 	{
 
 		CPlayer* player = gc->m_players[eventId - (int8)(EVENT_TYPE::ATTACKED_PLAYER_ONE)];
-		//if (player == nullptr) break;
-		//static_cast<CEmployee*>(player)->PlayerAttacked();
+		if (player == nullptr) break;
+		static_cast<CEmployee*>(player)->PlayerAttacked();
 	}
 	break;
 	case EVENT_TYPE::RESCUE_PLAYER_TWO:
@@ -136,5 +135,6 @@ void posEvent::Task()
 
 void FrameEvent::Task()
 {
-	//mainGame.m_ppScene[mainGame.m_nSceneIndex]->m_curFrame = _wf;
+	mainGame.m_curFrame = _wf;
+	static_cast<CGameScene*>(mainGame.m_SceneManager->GetSceneByIdx((int32)CGameFramework::SCENESTATE::INGAME))->m_curFrame = _wf;
 }

@@ -37,7 +37,7 @@ private:
 	bool m_isEscaped = false;
 public:
 	SPlayer();
-	SPlayer(const XMFLOAT3& pos) : m_xmf3Position(pos) {};
+	
 	virtual ~SPlayer();
 
 	XMFLOAT3 GetPosition() const { return(m_xmf3Position); }

@@ -24,13 +24,13 @@ class Room
 public:
 	Room();
 	~Room();
-	bool IsDestroyRoom() { return (_memCnt.load() == 0);/*(_cList.size() == 0);*/ } // false 반환 시 방 파괴 --> 호스트가 방을 나갔을 경우 파괴하도록함.
+	bool IsDestroyRoom() { return (_memCnt.load() == 0); } // false 반환 시 방 파괴 --> 호스트가 방을 나갔을 경우 파괴하도록함.
 	void UserOut(int32 sid);
 	void UserIn(int32 sid);
 	void BroadCasting(void* packet);
 	void BroadCastingExcept(void* packet, int32 sid);
 	bool ProcessAttackEvent(const int32& frame, const int16& target) { return (_gameLogic._history.IsAttackAvailable(frame, target)); }
-	CGameManager& GetGameManager() { return _gameLogic; }
+	//CGameManager& GetGameManager() { return _gameLogic; }
 	void Update();
 	void AddEvent(QueueEvent* packet, float after); // 이벤트 패킷이 들어오면 큐에다가 추가를 할 것이다.
 	void AddEvent(QueueEvent* qe);
@@ -44,25 +44,27 @@ public:
 
 	int32 GetSidIndexBySid(int32 sid) 
 	{
-	
+		std::shared_lock<std::shared_mutex> rll(_listLock);
 		for (int32 i = 0; i < PLAYERNUM; ++i)
 		{
 			if (_cArr[i].sid == sid) return i;
 		}
 		return -1;
 	};
+
+	void InitGame();
 	void UpdateReady(int32 idx, bool val);
-	bool IsGameStartAvailable() { int cnt = 0;  for (int i = 0; i < PLAYERNUM; ++i) if (i) ++cnt; return (PLAYERNUM == cnt); }
+	bool IsGameStartAvailable();
 private:
 	Rewinder<30> _history;
-private:
+public:
 	CGameManager _gameLogic;
 public:
 	std::shared_mutex _listLock;
 	std::vector<int32> _cList; // 방에 속해있는 클라이언트 리스트
 	Member _cArr[4];
 	Atomic<bool> _readys[4];
-	int8 _status = (int8)ROOM_STATUS::EMPTY; // 방 상태
+	uint8 _status = (int8)ROOM_STATUS::EMPTY; // 방 상태
 	int32 _rmNum = 0; // 방번호
 	Atomic<int32> _memCnt = 0;
 	Timer _timer;

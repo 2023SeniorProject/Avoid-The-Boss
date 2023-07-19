@@ -16,7 +16,7 @@ enum class KEY_TYPE
 	F = 0x46
 };
 
-enum class KEY_STATUS
+enum class KEY_STATUS : int8
 {
 	KEY_NONE = -1, // 애초에 누른 적이 없는 경우
 	KEY_UP = 0, // 키를 눌렀다 땠을 경우

@@ -36,6 +36,9 @@ public:
 	friend class InteractionEvent;
 	friend class FrameEvent;
 	
+	friend class CEmployee;
+	friend class CBoss;
+
 	friend class CSession;
 
 	friend class CGameScene;
@@ -105,13 +108,12 @@ public:
 	Microsoft::WRL::ComPtr<ID3D11DeviceContext>  m_d3d11DeviceContext;
 	Microsoft::WRL::ComPtr<ID3D11On12Device>	 m_d3d11On12Device;
 public:
-	CSound* m_pSound;
+	int32 m_curFrame = 0;
+
 protected:
 	static const int							m_nScene = 4;
-
-	CScene*										m_ppScene[m_nScene];
-	
 	Atomic<int32>								m_curScene = 3;
+
 public:
 	CGameFramework();
 	~CGameFramework();

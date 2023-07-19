@@ -5,6 +5,7 @@
 // 프레임 워크 헤더
 #include "GameFramework.h"
 #include "SceneManager.h"
+#include "UIManager.h"
 // 이벤트 처리관련 헤더
 #include "IocpEvent.h"
 #include "ClientPacketEvent.h"
@@ -160,7 +161,7 @@ void CSession::ProcessPacket(char* packet)
 		S2C_LOGIN_OK* lo = (S2C_LOGIN_OK*)packet;
 		_cid = lo->cid;
 		_sid = lo->sid;
-
+		std::cout << lo->sid << "--> SID\n";
 		CScene::m_sid = lo->sid;
 		CScene::m_cid = lo->cid;
 		mainGame.ChangeScene(CGameFramework::SCENESTATE::LOBBY);
@@ -247,16 +248,14 @@ void CSession::ProcessPacket(char* packet)
 	{
 		// ================= 플레이어 초기 위치 초기화 ==================
 		 gs->InitGame(packet, _sid);
-		// ================= 자신의 클라이언트 IDX 확인 =================
-		std::cout << "MYPLAYER IDX : " << gs->m_playerIdx << "\n";
-
 		// ================= 카메라 셋팅 ================================
 		CPlayer* myPlayer = gs->m_players[gs->m_playerIdx];
 		std::wstring str = L"Client";
 		str.append(std::to_wstring(gs->m_playerIdx));
 		::SetConsoleTitle(str.c_str());
-		//mainGame.ChangeScene(CGameFramework::SCENESTATE::INGAME);
-		//gs->InitScene();
+		mainGame.m_UIRenderer->InitGameSceneUI(gs);
+		mainGame.ChangeScene(CGameFramework::SCENESTATE::INGAME);
+		gs->InitScene();
 	}
 	break;
 #pragma endregion
@@ -266,11 +265,11 @@ void CSession::ProcessPacket(char* packet)
 	{
 		S2C_KEY* movePacket = reinterpret_cast<S2C_KEY*>(packet);
 		moveEvent* mev = new moveEvent();
-
+		std::cout << movePacket->sid << "\n";
 		CPlayer* player = gs ->GetScenePlayerBySid(movePacket->sid);
 		if (player == nullptr) break;
-
-		//mev->player = player;
+		
+		mev->player = player;
 		mev->_dir.x = movePacket->x;
 		mev->_dir.y = 0;
 		mev->_dir.z = movePacket->z;
@@ -296,7 +295,7 @@ void CSession::ProcessPacket(char* packet)
 		S2C_POS* posPacket = reinterpret_cast<S2C_POS*>(packet);
 		CPlayer* player = gs->GetScenePlayerBySid(posPacket->sid);		
 		if (player == nullptr) break;
-
+		
 		XMFLOAT3 newPos = XMFLOAT3(posPacket->x, player->GetPosition().y, posPacket->z);
 		posEvent* pe = new posEvent();
 		pe->player = player;

@@ -11,7 +11,7 @@ enum class PLAYER_TYPE
 	NONE = 0 ,BOSS = 1, EMPLOYEE = 2
 };
 
-enum class CHARACTER_TYPE: int32
+enum class CHARACTER_TYPE: uint8
 {
 	BOSS = 0, YELLOW_EMP = 1, MASK_EMP, CAP_EMP, GOGGLE_EMP, COUNT
 };
@@ -70,6 +70,9 @@ public:
 	CCamera* m_pCamera = nullptr;
 
 	uint8 m_ctype = -1; // 자신의 캐릭터 타입을 구현
+
+	CLIENT_TYPE m_clientType = CLIENT_TYPE::OTHER_PLAYER;
+
 	int16 m_sid = -1; // 자신으 Session Id
 	std::mutex m_lock; // 자신의 Lock
 
@@ -79,8 +82,9 @@ public:
 	bool m_hide = false;// 플레이어를 가릴 것이냐 그릴 것이냐
 	
 	// 05-21 추가
-	int32 m_hp = 5; // hp는 5로 설정
+	int32 m_hp = 3; // hp는 5로 설정
 	int32 m_idx = 0;
+	int32 m_chartype = -1; // 0 boss 1, emp;
 	// 05-22 추가
 	int32 m_behavior = (int32)PLAYER_BEHAVIOR::IDLE;
 

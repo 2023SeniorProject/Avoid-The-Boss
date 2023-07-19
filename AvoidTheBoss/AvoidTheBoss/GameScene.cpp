@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "GameScene.h"
 #include "GameFramework.h"
+#include "UIManager.h"
 #include "InputManager.h"
 #include "SoundManager.h"
 #include "CSound.h"
@@ -205,12 +206,12 @@ void CGameScene::BuildObjects(ID3D12Device5* pd3dDevice,ID3D12GraphicsCommandLis
 	m_ppGenerator = new CGenerator * [m_nGenerator];
 	for (int i = 0; i < m_nGenerator; ++i)
 	{
-		//m_ppGenerator[i] = ((CGenerator*)pGeneratorObjectsShader->m_ppObjects[i]);
-		//m_ppGenerator[i]->m_idx = i;
+		m_ppGenerator[i] = ((CGenerator*)pGeneratorObjectsShader->m_ppObjects[i]);
+		m_ppGenerator[i]->m_idx = i;
 	}
 	for (int i = 0; i < PLAYERNUM; ++i)
 	{
-		if (i == (int)CHARACTER_TYPE::BOSS)
+		if (i == (int)(CHARACTER_TYPE::BOSS))
 		{
 			m_players[i] = new CBoss(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature);
 			if (m_ppShaders[1]&& m_ppShaders[5])
@@ -231,6 +232,7 @@ void CGameScene::BuildObjects(ID3D12Device5* pd3dDevice,ID3D12GraphicsCommandLis
 			// 피격 이펙트 코드
 
 		}
+		m_players[i]->m_idx = i;
 	}
 	m_pCamera = m_players[m_playerIdx]->GetCamera();
 	
@@ -291,15 +293,17 @@ void CGameScene::Update(HWND& hWnd)
 		std::unique_lock<std::shared_mutex> wl(m_jobQueueLock);
 		m_jobQueue->DoTasks();
 	}
+	
+	
 
 	for (int k = 0; k < PLAYERNUM; ++k)
 	{
 		if (k == m_playerIdx) m_players[k]->Update(m_timer.GetTimeElapsed(), CLIENT_TYPE::OWNER);
 		else m_players[k]->Update(m_timer.GetTimeElapsed(), CLIENT_TYPE::OTHER_PLAYER);
 	}
-	//for (int k = 0; k < m_nGenerator; ++k) m_ppGenerator[k]->Update(_timer.GetTimeElapsed());
+	for (int k = 0; k < m_nGenerator; ++k) m_ppGenerator[k]->Update(m_timer.GetTimeElapsed());
 
-	
+	mainGame.m_UIRenderer->UpdateGameSceneUI(this);
 
 	// 평균 프레임 레이트 출력
 	std::wstring str = L"[";
@@ -412,6 +416,8 @@ void CGameScene::InitGame(void* packet, int32 sid)
 	if(m_players[1] != nullptr)m_players[1]->SetPosition(XMFLOAT3(10, 0.25, -18));
 	if(m_players[2] != nullptr)m_players[2]->SetPosition(XMFLOAT3(15, 0.25, -18));
 	if(m_players[3] != nullptr)m_players[3]->SetPosition(XMFLOAT3(20, 0.25, -18));
+	m_pCamera = m_players[m_playerIdx]->GetCamera();
+	m_players[m_playerIdx]->m_clientType = CLIENT_TYPE::OWNER;
 }
 
 void CGameScene::AddEvent(queueEvent* ev, float after)

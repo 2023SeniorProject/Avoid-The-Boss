@@ -30,9 +30,7 @@ void Room::UserOut(int32 sid)
 
 	{
 		// cList Lock 쓰기 호출	
-		//std::unique_lock<std::shared_mutex> wll(_listLock);
-		//auto i = std::find(_cList.begin(), _cList.end(), sid); // 리스트에 있는지 탐색 후
-		//if (i != _cList.end()) _cList.erase(i); // 리스트에서 제거
+		std::unique_lock<std::shared_mutex> wll(_listLock);
 		_memCnt.fetch_sub(1);
 		
 		for (int i = 0; i < PLAYERNUM; ++i)
@@ -54,8 +52,7 @@ void Room::UserOut(int32 sid)
 	}
 		
 	std::cout << "LEFT USER SID LIST [";
-	//for (auto i : _cList) std::cout << i << ", ";
-	for (auto i : _cArr) if(-1 != i.sid) std::cout << i.sid << ", ";
+	for (auto i : _cArr) if(-1 != i.sid) std::cout << (int32)i.sid << "|";
 	std::cout << " ]\n";
 	
 	// 인 게임중에  나간 플레이어는 숨기도록 한다.
@@ -66,6 +63,14 @@ void Room::UserOut(int32 sid)
 		packet.type = (uint8)SC_GAME_PACKET_TYPE::GAMEEVENT;
 		packet.eventId = (uint8)EVENT_TYPE::HIDE_PLAYER_ONE + idx;
 		BroadCasting(&packet);
+	}
+	else if (_status == (uint8)ROOM_STATUS::NOT_FULL)
+	{
+		S2C_ROOM_READY packet;
+		packet.size = sizeof(S2C_ROOM_READY);
+		packet.type = (uint8)S_ROOM_PACKET_TYPE::REP_READY_CANCEL;
+		packet.sid = sid;
+		BroadCastingExcept(&packet, sid);
 	}
 
 	if (IsDestroyRoom())
@@ -99,7 +104,6 @@ void Room::UserIn(int32 sid)
 		{
 			//cList Lock 쓰기 호출 
 			std::unique_lock<std::shared_mutex> wll(_listLock);
-			//_cList.push_back(sid);
 			_memCnt.fetch_add(1);
 			// 빈 배열 자리에다가 정보 채우기
 			for (int k = 0; k < PLAYERNUM; ++k)
@@ -112,30 +116,13 @@ void Room::UserIn(int32 sid)
 			}
 		
 		}
-		if (/*_cList.size()*/_memCnt == PLAYERNUM)
+		if (_memCnt == PLAYERNUM)
 		{
 			_status = (int8)ROOM_STATUS::FULL;
-			/*S2C_GAMESTART packet;
-			packet.type = (uint8)S_GAME_PACKET_TYPE::GAME_START;
-			packet.size = sizeof(S2C_GAMESTART);
-			int k = 0;
-			for (auto i : _cList)
-			{
-				packet.sids[k] = i;
-				_gameLogic.SetPlayerSidAndIdx(i, k);
-				++k;
-			}
-			std::cout << "GAME START\n";
-			std::cout << "TOTAL USER SID LIST[";
-			for (auto i : _cList) std::cout << i << " | ";
-			std::cout << " ]\n";
-			BroadCasting(&packet);
-			_status = (int8)ROOM_STATUS::FULL;
-			_gameLogic.InitGame();
-			_timer.Reset();*/
 		}
 	
 	}
+
 	SendRoomInfoPacket();
 	// 갱신할 방 리스트 정보와 방 정보를 보낸다.
 	SendRoomListPacket();
@@ -149,19 +136,13 @@ void Room::BroadCasting(void* packet) // 방에 속하는 클라이언트에게만 전달하기
 {
 	// cList Lock 읽기 호출 
 	std::shared_lock<std::shared_mutex> rll(_listLock);
-	/*for (auto i =  _cList.begin(); i != _cList.end(); ++i)
-	{
-		if (ServerIocpCore._clients[*i] == nullptr) continue;
-		if(!ServerIocpCore._clients[*i]->DoSend(packet))
-		{ 
-			continue;
-		}
-	}*/
+	
 	for (auto i : _cArr)
 	{
 		if (-1 == i.sid) continue;
 		else 
 		{
+			
 			if (ServerIocpCore._clients[i.sid] == nullptr) continue;
 			if (!ServerIocpCore._clients[i.sid]->DoSend(packet))
 			{
@@ -175,14 +156,7 @@ void Room::BroadCastingExcept(void* packet, int32 sid) // 방에 속하는 클라이언트
 {
 	// cList Lock 읽기 호출 
 	std::shared_lock<std::shared_mutex> rll(_listLock);
-	//for (auto i = _cList.begin(); i != _cList.end(); ++i)
-	//{
-	//	if (ServerIocpCore._clients[*i] == nullptr || *i == sid) continue;
-	//	if (!ServerIocpCore._clients[*i]->DoSend(packet))
-	//	{
-	//		continue;
-	//	}
-	//}
+	
 	for (auto i : _cArr)
 	{
 		if (-1 == i.sid || sid == i.sid) continue;
@@ -200,29 +174,27 @@ void Room::BroadCastingExcept(void* packet, int32 sid) // 방에 속하는 클라이언트
 // 방에 있는 유저에 대한 게임 로직 업데이트 진행 
 void Room::Update()
 {
-	if (_status != (uint8)ROOM_STATUS::INGAME) return;
-
+	if (_status != (int8)ROOM_STATUS::INGAME) return;
 	_timer.Tick(60.f);
 	_gameLogic.Update(_timer.GetTimeElapsed());
 	_gameLogic.LateUpdate(_timer.GetTimeElapsed());
 
 	if (_timer.IsTimeToAddHistory())
-
 	{
 		_gameLogic.AddHistory();
 		S2C_FRAMEPACKET packet;
 		packet.size = sizeof(S2C_FRAMEPACKET);
 		packet.type = (uint8)S_GAME_PACKET_TYPE::FRAME;
-		packet.wf = _history.GetCurFrame();
+		packet.wf = _gameLogic._history.GetCurFrame();
 		BroadCasting(&packet);
 	}
 
 	if (_timer.IsAfterTick(45)) // 1/45초마다 정확한 위치값을 브로드캐스팅 한다.
 	{
-		
+	
 		for (int i = 0; i < PLAYERNUM; ++i)
 		{
-			if (!_gameLogic.IsAvailablePlayer(i)) continue;
+			//if (!_gameLogic.IsAvailablePlayer(i)) continue;
 			SPlayer& ps = _gameLogic.GetPlayerByIdx(i);
 
 			S2C_POS packet;
@@ -232,6 +204,7 @@ void Room::Update()
 			packet.x = ps.GetPosition().x;
 			packet.z = ps.GetPosition().z;
 			BroadCasting(&packet);
+			
 		}
 	}
 }
@@ -257,7 +230,6 @@ void Room::SendRoomListPacket()
 		READ_SERVER_LOCK;
 		ServerIocpCore.BroadCastingAll(&rmpacket);
 	}
-
 	
 }
 void Room::SendRoomInfoPacket()
@@ -270,19 +242,50 @@ void Room::SendRoomInfoPacket()
 		for (int i = 0; i < PLAYERNUM; ++i) rmifpacket.sids[i] = _cArr[i].sid;
 	}
 	BroadCasting(&rmifpacket);
+	
 }
-void Room::UpdateReady(int32 idx, bool val)
+
+void Room::InitGame()
 {
-	_readys[idx].store(val);
+	
 	if (IsGameStartAvailable())
 	{
 		S2C_GAMESTART packet;
 		packet.size = sizeof(S2C_GAMESTART);
 		packet.type = (uint8)S_ROOM_PACKET_TYPE::GAME_START;
-		for (int i = 0; i < PLAYERNUM; ++i)packet.sids[i] = _cArr[i].sid;
+		for (int i = 0; i < PLAYERNUM; ++i)
+		{
+			packet.sids[i] = _cArr[i].sid;
+			_gameLogic.SetPlayerSidAndIdx(i, _cArr[i].sid);
+		}
 		BroadCasting(&packet);
-	}	
+
+		std::cout << "GAME START\n";
+		std::cout << "TOTAL USER SID LIST[";
+		
+		for (int i = 0; i < 4; ++i) std::cout << _gameLogic._players[i].m_sid << " | ";
+		std::cout << "]\n";
+		
+		
+		
+		_gameLogic.InitGame();
+		_timer.Reset();
+		_status = (uint8)ROOM_STATUS::INGAME;
+	}
 }
+void Room::UpdateReady(int32 idx, bool val)
+{
+	_readys[idx].store(val);
+	
+}
+
+bool Room::IsGameStartAvailable()
+{
+	 int cnt = 0;  
+	 for (int i = 0; i < 4; ++i) if (_readys[i]) ++cnt; 
+	 return (PLAYERNUM == cnt); 
+}
+
 // ======= RoomManager ========
 
 // ============================
@@ -297,7 +300,6 @@ void RoomManager::Init()
 void RoomManager::EnterRoom(int32 sid,int16 rmNum)
 {
 	_rooms[rmNum].UserIn(sid);
-	std::cout << "Dead Lock Checking\n";
 }
 void RoomManager::CreateRoom(int32 sid)
 {
@@ -328,7 +330,7 @@ void RoomManager::UpdateRooms()
 {
 	for (int i = 0; i < _cap; ++i)
 	{
-		if (_rooms[i]._status != (int8)ROOM_STATUS::FULL) continue;
+		if (_rooms[i]._status != (int8)ROOM_STATUS::INGAME) continue;
 		_rooms[i].Update();
 	}
 }

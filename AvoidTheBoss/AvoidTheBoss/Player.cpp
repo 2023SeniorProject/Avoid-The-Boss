@@ -159,7 +159,6 @@ CCamera* CPlayer::OnChangeCamera(DWORD nNewCameraMode, DWORD nCurrentCameraMode)
 	}
 	
 	m_pCamera = pNewCamera;
-	if (m_pCamera) delete m_pCamera;
 
 	return(pNewCamera);
 }

@@ -543,6 +543,7 @@ void CEmployee::PlayerAttacked()
 		if (m_hp == 0)
 		{
 			PlayerDown();
+			m_pCamera = ChangeCamera(THIRD_PERSON_CAMERA, 0.0f);
 			//SoundManager::GetInstance().PlayObjectSound(9, 4); // 총알 2번 째 충돌 시
 		}
 		else
@@ -646,6 +647,7 @@ bool CEmployee::RescueTasking()
 		{
 			if (GetIsPlayerOnRescueInter())
 			{
+				m_pCamera = ChangeCamera(FIRST_PERSON_CAMERA, 0.0f);
 				SetBehavior(PLAYER_BEHAVIOR::IDLE);
 				SetRescueInteraction(false);
 				//static_cast<CEmployee*>(mainGame.m_ppScene[mainGame.m_nSceneIndex]->GetScenePlayerByIdx(pIdx))->RescueOn(false);

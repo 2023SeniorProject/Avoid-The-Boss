@@ -207,7 +207,7 @@ void UIManager::UpdateRoomText()
 
        if (rs == ROOM_STATUS::FULL || rs == ROOM_STATUS::EMPTY)
             {
-                if(tempidx == -1 )tempidx = i;
+                //if(tempidx == -1 ) tempidx = i;
                 hide = true;
                 UpdateRoomTextBlocks(i, newText.c_str(), newRect, hide);
                 hide = false;
@@ -216,11 +216,11 @@ void UIManager::UpdateRoomText()
        
        if (tempidx != -1)
        {
-           newRect = MakeLayoutRectByCorner(LOBBYROOMLIST_X_OFFSET
+          /* newRect = MakeLayoutRectByCorner(LOBBYROOMLIST_X_OFFSET
                , LOBBYROOMLIST_Y_OFFSET + (FRAME_BUFFER_HEIGHT / 2.0f * ((float)tempidx / m_nRoomListPerPage)),
                FRAME_BUFFER_WIDTH - (LOBBYROOMLIST_X_OFFSET * 2.0), FRAME_BUFFER_HEIGHT / 2.0f * (1.0 / m_nRoomListPerPage));
            ls->GetRoom(curPage * 5 + i).idx = tempidx;
-           tempidx += 1;
+           tempidx += 1;*/
        }
        UpdateRoomTextBlocks(i, newText.c_str(), newRect, hide);
    }
@@ -431,24 +431,31 @@ void UIManager::InitGameSceneUI(CGameScene* gc)
 void UIManager::UpdateGameSceneUI(CGameScene* gc)
 {
   // 동적 UI들 hp, status
-    for (int i = 1; i < 3; ++i)
+    for (int i = 0; i < PLAYERNUM; ++i)
     {
         if (!gc->GetScenePlayerByIdx(i)) continue;
+        if (i == 0) continue;
+
         if (i != m_playerIdx)
         {
             if (MAX_HP == gc->GetScenePlayerByIdx(i)->m_hp)
             {
-                m_CharStatus[i].resource = m_CharStatusBitmaps[0]; // normal
+                m_CharStatus[i - 1].resource = m_CharStatusBitmaps[0]; // normal
             }
             else if (0 == gc->GetScenePlayerByIdx(i)->m_hp)
             {
-                m_CharStatus[i].resource = m_CharStatusBitmaps[2]; // death
+                m_CharStatus[i - 1].resource = m_CharStatusBitmaps[2]; // death
             }
+            else m_CharStatus[i - 1].resource = m_CharStatusBitmaps[1]; // death
         }
-        else
+        else if (i == m_playerIdx)
         {
-            m_HPUi[gc->GetScenePlayerByIdx(i)->m_hp + 1].m_hide = true;
-            m_CharStatus[i].resource = m_CharStatusBitmaps[1]; // injuried
+            for (auto& i : m_HPUi) i.m_hide = true;
+            for (int k = 0; k < gc->GetScenePlayerByIdx(i)->m_hp; ++k)
+            {
+                m_HPUi[i].m_hide = false;
+            }
+
         }
     }
 
@@ -642,7 +649,7 @@ void UIManager::InitializeDevice(ID3D12Device5* pd3dDevice, ID3D12CommandQueue* 
     // 상태 --> 동적으로 변하는 것이므로 그때 그때 위치를 업데이트하기로 한다. 일단 비트맵 리소스만 로드한다.
     m_CharStatusBitmaps[0] = LoadPngFromFile(L"UI/Normal.png");
     m_CharStatusBitmaps[1] = LoadPngFromFile(L"UI/Danger.png");
-    m_CharStatusBitmaps[2] = LoadPngFromFile(L"UI/Danger.png");
+    m_CharStatusBitmaps[2] = LoadPngFromFile(L"UI/Death.png");
     
     m_HpBitmap = LoadPngFromFile(L"UI/HP.png");
     for (int i = 0; i < MAX_HP; ++i)

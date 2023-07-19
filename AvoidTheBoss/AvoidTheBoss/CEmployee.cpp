@@ -20,19 +20,18 @@ CEmployee::CEmployee(ID3D12Device5* pd3dDevice, ID3D12GraphicsCommandList4* pd3d
 		CLoadedModelInfo* pEmployeeModel = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, g_pstrFirstCharactorRefernece[(int)m_nCharacterType], NULL, Layout::PLAYER);
 		SetChild(pEmployeeModel->m_pModelRootObject, true);
 
-		m_pSkinnedAnimationController = new CAnimationController(pd3dDevice, pd3dCommandList, 4, pEmployeeModel);
+		m_pSkinnedAnimationController2 = new CAnimationController(pd3dDevice, pd3dCommandList, 4, pEmployeeModel);
 
-		m_pSkinnedAnimationController->SetTrackAnimationSet(0, 3);//idle
-		m_pSkinnedAnimationController->SetTrackAnimationSet(1, 0);//run
-		m_pSkinnedAnimationController->SetTrackAnimationSet(2, 2);//slow_walk (절뚝거리기)
-		m_pSkinnedAnimationController->SetTrackAnimationSet(3, 1);//button
+		m_pSkinnedAnimationController2->SetTrackAnimationSet(0, 3);//idle
+		m_pSkinnedAnimationController2->SetTrackAnimationSet(1, 0);//run
+		m_pSkinnedAnimationController2->SetTrackAnimationSet(2, 2);//slow_walk (절뚝거리기)
+		m_pSkinnedAnimationController2->SetTrackAnimationSet(3, 1);//button
 
 		//달리기, 버튼, 느리게 걷기, 대기
-		m_pSkinnedAnimationController->SetTrackEnable(0, true);
-		m_pSkinnedAnimationController->SetTrackEnable(1, false);
-		m_pSkinnedAnimationController->SetTrackEnable(2, false);
-		m_pSkinnedAnimationController->SetTrackEnable(3, false);
-
+		m_pSkinnedAnimationController2->SetTrackEnable(0, true);
+		m_pSkinnedAnimationController2->SetTrackEnable(1, false);
+		m_pSkinnedAnimationController2->SetTrackEnable(2, false);
+		m_pSkinnedAnimationController2->SetTrackEnable(3, false);
 	}
 	//if (m_pCamera->m_nMode == (DWORD)THIRD_PERSON_CAMERA)
 	{
@@ -146,6 +145,11 @@ void CEmployee::Move(const int8& dwDirection, float fDistance)
 
 void CEmployee::Update(float fTimeElapsed, CLIENT_TYPE ptype)
 {
+	if (m_pCamera->m_nMode == (DWORD)FIRST_PERSON_CAMERA)
+		m_IsFirst = true;
+	else if (m_pCamera->m_nMode == (DWORD)THIRD_PERSON_CAMERA)
+		m_IsFirst = false;
+
 	CPlayer::Update(fTimeElapsed, ptype);
 	LateUpdate(fTimeElapsed,ptype);
 }

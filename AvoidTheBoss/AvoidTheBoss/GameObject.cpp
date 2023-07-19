@@ -583,6 +583,7 @@ CGameObject::~CGameObject()
 
 	if (m_pSkinnedAnimationController) delete m_pSkinnedAnimationController;
 	if (m_pSkinnedAnimationController1) delete m_pSkinnedAnimationController1;
+	if (m_pSkinnedAnimationController2) delete m_pSkinnedAnimationController2;
 
 }
 
@@ -693,6 +694,8 @@ void CGameObject::SetTrackAnimationSet(int nAnimationTrack, int nAnimationSet)
 {
 	if (m_pSkinnedAnimationController) m_pSkinnedAnimationController->SetTrackAnimationSet(nAnimationTrack, nAnimationSet);
 	if (m_pSkinnedAnimationController1) m_pSkinnedAnimationController1->SetTrackAnimationSet(nAnimationTrack, nAnimationSet);
+	(nAnimationTrack, nAnimationSet);
+	if (m_pSkinnedAnimationController2) m_pSkinnedAnimationController2->SetTrackAnimationSet(nAnimationTrack, nAnimationSet);
 
 }
 
@@ -700,7 +703,7 @@ void CGameObject::SetTrackAnimationPosition(int nAnimationTrack, float fPosition
 {
 	if (m_pSkinnedAnimationController) m_pSkinnedAnimationController->SetTrackPosition(nAnimationTrack, fPosition);
 	if (m_pSkinnedAnimationController1) m_pSkinnedAnimationController1->SetTrackPosition(nAnimationTrack, fPosition);
-
+	if (m_pSkinnedAnimationController2) m_pSkinnedAnimationController2->SetTrackPosition(nAnimationTrack, fPosition);
 }
 
 void CGameObject::Animate(float fTimeElapsed)
@@ -709,6 +712,7 @@ void CGameObject::Animate(float fTimeElapsed)
 
 	if (m_pSkinnedAnimationController) m_pSkinnedAnimationController->AdvanceTime(fTimeElapsed, this);
 	if (m_pSkinnedAnimationController1) m_pSkinnedAnimationController1->AdvanceTime(fTimeElapsed, this);
+	if (m_pSkinnedAnimationController2) m_pSkinnedAnimationController2->AdvanceTime(fTimeElapsed, this);
 
 	if (m_pSibling) m_pSibling->Animate(fTimeElapsed);
 	if (m_pChild) m_pChild->Animate(fTimeElapsed);
@@ -717,8 +721,17 @@ void CGameObject::Animate(float fTimeElapsed)
 
 void CGameObject::Render(ID3D12GraphicsCommandList4* pd3dCommandList, CCamera* pCamera, bool bRaster)
 {
-	if (m_pSkinnedAnimationController) m_pSkinnedAnimationController->UpdateShaderVariables(pd3dCommandList);
-	if (m_pSkinnedAnimationController1) m_pSkinnedAnimationController1->UpdateShaderVariables(pd3dCommandList);
+	//3ÀÎÄªÀÏ ¶§
+	if (!m_IsFirst)
+	{
+		if (m_pSkinnedAnimationController) m_pSkinnedAnimationController->UpdateShaderVariables(pd3dCommandList);
+		if (m_pSkinnedAnimationController1) m_pSkinnedAnimationController1->UpdateShaderVariables(pd3dCommandList);
+	}
+	else 
+	{
+	//1ÀÎÄªÀÏ ¶§
+		if (m_pSkinnedAnimationController2) m_pSkinnedAnimationController2->UpdateShaderVariables(pd3dCommandList);
+	}
 
 	if (m_pMesh)
 	{

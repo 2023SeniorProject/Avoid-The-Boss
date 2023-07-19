@@ -10,9 +10,11 @@
 #include "CJobQueue.h"
 
 // 객체 관련
+#include "CBullet.h"
 #include "CBoss.h"
 #include "CEmployee.h"
 #include "CGenerator.h"
+
 
 
 
@@ -163,7 +165,7 @@ void CGameScene::BuildObjects(ID3D12Device5* pd3dDevice,ID3D12GraphicsCommandLis
 	XMFLOAT3 xmf3Scale(8.0f, 2.0f, 8.0f);
 	XMFLOAT4 xmf4Color(0.0f, 0.3f, 0.0f, 0.0f);
 
-	m_nShaders = 5;
+	m_nShaders = 6;
 	m_ppShaders = new CShader * [m_nShaders];
 
 	CMapObjectsShader* pMapShader = new CMapObjectsShader();
@@ -191,6 +193,11 @@ void CGameScene::BuildObjects(ID3D12Device5* pd3dDevice,ID3D12GraphicsCommandLis
 	pGeneratorObjectsShader->BuildObjects(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, NULL, NULL);
 	m_ppShaders[4] = pGeneratorObjectsShader;
 
+	CHitEffectObjectsShader* pHitEffectObjectsShader = new CHitEffectObjectsShader();
+	pHitEffectObjectsShader->CreateShader(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature);
+	pHitEffectObjectsShader->BuildObjects(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, NULL, NULL);
+	m_ppShaders[5] = pHitEffectObjectsShader;
+
 	CBoundsObjectsShader* pBoundsMapShader = new CBoundsObjectsShader();
 	pBoundsMapShader->CreateShader(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature);
 	pBoundsMapShader->BuildObjects(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, NULL, NULL);
@@ -206,8 +213,9 @@ void CGameScene::BuildObjects(ID3D12Device5* pd3dDevice,ID3D12GraphicsCommandLis
 		if (i == (int)CHARACTER_TYPE::BOSS)
 		{
 			m_players[i] = new CBoss(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature);
-			if (m_ppShaders[1])
+			if (m_ppShaders[1]&& m_ppShaders[5])
 			{
+				((CBullet*)(pBulletObjectShader->m_ppObjects[0]))->SetHitEffect((CHitEffect*)pHitEffectObjectsShader->m_ppObjects[0]);
 				((CBoss*)m_players[i])->m_pBullet = (CBullet*)pBulletObjectShader->m_ppObjects[0];
 			}
 		}
@@ -220,6 +228,8 @@ void CGameScene::BuildObjects(ID3D12Device5* pd3dDevice,ID3D12GraphicsCommandLis
 			((CEmployee*)m_players[i])->m_pSwitches[1].radius = 0.2f;
 			((CEmployee*)m_players[i])->m_pSwitches[2].position = XMFLOAT3(0.6774719, 1.083242, -23.05909);
 			((CEmployee*)m_players[i])->m_pSwitches[2].radius = 0.2f;
+			// 피격 이펙트 코드
+
 		}
 	}
 	m_pCamera = m_players[m_playerIdx]->GetCamera();
@@ -296,6 +306,8 @@ void CGameScene::Update(HWND& hWnd)
 	str.append(std::to_wstring(m_sid));
 	str.append(L"] (");
 	str.append(std::to_wstring(m_players[m_playerIdx]->GetPosition().x));
+	str.append(L" ");
+	str.append(std::to_wstring(m_players[m_playerIdx]->GetPosition().y));
 	str.append(L" ");
 	str.append(std::to_wstring(m_players[m_playerIdx]->GetPosition().z));
 	str.append(L")- FPS: ");
@@ -396,7 +408,7 @@ void CGameScene::InitGame(void* packet, int32 sid)
 	}
 
 	std::cout << "PLAYER_IDX: " << m_playerIdx << "\n";
-	m_players[0]->SetPosition(XMFLOAT3(0, 0.25, -18));
+	m_players[0]->SetPosition(XMFLOAT3(0, 0.25, -18)); >>> 여기 위치 수정하기
 	if(m_players[1] != nullptr)m_players[1]->SetPosition(XMFLOAT3(10, 0.25, -18));
 	if(m_players[2] != nullptr)m_players[2]->SetPosition(XMFLOAT3(15, 0.25, -18));
 	if(m_players[3] != nullptr)m_players[3]->SetPosition(XMFLOAT3(20, 0.25, -18));

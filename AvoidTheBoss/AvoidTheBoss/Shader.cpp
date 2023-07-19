@@ -510,7 +510,7 @@ void CBulletObjectsShader::BuildObjects(ID3D12Device5* pd3dDevice,ID3D12Graphics
 	m_nObjects = BULLET_NUMBER;
 	m_ppObjects = new CGameObject * [m_nObjects];
 
-	CGameObject* pBullet = CGameObject::LoadGeometryFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "Model/Laser.bin", NULL, Layout::BULLET);
+	CGameObject* pBullet = CGameObject::LoadGeometryFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "Model/ÃÑ¾Ë/Bullet.bin", NULL, Layout::BULLET);
 	for (int i = 0; i < m_nObjects; i++)
 	{
 		m_ppObjects[i] = new CBullet();
@@ -784,3 +784,46 @@ void CVirtualObjectsShader::BuildObjects(ID3D12Device5* pd3dDevice, ID3D12Graphi
 
 }
 
+CHitEffectObjectsShader::CHitEffectObjectsShader()
+{
+}
+
+CHitEffectObjectsShader::~CHitEffectObjectsShader()
+{
+}
+
+void CHitEffectObjectsShader::BuildObjects(ID3D12Device5* pd3dDevice, ID3D12GraphicsCommandList4* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, CLoadedModelInfo* pModel, void* pContext)
+{
+	m_nObjects = 1;
+	m_ppObjects = new CGameObject * [m_nObjects];
+	
+	CGameObject* pHit = CGameObject::LoadGeometryFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "Model/hit.bin", NULL, Layout::EFFECT);
+	pHit->m_type = 1;
+	m_ppObjects[0] = new CHitEffect();
+	m_ppObjects[0]->SetChild(pHit);
+	m_ppObjects[0]->OnPrepareAnimate();
+	m_ppObjects[0]->SetPosition(XMFLOAT3(0.0f, 1.0f, 2.5f));
+	m_ppObjects[0]->SetScale(0.5f, 0.5f, 0.5f);
+
+	pHit->AddRef();
+
+	CreateShaderVariables(pd3dDevice, pd3dCommandList);
+}
+
+void CHitEffectObjectsShader::Render(ID3D12GraphicsCommandList4* pd3dCommandList, CCamera* pCamera, bool bRaster)
+{
+	CStandardShader::Render(pd3dCommandList, pCamera, bRaster);
+	for (int j = 0; j < m_nObjects; j++)
+	{
+		if (m_ppObjects[j])
+		{
+			if (m_ppObjects[j])
+			{
+				m_ppObjects[j]->Animate(m_fElapsedTime);
+				m_ppObjects[j]->UpdateTransform(NULL);
+				if (((CHitEffect*)m_ppObjects[j])->GetOnHit())
+					m_ppObjects[j]->Render(pd3dCommandList, pCamera, bRaster);
+			}
+		}
+	}
+}

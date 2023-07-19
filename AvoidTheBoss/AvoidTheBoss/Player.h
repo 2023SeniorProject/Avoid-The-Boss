@@ -82,6 +82,11 @@ public:
 	virtual bool GetOnMoveSound() {
 		return m_bOnMoveSound;
 	}
+
+	// 피격 이펙트 코드
+	bool m_bIsOnUIActive = false;
+	void SetIsOnUIActive(bool value) { m_bIsOnUIActive = value; }
+	bool GetIsOnUIActive() { return m_bIsOnUIActive; }
 public: 
 	CPlayer();
 	virtual ~CPlayer();
@@ -136,7 +141,6 @@ public: //04-29 추가함수
 	virtual void AnimTrackUpdate(float ,CLIENT_TYPE) {};
 	virtual void SetBehavior(PLAYER_BEHAVIOR b) { m_behavior = (int32)b; };
 	virtual int32 GetBehavior() { return m_behavior; }
-	//virtual void Render(ID3D12GraphicsCommandList4* pd3dCommandList, CCamera* pCamera =NULL);
 
 	virtual void BuildObjects(ID3D12Device5* pd3dDevice, ID3D12GraphicsCommandList4
 		* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature) {}

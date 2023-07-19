@@ -24,6 +24,12 @@ struct UIBackGround
     D2D1_RECT_F                     d2dLayoutRect; // 출력할 레이아웃 영역
     ID2D1Bitmap*                    resource = NULL;
 };
+struct UIEffect
+{
+    D2D1_RECT_F                     d2dLayoutRect; // 출력할 레이아웃 영역
+    ID2D1Bitmap* resource = NULL;
+};
+
 
 class UIManager
 {
@@ -39,9 +45,10 @@ public:
 
     void UpdateRoomTextBlocks(UINT nIndex,const WCHAR* pstrUIText, const D2D1_RECT_F& pd2dLayoutRect, bool hide);
     void UpdateRoomText();
-    void Render2D(UINT nFrame,int32 curScene);
+    void Render2D(UINT nFrame,int32 curScene,int playerType, bool IsRender);
     void ReleaseResources();
     void DrawBackGround(int32 Scene);
+    void DrawEffects(int32 Scene, int playerType, bool IsRender);
     void DrawButton(int32, int32 idx);
     void DrawTextBlock(int32);
 
@@ -98,6 +105,7 @@ public:
     D2D1_RECT_F m_RoomListLayout[5];
 
     UIButton m_RoomButtons[2];
+    UIEffect m_GameEffect[2];
 
     // 동적으로 바뀌는 텍스트 버튼들 Id,PW 
     UITextBlock m_pIDPWTextBlocks[2];

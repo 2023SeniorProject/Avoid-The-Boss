@@ -40,10 +40,10 @@ CEmployee::CEmployee(ID3D12Device5* pd3dDevice, ID3D12GraphicsCommandList4* pd3d
 	CreateShaderVariables(pd3dDevice, pd3dCommandList);
 
 	if (m_pCamera->m_nMode == (DWORD)FIRST_PERSON_CAMERA)
-		SetPosition(XMFLOAT3(0.0f, 1.57f, 0.0f));
+		SetPosition(XMFLOAT3(0.0f, 0.0f, 0.0f));
 
 	if (m_pCamera->m_nMode == (DWORD)THIRD_PERSON_CAMERA)
-		SetPosition(XMFLOAT3(0.0f, 0.25f, -30.0f));
+		SetPosition(XMFLOAT3(0.0f, 0.0f, -30.0f));
 
 	if (pEmployeeModel) delete pEmployeeModel;
 }
@@ -64,7 +64,7 @@ CCamera* CEmployee::ChangeCamera(DWORD nNewCameraMode, float fTimeElapsed)
 	case FIRST_PERSON_CAMERA:
 		m_pCamera = OnChangeCamera(FIRST_PERSON_CAMERA, nCurrentCameraMode);
 		m_pCamera->SetTimeLag(0.0f);
-		m_pCamera->SetOffset(XMFLOAT3(0.0f, 0.0f, 0.0f));
+		m_pCamera->SetOffset(XMFLOAT3(0.0f, 1.57f, 0.0f));
 		m_pCamera->GenerateProjectionMatrix(1.01f, MaxDepthofMap, ASPECT_RATIO, 60.0f); //5000.f
 		m_pCamera->SetViewport(0, 0, FRAME_BUFFER_WIDTH, FRAME_BUFFER_HEIGHT, 0.0f, 1.0f);
 		m_pCamera->SetScissorRect(0, 0, FRAME_BUFFER_WIDTH, FRAME_BUFFER_HEIGHT);
@@ -439,6 +439,16 @@ void CEmployee::PlayerAttacked()
 {
 	if (m_hp > 0)
 	{
+		if (m_hp <= 70)
+		{
+			if(!GetIsOnUIActive())
+				SetIsOnUIActive(true);
+		}
+		else
+		{
+			if (GetIsOnUIActive())
+				SetIsOnUIActive(false);
+		}
 		m_hp -= 1;
 		if (m_hp == 0)
 		{
@@ -450,9 +460,7 @@ void CEmployee::PlayerAttacked()
 			m_behavior = (int32)PLAYER_BEHAVIOR::ATTACKED;
 			m_attackedAnimationCount = EMPLOYEE_ATTACKED_TIME;
 		}
-		
 	}
-	
 }
 
 void CEmployee::PlayerDown()

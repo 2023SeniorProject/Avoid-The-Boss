@@ -61,10 +61,15 @@ void CPlayer::Update(float fTimeElapsed, CLIENT_TYPE ptype)
 	m_playerBV.Center = GetPosition();
 
 	DWORD nCameraMode = m_pCamera->GetMode();
-	if (m_pCamera) m_pCamera->Move(vel);
-	m_pCamera->Update(m_xmf3Position,fTimeElapsed);
-	if (nCameraMode == THIRD_PERSON_CAMERA) m_pCamera->SetLookAt(m_xmf3Position);
-	else m_pCamera->SetPosition(m_xmf3Position); //카메라 offset
+	if (m_pCamera)
+	{
+		m_pCamera->Move(vel);
+		m_pCamera->Update(m_xmf3Position, fTimeElapsed);
+	}
+	if (nCameraMode == THIRD_PERSON_CAMERA)
+		m_pCamera->SetLookAt(m_xmf3Position);
+	//else 
+	//	m_pCamera->SetPosition(Vector3::Add(m_xmf3Position, m_pCamera->GetPosition());); //카메라 offset
 	m_pCamera->RegenerateViewMatrix();
 }
 
@@ -175,9 +180,7 @@ void CPlayer::Render(ID3D12GraphicsCommandList4 * pd3dCommandList, CCamera* pCam
 	DWORD nCameraMode = (pCamera) ? pCamera->GetMode() : 0x03;
 
 	//카메라 모드가 3인칭이면 플레이어 객체를 렌더링한다. 
-
 	CGameObject::Render(pd3dCommandList, pCamera, bRaster); 
-	//CGameObject::Render(pd3dCommandList, pCamera);
 }
 
 CVirtualPlayer::CVirtualPlayer()
@@ -264,17 +267,7 @@ uint8 CVirtualPlayer::ProcessInput()
 void CSoundCallbackHandler::HandleCallback(void* pCallbackData, float fTrackPosition)
 {
 	_TCHAR* pWavName = (_TCHAR*)pCallbackData;
-//#ifdef _WITH_DEBUG_CALLBACK_DATA
-//	TCHAR pstrDebug[256] = { 0 };
-//	_stprintf_s(pstrDebug, 256, _T("%s(%f)\n"), pWavName, fTrackPosition);
-//	OutputDebugString(pstrDebug);
-//#endif
-//#ifdef _WITH_SOUND_RESOURCE
-//	PlaySound(pWavName, ::ghAppInstance, SND_RESOURCE | SND_ASYNC);
-//#else
 	PlaySound(pWavName, NULL, SND_LOOP | SND_ASYNC);
-//#endif
-
 }
 
 

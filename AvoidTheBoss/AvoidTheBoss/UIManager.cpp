@@ -247,9 +247,24 @@ void UIManager::DrawBackGround(int32 Scene)
     }
 }
 
+void UIManager::DrawEffects(int32 Scene, int playerType, bool IsRender)
+{
+    if (IsRender)
+    {
+        if (Scene == 3)
+        {
+            if (playerType == 1)
+                m_pd2dDeviceContext->DrawBitmap(m_GameEffect[0].resource,
+                    m_GameEffect[0].d2dLayoutRect, 1.0f, D2D1_INTERPOLATION_MODE_LINEAR, (D2D1_RECT_F*)0);
+            if (playerType == 2)
+                m_pd2dDeviceContext->DrawBitmap(m_GameEffect[1].resource,
+                    m_GameEffect[1].d2dLayoutRect, 1.0f, D2D1_INTERPOLATION_MODE_LINEAR, (D2D1_RECT_F*)0);
+        }
+    }
+}
+
 void UIManager::DrawButton(int32 Scene,int32 idx)
 {
-   
     if (Scene == 0) // 타이틀 씬
     {
         m_pd2dDeviceContext->DrawRectangle(m_TitleButtons[0].d2dLayoutRect, redBrush);
@@ -445,9 +460,18 @@ void UIManager::InitializeDevice(ID3D12Device5* pd3dDevice, ID3D12CommandQueue* 
         m_RoomListTextBlock[i].m_pstrText =  L"ROOMNUM:   MEMBER:   0/4";
     }
 
+  
+
+    // 게임 씬에 필요한 버튼
+    m_GameEffect[0].resource = LoadPngFromFile(L"UI/crosshair.png");
+    m_GameEffect[0].d2dLayoutRect = MakeLayoutRect(m_fWidth / 2.0f, m_fHeight / 2.0f ,225.0f*0.25f, 225.0f * 0.25f);
+
+    m_GameEffect[1].resource = LoadPngFromFile(L"UI/Hit.png");
+    m_GameEffect[1].d2dLayoutRect = MakeLayoutRect(m_fWidth / 2.0f, m_fHeight / 2.0f, m_fWidth, m_fHeight);
+
 }
 
-void UIManager::Render2D(UINT nFrame, int32 curScene)
+void UIManager::Render2D(UINT nFrame, int32 curScene, int playerType, bool IsRender)
 {
 
     ID3D11Resource* ppResources[] = { m_ppd3d11WrappedRenderTargets[nFrame] };
@@ -457,6 +481,7 @@ void UIManager::Render2D(UINT nFrame, int32 curScene)
 
     m_pd2dDeviceContext->BeginDraw();
     DrawBackGround(curScene);
+    DrawEffects(curScene, playerType, IsRender);
     DrawButton(curScene,0);
     DrawButton(curScene,1);
     DrawTextBlock(curScene);

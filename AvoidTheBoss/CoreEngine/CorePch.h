@@ -171,7 +171,7 @@ inline void Swap(float* pfS, float* pfT) { float fTemp = *pfS; *pfS = *pfT; *pfT
 
 enum Layout
 {
-	PLAYER, MAP, BOUDS, BULLET, SWITCH,  SIREN, DOOR, GENERATOR ,SOUND
+	PLAYER, MAP, BOUDS, BULLET, SWITCH,  SIREN, DOOR, GENERATOR ,SOUND, EFFECT
 };
 
 

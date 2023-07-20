@@ -16,7 +16,7 @@ CEmployee::CEmployee(ID3D12Device5* pd3dDevice, ID3D12GraphicsCommandList4* pd3d
 {
 	m_ctype = (uint8)PLAYER_TYPE::EMPLOYEE;
 	m_nCharacterType = nType;
-	m_pCamera = ChangeCamera(THIRD_PERSON_CAMERA, 0.0f);
+	m_pCamera = ChangeCamera(FIRST_PERSON_CAMERA, 0.0f);
 
 
 	{
@@ -305,7 +305,7 @@ void CEmployee::SetRunAnimTrack()
 	{
 		if (m_pSkinnedAnimationController2 == nullptr) return;
 		m_pSkinnedAnimationController2->SetTrackEnable(0, false);
-		m_pSkinnedAnimationController2->SetTrackEnable(1, true);
+		m_pSkinnedAnimationController2->SetTrackEnable(1, false);
 		m_pSkinnedAnimationController2->SetTrackEnable(2, false);
 		m_pSkinnedAnimationController2->SetTrackEnable(3, false);
 
@@ -574,7 +574,7 @@ void CEmployee::SetInteractionAnimTrack()
 	m_pSkinnedAnimationController2->SetTrackPosition(1, 0);
 	m_pSkinnedAnimationController2->SetTrackPosition(2, 0);
 	m_pSkinnedAnimationController2->SetTrackPosition(3, 0);
-
+}
 
 void CEmployee::AnimTrackUpdate()
 {

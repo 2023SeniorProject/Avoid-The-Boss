@@ -173,6 +173,8 @@ void AttackEvent::Task()
 	bool retVal = ServerIocpCore._rmgr->GetRoom(roomNum).ProcessAttackEvent(_wf, _tidx);
 	SPlayer& emp = gm.GetPlayerByIdx(_tidx);
 	
+	
+	
 	if (retVal)
 	{
 		emp.ProcessAttack();
@@ -181,6 +183,7 @@ void AttackEvent::Task()
 		apacket.size = sizeof(S2C_ANIMPACKET);
 		apacket.type = (uint8)S_GAME_PACKET_TYPE::ANIM;
 		apacket.track = 6;
+		ServerIocpCore._rmgr->GetRoom(roomNum).BroadCastingExcept(&apacket, _sid);
 
 		SC_EVENTPACKET epacket;
 		epacket.size = sizeof(SC_EVENTPACKET);
@@ -188,7 +191,7 @@ void AttackEvent::Task()
 		epacket.eventId = (int32)EVENT_TYPE::ATTACKED_PLAYER_ONE + (int32)_tidx;
 
 		ServerIocpCore._rmgr->GetRoom(roomNum).BroadCasting(&epacket);
-		ServerIocpCore._rmgr->GetRoom(roomNum).BroadCastingExcept(&apacket, _sid);
+	
 
 	}
 }

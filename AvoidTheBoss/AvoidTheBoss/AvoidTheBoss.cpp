@@ -70,7 +70,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
         {
             while (true)
             {
-               // clientCore.DoDelaySendTask();
+               clientCore.DoDelaySendTask();
+               ::Sleep(0.0f);
             }
         }
     );

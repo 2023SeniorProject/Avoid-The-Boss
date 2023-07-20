@@ -22,6 +22,7 @@ void InteractionEvent::Task()
 		CGenerator* targetGen = gc->GetSceneGenByIdx(eventId - (uint8)EVENT_TYPE::SWITCH_ONE_START_EVENT);
 		if(targetGen == nullptr) break;
 		targetGen->SetAlreadyOn(true);
+		targetGen->SetAnimationCount(0);
 	}
 	break;
 	case EVENT_TYPE::SWITCH_ONE_END_EVENT:

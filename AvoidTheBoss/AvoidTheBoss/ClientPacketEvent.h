@@ -1,5 +1,6 @@
 #pragma once
 // 0 1 2
+#include "clientIocpCore.h"
 class CPlayer;
 
 class queueEvent
@@ -69,9 +70,12 @@ public:
 		_packet = packet;
 	}
 public:
-	virtual void Task()
+	virtual void Task() 
 	{
-		//clientCore.DoSend(&_packet);
-	};
+		
+		
+		clientCore.DoSend(&_packet);
+		std::cout << "SendAttack";
+	}
 };
 

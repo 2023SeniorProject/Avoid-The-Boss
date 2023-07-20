@@ -25,6 +25,7 @@ CSession::CSession()
 {
 
 	_sock = SocketUtil::CreateSocket();
+	_DelayjobQueue = new Scheduler();
 
 }
 
@@ -105,14 +106,18 @@ bool CSession::DoSend(void* packet)
 void CSession::DoDelaySend(C2S_ATTACK packet, float afterTick)
 {
 	DelayEvent<C2S_ATTACK>* de = new DelayEvent(packet);
-	std::unique_lock<std::shared_mutex> wl(_DelayQueueLock);
-	_DelayjobQueue->PushTask(static_cast<queueEvent*>(de), afterTick);
+	{
+		std::unique_lock<std::shared_mutex> wl(_DelayQueueLock);
+		_DelayjobQueue->PushTask(static_cast<queueEvent*>(de), afterTick);
+	}
 }
 
 void CSession::DoDelayTask()
 {
-	std::unique_lock<std::shared_mutex> wl(_DelayQueueLock);
-	_DelayjobQueue->DoTasks();
+	{
+		std::unique_lock<std::shared_mutex> wl(_DelayQueueLock);
+		_DelayjobQueue->DoTasks();
+	}
 }
 
 bool CSession::DoRecv()
@@ -315,10 +320,13 @@ void CSession::ProcessPacket(char* packet)
 	{
 		S2C_ANIMPACKET* sw = (S2C_ANIMPACKET*)packet;
 		uint8 idx = sw->idx;
-		CEmployee* myPlayer = (CEmployee*)gs->GetScenePlayerBySid(idx);
+		CPlayer* myPlayer = nullptr;
+	
+		myPlayer = gs->GetScenePlayerBySid(idx);
 		if (myPlayer != nullptr)
 		{
 			if (sw->track == (uint8)ANIMTRACK::GEN_ANIM) myPlayer->SetBehavior(PLAYER_BEHAVIOR::SWITCH_INTER);
+			else if (sw->track == (uint8)ANIMTRACK::ATTACK_ANIM) static_cast<CBoss*>(myPlayer)->SetAttackAnimOtherClient();
 			else myPlayer->SetBehavior(PLAYER_BEHAVIOR::IDLE);
 		}
 	}

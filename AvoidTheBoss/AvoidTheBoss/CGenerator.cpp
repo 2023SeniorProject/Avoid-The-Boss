@@ -82,15 +82,16 @@ void CGenerator::OnPrepareAnimate()
 void CGenerator::BodyAnimate(float fTimeElapsed)
 {
 	XMMATRIX xmmtxTranslate;
+	float move = 0.001f;
 	int changeFrame = 8;
 	if (m_bOnInteraction)
 	{
 			if (m_nGenerBodyAnimationCount > changeFrame && m_nGenerBodyAnimationCount <= GENERATOR_BODY_ANIM_FRAM)
 			{
 				if (m_nGenerBodyAnimationCount <= GENERATOR_BODY_ANIM_FRAM && m_nGenerBodyAnimationCount > changeFrame + changeFrame / 2)
-					xmmtxTranslate = DirectX::XMMatrixTranslation(-0.001f, -0.001f, 0.0f);
+					xmmtxTranslate = DirectX::XMMatrixTranslation(-move, -move, 0.0f);
 				else if (m_nGenerBodyAnimationCount <= changeFrame + changeFrame / 2 && m_nGenerBodyAnimationCount > changeFrame / 2)
-					xmmtxTranslate = DirectX::XMMatrixTranslation(0.001f, 0.001f, 0.0f);
+					xmmtxTranslate = DirectX::XMMatrixTranslation(move, move, 0.0f);
 
 				if (m_nGenerBodyAnimationCount == GENERATOR_BODY_ANIM_FRAM)
 				{
@@ -100,11 +101,13 @@ void CGenerator::BodyAnimate(float fTimeElapsed)
 			else if (m_nGenerBodyAnimationCount <= changeFrame && m_nGenerBodyAnimationCount > 0)
 			{
 				if(m_nGenerBodyAnimationCount > 0 && m_nGenerBodyAnimationCount<= changeFrame /2)
-					xmmtxTranslate = DirectX::XMMatrixTranslation(0.0f, 0.001f, 0.001f);
+					xmmtxTranslate = DirectX::XMMatrixTranslation(0.0f, move, move);
 				else if (m_nGenerBodyAnimationCount <= changeFrame && m_nGenerBodyAnimationCount > changeFrame / 2)
-					xmmtxTranslate = DirectX::XMMatrixTranslation(0.0f, -0.001f, -0.001f);
+					xmmtxTranslate = DirectX::XMMatrixTranslation(0.0f, -move, -move);
 			}
 			m_pBody->m_xmf4x4ToParent = Matrix4x4::Multiply(xmmtxTranslate, m_pBody->m_xmf4x4ToParent);
+
+			std::cout << GetPosition().x << GetPosition().y << GetPosition().z << std::endl;
 	}
 }
 
@@ -143,7 +146,7 @@ void CGenerator::Animate(float fTimeElapsed)
 	LogicUpdate();
 
 	PipelineAnimate(fTimeElapsed);
-	BodyAnimate(fTimeElapsed);
+	//BodyAnimate(fTimeElapsed);
 
 	CGameObject::Animate(fTimeElapsed);
 }

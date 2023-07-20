@@ -359,7 +359,16 @@ void CGameScene::Render(ID3D12GraphicsCommandList4* pd3dCommandList, CCamera* pC
 		if (m_ppHierarchicalGameObjects[i])
 		{
 			m_ppHierarchicalGameObjects[i]->Animate(m_fElapsedTime);
-			if (!m_ppHierarchicalGameObjects[i]->m_pSkinnedAnimationController) m_ppHierarchicalGameObjects[i]->UpdateTransform(NULL);
+			if (!m_ppHierarchicalGameObjects[i]->m_IsFirst)
+			{
+				if (!m_ppHierarchicalGameObjects[i]->m_pSkinnedAnimationController) m_ppHierarchicalGameObjects[i]->UpdateTransform(NULL);
+				if (!m_ppHierarchicalGameObjects[i]->m_pSkinnedAnimationController1) m_ppHierarchicalGameObjects[i]->UpdateTransform(NULL);
+			}
+			else
+			{
+				if (!m_ppHierarchicalGameObjects[i]->m_pSkinnedAnimationController2) m_ppHierarchicalGameObjects[i]->UpdateTransform(NULL);
+			}
+
 			m_ppHierarchicalGameObjects[i]->Render(pd3dCommandList, pCamera, bRaster);
 		}
 	}

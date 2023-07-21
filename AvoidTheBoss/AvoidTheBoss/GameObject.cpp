@@ -1354,7 +1354,7 @@ void CFrontDoor::Animate(float fTimeElapsed)
 			{
 				XMMATRIX xmmtxTranslate = DirectX::XMMatrixTranslation(delta * fTimeElapsed, 0.0f, 0.0f);
 				m_pLeftDoorFrame->m_xmf4x4ToParent = Matrix4x4::Multiply(xmmtxTranslate, m_pLeftDoorFrame->m_xmf4x4ToParent);
-				std::cout <<"FrontDoor : " << GetPosition().x << " " << GetPosition().y << " " << GetPosition().z << std::endl;
+				//std::cout <<"FrontDoor : " << GetPosition().x << " " << GetPosition().y << " " << GetPosition().z << std::endl;
 			}
 			if (m_pRightDoorFrame)
 			{
@@ -1363,7 +1363,7 @@ void CFrontDoor::Animate(float fTimeElapsed)
 
 			}
 			m_AnimationDistance -= delta * fTimeElapsed;
-			std::cout << " CFrontDoor " << m_AnimationDistance << std::endl;
+			//std::cout << " CFrontDoor " << m_AnimationDistance << std::endl;
 		}
 		else
 		{
@@ -1392,7 +1392,7 @@ void CEmergencyDoor::Animate(float fTimeElapsed)
 			m_xmf4x4ToParent = Matrix4x4::Multiply(xmmtxRotate, m_xmf4x4ToParent);
 			m_AnimationDegree -= delta * fTimeElapsed;
 
-			std::cout << " EmergencyDoor " << m_AnimationDegree << std::endl;
+			//std::cout << " EmergencyDoor " << m_AnimationDegree << std::endl;
 		}
 		else 
 		{
@@ -1428,7 +1428,7 @@ void CShutterDoor::Animate(float fTimeElapsed)
 				XMMATRIX xmmtxTranslate = DirectX::XMMatrixTranslation(0.0f, 0.0f, delta * fTimeElapsed);
 				m_pShutter->m_xmf4x4ToParent = Matrix4x4::Multiply(xmmtxTranslate, m_pShutter->m_xmf4x4ToParent);
 				m_AnimationDistance -= delta * fTimeElapsed;
-	 			std::cout <<"ShutterDoor : " << m_AnimationDistance << std::endl;
+	 			//std::cout <<"ShutterDoor : " << m_AnimationDistance << std::endl;
 			}
 		}
 		CGameObject::Animate(fTimeElapsed);

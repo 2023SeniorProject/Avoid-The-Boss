@@ -373,7 +373,8 @@ void CGameScene::Render(ID3D12GraphicsCommandList4* pd3dCommandList, CCamera* pC
 		}
 	}
 
-	for (int i = 0; i < m_nGenerator; ++i)	m_ppGenerator[i]->Animate(m_fElapsedTime);
+	//for (int i = 0; i < m_nGenerator; ++i)	
+	//	m_ppGenerator[i]->Animate(m_fElapsedTime);
 	for (int i = 0; i < PLAYERNUM; ++i)
 	{
 		if(!m_players[i]->m_hide) m_players[i]->Render(pd3dCommandList, pCamera, bRaster);

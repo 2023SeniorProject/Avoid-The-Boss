@@ -20,25 +20,28 @@ void CGenerator::LogicUpdate()
 	if (m_bOnInteraction || m_bAlreadyOn)
 	{  
 		m_nPipeStartAnimation[0] = true;
+		m_bOnGenAnimation = true;
+	}
+	else
+	{
+		for (int i = 0; i < m_nPipe; i++)
+		{
+			m_nPipeStartAnimation[i] = false;
+		}
+		m_bOnGenAnimation = false;
 	}
 	if (m_nGenerPipeAnimationCount[0] == 4)
 		m_nPipeStartAnimation[1] = true;
 	if (m_nGenerPipeAnimationCount[1] == 4)
-		m_nPipeStartAnimation[2] = true;
-	//else
-	//{
-	//	for (int i = 0; i < m_nPipe; i++)
-	//	{
-	//		m_nPipeStartAnimation[i] = false;
-	//	}
-	// 
-	//}
+		m_nPipeStartAnimation[2] = true; 
+
 	for (int i = 0; i < m_nPipe; i++)
 	{
 		if(m_nPipeStartAnimation[i])
 			m_nGenerPipeAnimationCount[i] += 1;
 	}
-	m_nGenerBodyAnimationCount++;
+	if(m_bOnGenAnimation)
+		m_nGenerBodyAnimationCount++;
 }
 
 void CGenerator::Update(float fTimeElapsed)
@@ -76,7 +79,6 @@ void CGenerator::OnPrepareAnimate()
 	}
 	m_pButton = FindFrame("Button001"); //Button -> 통짜 이름
 	m_pBody = FindFrame("Generator"); 
-
 }
 
 void CGenerator::BodyAnimate(float fTimeElapsed)
@@ -84,30 +86,30 @@ void CGenerator::BodyAnimate(float fTimeElapsed)
 	XMMATRIX xmmtxTranslate;
 	float move = 0.001f;
 	int changeFrame = 8;
-	if (m_bOnInteraction)
+	if (m_bOnGenAnimation)
 	{
-			if (m_nGenerBodyAnimationCount > changeFrame && m_nGenerBodyAnimationCount <= GENERATOR_BODY_ANIM_FRAM)
-			{
-				if (m_nGenerBodyAnimationCount <= GENERATOR_BODY_ANIM_FRAM && m_nGenerBodyAnimationCount > changeFrame + changeFrame / 2)
-					xmmtxTranslate = DirectX::XMMatrixTranslation(-move, -move, 0.0f);
-				else if (m_nGenerBodyAnimationCount <= changeFrame + changeFrame / 2 && m_nGenerBodyAnimationCount > changeFrame / 2)
-					xmmtxTranslate = DirectX::XMMatrixTranslation(move, move, 0.0f);
+		if (m_nGenerBodyAnimationCount > changeFrame && m_nGenerBodyAnimationCount <= GENERATOR_BODY_ANIM_FRAM)
+		{
+			if (m_nGenerBodyAnimationCount <= GENERATOR_BODY_ANIM_FRAM && m_nGenerBodyAnimationCount > changeFrame + changeFrame / 2)
+				xmmtxTranslate = DirectX::XMMatrixTranslation(-move, -move, 0.0f);
+			else if (m_nGenerBodyAnimationCount <= changeFrame + changeFrame / 2 && m_nGenerBodyAnimationCount > changeFrame / 2)
+				xmmtxTranslate = DirectX::XMMatrixTranslation(move, move, 0.0f);
 
-				if (m_nGenerBodyAnimationCount == GENERATOR_BODY_ANIM_FRAM)
-				{
-					m_nGenerBodyAnimationCount = 0;
-				}
-			}
-			else if (m_nGenerBodyAnimationCount <= changeFrame && m_nGenerBodyAnimationCount > 0)
+			if (m_nGenerBodyAnimationCount == GENERATOR_BODY_ANIM_FRAM)
 			{
-				if(m_nGenerBodyAnimationCount > 0 && m_nGenerBodyAnimationCount<= changeFrame /2)
-					xmmtxTranslate = DirectX::XMMatrixTranslation(0.0f, move, move);
-				else if (m_nGenerBodyAnimationCount <= changeFrame && m_nGenerBodyAnimationCount > changeFrame / 2)
-					xmmtxTranslate = DirectX::XMMatrixTranslation(0.0f, -move, -move);
+				m_nGenerBodyAnimationCount = 0;
 			}
-			m_pBody->m_xmf4x4ToParent = Matrix4x4::Multiply(xmmtxTranslate, m_pBody->m_xmf4x4ToParent);
+		}
+		else if (m_nGenerBodyAnimationCount <= changeFrame && m_nGenerBodyAnimationCount > 0)
+		{
+			if(m_nGenerBodyAnimationCount > 0 && m_nGenerBodyAnimationCount<= changeFrame /2)
+				xmmtxTranslate = DirectX::XMMatrixTranslation(0.0f, move, move);
+			else if (m_nGenerBodyAnimationCount <= changeFrame && m_nGenerBodyAnimationCount > changeFrame / 2)
+				xmmtxTranslate = DirectX::XMMatrixTranslation(0.0f, -move, -move);
+		}
+		m_pBody->m_xmf4x4ToParent = Matrix4x4::Multiply(xmmtxTranslate, m_pBody->m_xmf4x4ToParent);
 
-			std::cout << GetPosition().x << GetPosition().y << GetPosition().z << std::endl;
+		std::cout << "Gemerator" << GetPosition().x <<", " << GetPosition().y << ", " << GetPosition().z << std::endl;
 	}
 }
 
@@ -115,7 +117,7 @@ void CGenerator::BodyAnimate(float fTimeElapsed)
 void CGenerator::PipelineAnimate(float fTimeElapsed)
 {
 	float delta = 0.01f;
-	if (m_bOnInteraction)
+	if (m_bOnGenAnimation)
 	{
 		for (int i = 0; i < m_nPipe; i++) //1.8 ->1.7    ̵  10.f
 		{
@@ -146,7 +148,7 @@ void CGenerator::Animate(float fTimeElapsed)
 	LogicUpdate();
 
 	PipelineAnimate(fTimeElapsed);
-	//BodyAnimate(fTimeElapsed);
+	BodyAnimate(fTimeElapsed);
 
 	CGameObject::Animate(fTimeElapsed);
 }

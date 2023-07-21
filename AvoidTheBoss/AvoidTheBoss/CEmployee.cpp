@@ -772,7 +772,6 @@ bool CEmployee::GenTasking()
 			SetBehavior(PLAYER_BEHAVIOR::SWITCH_INTER);
 
 			targetGen->SetInteractionOn(true); // 발전기 애니메이션 재생을 시작한다.
-			
 		
 			if (InputManager::GetInstance().GetKeyBuffer(KEY_TYPE::F) == (int8)KEY_STATUS::KEY_PRESS)
 			{

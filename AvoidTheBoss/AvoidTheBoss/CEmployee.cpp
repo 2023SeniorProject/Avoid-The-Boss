@@ -25,10 +25,10 @@ CEmployee::CEmployee(ID3D12Device5* pd3dDevice, ID3D12GraphicsCommandList4* pd3d
 
 		m_pSkinnedAnimationController2 = new CAnimationController(pd3dDevice, pd3dCommandList, 4, pEmployeeModel);
 
-		m_pSkinnedAnimationController2->SetTrackAnimationSet(0, 3);//idle
-		m_pSkinnedAnimationController2->SetTrackAnimationSet(1, 0);//run
+		m_pSkinnedAnimationController2->SetTrackAnimationSet(0, 0);//idle
+		m_pSkinnedAnimationController2->SetTrackAnimationSet(1, 1);//run
 		m_pSkinnedAnimationController2->SetTrackAnimationSet(2, 2);//slow_walk (Àý¶Ò°Å¸®±â)
-		m_pSkinnedAnimationController2->SetTrackAnimationSet(3, 1);//button
+		m_pSkinnedAnimationController2->SetTrackAnimationSet(3, 3);//button
 
 	}
 	{

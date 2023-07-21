@@ -12,6 +12,7 @@ public:
 private:
 	bool m_bIsInGenArea = false;
 	bool m_bIsInDownPlayerArea = false; // Down된 플레이어와 인접해 있는가?
+	//bool m_bIsDown
 private:
 	float m_maxRGuage = 100;
 	float m_curGuage = 0;

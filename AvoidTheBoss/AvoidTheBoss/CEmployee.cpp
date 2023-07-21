@@ -614,7 +614,7 @@ void CEmployee::AnimTrackUpdate()
 			SetAttackedAnimTrack();
 			m_attackedAnimationCount--;
 
-			SoundManager::GetInstance().PlayObjectSound(8, 4); // 총알 충돌 시
+			//SoundManager::GetInstance().PlayObjectSound(8, 4); // 총알 충돌 시
 			SoundManager::GetInstance().PlayObjectSound(13, 3);
 		}
 		else 
@@ -632,20 +632,20 @@ void CEmployee::AnimTrackUpdate()
 		{
 			SetDownAnimTrack();
 			m_downAnimationCount--;
-			SoundManager::GetInstance().PlayObjectSound(7, 3);
 		}
 		else if (m_downAnimationCount < EMPLOYEE_DOWN_TIME)
 		{
 			m_downAnimationCount--;
 			if (m_downAnimationCount <= 0)
 			{
+				SoundManager::GetInstance().PlayObjectSound(7, 3);
 				m_behavior = (int32)PLAYER_BEHAVIOR::CRAWL;
 			}
 		}
 		break;
 	case (int32)PLAYER_BEHAVIOR::CRAWL:
 		SetCrawlAnimTrack();
-		SoundManager::GetInstance().PlayObjectSound(12, 3);
+		//SoundManager::GetInstance().PlayObjectSound(12, 3); 기절 시 이상한 사운드 출력 문제 코드
 		break;
 	case (int32)PLAYER_BEHAVIOR::STAND:
 		if (m_standAnimationCount == EMPLOYEE_STAND_TIME)

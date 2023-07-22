@@ -118,7 +118,10 @@ float4 PSStandard(VS_STANDARD_OUTPUT input) : SV_TARGET
 
 	float4 cIllumination = Lighting(input.positionW, normalW);
 	cColor = cColor * FogFactor + (1.0f - FogFactor) * fogColor;
-	//return(lerp(cColor, cIllumination, 0.5f));
+	
+	if(Distance <= FogStart)
+		return(lerp(cColor, cIllumination, 0.5f));
+	else
 	return cColor;
 }
 

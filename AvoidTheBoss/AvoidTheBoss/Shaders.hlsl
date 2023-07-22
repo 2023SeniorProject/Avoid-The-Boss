@@ -122,7 +122,7 @@ float4 PSStandard(VS_STANDARD_OUTPUT input) : SV_TARGET
 	if(Distance <= FogStart)
 		return(lerp(cColor, cIllumination, 0.5f));
 	else
-	return cColor;
+	    return(lerp(cColor, cIllumination, 0.05f));
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

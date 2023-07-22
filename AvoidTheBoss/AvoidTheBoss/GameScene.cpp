@@ -124,7 +124,7 @@ void CGameScene::BuildDefaultLightsAndMaterials()
 	m_pLights[3].m_bEnable = false;
 	m_pLights[3].m_nType = SPOT_LIGHT;
 	m_pLights[3].m_fRange = 600.0f;
-	m_pLights[3].m_xmf4Ambient = XMFLOAT4(0.3f, 0.3f, 0.3f, 1.0f);
+	m_pLights[3].m_xmf4Ambient = XMFLOAT4(0.1f, 0.1f, 0.1f, 1.0f);
 	m_pLights[3].m_xmf4Diffuse = XMFLOAT4(0.3f, 0.7f, 0.0f, 1.0f);
 	m_pLights[3].m_xmf4Specular = XMFLOAT4(0.3f, 0.3f, 0.3f, 0.0f);
 	m_pLights[3].m_xmf3Position = XMFLOAT3(550.0f, 330.0f, 530.0f);
@@ -298,6 +298,9 @@ void CGameScene::Update(HWND& hWnd)
 		else m_players[k]->Update(m_timer.GetTimeElapsed(), CLIENT_TYPE::OTHER_PLAYER);
 	}
 	for (int k = 0; k < m_nGenerator; ++k) m_ppGenerator[k]->Update(m_timer.GetTimeElapsed());
+	
+	m_pLights[SPOT_LIGHT].m_xmf3Position = m_players[m_playerIdx]->GetCamera()->GetPosition();
+	m_pLights[SPOT_LIGHT].m_xmf3Direction = m_players[m_playerIdx]->GetLook();
 
 	mainGame.m_UIRenderer->UpdateGameSceneUI(this);
 

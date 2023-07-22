@@ -95,11 +95,11 @@ float4 PSStandard(VS_STANDARD_OUTPUT input) : SV_TARGET
 	float3 vPositionToCamera = cameraPos - input.positionW;
 	float Distance = length(vPositionToCamera);
 
-	float FogEnd = 10.0f;
-	float FogStart = 5.0f;
+	float FogEnd = 7.0f;
+	float FogStart = 2.0f;
 	float FogRange = FogEnd - FogStart;
 	float FogFactor = saturate((FogEnd - Distance) / FogRange);
-	float4 fogColor = float4(0.5f, 0.5f, 0.5f, 1.0f);
+	float4 fogColor = float4(0.3f, 0.3f, 0.3f, 1.0f);
 
 
 	float3 normalW;
@@ -115,14 +115,22 @@ float4 PSStandard(VS_STANDARD_OUTPUT input) : SV_TARGET
 	{
 		normalW = normalize(input.normalW);
 	}
-
-	float4 cIllumination = Lighting(input.positionW, normalW);
+	
+	float4 wIllumination = Lighting(input.positionW, normalW);
+	float4 cIllumination = SpotLight(1,input.positionW, normalW, vPositionToCamera);
 	cColor = cColor * FogFactor + (1.0f - FogFactor) * fogColor;
 	
-	if(Distance <= FogStart)
-		return(lerp(cColor, cIllumination, 0.5f));
+	/*if (Distance <= FogStart)
+		return(lerp(cColor, wIllumination, 0.5f));
+	else if (Distance > FogStart && Distance <= FogEnd)
+		return(lerp(cColor, wIllumination, 0.3f));
+	else return (lerp(cColor, wIllumination, 0.1f));*/
+	if (FogStart <= Distance && Distance <= FogEnd)
+		return(lerp(cColor, wIllumination, (1.0f - ((Distance + 0.01f) / FogEnd))));
+	else if (Distance < FogStart)
+		return(lerp(cColor, wIllumination, 0.5));
 	else
-	    return(lerp(cColor, cIllumination, 0.05f));
+		return cColor;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

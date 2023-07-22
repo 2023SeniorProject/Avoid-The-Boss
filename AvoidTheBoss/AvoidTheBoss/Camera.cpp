@@ -165,7 +165,24 @@ CFirstPersonCamera::CFirstPersonCamera(CCamera* pCamera)
 
 void CFirstPersonCamera::Update(XMFLOAT3& xmf3LookAt, float fTimeElapsed)
 {
-	
+	if (m_pPlayer)
+	{
+		XMFLOAT4X4 xmf4x4Rotate = Matrix4x4::Identity();
+		XMFLOAT3 xmf3Right = m_pPlayer->GetRightVector();
+		XMFLOAT3 xmf3Up = m_pPlayer->GetUpVector();
+		XMFLOAT3 xmf3Look = m_pPlayer->GetLookVector();
+
+		//플레이어의 로컬 x-축, y-축, z-축 벡터로부터 회전 행렬(플레이어와 같은 방향을 나타내는 행렬)을 생성한다. 
+		xmf4x4Rotate._11 = xmf3Right.x; xmf4x4Rotate._21 = xmf3Up.x; xmf4x4Rotate._31 =
+			xmf3Look.x;
+		xmf4x4Rotate._12 = xmf3Right.y; xmf4x4Rotate._22 = xmf3Up.y; xmf4x4Rotate._32 =
+			xmf3Look.y;
+		xmf4x4Rotate._13 = xmf3Right.z; xmf4x4Rotate._23 = xmf3Up.z; xmf4x4Rotate._33 =
+			xmf3Look.z;
+		XMFLOAT3 xmf3Offset = Vector3::TransformCoord(m_xmf3Offset, xmf4x4Rotate);
+		XMFLOAT3 xmf3Position = Vector3::Add(m_pPlayer->GetPosition(), xmf3Offset);
+		SetPosition(xmf3Position);
+	}
 }
 
 void CFirstPersonCamera::Rotate(float x, float y, float z)

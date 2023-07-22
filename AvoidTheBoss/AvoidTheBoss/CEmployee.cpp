@@ -101,7 +101,7 @@ CCamera* CEmployee::ChangeCamera(DWORD nNewCameraMode, float fTimeElapsed)
 	case FIRST_PERSON_CAMERA:
 		m_pCamera = OnChangeCamera(FIRST_PERSON_CAMERA, nCurrentCameraMode);
 		m_pCamera->SetTimeLag(0.0f);
-		m_pCamera->SetOffset(XMFLOAT3(0.0f, 1.2f, 0.0f));
+		m_pCamera->SetOffset(XMFLOAT3(0.0f, 1.2f, -0.1f));
 		m_pCamera->GenerateProjectionMatrix(0.01f, MaxDepthofMap, ASPECT_RATIO, 60.0f); //5000.f
 		m_pCamera->SetViewport(0, 0, FRAME_BUFFER_WIDTH, FRAME_BUFFER_HEIGHT, 0.0f, 1.0f);
 		m_pCamera->SetScissorRect(0, 0, FRAME_BUFFER_WIDTH, FRAME_BUFFER_HEIGHT);
@@ -821,7 +821,7 @@ void CEmployee::PlayerDown()
 	if (CLIENT_TYPE::OWNER == m_clientType)
 	{
 		ChangeCamera(THIRD_PERSON_CAMERA, 0);
-		//m_pCamera->CreateShaderVariables(mainGame.m_pd3dDevice, mainGame.m_pd3dCommandList);
+	
 		mainGame.m_SceneManager->GetSceneByIdx(3)->m_pCamera = m_pCamera;
 		mainGame.m_SceneManager->GetSceneByIdx(3)->m_pCamera->CreateShaderVariables(mainGame.m_pd3dDevice, mainGame.m_pd3dCommandList);
 	}

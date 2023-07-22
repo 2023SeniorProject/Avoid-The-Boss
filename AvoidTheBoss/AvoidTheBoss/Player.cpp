@@ -66,8 +66,9 @@ void CPlayer::Update(float fTimeElapsed, CLIENT_TYPE ptype)
 		m_pCamera->Move(vel);
 		m_pCamera->Update(m_xmf3Position, fTimeElapsed);
 	}
+
 	if (nCameraMode == THIRD_PERSON_CAMERA) m_pCamera->SetLookAt(m_xmf3Position);
-	else m_pCamera->SetPosition(Vector3::Add(m_xmf3Position, m_pCamera->GetOffset())); //카메라 offset
+	//else m_pCamera->SetPosition(Vector3::Add(m_xmf3Position, m_pCamera->GetOffset())); //카메라 offset
 	m_pCamera->RegenerateViewMatrix();
 }
 

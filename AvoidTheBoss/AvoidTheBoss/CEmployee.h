@@ -12,6 +12,7 @@ public:
 private:
 	bool m_bIsInGenArea = false;
 	bool m_bIsInDownPlayerArea = false; // Down된 플레이어와 인접해 있는가?
+	//bool m_bIsDown
 private:
 	float m_maxRGuage = 100;
 	float m_curGuage = 0;
@@ -44,8 +45,7 @@ public:
 	bool GetIsPlayerOnRescueInter() { return m_bIsPlayerOnRescueInter; }
 
 	// ============= 애니메이션 트랙 셋팅 관련 ============
-	void SetIdleAnimTrack(); // 걷기
-	void SetRunAnimTrack(); // 달리기
+
 	bool IsMovable() 
 	{ 
 		return (m_behavior == (int32)PLAYER_BEHAVIOR::RESCUE || m_behavior == (int32)PLAYER_BEHAVIOR::SWITCH_INTER || m_behavior == (int32)PLAYER_BEHAVIOR::CRAWL);
@@ -64,11 +64,22 @@ public:
 	void ResetRescueGuage() { m_curGuage = 0; }
 	bool GetRescueOn() { return m_bIsRescuing; }
 
-	void SetAttackedAnimTrack(); // 절뚝거리기 
-	void SetDownAnimTrack(); // 피격
-	void SetCrawlAnimTrack(); // 기어가기
-	void SetStandAnimTrack(); // 일어나기
-	void SetInteractionAnimTrack(); // 발전기 상호작용
+
+	// 총알 맞고 쓰러짐 x,2
+	// 피격 2,4
+	// 느리게 걷기 2,4
+
+	//down (총알 맞고 쓰러짐) x 
+	//down_idle (쓰러진 상태) ㅇ
+	//slow_walk,crawl (절뚝거리기) x
+
+	void SetIdleAnimTrack();	// 걷기 0
+	void SetRunAnimTrack(); 	// 달리기 1
+	void SetDownAnimTrack();	// 총알 맞고 쓰러짐 x,2
+	void SetAttackedAnimTrack();// 절뚝거리기 2,4
+	void SetCrawlAnimTrack();	// 쓰러진 상태 x,3
+	void SetStandAnimTrack(); 	// 일어나기 x,5
+	void SetInteractionAnimTrack(); 	// 발전기 상호작용 3,6
 	
 
 	virtual void AnimTrackUpdate();

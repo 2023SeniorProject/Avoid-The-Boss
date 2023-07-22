@@ -25,6 +25,7 @@ public:
 	bool m_bGenActive = false; // --> 발전기가 활성화 되었는가
 	bool m_bOnInteraction = false; // --> 발전기가 상호작용 중인가?
 	bool m_bAlreadyOn = false;
+	bool m_bOnGenAnimation = false; // 발전기 애니메이션 활성화 여부
 	bool m_nPipeStartAnimation[3];
 public:
 	int  m_nButtonAnimationCount = BUTTON_ANIM_FRAME;

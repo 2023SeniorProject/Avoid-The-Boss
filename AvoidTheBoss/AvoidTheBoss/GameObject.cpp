@@ -583,6 +583,8 @@ CGameObject::~CGameObject()
 
 	if (m_pSkinnedAnimationController) delete m_pSkinnedAnimationController;
 	if (m_pSkinnedAnimationController1) delete m_pSkinnedAnimationController1;
+	if (m_pSkinnedAnimationController2) delete m_pSkinnedAnimationController2;
+
 }
 
 void CGameObject::AddRef() 
@@ -693,14 +695,15 @@ void CGameObject::SetTrackAnimationSet(int nAnimationTrack, int nAnimationSet)
 	if (m_pSkinnedAnimationController) m_pSkinnedAnimationController->SetTrackAnimationSet(nAnimationTrack, nAnimationSet);
 	if (m_pSkinnedAnimationController1) m_pSkinnedAnimationController1->SetTrackAnimationSet(nAnimationTrack, nAnimationSet);
 	(nAnimationTrack, nAnimationSet);
-	
+	if (m_pSkinnedAnimationController2) m_pSkinnedAnimationController2->SetTrackAnimationSet(nAnimationTrack, nAnimationSet);
+
 }
 
 void CGameObject::SetTrackAnimationPosition(int nAnimationTrack, float fPosition)
 {
 	if (m_pSkinnedAnimationController) m_pSkinnedAnimationController->SetTrackPosition(nAnimationTrack, fPosition);
 	if (m_pSkinnedAnimationController1) m_pSkinnedAnimationController1->SetTrackPosition(nAnimationTrack, fPosition);
-	
+	if (m_pSkinnedAnimationController2) m_pSkinnedAnimationController2->SetTrackPosition(nAnimationTrack, fPosition);
 }
 
 void CGameObject::Animate(float fTimeElapsed)
@@ -709,7 +712,7 @@ void CGameObject::Animate(float fTimeElapsed)
 
 	if (m_pSkinnedAnimationController) m_pSkinnedAnimationController->AdvanceTime(fTimeElapsed, this);
 	if (m_pSkinnedAnimationController1) m_pSkinnedAnimationController1->AdvanceTime(fTimeElapsed, this);
-	
+	if (m_pSkinnedAnimationController2) m_pSkinnedAnimationController2->AdvanceTime(fTimeElapsed, this);
 
 	if (m_pSibling) m_pSibling->Animate(fTimeElapsed);
 	if (m_pChild) m_pChild->Animate(fTimeElapsed);
@@ -719,11 +722,18 @@ void CGameObject::Animate(float fTimeElapsed)
 void CGameObject::Render(ID3D12GraphicsCommandList4* pd3dCommandList, CCamera* pCamera, bool bRaster)
 {
 	//3ÀÎÄªÀÏ ¶§
+	if (!m_IsFirst)
+	{
+		if (m_pSkinnedAnimationController) m_pSkinnedAnimationController->UpdateShaderVariables(pd3dCommandList);
+		if (m_pSkinnedAnimationController1) m_pSkinnedAnimationController1->UpdateShaderVariables(pd3dCommandList);
+		if (m_pSkinnedAnimationController2) m_pSkinnedAnimationController2->UpdateShaderVariables(pd3dCommandList);
 
-	if (m_pSkinnedAnimationController) m_pSkinnedAnimationController->UpdateShaderVariables(pd3dCommandList);
-	if (m_pSkinnedAnimationController1) m_pSkinnedAnimationController1->UpdateShaderVariables(pd3dCommandList);
-	
-	
+	}
+	else 
+	{
+	//1ÀÎÄªÀÏ ¶§
+		if (m_pSkinnedAnimationController2) m_pSkinnedAnimationController2->UpdateShaderVariables(pd3dCommandList);
+	}
 
 	if (m_pMesh)
 	{
@@ -1344,7 +1354,7 @@ void CFrontDoor::Animate(float fTimeElapsed)
 			{
 				XMMATRIX xmmtxTranslate = DirectX::XMMatrixTranslation(delta * fTimeElapsed, 0.0f, 0.0f);
 				m_pLeftDoorFrame->m_xmf4x4ToParent = Matrix4x4::Multiply(xmmtxTranslate, m_pLeftDoorFrame->m_xmf4x4ToParent);
-				std::cout <<"FrontDoor : " << GetPosition().x << " " << GetPosition().y << " " << GetPosition().z << std::endl;
+				//std::cout <<"FrontDoor : " << GetPosition().x << " " << GetPosition().y << " " << GetPosition().z << std::endl;
 			}
 			if (m_pRightDoorFrame)
 			{
@@ -1353,7 +1363,7 @@ void CFrontDoor::Animate(float fTimeElapsed)
 
 			}
 			m_AnimationDistance -= delta * fTimeElapsed;
-			std::cout << " CFrontDoor " << m_AnimationDistance << std::endl;
+			//std::cout << " CFrontDoor " << m_AnimationDistance << std::endl;
 		}
 		else
 		{
@@ -1382,7 +1392,7 @@ void CEmergencyDoor::Animate(float fTimeElapsed)
 			m_xmf4x4ToParent = Matrix4x4::Multiply(xmmtxRotate, m_xmf4x4ToParent);
 			m_AnimationDegree -= delta * fTimeElapsed;
 
-			std::cout << " EmergencyDoor " << m_AnimationDegree << std::endl;
+			//std::cout << " EmergencyDoor " << m_AnimationDegree << std::endl;
 		}
 		else 
 		{
@@ -1418,7 +1428,7 @@ void CShutterDoor::Animate(float fTimeElapsed)
 				XMMATRIX xmmtxTranslate = DirectX::XMMatrixTranslation(0.0f, 0.0f, delta * fTimeElapsed);
 				m_pShutter->m_xmf4x4ToParent = Matrix4x4::Multiply(xmmtxTranslate, m_pShutter->m_xmf4x4ToParent);
 				m_AnimationDistance -= delta * fTimeElapsed;
-	 			std::cout <<"ShutterDoor : " << m_AnimationDistance << std::endl;
+	 			//std::cout <<"ShutterDoor : " << m_AnimationDistance << std::endl;
 			}
 		}
 		CGameObject::Animate(fTimeElapsed);

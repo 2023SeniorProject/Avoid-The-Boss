@@ -38,11 +38,11 @@ void CSound::SoundSystem()
 	FMOD_System_CreateSound(pSystem, "Sound/Character_Walk.mp3", FMOD_LOOP_NORMAL, nullptr, &pSound[14]);
 
 	// 오브젝트
-	FMOD_System_CreateSound(pSystem, "Sound/Dangerous_Alarm.mp3", FMOD_LOOP_NORMAL, nullptr, &pSound[15]);
-	FMOD_System_CreateSound(pSystem, "Sound/Emergency_Door_Open.mp3", FMOD_LOOP_NORMAL, nullptr, &pSound[16]);
-	FMOD_System_CreateSound(pSystem, "Sound/Generator.mp3", FMOD_LOOP_NORMAL, nullptr, &pSound[17]);
-	FMOD_System_CreateSound(pSystem, "Sound/Hangar_Door_Open.mp3", FMOD_LOOP_NORMAL, nullptr, &pSound[18]);
-	FMOD_System_CreateSound(pSystem, "Sound/Shutter_Open.mp3", FMOD_LOOP_NORMAL, nullptr, &pSound[19]);
+	FMOD_System_CreateSound(pSystem, "Sound/Dangerous_Alarm.mp3", FMOD_LOOP_OFF, nullptr, &pSound[15]);
+	FMOD_System_CreateSound(pSystem, "Sound/Emergency_Door_Open.mp3", FMOD_LOOP_OFF, nullptr, &pSound[16]);
+	FMOD_System_CreateSound(pSystem, "Sound/Generator.mp3", FMOD_LOOP_OFF, nullptr, &pSound[17]);
+	FMOD_System_CreateSound(pSystem, "Sound/Hangar_Door_Open.mp3", FMOD_LOOP_OFF, nullptr, &pSound[18]);
+	FMOD_System_CreateSound(pSystem, "Sound/Shutter_Open.mp3", FMOD_LOOP_OFF, nullptr, &pSound[19]);
 	
 	FMOD_System_CreateSound(pSystem, "Sound/UIButton.mp3", FMOD_LOOP_OFF, nullptr, &pSound[20]);
 	FMOD_System_CreateSound(pSystem, "Sound/UI_Click.wav", FMOD_LOOP_OFF, nullptr, &pSound[21]);

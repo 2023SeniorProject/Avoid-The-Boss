@@ -9,6 +9,8 @@ class CEmployee : public CPlayer
 public:
 	bool m_bIsPlayerOnGenInter = false; // F키를 눌렀다 땠는지 확인하는 용도
 	bool m_bIsPlayerOnRescueInter = false;
+public:
+	bool m_bIsInvincibility = false;
 private:
 	bool m_bIsInGenArea = false;
 	bool m_bIsInDownPlayerArea = false; // Down된 플레이어와 인접해 있는가?

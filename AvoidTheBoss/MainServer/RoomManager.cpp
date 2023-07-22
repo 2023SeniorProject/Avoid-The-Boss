@@ -265,7 +265,8 @@ void Room::InitGame()
 		
 		for (int i = 0; i < 4; ++i) std::cout << _gameLogic._players[i].m_sid << " | ";
 		std::cout << "]\n";
-		
+
+		for (auto& i : _readys) i.store(false);
 		
 		
 		_gameLogic.InitGame();

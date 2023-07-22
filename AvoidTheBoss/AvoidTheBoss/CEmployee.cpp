@@ -19,6 +19,7 @@ CEmployee::CEmployee(ID3D12Device5* pd3dDevice, ID3D12GraphicsCommandList4* pd3d
 	m_pCamera = ChangeCamera(FIRST_PERSON_CAMERA, 0.0f);
 
 
+	// 1 인칭 애니메이션 로드
 	{
 		CLoadedModelInfo* pEmployeeModel = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, g_pstrFirstCharactorRefernece[(int)m_nCharacterType], NULL, Layout::PLAYER);
 		SetChild(pEmployeeModel->m_pModelRootObject, true);
@@ -31,6 +32,7 @@ CEmployee::CEmployee(ID3D12Device5* pd3dDevice, ID3D12GraphicsCommandList4* pd3d
 		m_pSkinnedAnimationController2->SetTrackAnimationSet(3, 3);//button
 
 	}
+	// 3인칭 애니메이션 로드
 	{
 		CLoadedModelInfo* pEmployeeModel = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, g_pstrThirdCharactorRefernece[(int)m_nCharacterType], NULL, Layout::PLAYER);
 		SetChild(pEmployeeModel->m_pModelRootObject, true);
@@ -46,6 +48,7 @@ CEmployee::CEmployee(ID3D12Device5* pd3dDevice, ID3D12GraphicsCommandList4* pd3d
 		m_pSkinnedAnimationController1->SetTrackAnimationSet(5, 5);//stand (쓰러진 상태에서 일어나기) ㅇ
 		m_pSkinnedAnimationController1->SetTrackAnimationSet(6, 6);//button ㅇ
 	}
+
 	if (m_pCamera->m_nMode == (DWORD)FIRST_PERSON_CAMERA)
 		//달리기, 버튼, 느리게 걷기, 대기
 	{
@@ -181,10 +184,13 @@ void CEmployee::Move(const int16& dwDirection, float fDistance)
 
 void CEmployee::Update(float fTimeElapsed, CLIENT_TYPE ptype)
 {
-	if (m_pCamera->m_nMode == (DWORD)FIRST_PERSON_CAMERA)
+	// 일단 주인이면 기본적으로 3인칭 렌더링을 수행한다.
+	if (CLIENT_TYPE::OWNER == m_clientType)
 		m_IsFirst = true;
-	else if (m_pCamera->m_nMode == (DWORD)THIRD_PERSON_CAMERA)
+	// 근데 만약 다른 플레이어거나, 주인이 3인칭 카메라로 시점을 변경하게 된다면 삭제한다.
+	if (CLIENT_TYPE::OTHER_PLAYER == m_clientType || THIRD_PERSON_CAMERA == m_pCamera->GetMode())
 		m_IsFirst = false;
+
 
 	CPlayer::Update(fTimeElapsed, ptype);
 	LateUpdate(fTimeElapsed,ptype);
@@ -233,7 +239,7 @@ void CEmployee::LateUpdate(float fTimeElapsed, CLIENT_TYPE ptype)
 // 걷기 0
 void CEmployee::SetIdleAnimTrack()
 {
-	if (m_pCamera->m_nMode == (DWORD)FIRST_PERSON_CAMERA)
+	if (CLIENT_TYPE::OWNER == m_clientType)
 	{
 		if (m_pSkinnedAnimationController2 == nullptr) return;
 		m_pSkinnedAnimationController2->SetTrackEnable(0, true);
@@ -250,7 +256,7 @@ void CEmployee::SetIdleAnimTrack()
 		m_pSkinnedAnimationController1->SetTrackEnable(5, false);
 		m_pSkinnedAnimationController1->SetTrackEnable(6, false);
 	}
-	else if (m_pCamera->m_nMode == (DWORD)THIRD_PERSON_CAMERA)
+	else if (CLIENT_TYPE::OTHER_PLAYER == m_clientType)
 	{
 		if (m_pSkinnedAnimationController2 == nullptr) return;
 		m_pSkinnedAnimationController2->SetTrackEnable(0, false);
@@ -285,7 +291,7 @@ void CEmployee::SetIdleAnimTrack()
 // 달리기 1
 void CEmployee::SetRunAnimTrack()
 {
-	if (m_pCamera->m_nMode == (DWORD)FIRST_PERSON_CAMERA)
+	if (CLIENT_TYPE::OWNER == m_clientType)
 	{
 		if (m_pSkinnedAnimationController2 == nullptr) return;
 		m_pSkinnedAnimationController2->SetTrackEnable(0, false);
@@ -302,7 +308,7 @@ void CEmployee::SetRunAnimTrack()
 		m_pSkinnedAnimationController1->SetTrackEnable(5, false);
 		m_pSkinnedAnimationController1->SetTrackEnable(6, false);
 	}
-	if (m_pCamera->m_nMode == (DWORD)THIRD_PERSON_CAMERA)
+	else if (CLIENT_TYPE::OTHER_PLAYER == m_clientType)
 	{
 		if (m_pSkinnedAnimationController2 == nullptr) return;
 		m_pSkinnedAnimationController2->SetTrackEnable(0, false);
@@ -333,10 +339,80 @@ void CEmployee::SetRunAnimTrack()
 	m_pSkinnedAnimationController1->SetTrackPosition(6, 0);
 }
 
-// 쓰러진 상태 x,3
-void CEmployee::SetCrawlAnimTrack()
+// 절뚝거리기 2,4
+void CEmployee::SetAttackedAnimTrack()
 {
-	if (m_pCamera->m_nMode == (DWORD)FIRST_PERSON_CAMERA)
+	if (CLIENT_TYPE::OWNER == m_clientType)
+	{
+		if (m_pSkinnedAnimationController2 == nullptr) return;
+		m_pSkinnedAnimationController2->SetTrackEnable(0, false);
+		m_pSkinnedAnimationController2->SetTrackEnable(1, false);
+		m_pSkinnedAnimationController2->SetTrackEnable(2, true);
+		m_pSkinnedAnimationController2->SetTrackEnable(3, false);
+
+		if (m_pSkinnedAnimationController1 == nullptr) return;
+		m_pSkinnedAnimationController1->SetTrackEnable(0, false);
+		m_pSkinnedAnimationController1->SetTrackEnable(1, false);
+		m_pSkinnedAnimationController1->SetTrackEnable(2, false);
+		m_pSkinnedAnimationController1->SetTrackEnable(3, false);
+		m_pSkinnedAnimationController1->SetTrackEnable(4, false);
+		m_pSkinnedAnimationController1->SetTrackEnable(5, false);
+		m_pSkinnedAnimationController1->SetTrackEnable(6, false);
+	}
+	else if (CLIENT_TYPE::OTHER_PLAYER == m_clientType)
+	{
+		if (m_pSkinnedAnimationController2 == nullptr) return;
+		m_pSkinnedAnimationController2->SetTrackEnable(0, false);
+		m_pSkinnedAnimationController2->SetTrackEnable(1, false);
+		m_pSkinnedAnimationController2->SetTrackEnable(2, false);
+		m_pSkinnedAnimationController2->SetTrackEnable(3, false);
+
+		if (m_pSkinnedAnimationController1 == nullptr) return;
+		m_pSkinnedAnimationController1->SetTrackEnable(0, false);
+		m_pSkinnedAnimationController1->SetTrackEnable(1, false);
+		m_pSkinnedAnimationController1->SetTrackEnable(2, false);
+		m_pSkinnedAnimationController1->SetTrackEnable(3, false);
+		m_pSkinnedAnimationController1->SetTrackEnable(4, true);
+		m_pSkinnedAnimationController1->SetTrackEnable(5, false);
+		m_pSkinnedAnimationController1->SetTrackEnable(6, false);
+	}
+
+	m_pSkinnedAnimationController2->SetTrackPosition(0, 0);
+	m_pSkinnedAnimationController2->SetTrackPosition(1, 0);
+	m_pSkinnedAnimationController2->SetTrackPosition(2, 0);
+	m_pSkinnedAnimationController2->SetTrackPosition(3, 0);
+
+	m_pSkinnedAnimationController1->SetTrackPosition(0, 0);
+	m_pSkinnedAnimationController1->SetTrackPosition(1, 0);
+	m_pSkinnedAnimationController1->SetTrackPosition(2, 0);
+	m_pSkinnedAnimationController1->SetTrackPosition(3, 0);
+	m_pSkinnedAnimationController1->SetTrackPosition(4, 0);
+	m_pSkinnedAnimationController1->SetTrackPosition(5, 0);
+	m_pSkinnedAnimationController1->SetTrackPosition(6, 0);
+}
+
+// 발전기 상호작용 3,6
+void CEmployee::SetInteractionAnimTrack()
+{
+	// 발전기 상호작용
+	if (CLIENT_TYPE::OWNER == m_clientType)
+	{
+		if (m_pSkinnedAnimationController2 == nullptr) return;
+		m_pSkinnedAnimationController2->SetTrackEnable(0, false);
+		m_pSkinnedAnimationController2->SetTrackEnable(1, false);
+		m_pSkinnedAnimationController2->SetTrackEnable(2, false);
+		m_pSkinnedAnimationController2->SetTrackEnable(3, true);
+
+		if (m_pSkinnedAnimationController1 == nullptr) return;
+		m_pSkinnedAnimationController1->SetTrackEnable(0, false);
+		m_pSkinnedAnimationController1->SetTrackEnable(1, false);
+		m_pSkinnedAnimationController1->SetTrackEnable(2, false);
+		m_pSkinnedAnimationController1->SetTrackEnable(3, false);
+		m_pSkinnedAnimationController1->SetTrackEnable(4, false);
+		m_pSkinnedAnimationController1->SetTrackEnable(5, false);
+		m_pSkinnedAnimationController1->SetTrackEnable(6, false);
+	}
+	else if (CLIENT_TYPE::OTHER_PLAYER == m_clientType)
 	{
 		if (m_pSkinnedAnimationController2 == nullptr) return;
 		m_pSkinnedAnimationController2->SetTrackEnable(0, false);
@@ -351,9 +427,57 @@ void CEmployee::SetCrawlAnimTrack()
 		m_pSkinnedAnimationController1->SetTrackEnable(3, false);
 		m_pSkinnedAnimationController1->SetTrackEnable(4, false);
 		m_pSkinnedAnimationController1->SetTrackEnable(5, false);
+		m_pSkinnedAnimationController1->SetTrackEnable(6, true);
+	}
+	m_pSkinnedAnimationController2->SetTrackPosition(0, 0);
+	m_pSkinnedAnimationController2->SetTrackPosition(1, 0);
+	m_pSkinnedAnimationController2->SetTrackPosition(2, 0);
+	m_pSkinnedAnimationController2->SetTrackPosition(3, 0);
+}
+
+
+// 쓰러진 상태 x,3
+void CEmployee::SetCrawlAnimTrack()
+{
+	if (CLIENT_TYPE::OWNER == m_clientType && FIRST_PERSON_CAMERA == m_pCamera->GetMode())
+	{
+		// 일단 아이들 상태 애니메이션 재생하도록 한다.
+		if (m_pSkinnedAnimationController2 == nullptr) return;
+		m_pSkinnedAnimationController2->SetTrackEnable(0, true);
+		m_pSkinnedAnimationController2->SetTrackEnable(1, false);
+		m_pSkinnedAnimationController2->SetTrackEnable(2, false);
+		m_pSkinnedAnimationController2->SetTrackEnable(3, false);
+
+		if (m_pSkinnedAnimationController1 == nullptr) return;
+		m_pSkinnedAnimationController1->SetTrackEnable(0, false);
+		m_pSkinnedAnimationController1->SetTrackEnable(1, false);
+		m_pSkinnedAnimationController1->SetTrackEnable(2, false);
+		m_pSkinnedAnimationController1->SetTrackEnable(3, false);
+		m_pSkinnedAnimationController1->SetTrackEnable(4, false);
+		m_pSkinnedAnimationController1->SetTrackEnable(5, false);
 		m_pSkinnedAnimationController1->SetTrackEnable(6, false);
 	}
-	if (m_pCamera->m_nMode == (DWORD)THIRD_PERSON_CAMERA)
+	else if (CLIENT_TYPE::OWNER == m_clientType && THIRD_PERSON_CAMERA == m_pCamera->GetMode())
+	{
+		// 일단 아이들 상태 애니메이션 재생하도록 한다.
+		if (m_pSkinnedAnimationController2 == nullptr) return;
+		m_pSkinnedAnimationController2->SetTrackEnable(0, false);
+		m_pSkinnedAnimationController2->SetTrackEnable(1, false);
+		m_pSkinnedAnimationController2->SetTrackEnable(2, false);
+		m_pSkinnedAnimationController2->SetTrackEnable(3, false);
+
+		if (m_pSkinnedAnimationController1 == nullptr) return;
+		m_pSkinnedAnimationController1->SetTrackEnable(0, false);
+		m_pSkinnedAnimationController1->SetTrackEnable(1, false);
+		m_pSkinnedAnimationController1->SetTrackEnable(2, false);
+		m_pSkinnedAnimationController1->SetTrackEnable(3, true);
+		m_pSkinnedAnimationController1->SetTrackEnable(4, false);
+		m_pSkinnedAnimationController1->SetTrackEnable(5, false);
+		m_pSkinnedAnimationController1->SetTrackEnable(6, false);
+	}
+
+	// 만약 그냥 다른 플레이어라면 ~
+	if (CLIENT_TYPE::OTHER_PLAYER == m_clientType)
 	{
 		if (m_pSkinnedAnimationController2 == nullptr) return;
 		m_pSkinnedAnimationController2->SetTrackEnable(0, false);
@@ -388,10 +512,10 @@ void CEmployee::SetCrawlAnimTrack()
 // 총알 맞고 쓰러짐 x,2
 void CEmployee::SetDownAnimTrack()
 {
-	if (m_pCamera->m_nMode == (DWORD)FIRST_PERSON_CAMERA)
+	if (CLIENT_TYPE::OWNER == m_clientType && FIRST_PERSON_CAMERA == m_pCamera->GetMode())
 	{
 		if (m_pSkinnedAnimationController2 == nullptr) return;
-		m_pSkinnedAnimationController2->SetTrackEnable(0, false);
+		m_pSkinnedAnimationController2->SetTrackEnable(0, true);
 		m_pSkinnedAnimationController2->SetTrackEnable(1, false);
 		m_pSkinnedAnimationController2->SetTrackEnable(2, false);
 		m_pSkinnedAnimationController2->SetTrackEnable(3, false);
@@ -405,7 +529,27 @@ void CEmployee::SetDownAnimTrack()
 		m_pSkinnedAnimationController1->SetTrackEnable(5, false);
 		m_pSkinnedAnimationController1->SetTrackEnable(6, false);
 	}
-	if (m_pCamera->m_nMode == (DWORD)THIRD_PERSON_CAMERA)
+	else if (CLIENT_TYPE::OWNER == m_clientType && THIRD_PERSON_CAMERA == m_pCamera->GetMode())
+	{
+		// 일단 아이들 상태 애니메이션 재생하도록 한다.
+		if (m_pSkinnedAnimationController2 == nullptr) return;
+		m_pSkinnedAnimationController2->SetTrackEnable(0, false);
+		m_pSkinnedAnimationController2->SetTrackEnable(1, false);
+		m_pSkinnedAnimationController2->SetTrackEnable(2, false);
+		m_pSkinnedAnimationController2->SetTrackEnable(3, false);
+
+		if (m_pSkinnedAnimationController1 == nullptr) return;
+		m_pSkinnedAnimationController1->SetTrackEnable(0, false);
+		m_pSkinnedAnimationController1->SetTrackEnable(1, false);
+		m_pSkinnedAnimationController1->SetTrackEnable(2, true);
+		m_pSkinnedAnimationController1->SetTrackEnable(3, false);
+		m_pSkinnedAnimationController1->SetTrackEnable(4, false);
+		m_pSkinnedAnimationController1->SetTrackEnable(5, false);
+		m_pSkinnedAnimationController1->SetTrackEnable(6, false);
+	}
+
+
+	if (CLIENT_TYPE::OTHER_PLAYER == m_clientType)
 	{
 		if (m_pSkinnedAnimationController2 == nullptr) return;
 		m_pSkinnedAnimationController2->SetTrackEnable(0, false);
@@ -436,66 +580,14 @@ void CEmployee::SetDownAnimTrack()
 	m_pSkinnedAnimationController1->SetTrackPosition(6, 0);
 }
 
-// 절뚝거리기 2,4
-void CEmployee::SetAttackedAnimTrack()
-{
-	if (m_pCamera->m_nMode == (DWORD)FIRST_PERSON_CAMERA)
-	{
-		if (m_pSkinnedAnimationController2 == nullptr) return;
-		m_pSkinnedAnimationController2->SetTrackEnable(0, false);
-		m_pSkinnedAnimationController2->SetTrackEnable(1, false);
-		m_pSkinnedAnimationController2->SetTrackEnable(2, true);
-		m_pSkinnedAnimationController2->SetTrackEnable(3, false);
-
-		if (m_pSkinnedAnimationController1 == nullptr) return;
-		m_pSkinnedAnimationController1->SetTrackEnable(0, false);
-		m_pSkinnedAnimationController1->SetTrackEnable(1, false);
-		m_pSkinnedAnimationController1->SetTrackEnable(2, false);
-		m_pSkinnedAnimationController1->SetTrackEnable(3, false);
-		m_pSkinnedAnimationController1->SetTrackEnable(4, false);
-		m_pSkinnedAnimationController1->SetTrackEnable(5, false);
-		m_pSkinnedAnimationController1->SetTrackEnable(6, false);
-	}
-	if (m_pCamera->m_nMode == (DWORD)THIRD_PERSON_CAMERA)
-	{
-		if (m_pSkinnedAnimationController2 == nullptr) return;
-		m_pSkinnedAnimationController2->SetTrackEnable(0, false);
-		m_pSkinnedAnimationController2->SetTrackEnable(1, false);
-		m_pSkinnedAnimationController2->SetTrackEnable(2, false);
-		m_pSkinnedAnimationController2->SetTrackEnable(3, false);
-
-		if (m_pSkinnedAnimationController1 == nullptr) return;
-		m_pSkinnedAnimationController1->SetTrackEnable(0, false);
-		m_pSkinnedAnimationController1->SetTrackEnable(1, false);
-		m_pSkinnedAnimationController1->SetTrackEnable(2, false);
-		m_pSkinnedAnimationController1->SetTrackEnable(3, false);
-		m_pSkinnedAnimationController1->SetTrackEnable(4, true);
-		m_pSkinnedAnimationController1->SetTrackEnable(5, false);
-		m_pSkinnedAnimationController1->SetTrackEnable(6, false);
-	}
-
-	m_pSkinnedAnimationController2->SetTrackPosition(0, 0);
-	m_pSkinnedAnimationController2->SetTrackPosition(1, 0);
-	m_pSkinnedAnimationController2->SetTrackPosition(2, 0);
-	m_pSkinnedAnimationController2->SetTrackPosition(3, 0);
-
-	m_pSkinnedAnimationController1->SetTrackPosition(0, 0);
-	m_pSkinnedAnimationController1->SetTrackPosition(1, 0);
-	m_pSkinnedAnimationController1->SetTrackPosition(2, 0);
-	m_pSkinnedAnimationController1->SetTrackPosition(3, 0);
-	m_pSkinnedAnimationController1->SetTrackPosition(4, 0);
-	m_pSkinnedAnimationController1->SetTrackPosition(5, 0);
-	m_pSkinnedAnimationController1->SetTrackPosition(6, 0);
-}
-
 // 일어나기 x,5
 void CEmployee::SetStandAnimTrack()
 {
 	// 일어나기
-	if (m_pCamera->m_nMode == (DWORD)FIRST_PERSON_CAMERA)
+	if (CLIENT_TYPE::OWNER == m_clientType && FIRST_PERSON_CAMERA == m_pCamera->GetMode())
 	{
 		if (m_pSkinnedAnimationController2 == nullptr) return;
-		m_pSkinnedAnimationController2->SetTrackEnable(0, false);
+		m_pSkinnedAnimationController2->SetTrackEnable(0, true); // Idle 애니메이션 재생하도록
 		m_pSkinnedAnimationController2->SetTrackEnable(1, false);
 		m_pSkinnedAnimationController2->SetTrackEnable(2, false);
 		m_pSkinnedAnimationController2->SetTrackEnable(3, false);
@@ -509,7 +601,26 @@ void CEmployee::SetStandAnimTrack()
 		m_pSkinnedAnimationController1->SetTrackEnable(5, false);
 		m_pSkinnedAnimationController1->SetTrackEnable(6, false);
 	}
-	if (m_pCamera->m_nMode == (DWORD)THIRD_PERSON_CAMERA)
+	else if (CLIENT_TYPE::OWNER == m_clientType && THIRD_PERSON_CAMERA == m_pCamera->GetMode())
+	{
+		if (m_pSkinnedAnimationController2 == nullptr) return;
+		m_pSkinnedAnimationController2->SetTrackEnable(0, false); // Idle 애니메이션 재생하도록
+		m_pSkinnedAnimationController2->SetTrackEnable(1, false);
+		m_pSkinnedAnimationController2->SetTrackEnable(2, false);
+		m_pSkinnedAnimationController2->SetTrackEnable(3, false);
+
+		if (m_pSkinnedAnimationController1 == nullptr) return;
+		m_pSkinnedAnimationController1->SetTrackEnable(0, false);
+		m_pSkinnedAnimationController1->SetTrackEnable(1, false);
+		m_pSkinnedAnimationController1->SetTrackEnable(2, false);
+		m_pSkinnedAnimationController1->SetTrackEnable(3, false);
+		m_pSkinnedAnimationController1->SetTrackEnable(4, false);
+		m_pSkinnedAnimationController1->SetTrackEnable(5, true);
+		m_pSkinnedAnimationController1->SetTrackEnable(6, false);
+	}
+
+	
+	if (CLIENT_TYPE::OTHER_PLAYER == m_clientType)
 	{
 		if (m_pSkinnedAnimationController2 == nullptr) return;
 		m_pSkinnedAnimationController2->SetTrackEnable(0, false);
@@ -540,49 +651,6 @@ void CEmployee::SetStandAnimTrack()
 	m_pSkinnedAnimationController1->SetTrackPosition(6, 0);
 }
 
-// 발전기 상호작용 3,6
-void CEmployee::SetInteractionAnimTrack()
-{
-	// 발전기 상호작용
-	if (m_pCamera->m_nMode == (DWORD)FIRST_PERSON_CAMERA)
-	{
-		if (m_pSkinnedAnimationController2 == nullptr) return;
-		m_pSkinnedAnimationController2->SetTrackEnable(0, false);
-		m_pSkinnedAnimationController2->SetTrackEnable(1, false);
-		m_pSkinnedAnimationController2->SetTrackEnable(2, false);
-		m_pSkinnedAnimationController2->SetTrackEnable(3, true);
-
-		if (m_pSkinnedAnimationController1 == nullptr) return;
-		m_pSkinnedAnimationController1->SetTrackEnable(0, false);
-		m_pSkinnedAnimationController1->SetTrackEnable(1, false);
-		m_pSkinnedAnimationController1->SetTrackEnable(2, false);
-		m_pSkinnedAnimationController1->SetTrackEnable(3, false);
-		m_pSkinnedAnimationController1->SetTrackEnable(4, false);
-		m_pSkinnedAnimationController1->SetTrackEnable(5, false);
-		m_pSkinnedAnimationController1->SetTrackEnable(6, false);
-	}
-	if (m_pCamera->m_nMode == (DWORD)THIRD_PERSON_CAMERA)
-	{
-		if (m_pSkinnedAnimationController2 == nullptr) return;
-		m_pSkinnedAnimationController2->SetTrackEnable(0, false);
-		m_pSkinnedAnimationController2->SetTrackEnable(1, false);
-		m_pSkinnedAnimationController2->SetTrackEnable(2, false);
-		m_pSkinnedAnimationController2->SetTrackEnable(3, false);
-
-		if (m_pSkinnedAnimationController1 == nullptr) return;
-		m_pSkinnedAnimationController1->SetTrackEnable(0, false);
-		m_pSkinnedAnimationController1->SetTrackEnable(1, false);
-		m_pSkinnedAnimationController1->SetTrackEnable(2, false);
-		m_pSkinnedAnimationController1->SetTrackEnable(3, false);
-		m_pSkinnedAnimationController1->SetTrackEnable(4, false);
-		m_pSkinnedAnimationController1->SetTrackEnable(5, false);
-		m_pSkinnedAnimationController1->SetTrackEnable(6, true);
-	}
-	m_pSkinnedAnimationController2->SetTrackPosition(0, 0);
-	m_pSkinnedAnimationController2->SetTrackPosition(1, 0);
-	m_pSkinnedAnimationController2->SetTrackPosition(2, 0);
-	m_pSkinnedAnimationController2->SetTrackPosition(3, 0);
-}
 
 void CEmployee::AnimTrackUpdate()
 {
@@ -623,7 +691,8 @@ void CEmployee::AnimTrackUpdate()
 			m_behavior = (int32)PLAYER_BEHAVIOR::ATTACKED;
 			if (m_attackedAnimationCount == 0)
 			{
-				m_behavior = (int32)PLAYER_BEHAVIOR::IDLE;
+				SetBehavior(PLAYER_BEHAVIOR::IDLE);
+				m_bIsInvincibility = false;
 			}
 		}
 		break;
@@ -639,13 +708,13 @@ void CEmployee::AnimTrackUpdate()
 			if (m_downAnimationCount <= 0)
 			{
 				SoundManager::GetInstance().PlayObjectSound(7, 3);
-				m_behavior = (int32)PLAYER_BEHAVIOR::CRAWL;
+				SetBehavior(PLAYER_BEHAVIOR::CRAWL);
 			}
 		}
 		break;
 	case (int32)PLAYER_BEHAVIOR::CRAWL:
 		SetCrawlAnimTrack();
-		//SoundManager::GetInstance().PlayObjectSound(12, 3); 기절 시 이상한 사운드 출력 문제 코드
+	
 		break;
 	case (int32)PLAYER_BEHAVIOR::STAND:
 		if (m_standAnimationCount == EMPLOYEE_STAND_TIME)
@@ -658,8 +727,14 @@ void CEmployee::AnimTrackUpdate()
 			if(m_standAnimationCount > 0) m_standAnimationCount--;
 			if (m_standAnimationCount <= 0)
 			{
-				m_behavior = (int32)PLAYER_BEHAVIOR::IDLE;
-			
+				if (CLIENT_TYPE::OWNER == m_clientType)
+				{
+					ChangeCamera(FIRST_PERSON_CAMERA, 0);
+					//m_pCamera->CreateShaderVariables(mainGame.m_pd3dDevice, mainGame.m_pd3dCommandList);
+					mainGame.m_SceneManager->GetSceneByIdx(3)->m_pCamera = m_pCamera;
+					mainGame.m_SceneManager->GetSceneByIdx(3)->m_pCamera->CreateShaderVariables(mainGame.m_pd3dDevice, mainGame.m_pd3dCommandList);
+				}
+				SetBehavior(PLAYER_BEHAVIOR::IDLE);
 			}
 		}
 		break;
@@ -722,23 +797,16 @@ void CEmployee::PlayerAttacked()
 {
 	if (m_hp > 0)
 	{
-		if (m_hp <= 3)
-		{
-			if(!GetIsOnUIActive())
-				SetIsOnUIActive(true);
-		}
-		else
-		{
-			if (GetIsOnUIActive())
-				SetIsOnUIActive(false);
-		}
+		if (m_hp <= 3) if(!GetIsOnUIActive()) SetIsOnUIActive(true);
+		else if (GetIsOnUIActive()) SetIsOnUIActive(false);
+		
 		m_hp -= 1;
+		m_bIsInvincibility = true;
+
 
 		if (m_hp == 0)
 		{
-			PlayerDown();
-			
-			
+			PlayerDown();	
 		}
 		else
 		{
@@ -750,8 +818,15 @@ void CEmployee::PlayerAttacked()
 
 void CEmployee::PlayerDown()
 {
-	mainGame.m_SceneManager->GetSceneByIdx(3)->m_pCamera->m_nMode = THIRD_PERSON_CAMERA;
-	m_behavior = (int32)PLAYER_BEHAVIOR::DOWN;
+	if (CLIENT_TYPE::OWNER == m_clientType)
+	{
+		ChangeCamera(THIRD_PERSON_CAMERA, 0);
+		//m_pCamera->CreateShaderVariables(mainGame.m_pd3dDevice, mainGame.m_pd3dCommandList);
+		mainGame.m_SceneManager->GetSceneByIdx(3)->m_pCamera = m_pCamera;
+		mainGame.m_SceneManager->GetSceneByIdx(3)->m_pCamera->CreateShaderVariables(mainGame.m_pd3dDevice, mainGame.m_pd3dCommandList);
+	}
+
+	SetBehavior(PLAYER_BEHAVIOR::DOWN);
 	m_downAnimationCount = EMPLOYEE_DOWN_TIME;
 }
 

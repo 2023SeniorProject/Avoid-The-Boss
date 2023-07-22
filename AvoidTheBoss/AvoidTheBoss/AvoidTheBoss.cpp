@@ -50,9 +50,6 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
         return FALSE;
     }
 
-    //clientCore.InitConnect("127.0.0.1");
-    //clientCore.DoConnect(&loginPacket);
-    
     
     HACCEL hAccelTable = LoadAccelerators(hInstance, MAKEINTRESOURCE(IDC_AVOIDTHEBOSS));
 

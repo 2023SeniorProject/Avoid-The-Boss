@@ -1,5 +1,6 @@
 #include "pch.h"
 #include "CBoss.h"
+#include "CEmployee.h"
 #include "CBullet.h"
 #include "clientIocpCore.h"
 
@@ -18,7 +19,7 @@ CBoss::CBoss(ID3D12Device5* pd3dDevice,
 
 	m_ctype = (uint8)PLAYER_TYPE::BOSS;
 	m_nCharacterType = CHARACTER_TYPE::BOSS;
-	m_pCamera = ChangeCamera(THIRD_PERSON_CAMERA, 0.0f);
+	m_pCamera = ChangeCamera(FIRST_PERSON_CAMERA, 0.0f);
 
 	SetIsOnUIActive(true);
 
@@ -179,10 +180,13 @@ void CBoss::SetAttackAnimOtherClient()
 
 void CBoss::Update(float fTimeElapsed, CLIENT_TYPE ptype)
 {
-	if (m_pCamera->m_nMode == (DWORD)FIRST_PERSON_CAMERA)
+	if (CLIENT_TYPE::OWNER == m_clientType)
 		m_IsFirst = true;
-	else if (m_pCamera->m_nMode == (DWORD)THIRD_PERSON_CAMERA)
+	
+	if (CLIENT_TYPE::OTHER_PLAYER  == m_clientType || m_pCamera->m_nMode == (DWORD)THIRD_PERSON_CAMERA)
 		m_IsFirst = false;
+	
+
 	CPlayer::Update(fTimeElapsed, ptype);
 
 	if (m_pBullet)
@@ -254,7 +258,7 @@ void CBoss::AimationStateUpdate()
 
 void CBoss::SetIdleAnimTrack()
 {
-	if (m_pCamera->m_nMode == (DWORD)FIRST_PERSON_CAMERA)
+	if (CLIENT_TYPE::OWNER == m_clientType)
 	{
 		if (m_pSkinnedAnimationController2 == nullptr) return;
 		m_pSkinnedAnimationController2->SetTrackEnable(0, true); // 아이들
@@ -286,7 +290,7 @@ void CBoss::SetIdleAnimTrack()
 		m_pSkinnedAnimationController1->SetTrackPosition(0, 0.0f);
 		m_pSkinnedAnimationController1->SetTrackPosition(1, 0.0f);
 	}
-	else if (m_pCamera->m_nMode == (DWORD)THIRD_PERSON_CAMERA)
+	else if (CLIENT_TYPE::OTHER_PLAYER == m_clientType)
 	{
 		if (m_pSkinnedAnimationController2 == nullptr) return;
 		m_pSkinnedAnimationController2->SetTrackEnable(0, false); // 아이들
@@ -322,7 +326,7 @@ void CBoss::SetIdleAnimTrack()
 
 void CBoss::SetRunAnimTrack()
 {
-	if (m_pCamera->m_nMode == (DWORD)FIRST_PERSON_CAMERA)
+	if (CLIENT_TYPE::OWNER == m_clientType)
 	{
 		if (m_pSkinnedAnimationController2 == nullptr) return;
 		m_pSkinnedAnimationController2->SetTrackEnable(0, false);
@@ -355,7 +359,7 @@ void CBoss::SetRunAnimTrack()
 		m_pSkinnedAnimationController1->SetTrackPosition(0, 0.0f);
 		m_pSkinnedAnimationController1->SetTrackPosition(1, 0.0f);
 	}
-	else if (m_pCamera->m_nMode == (DWORD)THIRD_PERSON_CAMERA)
+	else if (CLIENT_TYPE::OTHER_PLAYER == m_clientType)
 	{
 		if (m_pSkinnedAnimationController2 == nullptr) return;
 		m_pSkinnedAnimationController2->SetTrackEnable(0, false);
@@ -393,7 +397,7 @@ void CBoss::SetRunAnimTrack()
 
 void CBoss::SetAttackAnimTrack()
 {
-	if (m_pCamera->m_nMode == (DWORD)FIRST_PERSON_CAMERA)
+	if (CLIENT_TYPE::OWNER == m_clientType)
 	{
 		if (m_pSkinnedAnimationController2 == nullptr) return;
 		m_pSkinnedAnimationController2->SetTrackEnable(0, false); // 아이들
@@ -431,7 +435,7 @@ void CBoss::SetAttackAnimTrack()
 		m_pSkinnedAnimationController1->SetTrackPosition(1, 0.0f);
 
 	}
-	else if (m_pCamera->m_nMode == (DWORD)THIRD_PERSON_CAMERA)
+	else if (CLIENT_TYPE::OTHER_PLAYER == m_clientType)
 	{
 		if (m_pSkinnedAnimationController2 == nullptr) return;
 		m_pSkinnedAnimationController2->SetTrackEnable(0, false); // 아이들
@@ -467,7 +471,7 @@ void CBoss::SetAttackAnimTrack()
 
 void CBoss::SetRunAttackAnimTrack()
 {
-	if (m_pCamera->m_nMode == (DWORD)FIRST_PERSON_CAMERA)
+	if (CLIENT_TYPE::OWNER == m_clientType)
 	{
 		if (m_pSkinnedAnimationController2 == nullptr) return;
 		m_pSkinnedAnimationController2->SetTrackEnable(0, false);
@@ -499,7 +503,7 @@ void CBoss::SetRunAttackAnimTrack()
 		m_pSkinnedAnimationController1->SetTrackPosition(0, 0.0f);
 		m_pSkinnedAnimationController1->SetTrackPosition(1, 0.0f);
 	}
-	else if (m_pCamera->m_nMode == (DWORD)THIRD_PERSON_CAMERA)
+	else if (CLIENT_TYPE::OTHER_PLAYER == m_clientType)
 	{
 		if (m_pSkinnedAnimationController2 == nullptr) return;
 		m_pSkinnedAnimationController2->SetTrackEnable(0, false);
@@ -603,15 +607,19 @@ uint8 CBoss::ProcessInput()
 
 		CGameScene* gs = static_cast<CGameScene*>(mainGame.m_SceneManager->GetSceneByIdx((int32)CGameFramework::SCENESTATE::INGAME));
 
-		if (PLAYERNUM > 1)
+		if (PLAYERNUM >= 1)
 		{
 			for (int i = 1; i < PLAYERNUM; ++i)
 			{
-				if (gs->GetScenePlayerByIdx(i)->m_playerBV.Intersects(XMLoadFloat3(&bossPos), XMLoadFloat3(&bossDir), rayDist))
+				CEmployee* targetPlayer = static_cast<CEmployee*>(gs->GetScenePlayerByIdx(i));
+				if (targetPlayer)
 				{
-					packet.tidx = i;
-					clientCore.DoSend(&packet);
-					break;
+					if (targetPlayer->m_playerBV.Intersects(XMLoadFloat3(&bossPos), XMLoadFloat3(&bossDir), rayDist) && !targetPlayer->m_bIsInvincibility)
+					{
+						packet.tidx = i;
+						clientCore.DoSend(&packet);
+						break;
+					}
 				}
 			}
 		}

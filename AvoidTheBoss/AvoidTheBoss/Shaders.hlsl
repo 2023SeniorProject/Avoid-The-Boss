@@ -33,6 +33,7 @@ cbuffer cbGameObjectInfo : register(b2)
 #define MATERIAL_EMISSION_MAP		0x10
 #define MATERIAL_DETAIL_ALBEDO_MAP	0x20
 #define MATERIAL_DETAIL_NORMAL_MAP	0x40
+#define LINEAR_FOG = 1.0f
 
 Texture2D gtxtAlbedoTexture : register(t6);
 Texture2D gtxtSpecularTexture : register(t7);
@@ -90,8 +91,20 @@ float4 PSStandard(VS_STANDARD_OUTPUT input) : SV_TARGET
 	float4 cEmissionColor = float4(0.0f, 0.0f, 0.0f, 1.0f);
 	if (gnTexturesMask & MATERIAL_EMISSION_MAP) cEmissionColor = gtxtEmissionTexture.Sample(gssWrap, input.uv);
 
+	float3 cameraPos = gvCameraPosition.xyz;
+	float3 vPositionToCamera = cameraPos - input.positionW;
+	float Distance = length(vPositionToCamera);
+
+	float FogEnd = 10.0f;
+	float FogStart = 5.0f;
+	float FogRange = FogEnd - FogStart;
+	float FogFactor = saturate((FogEnd - Distance) / FogRange);
+	float4 fogColor = float4(0.5f, 0.5f, 0.5f, 1.0f);
+
+
 	float3 normalW;
 	float4 cColor = cAlbedoColor + cSpecularColor + cMetallicColor + cEmissionColor;
+	
 	if (gnTexturesMask & MATERIAL_NORMAL_MAP)
 	{
 		float3x3 TBN = float3x3(normalize(input.tangentW), normalize(input.bitangentW), normalize(input.normalW));
@@ -102,8 +115,11 @@ float4 PSStandard(VS_STANDARD_OUTPUT input) : SV_TARGET
 	{
 		normalW = normalize(input.normalW);
 	}
+
 	float4 cIllumination = Lighting(input.positionW, normalW);
-	return(lerp(cColor, cIllumination, 0.5f));
+	cColor = cColor * FogFactor + (1.0f - FogFactor) * fogColor;
+	//return(lerp(cColor, cIllumination, 0.5f));
+	return cColor;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

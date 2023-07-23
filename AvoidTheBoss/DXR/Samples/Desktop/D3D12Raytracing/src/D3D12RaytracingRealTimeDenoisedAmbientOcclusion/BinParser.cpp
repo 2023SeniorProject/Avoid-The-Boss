@@ -1047,7 +1047,13 @@
 //    }
 //}
 
-void BinParser::LoadBinScene(const char* pstrFileName)
+void BinParser::RasterDataStructureAlignmentToDXR()
 {
-	//LoadGeometryFromFile(pstrFileName);
+
+}
+
+void BinParser::LoadBinScene(ID3D12Device5* pd3dDevice, ID3D12GraphicsCommandList4* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, const char* pstrFileName)
+{
+	LoadGeometryFromFile(pstrFileName);
+	RasterDataStructureAlignmentToDXR();
 }

@@ -59,6 +59,7 @@ private:
     void GenerateGrassGeometry();
     void CreateIndexAndVertexBuffers(const GeometryDescriptor& desc, D3DGeometry* geometry);
     void LoadPBRTScene();
+    void LoadBinaryScene(); // 바이너리 파일 로드용 추가 함수
     void LoadSceneGeometry();
     void InitializeScene();
     void UpdateAccelerationStructure();

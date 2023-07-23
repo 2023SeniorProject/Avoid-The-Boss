@@ -117,7 +117,7 @@ CCamera* CEmployee::ChangeCamera(DWORD nNewCameraMode, float fTimeElapsed)
 	default:
 		break;
 	}
-	m_pCamera->SetPosition(Vector3::Add(m_xmf3Position, m_pCamera->GetOffset()));
+	m_pCamera->SetPosition(m_xmf3Position);
 
 	Update(fTimeElapsed, m_clientType);
 
@@ -143,7 +143,7 @@ uint8 CEmployee::ProcessInput()
 
 		// 구조 작업이나 발전기 상호작용을 수행하고 있다면 
 		
-		//if (RescueTasking() || GenTasking()) { dir = 0; }
+		
 	}
 	GenTasking();
 	RescueTasking();
@@ -204,7 +204,7 @@ void CEmployee::LateUpdate(float fTimeElapsed, CLIENT_TYPE ptype)
 	// 무적시간 동안 피격 이펙트 재생
 	if (m_bIsInvincibility)
 	{
-		m_UICoolTime -= fTimeElapsed;
+		m_UICoolTime -= fTimeElapsed * 10.0f;
 	}
 	else 
 	{
@@ -217,7 +217,7 @@ void CEmployee::LateUpdate(float fTimeElapsed, CLIENT_TYPE ptype)
 		m_curGuage += m_rVel * fTimeElapsed;
 		if (m_curGuage >= m_maxRGuage)
 		{
-			std::cout << "Alive\n";
+			
 			m_curGuage = 0;
 			m_hp = 3;
 			m_bIsRescuing = false;
@@ -735,7 +735,7 @@ void CEmployee::AnimTrackUpdate()
 				if (CLIENT_TYPE::OWNER == m_clientType)
 				{
 					ChangeCamera(FIRST_PERSON_CAMERA, 0);
-					//m_pCamera->CreateShaderVariables(mainGame.m_pd3dDevice, mainGame.m_pd3dCommandList);
+					
 					mainGame.m_SceneManager->GetSceneByIdx(3)->m_pCamera = m_pCamera;
 					mainGame.m_SceneManager->GetSceneByIdx(3)->m_pCamera->CreateShaderVariables(mainGame.m_pd3dDevice, mainGame.m_pd3dCommandList);
 				}

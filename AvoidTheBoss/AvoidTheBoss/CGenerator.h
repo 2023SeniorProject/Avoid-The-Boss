@@ -39,8 +39,8 @@ public:
 
 	virtual void SetNormalVector();
 	void LogicUpdate();
-	//void SetAnimationCount(int value) { m_nGenerPipeAnimationCount[0] = value; }
-	//bool GetAnimationCount() { return m_nGenerPipeAnimationCount[0]; }
+	void SetOnGenAnimation(bool value) { m_bOnGenAnimation = value; }
+	bool GetOnGenAnimation() { return m_bOnGenAnimation; }
 	void SetInteractionOn(bool value) { m_bOnInteraction = value; };
 	bool GetInteractionOn() { return m_bOnInteraction; }
 	void SetAlreadyOn(bool value) { m_bAlreadyOn = value; }

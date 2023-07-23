@@ -20,7 +20,7 @@ void CGenerator::LogicUpdate()
 	if (m_bOnInteraction || m_bAlreadyOn)
 	{  
 		m_nPipeStartAnimation[0] = true;
-		m_bOnGenAnimation = true;
+		//m_bOnGenAnimation = true;
 	}
 	else
 	{
@@ -40,7 +40,7 @@ void CGenerator::LogicUpdate()
 		if(m_nPipeStartAnimation[i])
 			m_nGenerPipeAnimationCount[i] += 1;
 	}
-	if(m_bOnGenAnimation)
+	if(m_bOnInteraction)
 		m_nGenerBodyAnimationCount++;
 }
 
@@ -83,11 +83,11 @@ void CGenerator::OnPrepareAnimate()
 
 void CGenerator::BodyAnimate(float fTimeElapsed)
 {
-	XMMATRIX xmmtxTranslate;
-	float move = 0.001f;
-	int changeFrame = 8;
-	if (m_bOnGenAnimation)
+	if (m_bOnInteraction)
 	{
+		XMMATRIX xmmtxTranslate;
+		float move = 0.001f;
+		int changeFrame = 8;
 		if (m_nGenerBodyAnimationCount > changeFrame && m_nGenerBodyAnimationCount <= GENERATOR_BODY_ANIM_FRAM)
 		{
 			if (m_nGenerBodyAnimationCount <= GENERATOR_BODY_ANIM_FRAM && m_nGenerBodyAnimationCount > changeFrame + changeFrame / 2)
@@ -116,9 +116,9 @@ void CGenerator::BodyAnimate(float fTimeElapsed)
 
 void CGenerator::PipelineAnimate(float fTimeElapsed)
 {
-	float delta = 0.01f;
-	if (m_bOnGenAnimation)
+	if (m_bOnInteraction)
 	{
+		float delta = 0.01f;
 		for (int i = 0; i < m_nPipe; i++) //1.8 ->1.7    ̵  10.f
 		{
 			if (m_nPipeStartAnimation[i])

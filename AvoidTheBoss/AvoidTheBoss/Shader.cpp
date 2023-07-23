@@ -533,7 +533,7 @@ void CBulletObjectsShader::Render(ID3D12GraphicsCommandList4  * pd3dCommandList,
 			{
 				m_ppObjects[j]->Animate(m_fElapsedTime);
 				m_ppObjects[j]->UpdateTransform(NULL);
-				if(((CBullet*)m_ppObjects[j])->GetOnShoot()) m_ppObjects[j]->Render(pd3dCommandList, pCamera,bRaster);
+				m_ppObjects[j]->Render(pd3dCommandList, pCamera,bRaster);
 			}
 		}
 	}
@@ -768,6 +768,21 @@ void CGeneratorObjectsShader::BuildObjects(ID3D12Device5* pd3dDevice, ID3D12Grap
 	m_ppObjects[2]->objLayer = Layout::GENERATOR;
 
 	CreateShaderVariables(pd3dDevice, pd3dCommandList);
+}
+
+void CGeneratorObjectsShader::Render(ID3D12GraphicsCommandList4* pd3dCommandList, CCamera* pCamera, bool bRaster)
+{
+	CStandardShader::Render(pd3dCommandList, pCamera, bRaster);
+	for (int j = 0; j < m_nObjects; j++)
+	{
+			if (m_ppObjects[j])
+			{
+				//if (((CGenerator*)m_ppObjects[j])->GetOnGenAnimation())
+				m_ppObjects[j]->Animate(m_fElapsedTime);
+				m_ppObjects[j]->UpdateTransform(NULL);
+				m_ppObjects[j]->Render(pd3dCommandList, pCamera, bRaster);
+			}
+	}
 }
 
 

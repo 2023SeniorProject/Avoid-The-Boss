@@ -201,10 +201,17 @@ void CEmployee::LateUpdate(float fTimeElapsed, CLIENT_TYPE ptype)
 	// ===== 애니메이션 트랙 업데이트 ========
 	AnimTrackUpdate();
 	
-	//======= 스위치 위치 판별 =========
+	// 무적시간 동안 피격 이펙트 재생
+	if (m_bIsInvincibility)
+	{
+		m_UICoolTime -= fTimeElapsed;
+	}
+	else 
+	{
+		m_UICoolTime = 1.0f;
+	}
 	
-	//======= 상호작용 가능 유저 판별 ==========
-
+	// 내가 구해짐을 받고 있다면~
 	if (m_bIsRescuing)
 	{
 		m_curGuage += m_rVel * fTimeElapsed;
@@ -681,15 +688,13 @@ void CEmployee::AnimTrackUpdate()
 		{
 			SetAttackedAnimTrack();
 			m_attackedAnimationCount--;
-
-			//SoundManager::GetInstance().PlayObjectSound(8, 4); // 총알 충돌 시
 			SoundManager::GetInstance().PlayObjectSound(13, 3);
 		}
 		else 
 		{
 			m_attackedAnimationCount--;
 			m_behavior = (int32)PLAYER_BEHAVIOR::ATTACKED;
-			if (m_attackedAnimationCount == 0)
+			if (m_attackedAnimationCount <= 0)
 			{
 				SetBehavior(PLAYER_BEHAVIOR::IDLE);
 				m_bIsInvincibility = false;
@@ -797,9 +802,8 @@ void CEmployee::PlayerAttacked()
 {
 	if (m_hp > 0)
 	{
-		if (m_hp <= 3) if(!GetIsOnUIActive()) SetIsOnUIActive(true);
-		else if (GetIsOnUIActive()) SetIsOnUIActive(false);
 		
+	
 		m_hp -= 1;
 		m_bIsInvincibility = true;
 

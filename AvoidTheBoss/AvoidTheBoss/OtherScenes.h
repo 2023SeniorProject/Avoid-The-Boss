@@ -11,6 +11,7 @@ class CLobbyScene : public CScene
 		int32 idx = 0;
 		ROOM_STATUS status = ROOM_STATUS::EMPTY;
 	};
+public:
 	int32	 m_curPage;
 	int32	 m_lastPage;
 	Room	 m_rooms[MAX_ROOM];
@@ -29,7 +30,12 @@ public:
 
 	void ChangePage(int32);
 	void UpdateRoomText(int32, int32);
-	Room& GetRoom(int32);
+	void UpdateRoomStatus(int32 rn, int32 mem) 
+	{ 
+		m_rooms[rn].member = mem; 
+		for (int i = 0; i < 5; ++i)UpdateRoomText(i, -1);
+	};
+	Room& GetRoom(int32 rm) { return m_rooms[rm]; }
 	int32 GetCurPage() { return m_curPage; };
 };
 
@@ -59,7 +65,7 @@ class CRoomScene : public CScene
 public:
 	Member m_members[4];
 	std::mutex m_memLock;
-
+	int32 m_rmnum;
 public:
 	CRoomScene() 
 	{

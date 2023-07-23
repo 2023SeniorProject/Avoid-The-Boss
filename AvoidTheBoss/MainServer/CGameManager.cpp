@@ -22,15 +22,15 @@ void CGameManager::InitGame()
 	_players[2].SetPosition(XMFLOAT3(15, 0, -18));
 	_players[3].SetPosition(XMFLOAT3(20, 0, -18));
 
-	for (int i = 0; i < PLAYERNUM; ++i)
-	{
-		std::cout << _players[i].m_sid << "\n";
-	}
 	// 발전기 위치 셋팅
 	_generators[0]._pos = XMFLOAT3(-23.12724, 1.146619, 1.814123);
 	_generators[1]._pos = XMFLOAT3(23.08867, 1.083242, 3.155997);
 	_generators[2]._pos = XMFLOAT3(0.6774719, 1.083242, -23.05909);
 	
+	_generators[0].ResetState();
+	_generators[1].ResetState();
+	_generators[2].ResetState();
+
 	_gState = GAMESTATE::IN_GAME;
 	_history.Clear();
 	

@@ -14,7 +14,7 @@ using namespace std;
 //=============================
 Room::Room()
 {
-	//_cList.reserve(PLAYERNUM);
+	
 }
 
 Room::~Room()
@@ -27,7 +27,13 @@ void Room::UserOut(int32 sid)
 	_gameLogic.GetPlayerBySid(sid).SetVelocity(XMFLOAT3(0, 0, 0)); // 속도 0
 	idx = _gameLogic.GetPlayerBySid(sid).m_idx; /// 인덱스 가져오기
 	_gameLogic.GetPlayerBySid(sid).m_hide = true; // 업데이트 false로 변경
+	
+	S2C_ROOM_READY rcpacket;
+	rcpacket.type = (uint8)S_ROOM_PACKET_TYPE::REP_READY_CANCEL;
+	rcpacket.size = sizeof(S2C_ROOM_READY);
+	rcpacket.sid = sid;
 
+	BroadCasting(&rcpacket);
 	{
 		// cList Lock 쓰기 호출	
 		std::unique_lock<std::shared_mutex> wll(_listLock);
@@ -41,22 +47,16 @@ void Room::UserOut(int32 sid)
 				_cArr[i].isReady = false;
 			}
 		}
-
-
-		if((uint8)ROOM_STATUS::NOT_FULL == _status)
-		{
-			SendRoomInfoPacket();
-		}
-
 		SendRoomListPacket();
 	}
-		
+
+	
+
 	std::cout << "LEFT USER SID LIST [";
 	for (auto i : _cArr) if(-1 != i.sid) std::cout << (int32)i.sid << "|";
 	std::cout << " ]\n";
 	
-	// 인 게임중에  나간 플레이어는 숨기도록 한다.
-	if (_status == (uint8)ROOM_STATUS::INGAME) 
+	if (_status == (uint8)ROOM_STATUS::INGAME)
 	{
 		SC_EVENTPACKET packet;
 		packet.size = sizeof(SC_EVENTPACKET);
@@ -64,22 +64,23 @@ void Room::UserOut(int32 sid)
 		packet.eventId = (uint8)EVENT_TYPE::HIDE_PLAYER_ONE + idx;
 		BroadCasting(&packet);
 	}
-	else if (_status == (uint8)ROOM_STATUS::NOT_FULL)
-	{
-		S2C_ROOM_READY packet;
-		packet.size = sizeof(S2C_ROOM_READY);
-		packet.type = (uint8)S_ROOM_PACKET_TYPE::REP_READY_CANCEL;
-		packet.sid = sid;
-		BroadCastingExcept(&packet, sid);
-	}
+
 
 	if (IsDestroyRoom())
 	{
 		_status = (uint8)ROOM_STATUS::EMPTY;
-		
+		for (auto& i : _cArr) i.isReady = false;
 		std::cout << "Destroy Room\n";
 	}
-	std::cout << "RM [" << _rmNum << "][" << _memCnt.load() << "/4]" << std::endl;
+	else 
+	{
+		_status = (uint8)ROOM_STATUS::NOT_FULL;
+	}
+	
+	if ((uint8)ROOM_STATUS::NOT_FULL == _status)
+	{
+		SendRoomInfoPacket();
+	}
 }
 
 void Room::UserIn(int32 sid)
@@ -88,17 +89,20 @@ void Room::UserIn(int32 sid)
 	S2C_ROOM_ENTER packet;
 	packet.size = sizeof(S2C_ROOM_ENTER);
 	packet.type = (uint8)S_ROOM_PACKET_TYPE::REP_ENTER_OK;
+	
 
 	// 비어있는 방 (만들어지지 않은 방) or 현재 인원수가 4명이면 접속 실패 
 	if (_status == (int8)ROOM_STATUS::FULL || _status == (int8)ROOM_STATUS::EMPTY || _status == (int8)ROOM_STATUS::INGAME)
 	{
 		// enter fail
+		std::cout << "Enter Fail\n";
+		packet.rmNum = -1;
 		packet.type = (uint8)S_ROOM_PACKET_TYPE::REP_ENTER_FAIL;
 		ServerIocpCore._clients[sid]->DoSend(&packet);
 	}
 	else if (_status == (int8)ROOM_STATUS::NOT_FULL) // 아니면 접속 성공
 	{
-
+		packet.rmNum = _rmNum;
 		ServerIocpCore._clients[sid]->_myRm = _rmNum;
 		ServerIocpCore._clients[sid]->DoSend(&packet);
 		{
@@ -114,7 +118,8 @@ void Room::UserIn(int32 sid)
 					break;
 				}
 			}
-		
+			SendRoomListPacket();
+
 		}
 		if (_memCnt == PLAYERNUM)
 		{
@@ -125,7 +130,6 @@ void Room::UserIn(int32 sid)
 
 	SendRoomInfoPacket();
 	// 갱신할 방 리스트 정보와 방 정보를 보낸다.
-	SendRoomListPacket();
 	
 	std::cout << "RM [" << _rmNum << "][" << _memCnt.load() << "/4]" << std::endl;
 	
@@ -244,7 +248,6 @@ void Room::SendRoomInfoPacket()
 	BroadCasting(&rmifpacket);
 	
 }
-
 void Room::InitGame()
 {
 	
@@ -266,8 +269,7 @@ void Room::InitGame()
 		for (int i = 0; i < 4; ++i) std::cout << _gameLogic._players[i].m_sid << " | ";
 		std::cout << "]\n";
 
-		for (auto& i : _readys) i.store(false);
-		
+		for (auto& i : _cArr) i.isReady = false;
 		
 		_gameLogic.InitGame();
 		_timer.Reset();
@@ -276,14 +278,13 @@ void Room::InitGame()
 }
 void Room::UpdateReady(int32 idx, bool val)
 {
-	_readys[idx].store(val);
-	
+	_cArr[idx].isReady = val;	
 }
 
 bool Room::IsGameStartAvailable()
 {
 	 int cnt = 0;  
-	 for (int i = 0; i < 4; ++i) if (_readys[i]) ++cnt; 
+	 for (int i = 0; i < 4; ++i) if (_cArr[i].isReady) ++cnt; 
 	 return (PLAYERNUM == cnt); 
 }
 

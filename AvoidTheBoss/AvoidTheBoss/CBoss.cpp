@@ -21,8 +21,6 @@ CBoss::CBoss(ID3D12Device5* pd3dDevice,
 	m_nCharacterType = CHARACTER_TYPE::BOSS;
 	m_pCamera = ChangeCamera(FIRST_PERSON_CAMERA, 0.0f);
 
-	SetIsOnUIActive(true);
-
 	{
 		CLoadedModelInfo* pBossArmModel = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "Model/Character/Boss_Idle_First.bin", NULL, Layout::PLAYER);
 		SetChild(pBossArmModel->m_pModelRootObject, true);

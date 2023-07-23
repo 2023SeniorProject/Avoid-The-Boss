@@ -10,7 +10,6 @@ public:
 	float _curGuage = 0.f;
 	float _GuageOffset = 1.0f;
 	std::mutex _lock;
-	float _coolTime;
 	float _ActiveRadius = 1.25f;
 	int32 _idx;
 public:

@@ -169,7 +169,7 @@ void UIManager::UpdateRoomTextBlocks(UINT nIndex,const WCHAR* pstrUIText, const 
 {
     m_RoomListTextBlock[nIndex].m_pstrText.erase();
     m_RoomListTextBlock[nIndex].m_pstrText.append(pstrUIText);
-    m_RoomListTextBlock[nIndex].m_d2dLayoutRect = pd2dLayoutRect;
+    //m_RoomListTextBlock[nIndex].m_d2dLayoutRect = pd2dLayoutRect;
     m_RoomListTextBlock[nIndex].m_hide = hide;
 }
 
@@ -178,51 +178,37 @@ void UIManager::UpdateRoomText()
     
     CLobbyScene* ls = static_cast<CLobbyScene*>(mainGame.m_SceneManager->GetSceneByIdx((int32)CGameFramework::SCENESTATE::LOBBY));
     int32 curPage = ls->GetCurPage();
-    int32 tempidx = -1;
     bool hide = false;
-    WCHAR temp[2];
+    WCHAR temp[3];
     
-    std::wstring newText = L"ROOM[";
+    
     D2D1_RECT_F newRect{ 0,0,0,0 };
     // 전체 페이지를 갱신한다.
    
    for(int i = 0; i < m_nRoomListPerPage; ++i)
    { 
+       std::wstring newText = L"ROOM [";
        int32 mem = ls->GetRoom((curPage * 5 + i)).member;
        ROOM_STATUS rs = ls->GetRoom(curPage * 5 + i).status;
            
        _itow_s(curPage * 5 + i, temp, 10); // 멤버 변환
-       temp[1] = '\0';
+       temp[2] = '\0';
 
        newText.append(temp);
-       newText.append(L"] ");
+       newText.append(L"]");
        temp[0] = L'\0';
        _itow_s(mem, temp, 10);
+       temp[2] = L'\0';
+
        newText.append(temp);
        newText.append(L"/4");
 
-       newRect = MakeLayoutRectByCorner(LOBBYROOMLIST_X_OFFSET
-           , LOBBYROOMLIST_Y_OFFSET + (FRAME_BUFFER_HEIGHT / 2.0f * ((float)i / m_nRoomListPerPage)),
-           FRAME_BUFFER_WIDTH - (LOBBYROOMLIST_X_OFFSET * 2.0), FRAME_BUFFER_HEIGHT / 2.0f * (1.0 / m_nRoomListPerPage));
-
-       if (rs == ROOM_STATUS::FULL || rs == ROOM_STATUS::EMPTY)
-            {
-                //if(tempidx == -1 ) tempidx = i;
-                hide = true;
-                UpdateRoomTextBlocks(i, newText.c_str(), newRect, hide);
-                hide = false;
-                continue;
-            }
-       
-       if (tempidx != -1)
+       if (rs == ROOM_STATUS::FULL || rs == ROOM_STATUS::EMPTY || rs == ROOM_STATUS::INGAME)
        {
-          /* newRect = MakeLayoutRectByCorner(LOBBYROOMLIST_X_OFFSET
-               , LOBBYROOMLIST_Y_OFFSET + (FRAME_BUFFER_HEIGHT / 2.0f * ((float)tempidx / m_nRoomListPerPage)),
-               FRAME_BUFFER_WIDTH - (LOBBYROOMLIST_X_OFFSET * 2.0), FRAME_BUFFER_HEIGHT / 2.0f * (1.0 / m_nRoomListPerPage));
-           ls->GetRoom(curPage * 5 + i).idx = tempidx;
-           tempidx += 1;*/
+          UpdateRoomTextBlocks(i, L"", newRect, true);      
+          continue;
        }
-       UpdateRoomTextBlocks(i, newText.c_str(), newRect, hide);
+       else UpdateRoomTextBlocks(i, newText.c_str(), newRect, false);
    }
     
 }
@@ -266,8 +252,6 @@ void UIManager::DrawOtherSceneBackGround(int32 Scene)
         break;
     }
 }
-
-
 
 void UIManager::DrawOtherSceneUI(int32 Scene,int32 idx)
 {
@@ -431,13 +415,13 @@ void UIManager::InitGameSceneUI(CGameScene* gc)
 
 void UIManager::UpdateGameSceneUI(CGameScene* gc)
 {
-  // 동적 UI들 hp, status
+  // 직원에 해당하는 동적 UI들 hp, status
     for (int i = 0; i < PLAYERNUM; ++i)
     {
         if (!gc->GetScenePlayerByIdx(i)) continue;
         if (i == 0) continue;
 
-        if (i != m_playerIdx)
+        if (i != m_playerIdx) // 상태 갱신 
         {
             if (MAX_HP == gc->GetScenePlayerByIdx(i)->m_hp)
             {
@@ -449,14 +433,21 @@ void UIManager::UpdateGameSceneUI(CGameScene* gc)
             }
             else m_CharStatus[gc->GetScenePlayerByIdx(i)->m_idx - 1].resource = m_CharStatusBitmaps[1]; // death
         }
-        else if (i == m_playerIdx)
+        else if (i == m_playerIdx) // HP , 피격 이펙트
         {
+            CEmployee* mp = static_cast<CEmployee*>(gc->GetScenePlayerByIdx(i));
+            if (mp->m_bIsInvincibility)
+            {
+                m_AttackedEffect.m_hide = false;
+                if (mp->m_UICoolTime >= 0.0f) m_AttackedOpacity = mp->m_UICoolTime;
+            }
+            else m_AttackedEffect.m_hide = true;
+
             for (auto& i : m_HPUi) i.m_hide = true;
             for (int k = 0; k < gc->GetScenePlayerByIdx(i)->m_hp; ++k)
             {
                 m_HPUi[k].m_hide = false;
             }
-
         }
     }
 
@@ -511,6 +502,7 @@ void UIManager::DrawGameSceneUI(int32 Scene)
     if (m_playerIdx != 0)
     {
         for(auto i : m_HPUi)  if (!i.m_hide) m_pd2dDeviceContext->DrawBitmap(i.resource, i.d2dLayoutRect);
+        if (!m_AttackedEffect.m_hide) m_pd2dDeviceContext->DrawBitmap(m_AttackedEffect.resource, m_AttackedEffect.d2dLayoutRect, m_AttackedOpacity);
     }
 
     if (m_playerIdx == 0) m_pd2dDeviceContext->DrawBitmap(m_CharCrossHead.resource, m_CharCrossHead.d2dLayoutRect);
@@ -545,7 +537,7 @@ ID2D1SolidColorBrush* UIManager::CreateBrush(D2D1::ColorF d2dColor)
 IDWriteTextFormat* UIManager::CreateTextFormat(const WCHAR* pszFontName, float fFontSize)
 {
     IDWriteTextFormat* pdwDefaultTextFormat = NULL;
-    m_pd2dWriteFactory->CreateTextFormat(L"맑은 고딕", nullptr, DWRITE_FONT_WEIGHT_NORMAL, DWRITE_FONT_STYLE_NORMAL, DWRITE_FONT_STRETCH_NORMAL, fFontSize, L"en-us", &pdwDefaultTextFormat);
+    m_pd2dWriteFactory->CreateTextFormat(pszFontName, nullptr, DWRITE_FONT_WEIGHT_NORMAL, DWRITE_FONT_STYLE_NORMAL, DWRITE_FONT_STRETCH_NORMAL, fFontSize, L"en-us", &pdwDefaultTextFormat);
 
     pdwDefaultTextFormat->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_CENTER);
     pdwDefaultTextFormat->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT_NEAR);
@@ -565,8 +557,8 @@ void UIManager::InitializeDevice(ID3D12Device5* pd3dDevice, ID3D12CommandQueue* 
     grayBrush = CreateBrush(D2D1::ColorF::Gray);
     blackBrush = CreateBrush(D2D1::ColorF::Black);
     // 폰트
-    m_TitleTextFormat = CreateTextFormat(L"", FRAME_BUFFER_HEIGHT / 30);
-    m_LobbyTextFormat = CreateTextFormat(L"", FRAME_BUFFER_HEIGHT / 20);
+    m_TitleTextFormat = CreateTextFormat(L"Headliner No. 45", 40);
+    m_LobbyTextFormat = CreateTextFormat(L"맑은 고딕", 40);
     // 배경 리소스들
     m_backGround[0].resource = LoadPngFromFile(L"UI/Title.png");
     m_backGround[1].resource = LoadPngFromFile(L"UI/Lobby.png");
@@ -656,6 +648,7 @@ void UIManager::InitializeDevice(ID3D12Device5* pd3dDevice, ID3D12CommandQueue* 
     m_CharStatusBitmaps[1] = LoadPngFromFile(L"UI/Danger.png");
     m_CharStatusBitmaps[2] = LoadPngFromFile(L"UI/Dead.png");
     
+    // HP
     m_HpBitmap = LoadPngFromFile(L"UI/HP.png");
     for (int i = 0; i < MAX_HP; ++i)
     {
@@ -667,6 +660,11 @@ void UIManager::InitializeDevice(ID3D12Device5* pd3dDevice, ID3D12CommandQueue* 
     m_CharCrossHead.resource = LoadPngFromFile(L"UI/crossHair.png");
     m_CharCrossHead.d2dLayoutRect = MakeLayoutRect(CENTER_X, CENTER_Y,10.f,10.f);
     m_CharCrossHead.m_hide = false;
+
+    // 피격 이펙트
+    m_AttackedEffect.resource = LoadPngFromFile(L"UI/Attacked.png");
+    m_AttackedEffect.d2dLayoutRect = MakeLayoutRectByCorner(0, 0, FRAME_BUFFER_WIDTH, FRAME_BUFFER_HEIGHT);
+    m_AttackedEffect.m_hide = false;
 
     // 발전기 게이지
     for (int i = 0; i < 20; ++i)

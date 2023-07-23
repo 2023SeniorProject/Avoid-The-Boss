@@ -97,10 +97,7 @@ public:
 		return m_bOnMoveSound;
 	}
 
-	// 피격 이펙트 코드
-	bool m_bIsOnUIActive = false;
-	void SetIsOnUIActive(bool value) { m_bIsOnUIActive = value; }
-	bool GetIsOnUIActive() { return m_bIsOnUIActive; }
+	
 public: 
 	CPlayer();
 	virtual ~CPlayer();

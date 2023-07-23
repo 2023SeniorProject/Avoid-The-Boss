@@ -183,6 +183,8 @@ void CSession::ProcessPacket(char* packet)
 	// ============= 방 관련 패킷 ============
 	case (uint8)S_ROOM_PACKET_TYPE::REP_ENTER_OK:
 	{
+		S2C_ROOM_ENTER* rep = (S2C_ROOM_ENTER*)packet;
+		rs->m_rmnum = rep->rmNum;
 		mainGame.ChangeScene(CGameFramework::SCENESTATE::ROOM);
 	}
 	break;
@@ -190,24 +192,23 @@ void CSession::ProcessPacket(char* packet)
 	{
 
 	}
-		break;
+	break;
 	case (uint8)S_ROOM_PACKET_TYPE::MK_RM_FAIL:
 	{
-		std::cout << "Fail to Create Room!!(MAX_CAPACITY)" << std::endl;
+		
 	}
 	break;
 	case (uint8)S_ROOM_PACKET_TYPE::MK_RM_OK:
 	{
+
 		mainGame.ChangeScene(CGameFramework::SCENESTATE::ROOM);
 	}
 		break;
 	case (uint8)S_ROOM_PACKET_TYPE::UPDATE_LIST:
 	{
 		
-		S2C_ROOM_LIST* rp = (S2C_ROOM_LIST*)packet;
-		std::cout << "Update" << (int32)rp->rmNum << ")" << (int32)(rp->member) << "\n";
-		ls->GetRoom(rp->rmNum).member = rp->member;
-		ls->UpdateRoomText(rp->rmNum, rp->member);
+		S2C_ROOM_LIST* rp = (S2C_ROOM_LIST*)packet;;
+		ls->UpdateRoomStatus(rp->rmNum, rp->member);	
 	}
 		break;
 	
@@ -236,21 +237,20 @@ void CSession::ProcessPacket(char* packet)
 	{
 		
 		S2C_ROOM_INFO* rp = (S2C_ROOM_INFO*)packet;
-		
-		std::cout << "Get Room Info";
 		rs->m_memLock.lock();
-		for (int i = 0; i < PLAYERNUM; ++i)
-		{
-			 rs->m_members[i].m_sid = rp->sids[i];
-			 std::cout << rp->sids[i] << " ";
-		}
-		std::cout << "\n";
+		for (int i = 0; i < PLAYERNUM; ++i) rs->m_members[i].m_sid = rp->sids[i];
 		rs->m_memLock.unlock();
 	}
 	break;
 	case (uint8)S_ROOM_PACKET_TYPE::GAME_START:
 	{
 		// ================= 플레이어 초기 위치 초기화 ==================
+		for (int i = 0; i < PLAYERNUM; ++i)
+		{
+			rs->m_members[i].m_sid = -1;
+			
+		}
+
 		 gs->InitGame(packet, _sid);
 		// ================= 카메라 셋팅 ================================
 		std::wstring str = L"Client";

@@ -118,6 +118,8 @@ public:
     UIButton m_RoomButtons[2];
     InGameUI m_CharCrossHead;
 
+    InGameUI m_AttackedEffect;
+    float m_AttackedOpacity = 1.0;
     // 인 게임 전용
     int32                      m_playerIdx = -1;
     UIButton                   m_GenerateUIButtons[21];

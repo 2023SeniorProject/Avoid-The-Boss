@@ -17,7 +17,7 @@ void CGenerator::SetNormalVector()
 }
 void CGenerator::LogicUpdate()
 {
-	if (m_bOnInteraction || m_bAlreadyOn)
+	if (m_bOnInteraction)
 	{  
 		m_nPipeStartAnimation[0] = true;
 		//m_bOnGenAnimation = true;
@@ -28,7 +28,7 @@ void CGenerator::LogicUpdate()
 		{
 			m_nPipeStartAnimation[i] = false;
 		}
-		m_bOnGenAnimation = false;
+		//m_bOnGenAnimation = false;
 	}
 	if (m_nGenerPipeAnimationCount[0] == 4)
 		m_nPipeStartAnimation[1] = true;

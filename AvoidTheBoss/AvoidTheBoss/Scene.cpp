@@ -238,7 +238,7 @@ void CGameScene::Update(HWND hWnd)
 	DWORD dwDirection = 0;
 	_players[_playerIdx]->ProcessInput(dwDirection);
 	UCHAR pKeyBuffer[256];
-	if(::GetKeyboardState(pKeyBuffer));
+	//if(::GetKeyboardState(pKeyBuffer));
 
 	// 마우스 처리는 동일하게 진행되므로 그냥 남겨놨습니다.
 	float cxDelta = 0.0f, cyDelta = 0.0f;

@@ -138,6 +138,24 @@ public:
 
 	// 가속 구조 구축
 private:
+
+	// #DXR
+	//ComPtr<id3d12rootsignature> CreateRayGenSignature();
+	//ComPtr<id3d12rootsignature> CreateMissSignature();
+	//ComPtr<id3d12rootsignature> CreateHitSignature();
+	//void CreateRaytracingPipeline();
+	//ComPtr<idxcblob> m_rayGenLibrary;
+	//ComPtr<idxcblob> m_hitLibrary;
+	//ComPtr<idxcblob> m_missLibrary;
+	//ComPtr<id3d12rootsignature> m_rayGenSignature;
+	//ComPtr<id3d12rootsignature> m_hitSignature;
+	//ComPtr<id3d12rootsignature> m_missSignature;
+	//// Ray tracing pipeline state
+	//ComPtr<id3d12stateobject> m_rtStateObject;
+	//// Ray tracing pipeline state properties, retaining the shader identifiers
+	//// to use in the Shader Binding Table
+	//ComPtr<id3d12stateobjectproperties> m_rtStateObjectProps;
+	
 	ComPtr<ID3D12Resource> m_bottomLevelAS; // Storage for the bottom Level AS
 	nv_helpers_dx12::TopLevelASGenerator m_topLevelASGenerator;
 	AccelerationStructureBuffers m_topLevelASBuffers;
@@ -148,7 +166,7 @@ private:
 	/// \param vVertexBuffers : pair of buffer and vertex count
 	/// \return AccelerationStructureBuffers for TLAS
 	AccelerationStructureBuffers CreateBottomLevelAS(std::vector<std::pair<ComPtr<ID3D12Resource>, uint32_t>> vVertexBuffers); //  GPU 메모리의 정점 버퍼 및 정점 수 하위 레벨 AS를 생성
-
+public:
 	/// Create the main acceleration structure that holds
 	/// all instances of the scene
 	/// \param instances : pair of BLAS and transform

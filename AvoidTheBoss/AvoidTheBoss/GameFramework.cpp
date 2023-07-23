@@ -5,6 +5,8 @@
 #include <string>
 #include "DXRHelper.h"
 #include "DXRHelpers/nv_helpers_dx12/BottomLevelASGenerator.h"
+//#include "nv_helpers_dx12/RaytracingPipelineGenerator.h"
+//#include "nv_helpers_dx12/RootSignatureGenerator.h"
 
 CGameFramework mainGame;
 // #define _WITH_PLAYER_TOP // 플레이어 깊이 버퍼값 1.0f
@@ -69,11 +71,16 @@ bool CGameFramework::OnCreate(HINSTANCE hInstance, HWND hMainWnd)
 	CheckRaytracingSupport();
 	// Setup the acceleration structures (AS) for raytracing. When setting up 
 	// geometry, each bottom-level AS has its own transform matrix. 
-	//CreateAccelerationStructures();
+	CreateAccelerationStructures();
 	// Command lists are created in the recording state, but there is 
 	// nothing to record yet. The main loop expects it to be closed, so 
 	// close it now. 
-	//ThrowIfFailed(m_pd3dCommandList->Close());
+	ThrowIfFailed(m_pd3dCommandList->Close());
+
+	// Create the raytracing pipeline, associating the shader code to symbol names
+// and to their root signatures, and defining the amount of memory carried by
+// rays (ray payload)
+	//CreateRaytracingPipeline(); // #DXR
 
 	return(true);
 }
@@ -749,3 +756,69 @@ void CGameFramework::ChangeSwapChainState()
 	CreateRenderTargetViews();
 }
 
+//=====================셰이더의 루트 서명
+//-----------------------------------------------------------------------------
+// The ray generation shader needs to access 2 resources: the raytracing output
+// and the top-level acceleration structure
+//
+ComPtr<id3d12rootsignature> D3D12HelloTriangle::CreateRayGenSignature() {
+	nv_helpers_dx12::RootSignatureGenerator rsc; rsc.AddHeapRangesParameter({ {0 /*u0*/, 1 /*1 descriptor */, 0 /*use the implicit register space 0*/, D3D12_DESCRIPTOR_RANGE_TYPE_UAV /* UAV representing the output buffer*/, 0 /*heap slot where the UAV is defined*/}, {0 /*t0*/, 1, 0, D3D12_DESCRIPTOR_RANGE_TYPE_SRV /*Top-level acceleration structure*/, 1} }); return rsc.Generate(m_device.Get(), true);
+}
+
+//-----------------------------------------------------------------------------
+// The hit shader communicates only through the ray payload, and therefore does
+// not require any resources
+//
+ComPtr<id3d12rootsignature> D3D12HelloTriangle::CreateHitSignature() {
+	nv_helpers_dx12::RootSignatureGenerator rsc; return rsc.Generate(m_device.Get(), true);
+}
+
+
+//-----------------------------------------------------------------------------
+// The miss shader communicates only through the ray payload, and therefore
+// does not require any resources
+//
+ComPtr<id3d12rootsignature> D3D12HelloTriangle::CreateMissSignature() {
+	nv_helpers_dx12::RootSignatureGenerator rsc; return rsc.Generate(m_device.Get(), true);
+}
+
+//-----------------------------------------------------------------------------
+//
+// The raytracing pipeline binds the shader code, root signatures and pipeline
+// characteristics in a single structure used by DXR to invoke the shaders and
+// manage temporary memory during raytracing
+//
+//
+void D3D12HelloTriangle::CreateRaytracingPipeline()
+{
+	nv_helpers_dx12::RayTracingPipelineGenerator pipeline(m_device.Get()); 
+	// The pipeline contains the DXIL code of all the shaders potentially executed 
+	// during the raytracing process. This section compiles the HLSL code into a 
+	// set of DXIL libraries. We chose to separate the code in several libraries 
+	// by semantic (ray generation, hit, miss) for clarity. Any code layout can be 
+	// used. 
+	m_rayGenLibrary = nv_helpers_dx12::CompileShaderLibrary(L"RayGen.hlsl"); m_missLibrary = nv_helpers_dx12::CompileShaderLibrary(L"Miss.hlsl"); m_hitLibrary = nv_helpers_dx12::CompileShaderLibrary(L"Hit.hlsl");
+
+	/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+		As described at the beginning of this section, to each shader corresponds a root signature defining
+		its external inputs.
+		~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
+		/// To be used, each DX12 shader needs a root signature defining which
+		// parameters and buffers will be accessed.
+		m_rayGenSignature = CreateRayGenSignature(); 
+		m_missSignature = CreateMissSignature(); 
+		m_hitSignature = CreateHitSignature();
+
+/*  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~To be used, each shader needs to be associated to its root signature.A shaders imported from the DXIL libraries needs to be associated with exactly one root signature.The shaders comprising the hit groups need to share the same root signature, which is associated to the hit group(and not to the shaders themselves).Note that a shader does not have to actually access all the resources declared in its root signature, as long as the root signature defines a superset of the resources the shader needs.
+			~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+			*/
+// The following section associates the root signature to each shader. Note // that we can explicitly show that some shaders share the same root signature // (eg. Miss and ShadowMiss). Note that the hit shaders are now only referred
+// to as hit groups, meaning that the underlying intersection, any-hit and 
+// closest-hit shaders share the same root signature. 
+		pipeline.AddRootSignatureAssociation(m_rayGenSignature.Get(), {L"RayGen"}); pipeline.AddRootSignatureAssociation(m_missSignature.Get(), {L"Miss"}); pipeline.AddRootSignatureAssociation(m_hitSignature.Get(), {L"HitGroup"});
+
+		/* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+			The pipeline now has all the information it needs.We generate the pipeline by calling the `Generate`
+			method of the helper, which creates the array of subobjects and calls
+			`ID3D12Device5::CreateStateObject`.*/
+}

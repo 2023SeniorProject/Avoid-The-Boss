@@ -385,7 +385,7 @@ void CGameFramework::ReleaseScenes()
 
 void CGameFramework::ProcessInput()
 {
-	if (m_hWnd != ::GetActiveWindow()) return;
+	
 	m_SceneManager->ProcessInput(m_hWnd, m_curScene);
 	
 }
@@ -555,12 +555,14 @@ void CGameFramework::ChangeScene(SCENESTATE ss)
 
 void CGameFramework::OnProcessingMouseMessage(HWND hWnd, UINT nMessageID, WPARAM wParam, LPARAM lParam)
 {
+	if (m_hWnd != ::GetActiveWindow()) return;
 	m_SceneManager->GetSceneByIdx(m_curScene)->OnProcessingMouseMessage(hWnd, nMessageID, wParam, lParam);
 	
 }
 
 void CGameFramework::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPARAM wParam, LPARAM lParam)
 {
+	if (m_hWnd != ::GetActiveWindow()) return;
 	m_SceneManager->GetSceneByIdx(m_curScene)->OnProcessingKeyboardMessage(hWnd, nMessageID, wParam, lParam);
 
 }

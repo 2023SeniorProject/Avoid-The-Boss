@@ -263,6 +263,7 @@ struct S2C_ROOM_ENTER
 {
 	uint8 size;
 	uint8 type;
+	int16 rmNum;
 };
 
 struct S2C_ROOM_LIST

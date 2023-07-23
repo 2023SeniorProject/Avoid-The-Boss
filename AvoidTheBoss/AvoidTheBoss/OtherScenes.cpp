@@ -151,9 +151,12 @@ void CLobbyScene::MouseAction(const POINT& mp)
 	{
 		if (IntersectRectByPoint(mainGame.m_UIRenderer->m_RoomListLayout[i], mp))
 		{
-			if (m_rooms[m_curPage * 5 + i].status != ROOM_STATUS::EMPTY) m_selected_rm = m_curPage * 5 + i;
+			if (m_rooms[m_curPage * 5 + i].status != ROOM_STATUS::EMPTY)
+			{
+				m_selected_rm = m_curPage * 5 + i;
+				std::cout << "Selected RM:" << m_selected_rm << "\n";
+			}
 			mainGame.m_UIRenderer->m_selectedLayout = i;
-			std::cout << "Selected RM:" << i << "\n";
 		}
 	}
 
@@ -196,17 +199,14 @@ void CLobbyScene::UpdateRoomText(int32 index = -1, int32 member = -1)
 	
 	if (index >= 0 || member >= 0)
 	{
-		m_rooms[m_curPage * 5 + index].member = member;
-		if (PLAYERNUM == member) m_rooms[m_curPage * 5 + index].status = ROOM_STATUS::FULL;
-		else if (0 == member)	 m_rooms[m_curPage * 5 + index].status = ROOM_STATUS::EMPTY;
+		if(member != -1) m_rooms[m_curPage * 5 + index].member = member;
+		if (PLAYERNUM == m_rooms[m_curPage * 5 + index].member) m_rooms[m_curPage * 5 + index].status = ROOM_STATUS::FULL;
+		else if (0 ==	m_rooms[m_curPage * 5 + index].member)	 m_rooms[m_curPage * 5 + index].status = ROOM_STATUS::EMPTY;
 		else m_rooms[m_curPage * 5 + index].status = ROOM_STATUS::NOT_FULL;
 	}
 	mainGame.m_UIRenderer->UpdateRoomText();
 }
-CLobbyScene::Room & CLobbyScene::GetRoom(int32 idx)
-{
-	return m_rooms[idx];
-}
+
 #pragma endregion
 
 

@@ -431,13 +431,13 @@ void UIManager::InitGameSceneUI(CGameScene* gc)
 
 void UIManager::UpdateGameSceneUI(CGameScene* gc)
 {
-  // 동적 UI들 hp, status
+  // 직원에 해당하는 동적 UI들 hp, status
     for (int i = 0; i < PLAYERNUM; ++i)
     {
         if (!gc->GetScenePlayerByIdx(i)) continue;
         if (i == 0) continue;
 
-        if (i != m_playerIdx)
+        if (i != m_playerIdx) // 상태 갱신 
         {
             if (MAX_HP == gc->GetScenePlayerByIdx(i)->m_hp)
             {
@@ -449,14 +449,21 @@ void UIManager::UpdateGameSceneUI(CGameScene* gc)
             }
             else m_CharStatus[gc->GetScenePlayerByIdx(i)->m_idx - 1].resource = m_CharStatusBitmaps[1]; // death
         }
-        else if (i == m_playerIdx)
+        else if (i == m_playerIdx) // HP , 피격 이펙트
         {
+            CEmployee* mp = static_cast<CEmployee*>(gc->GetScenePlayerByIdx(i));
+            if (mp->m_bIsInvincibility)
+            {
+                m_AttackedEffect.m_hide = false;
+                if (mp->m_UICoolTime >= 0.0f) m_AttackedOpacity = mp->m_UICoolTime;
+            }
+            else m_AttackedEffect.m_hide = true;
+
             for (auto& i : m_HPUi) i.m_hide = true;
             for (int k = 0; k < gc->GetScenePlayerByIdx(i)->m_hp; ++k)
             {
                 m_HPUi[k].m_hide = false;
             }
-
         }
     }
 
@@ -511,6 +518,7 @@ void UIManager::DrawGameSceneUI(int32 Scene)
     if (m_playerIdx != 0)
     {
         for(auto i : m_HPUi)  if (!i.m_hide) m_pd2dDeviceContext->DrawBitmap(i.resource, i.d2dLayoutRect);
+        if (!m_AttackedEffect.m_hide) m_pd2dDeviceContext->DrawBitmap(m_AttackedEffect.resource, m_AttackedEffect.d2dLayoutRect, m_AttackedOpacity);
     }
 
     if (m_playerIdx == 0) m_pd2dDeviceContext->DrawBitmap(m_CharCrossHead.resource, m_CharCrossHead.d2dLayoutRect);
@@ -656,6 +664,7 @@ void UIManager::InitializeDevice(ID3D12Device5* pd3dDevice, ID3D12CommandQueue* 
     m_CharStatusBitmaps[1] = LoadPngFromFile(L"UI/Danger.png");
     m_CharStatusBitmaps[2] = LoadPngFromFile(L"UI/Dead.png");
     
+    // HP
     m_HpBitmap = LoadPngFromFile(L"UI/HP.png");
     for (int i = 0; i < MAX_HP; ++i)
     {
@@ -667,6 +676,11 @@ void UIManager::InitializeDevice(ID3D12Device5* pd3dDevice, ID3D12CommandQueue* 
     m_CharCrossHead.resource = LoadPngFromFile(L"UI/crossHair.png");
     m_CharCrossHead.d2dLayoutRect = MakeLayoutRect(CENTER_X, CENTER_Y,10.f,10.f);
     m_CharCrossHead.m_hide = false;
+
+    // 피격 이펙트
+    m_AttackedEffect.resource = LoadPngFromFile(L"UI/Attacked.png");
+    m_AttackedEffect.d2dLayoutRect = MakeLayoutRectByCorner(0, 0, FRAME_BUFFER_WIDTH, FRAME_BUFFER_HEIGHT);
+    m_AttackedEffect.m_hide = false;
 
     // 발전기 게이지
     for (int i = 0; i < 20; ++i)

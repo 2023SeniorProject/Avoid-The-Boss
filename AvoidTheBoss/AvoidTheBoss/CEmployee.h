@@ -11,6 +11,8 @@ public:
 	bool m_bIsPlayerOnRescueInter = false;
 public:
 	bool m_bIsInvincibility = false;
+	float m_UICoolTime = 1.0f;
+	
 private:
 	bool m_bIsInGenArea = false;
 	bool m_bIsInDownPlayerArea = false; // Down된 플레이어와 인접해 있는가?

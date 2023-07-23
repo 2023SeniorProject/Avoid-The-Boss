@@ -25,13 +25,12 @@ static const char *g_pstrThirdCharactorRefernece[5] =
 	"Model/Character/Character4_Idle.bin"
 };
 
-static const char* g_pstrFirstCharactorRefernece[5] =
+static const char* g_pstrFirstCharactorRefernece[4] =
 {
 	"null",
-	"Model/Character/Character1_Run_1st_View.bin",
 	"Model/Character/Character1_Button_1st_View.bin",
 	"Model/Character/Character2_Button_1st_View.bin",
-	"Model/Character/Character3_Button_1st_View.bin"
+	"Model/Character/Character3_Button_1st_View.bin",
 };
 
 #define BOSS_ATTACK_TIME 25 //25프레임 (기존 65)

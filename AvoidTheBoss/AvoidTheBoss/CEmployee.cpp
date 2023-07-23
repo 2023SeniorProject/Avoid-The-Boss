@@ -21,15 +21,15 @@ CEmployee::CEmployee(ID3D12Device5* pd3dDevice, ID3D12GraphicsCommandList4* pd3d
 
 	// 1 인칭 애니메이션 로드
 	{
+		//달리기, 버튼, 느리게 걷기, 대기
 		CLoadedModelInfo* pEmployeeModel = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, g_pstrFirstCharactorRefernece[(int)m_nCharacterType], NULL, Layout::PLAYER);
 		SetChild(pEmployeeModel->m_pModelRootObject, true);
 
 		m_pSkinnedAnimationController2 = new CAnimationController(pd3dDevice, pd3dCommandList, 4, pEmployeeModel);
-
-		m_pSkinnedAnimationController2->SetTrackAnimationSet(0, 0);//idle
-		m_pSkinnedAnimationController2->SetTrackAnimationSet(1, 1);//run
+		m_pSkinnedAnimationController2->SetTrackAnimationSet(0, 3);//idle
+		m_pSkinnedAnimationController2->SetTrackAnimationSet(1, 0);//run
 		m_pSkinnedAnimationController2->SetTrackAnimationSet(2, 2);//slow_walk (절뚝거리기)
-		m_pSkinnedAnimationController2->SetTrackAnimationSet(3, 3);//button
+		m_pSkinnedAnimationController2->SetTrackAnimationSet(3, 1);//button
 
 	}
 	// 3인칭 애니메이션 로드

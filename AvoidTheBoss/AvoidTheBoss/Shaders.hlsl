@@ -146,11 +146,6 @@ float4 PSNonFogStandard(VS_STANDARD_OUTPUT input) : SV_TARGET
 	float4 cEmissionColor = float4(0.0f, 0.0f, 0.0f, 1.0f);
 	if (gnTexturesMask & MATERIAL_EMISSION_MAP) cEmissionColor = gtxtEmissionTexture.Sample(gssWrap, input.uv);
 
-	float3 cameraPos = gvCameraPosition.xyz;
-	float3 vPositionToCamera = cameraPos - input.positionW;
-	float Distance = length(vPositionToCamera);
-
-
 	float3 normalW;
 	float4 cColor = cAlbedoColor + cSpecularColor + cMetallicColor + cEmissionColor;
 

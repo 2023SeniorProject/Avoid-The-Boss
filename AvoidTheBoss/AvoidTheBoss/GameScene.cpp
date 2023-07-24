@@ -150,11 +150,11 @@ void CGameScene::BuildObjects(ID3D12Device5* pd3dDevice,ID3D12GraphicsCommandLis
 
 	CreateCbvSrvDescriptorHeaps(pd3dDevice, 0, 52 + 1 + 1 + 12 + 3 + 12 + 3 + 89 + 5 + 5 * 4 + 6 * 17 + 2 * 50 + 3 * 2 + 14 + 1 + 12);//Albedomap 52 / player 1 / skybox 1 / box subTexture 3 * 4/ tile subTexture 3 * 1/ woodPallet 3 * 4 / pillar2 3 * 1 / BoundsMap 89 / ï¿½ï¿½ï¿½ï¿½Ä¡ 2 + 3 / ï¿½ï¿½ / ï¿½ï¿½ï¿½Ì·ï¿½ 6 / ï¿½Ñ¾ï¿½ 100 / ï¿½ï¿½ï¿½Ìµï¿½ ï¿½ï¿½ 3*2 / 14
 
-	CMaterial::PrepareShaders(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature);
+	CMaterial::PrepareShaders(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, m_playerIdx);
 
 	BuildDefaultLightsAndMaterials();
 
-	m_pSkyBox = new CSkyBox(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature);
+	m_pSkyBox = new CSkyBox(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, m_playerIdx);
 	m_pSkyBox->SetScale(50.0f, 50.0f, 50.0f);
 
 	XMFLOAT3 xmf3Scale(8.0f, 2.0f, 8.0f);
@@ -163,38 +163,54 @@ void CGameScene::BuildObjects(ID3D12Device5* pd3dDevice,ID3D12GraphicsCommandLis
 	m_nShaders = 6;
 	m_ppShaders = new CShader * [m_nShaders];
 
+	for (int i = 0; i < PLAYERNUM; ++i)
+	{
+		if (i == (int)(CHARACTER_TYPE::BOSS))
+		{
+			m_players[i] = new CBoss(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature);
+		}
+		else
+		{
+			m_players[i] = new CEmployee(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, (CHARACTER_TYPE)(i));
+		}
+		m_players[i]->m_idx = i;
+	}
+	m_pCamera = m_players[m_playerIdx]->GetCamera();
+	
+	std::cout << (int)m_players[m_playerIdx]->m_chartype << std::endl;
+
 	CMapObjectsShader* pMapShader = new CMapObjectsShader();
-	pMapShader->CreateShader(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature);
+	pMapShader->CreateShader(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, m_playerIdx);
 	pMapShader->BuildObjects(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, NULL, NULL);
 	m_ppShaders[0] = pMapShader;
 
 	CBulletObjectsShader* pBulletObjectShader = new CBulletObjectsShader();
-	pBulletObjectShader->CreateShader(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature);
+	pBulletObjectShader->CreateShader(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, m_playerIdx);
 	pBulletObjectShader->BuildObjects(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, NULL, NULL);
 	m_ppShaders[1] = pBulletObjectShader;
 
 	CDoorObjectsShader* pDoorObjectShader = new CDoorObjectsShader();
-	pDoorObjectShader->CreateShader(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature);
+	pDoorObjectShader->CreateShader(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, m_playerIdx);
 	pDoorObjectShader->BuildObjects(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, NULL, NULL);
 	m_ppShaders[2] = pDoorObjectShader;
 
 	CSirenObjectsShader* pSirenObjectShader = new CSirenObjectsShader();
-	pSirenObjectShader->CreateShader(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature);
+	pSirenObjectShader->CreateShader(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, m_playerIdx);
 	pSirenObjectShader->BuildObjects(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, NULL, NULL);
 	m_ppShaders[3] = pSirenObjectShader;
 
 	CGeneratorObjectsShader* pGeneratorObjectsShader = new CGeneratorObjectsShader();
-	pGeneratorObjectsShader->CreateShader(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature);
+	pGeneratorObjectsShader->CreateShader(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, m_playerIdx);
 	pGeneratorObjectsShader->BuildObjects(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, NULL, NULL);
 	m_ppShaders[4] = pGeneratorObjectsShader;
 
 	CHitEffectObjectsShader* pHitEffectObjectsShader = new CHitEffectObjectsShader();
-	pHitEffectObjectsShader->CreateShader(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature);
+	pHitEffectObjectsShader->CreateShader(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature,m_playerIdx);
 	pHitEffectObjectsShader->BuildObjects(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, NULL, NULL);
 	m_ppShaders[5] = pHitEffectObjectsShader;
 
 	CBoundsObjectsShader* pBoundsMapShader = new CBoundsObjectsShader();
-	pBoundsMapShader->CreateShader(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature);
+	pBoundsMapShader->CreateShader(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, m_playerIdx);
 	pBoundsMapShader->BuildObjects(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, NULL, NULL);
 
 	m_ppGenerator = new CGenerator * [m_nGenerator];
@@ -204,13 +220,13 @@ void CGameScene::BuildObjects(ID3D12Device5* pd3dDevice,ID3D12GraphicsCommandLis
 		m_ppGenerator[i] = ((CGenerator*)pGeneratorObjectsShader->m_ppObjects[i]);
 		m_ppGenerator[i]->m_idx = i;
 	}
+	
 
 	for (int i = 0; i < PLAYERNUM; ++i)
 	{
 		if (i == (int)(CHARACTER_TYPE::BOSS))
 		{
-			m_players[i] = new CBoss(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature);
-			if (m_ppShaders[1]&& m_ppShaders[5])
+			if (m_ppShaders[1] && m_ppShaders[5])
 			{
 				((CBullet*)(pBulletObjectShader->m_ppObjects[0]))->SetHitEffect((CHitEffect*)pHitEffectObjectsShader->m_ppObjects[0]);
 				((CBoss*)m_players[i])->m_pBullet = (CBullet*)pBulletObjectShader->m_ppObjects[0];
@@ -218,7 +234,6 @@ void CGameScene::BuildObjects(ID3D12Device5* pd3dDevice,ID3D12GraphicsCommandLis
 		}
 		else
 		{
-			m_players[i] = new CEmployee(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, (CHARACTER_TYPE)(i));
 			((CEmployee*)m_players[i])->m_pSwitches[0].position = XMFLOAT3(-23.12724, 1.146619, 1.814123);
 			((CEmployee*)m_players[i])->m_pSwitches[0].radius = 0.5f;
 			((CEmployee*)m_players[i])->m_pSwitches[1].position = XMFLOAT3(23.08867, 1.083242, 3.155997);
@@ -226,13 +241,8 @@ void CGameScene::BuildObjects(ID3D12Device5* pd3dDevice,ID3D12GraphicsCommandLis
 			((CEmployee*)m_players[i])->m_pSwitches[2].position = XMFLOAT3(0.6774719, 1.083242, -23.05909);
 			((CEmployee*)m_players[i])->m_pSwitches[2].radius = 0.5f;
 			// ÇÇ°Ý ÀÌÆåÆ® ÄÚµå
-
 		}
-		m_players[i]->m_idx = i;
 	}
-	m_pCamera = m_players[m_playerIdx]->GetCamera();
-	
-	//¾À¿¡ »ç¿îµå ¼³Á¤
 	CreateShaderVariables(pd3dDevice, pd3dCommandList);
 }
 

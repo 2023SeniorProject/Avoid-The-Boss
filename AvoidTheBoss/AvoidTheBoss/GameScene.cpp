@@ -177,8 +177,6 @@ void CGameScene::BuildObjects(ID3D12Device5* pd3dDevice,ID3D12GraphicsCommandLis
 	}
 	m_pCamera = m_players[m_playerIdx]->GetCamera();
 	
-	std::cout << (int)m_players[m_playerIdx]->m_chartype << std::endl;
-
 	CMapObjectsShader* pMapShader = new CMapObjectsShader();
 	pMapShader->CreateShader(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, m_playerIdx);
 	pMapShader->BuildObjects(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, NULL, NULL);

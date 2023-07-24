@@ -103,22 +103,7 @@ bool CSession::DoSend(void* packet)
 	return true;
 }
 
-void CSession::DoDelaySend(C2S_ATTACK packet, float afterTick)
-{
-	DelayEvent<C2S_ATTACK>* de = new DelayEvent(packet);
-	{
-		std::unique_lock<std::shared_mutex> wl(_DelayQueueLock);
-		_DelayjobQueue->PushTask(static_cast<queueEvent*>(de), afterTick);
-	}
-}
 
-void CSession::DoDelayTask()
-{
-	{
-		std::unique_lock<std::shared_mutex> wl(_DelayQueueLock);
-		_DelayjobQueue->DoTasks();
-	}
-}
 
 bool CSession::DoRecv()
 {

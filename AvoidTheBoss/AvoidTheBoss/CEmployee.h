@@ -20,7 +20,7 @@ private:
 private:
 	float m_maxRGuage = 100;
 	float m_curGuage = 0;
-	float m_rVel = 5.0f;
+	float m_rVel = 10.0f;
 	float m_bIsRescuing = false;
 private:
 	int32 m_curInterGen = -1;

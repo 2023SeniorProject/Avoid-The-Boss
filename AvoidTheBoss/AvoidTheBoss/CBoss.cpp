@@ -587,6 +587,7 @@ uint8 CBoss::ProcessInput()
 	if (dir) SetBehavior(PLAYER_BEHAVIOR::RUN);
 	else	 SetBehavior(PLAYER_BEHAVIOR::IDLE);
 
+	CGameScene* gs = static_cast<CGameScene*>(mainGame.m_SceneManager->GetSceneByIdx(3));
 	// 1. 공격 키를 눌렀을 경우 처리 
 	if (InputManager::GetInstance().GetKeyBuffer(KEY_TYPE::SPACE) == (uint8)KEY_STATUS::KEY_PRESS && !GetOnAttack())
 	{
@@ -615,7 +616,8 @@ uint8 CBoss::ProcessInput()
 					if (targetPlayer->m_playerBV.Intersects(XMLoadFloat3(&bossPos), XMLoadFloat3(&bossDir), rayDist) && !targetPlayer->m_bIsInvincibility)
 					{
 						packet.tidx = i;
-						clientCore.DoSend(&packet);
+						DelayEvent* aev = new DelayEvent(packet);
+						gs->AddEvent(static_cast<queueEvent*>(aev), 1000);
 						break;
 					}
 				}

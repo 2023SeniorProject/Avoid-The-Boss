@@ -20,8 +20,6 @@ public:
 	void InitConnect(const char* address);
 	void DoConnect(void* loginInfo);
 	void DoSend(void* packet) { _client->DoSend(packet); }
-	void DoDelaySendTask() { _client->DoDelayTask(); }
-	void DoDelaySend(C2S_ATTACK packet, float after) { _client->DoDelaySend(packet, after); }
 	virtual void Disconnect(int32 sid) override;
 private:
 	CSession* _client;

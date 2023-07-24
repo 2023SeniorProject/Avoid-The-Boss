@@ -58,21 +58,20 @@ public:
 	virtual void Task();
 };
 
-template<class T>
+
 class DelayEvent : public queueEvent
 {
-	T _packet;
+	C2S_ATTACK _packet;
 
 public:
 	~DelayEvent() {};
-	DelayEvent(T packet)
+	DelayEvent(C2S_ATTACK packet)
 	{
 		_packet = packet;
 	}
 public:
 	virtual void Task() 
 	{
-		
 		
 		clientCore.DoSend(&_packet);
 		std::cout << "SendAttack";

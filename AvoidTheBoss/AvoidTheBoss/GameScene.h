@@ -47,6 +47,7 @@ public: // 오승담 작성 함수
 	void StopTimer() { m_timer.Stop(); }
 	void StartTimer() { m_timer.Start(); }
 	void AddEvent(queueEvent*, float);
+
 	void Exit();
 public:
 	WCHAR								txtFrameBuf[20];

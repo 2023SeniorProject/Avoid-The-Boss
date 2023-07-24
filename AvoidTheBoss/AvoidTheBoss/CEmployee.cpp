@@ -204,7 +204,7 @@ void CEmployee::LateUpdate(float fTimeElapsed, CLIENT_TYPE ptype)
 	// 무적시간 동안 피격 이펙트 재생
 	if (m_bIsInvincibility)
 	{
-		m_UICoolTime -= fTimeElapsed * 10.0f;
+		m_UICoolTime -= fTimeElapsed;
 	}
 	else 
 	{

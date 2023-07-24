@@ -79,11 +79,11 @@
     <ClCompile Include="SoundManager.cpp">
       <Filter>Mananger\SoundManager</Filter>
     </ClCompile>
-    <ClCompile Include="clientIocpCore.cpp">
-      <Filter>ForClient\IocpCore</Filter>
-    </ClCompile>
     <ClCompile Include="Player.cpp">
       <Filter>Player</Filter>
+    </ClCompile>
+    <ClCompile Include="clientIocpCore.cpp">
+      <Filter>ForClient\IocpCore</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

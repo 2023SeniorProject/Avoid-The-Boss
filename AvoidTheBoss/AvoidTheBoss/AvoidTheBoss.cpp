@@ -63,16 +63,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
             std::cout << "end thread \n";
         }
     );
-    GCThreadManager->Launch([=]()
-        {
-            while (true)
-            {
-               clientCore.DoDelaySendTask();
-               ::Sleep(0.0f);
-            }
-        }
-    );
-
+   
    while (true)
    {
        if (::PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))

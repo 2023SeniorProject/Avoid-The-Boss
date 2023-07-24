@@ -145,6 +145,13 @@ uint8 CEmployee::ProcessInput()
 		
 		
 	}
+
+	if (InputManager::GetInstance().GetKeyBuffer(KEY_TYPE::G) == (uint8)KEY_STATUS::KEY_PRESS)
+	{
+		if (m_pCamera->m_fogOn) m_pCamera->m_fogOn = false;
+		else m_pCamera->m_fogOn = true;
+	}
+
 	GenTasking();
 	RescueTasking();
 

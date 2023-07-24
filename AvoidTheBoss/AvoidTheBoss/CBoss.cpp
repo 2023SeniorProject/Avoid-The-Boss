@@ -627,7 +627,7 @@ uint8 CBoss::ProcessInput()
 		m_pBullet->SetStartShoot(true);
 		SoundManager::GetInstance().PlayObjectSound(4, 3);
 	}
-	if (InputManager::GetInstance().GetKeyBuffer(KEY_TYPE::E) == (uint8)KEY_STATUS::KEY_PRESS)
+	if (InputManager::GetInstance().GetKeyBuffer(KEY_TYPE::G) == (uint8)KEY_STATUS::KEY_PRESS)
 	{
 		if (m_pCamera->m_fogOn) m_pCamera->m_fogOn = false;
 		else m_pCamera->m_fogOn = true;

@@ -13,7 +13,8 @@ enum class KEY_TYPE
 	S = 0x53,
 	D = 0x44,
 	E = 0x45,
-	F = 0x46
+	F = 0x46,
+	G = 0x47,
 };
 
 enum class KEY_STATUS : int8

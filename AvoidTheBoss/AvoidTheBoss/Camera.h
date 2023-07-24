@@ -14,6 +14,7 @@ struct VS_CB_CAMERA_INFO
 	XMFLOAT4X4						m_xmf4x4View;
 	XMFLOAT4X4						m_xmf4x4Projection;
 	XMFLOAT3						m_xmf3Position;
+	XMFLOAT3						m_xmf3FogOption;
 };
 
 class CPlayer;
@@ -60,6 +61,11 @@ protected:
 
 	ID3D12Resource* m_pd3dcbCamera = NULL;
 	VS_CB_CAMERA_INFO* m_pcbMappedCamera = NULL;
+	
+public:
+	int32		m_playerIdx = -1;
+	bool		m_fogOn = false;
+
 public:
 	CCamera();
 	CCamera(CCamera* pCamera);

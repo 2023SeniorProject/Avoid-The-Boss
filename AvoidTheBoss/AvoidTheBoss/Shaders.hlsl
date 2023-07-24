@@ -11,6 +11,7 @@ cbuffer cbCameraInfo : register(b1)
 	matrix					gmtxView : packoffset(c0);
 	matrix					gmtxProjection : packoffset(c4);
 	float3					gvCameraPosition : packoffset(c8);
+	float3					gvFogOption : packoffset(c9);
 };
 
 cbuffer cbGameObjectInfo : register(b2)
@@ -149,6 +150,28 @@ float4 PSNonFogStandard(VS_STANDARD_OUTPUT input) : SV_TARGET
 	float3 normalW;
 	float4 cColor = cAlbedoColor + cSpecularColor + cMetallicColor + cEmissionColor;
 
+	float3 cameraPos = gvCameraPosition.xyz;
+	float3 vPositionToCamera = cameraPos - input.positionW;
+	
+	float Distance = length(vPositionToCamera);
+	
+	float FogStart = 0;
+	float FogEnd = 0;
+	if (gvFogOption.x > 2)
+	{
+		FogStart = 2.0;
+		FogEnd = 7.0;
+	}
+	else
+	{
+		FogStart = 5.0;
+		FogEnd = 12.0;
+	}
+	float FogRange = FogEnd - FogStart;
+	float FogFactor = 0;
+
+	float4 fogColor = float4(0.3f, 0.3f, 0.3f, 1.0f);
+
 	if (gnTexturesMask & MATERIAL_NORMAL_MAP)
 	{
 		float3x3 TBN = float3x3(normalize(input.tangentW), normalize(input.bitangentW), normalize(input.normalW));
@@ -159,17 +182,22 @@ float4 PSNonFogStandard(VS_STANDARD_OUTPUT input) : SV_TARGET
 	{
 		normalW = normalize(input.normalW);
 	}
-
-	/*if (Distance <= FogStart)
-		return(lerp(cColor, wIllumination, 0.5f));
-	else if (Distance > FogStart && Distance <= FogEnd)
-		return(lerp(cColor, wIllumination, 0.3f));
-	else return (lerp(cColor, wIllumination, 0.1f));*/
-
-	float4 cIllumination = Lighting(input.positionW, normalW);
-	return(lerp(cColor, cIllumination, 0.5f));
 	
-		return cColor;
+	float4 wIllumination = Lighting(input.positionW, normalW);
+
+	if (gvFogOption.x > 0)
+	{
+		
+		FogFactor = saturate((FogEnd - Distance) / FogEnd);
+		
+		cColor = cColor * FogFactor + (1.0f - FogFactor) * fogColor;
+
+		if (FogStart <= Distance && Distance <= FogEnd) return(lerp(cColor, wIllumination, (1.0f - ((Distance + 0.01f) / FogEnd))));
+		else if (Distance < FogStart) return(lerp(cColor, wIllumination, 0.5));
+		else return cColor;
+	}
+	
+	return(lerp(cColor, wIllumination, 0.5f));
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

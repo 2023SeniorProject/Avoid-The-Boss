@@ -758,11 +758,7 @@ void CGameObject::Render(ID3D12GraphicsCommandList4* pd3dCommandList, CCamera* p
 	if (m_pChild) m_pChild->Render(pd3dCommandList, pCamera, bRaster);
 }
 
-void CGameObject::CreateShaderVariables(ID3D12Device5 *pd3dDevice, 
-	
-	
-	
-	ID3D12GraphicsCommandList4    *pd3dCommandList)
+void CGameObject::CreateShaderVariables(ID3D12Device5 *pd3dDevice, ID3D12GraphicsCommandList4    *pd3dCommandList)
 {
 }
 

@@ -59,7 +59,6 @@ void CCamera::CreateShaderVariables(ID3D12Device5* pd3dDevice, ID3D12GraphicsCom
 {
 	UINT ncbElementBytes = ((sizeof(VS_CB_CAMERA_INFO) + 255) & ~255); //256ÀÇ ¹è¼ö
 	m_pd3dcbCamera = ::CreateBufferResource(pd3dDevice, pd3dCommandList, NULL, ncbElementBytes, D3D12_HEAP_TYPE_UPLOAD, D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER, NULL);
-
 	m_pd3dcbCamera->Map(0, NULL, (void**)&m_pcbMappedCamera);
 }
 
@@ -83,7 +82,19 @@ void CCamera::UpdateShaderVariables(ID3D12GraphicsCommandList4* pd3dCommandList)
 	::memcpy(&m_pcbMappedCamera->m_xmf4x4Projection, &xmf4x4Projection, sizeof(XMFLOAT4X4));
 
 	::memcpy(&m_pcbMappedCamera->m_xmf3Position, &m_xmf3Position, sizeof(XMFLOAT3));
+	
+	XMFLOAT3 fogOption; // id , on off, start, end;
+	
+	std::cout << m_fogOn << " " << m_playerIdx << "\n";
+	
+	if (m_playerIdx == 0 && m_fogOn)	fogOption =	XMFLOAT3 {1.f, 2.f, 7.f  };
+	else if (m_playerIdx > 0 && m_fogOn) fogOption = XMFLOAT3{3.f , 5.f, 7.f };
+	else if(m_playerIdx < 0 || !m_fogOn) fogOption = XMFLOAT3{ -1.f , 0.f, 0.f };
 
+	
+	::memcpy(&m_pcbMappedCamera->m_xmf3FogOption, &fogOption, sizeof(XMFLOAT3));
+	
+	
 	D3D12_GPU_VIRTUAL_ADDRESS d3dGpuVirtualAddress = m_pd3dcbCamera->GetGPUVirtualAddress();
 	pd3dCommandList->SetGraphicsRootConstantBufferView(0, d3dGpuVirtualAddress);
 }

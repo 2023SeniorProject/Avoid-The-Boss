@@ -304,10 +304,9 @@ D3D12_SHADER_BYTECODE CStandardShader::CreateVertexShader()
 
 D3D12_SHADER_BYTECODE CStandardShader::CreatePixelShader(int16 playerIdx)
 {
-	if (playerIdx == 0)
-		return(CShader::CompileShaderFromFile(L"Shaders.hlsl", "PSNonFogStandard", "ps_5_1", &m_pd3dPixelShaderBlob));
-	else 
-		return(CShader::CompileShaderFromFile(L"Shaders.hlsl", "PSStandard", "ps_5_1", &m_pd3dPixelShaderBlob));
+	
+	return(CShader::CompileShaderFromFile(L"Shaders.hlsl", "PSNonFogStandard", "ps_5_1", &m_pd3dPixelShaderBlob));
+	
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

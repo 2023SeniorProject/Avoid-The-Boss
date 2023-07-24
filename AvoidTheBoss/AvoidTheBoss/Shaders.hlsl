@@ -10,8 +10,8 @@ cbuffer cbCameraInfo : register(b1)
 {
 	matrix					gmtxView : packoffset(c0);
 	matrix					gmtxProjection : packoffset(c4);
-	float3					gvCameraPosition : packoffset(c8);
-	float3					gvFogOption : packoffset(c9);
+	float4					gvFogOption : packoffset(c8);
+	float3					gvCameraPosition : packoffset(c9);
 };
 
 cbuffer cbGameObjectInfo : register(b2)
@@ -155,9 +155,9 @@ float4 PSNonFogStandard(VS_STANDARD_OUTPUT input) : SV_TARGET
 	
 	float Distance = length(vPositionToCamera);
 	
-	float FogStart = 0;
-	float FogEnd = 0;
-	if (gvFogOption.x > 2)
+	float FogStart = gvFogOption.y;
+	float FogEnd = gvFogOption.z;
+	/*if (gvFogOption.x > 2)
 	{
 		FogStart = 2.0;
 		FogEnd = 7.0;
@@ -166,7 +166,7 @@ float4 PSNonFogStandard(VS_STANDARD_OUTPUT input) : SV_TARGET
 	{
 		FogStart = 5.0;
 		FogEnd = 12.0;
-	}
+	}*/
 	float FogRange = FogEnd - FogStart;
 	float FogFactor = 0;
 

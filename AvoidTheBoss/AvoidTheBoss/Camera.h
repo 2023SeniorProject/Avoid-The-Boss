@@ -13,8 +13,9 @@ struct VS_CB_CAMERA_INFO
 {
 	XMFLOAT4X4						m_xmf4x4View;
 	XMFLOAT4X4						m_xmf4x4Projection;
+	XMFLOAT4						m_xmf4FogOption;
 	XMFLOAT3						m_xmf3Position;
-	XMFLOAT3						m_xmf3FogOption;
+	
 };
 
 class CPlayer;

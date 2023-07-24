@@ -342,8 +342,6 @@ public:
 	int								m_type = -1;
 
 	void SetMesh(CMesh *pMesh);
-	//void SetShader(CShader *pShader);
-	//void SetShader(int nMaterial, CShader *pShader);
 	void SetMaterial(int nMaterial, CMaterial *pMaterial);
 
 	void SetChild(CGameObject *pChild, bool bReferenceUpdate=false);
@@ -351,11 +349,9 @@ public:
 	virtual void BuildMaterials(ID3D12Device5 *pd3dDevice, ID3D12GraphicsCommandList4  *pd3dCommandList) { }
 
 	virtual void OnPrepareAnimate() { }
-	//virtual void Animate(float fTimeElapsed);
 	virtual void Update(float fTimeElapsed) { }
 
 	virtual void OnPrepareRender() { }
-	//virtual void Render(ID3D12GraphicsCommandList4 *pd3dCommandList, CCamera* pCamera, bool bRaster);
 
 	virtual void CreateShaderVariables(ID3D12Device5 *pd3dDevice, ID3D12GraphicsCommandList4  *pd3dCommandList);
 	virtual void UpdateShaderVariables(ID3D12GraphicsCommandList4  *pd3dCommandList);
@@ -392,18 +388,8 @@ public:
 	UINT GetMeshType() { return((m_pMesh) ? m_pMesh->GetType() : 0x00); }
 
 public:
-	//CAnimationController 			*m_pSkinnedAnimationController = NULL;
-
-	//CSkinnedMesh *FindSkinnedMesh(char *pstrSkinnedMeshName);
-	//void FindAndSetSkinnedMesh(CSkinnedMesh **ppSkinnedMeshes, int *pnSkinnedMesh);
-
-	//void SetTrackAnimationSet(int nAnimationTrack, int nAnimationSet);
-	//void SetTrackAnimationPosition(int nAnimationTrack, float fPosition);
 
 	void LoadMaterialsFromFile(ID3D12Device5 *pd3dDevice, ID3D12GraphicsCommandList4  *pd3dCommandList, CGameObject *pParent, FILE *pInFile);
-
-	//static void LoadAnimationFromFile(FILE *pInFile, CLoadedModelInfo *pLoadedModel);
-		//static CLoadedModelInfo *LoadGeometryAndAnimationFromFile(ID3D12Device5 *pd3dDevice, ID3D12GraphicsCommandList4  *pd3dCommandList, ID3D12RootSignature *pd3dGraphicsRootSignature, const char *pstrFileName, CShader *pShader, Layout objType);
 
 	static CGameObject *LoadFrameHierarchyFromFile(ID3D12Device5 *pd3dDevice, ID3D12GraphicsCommandList4  *pd3dCommandList, ID3D12RootSignature *pd3dGraphicsRootSignature, CGameObject *pParent, FILE *pInFile, int *pnSkinnedMeshes);
 

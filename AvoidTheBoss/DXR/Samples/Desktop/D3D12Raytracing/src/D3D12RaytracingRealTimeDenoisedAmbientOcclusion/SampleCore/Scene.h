@@ -59,7 +59,7 @@ private:
     void GenerateGrassGeometry();
     void CreateIndexAndVertexBuffers(const GeometryDescriptor& desc, D3DGeometry* geometry);
     void LoadPBRTScene();
-    void LoadBinaryScene(); // 바이너리 파일 로드용 추가 함수
+   // void LoadBinaryScene(); // 바이너리 파일 로드용 추가 함수
     void LoadSceneGeometry();
     void InitializeScene();
     void UpdateAccelerationStructure();
@@ -110,6 +110,12 @@ private:
     StructuredBuffer<XMFLOAT3X4> m_prevFrameBottomLevelASInstanceTransforms;        // Bottom-Level AS Instance transforms used for previous frame. Used for Temporal Reprojection.
        
     struct PBRTScene
+    {
+        std::wstring name;
+        std::string path;
+    };
+
+    struct BinScene
     {
         std::wstring name;
         std::string path;

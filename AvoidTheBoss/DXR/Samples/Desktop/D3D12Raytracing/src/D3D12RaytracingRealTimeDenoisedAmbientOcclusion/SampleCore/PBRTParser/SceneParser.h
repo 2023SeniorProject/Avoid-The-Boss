@@ -251,13 +251,13 @@ namespace SceneParser
 
     struct Scene
     {
-        Camera m_Camera;
-        Film m_Film;
-        std::unordered_map<std::string, Material> m_Materials;
-        std::vector<AreaLight> m_AreaLights;
-        std::vector<Mesh> m_Meshes;
-        EnvironmentMap m_EnvironmentMap;
-		XMMATRIX m_transform;
+        Camera m_Camera; //Scene
+        Film m_Film; // 이미지에 대한 해상도 x,y인데 내 파일엔 없다.
+        std::unordered_map<std::string, Material> m_Materials; //CGameObject
+        std::vector<AreaLight> m_AreaLights; //CGameObject
+        std::vector<Mesh> m_Meshes; //CGameObject
+        EnvironmentMap m_EnvironmentMap; //Scene
+		XMMATRIX m_transform; //	CGameObject에 XMFLOAT4X4 m_xmf4x4ToParent;
     };
 
     class BadFormatException : public std::exception

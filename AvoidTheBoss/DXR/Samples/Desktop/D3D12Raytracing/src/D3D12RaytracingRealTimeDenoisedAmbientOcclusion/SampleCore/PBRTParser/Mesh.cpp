@@ -5,7 +5,7 @@
 #include "stdafx.h"
 #include "Mesh.h"
 #include "GameObject.h"
-
+#include "SceneParser.h"
 
 CMesh::CMesh(ID3D12Device5 *pd3dDevice, ID3D12GraphicsCommandList4*pd3dCommandList)
 {
@@ -133,14 +133,14 @@ void CStandardMesh::LoadMeshFromFile(ID3D12Device5 *pd3dDevice, ID3D12GraphicsCo
 		::ReadStringFromFile(pInFile, pstrToken);
 		if (!strcmp(pstrToken, "<Bounds>:"))
 		{
-			nReads = (UINT)::fread(&m_xmf3AABBCenter, sizeof(XMFLOAT3), 1, pInFile);
-			nReads = (UINT)::fread(&m_xmf3AABBExtents, sizeof(XMFLOAT3), 1, pInFile);
-
-			//if (objType == Layout::BOUDS)
-			//{
-			//	pGameobject->m_pAABB.Center = m_xmf3AABBCenter;
-			//	pGameobject->m_pAABB.Extents = m_xmf3AABBExtents;
-			//}
+		//	//nReads = (UINT)::fread(&m_xmf3AABBCenter, sizeof(XMFLOAT3), 1, //pInFile);
+		//	//nReads = (UINT)::fread(&m_xmf3AABBExtents, sizeof(XMFLOAT3), 1, //pInFile);
+		//
+		//	//if (objType == Layout::BOUDS)
+		//	//{
+		//	//	pGameobject->m_pAABB.Center = m_xmf3AABBCenter;
+		//	//	pGameobject->m_pAABB.Extents = m_xmf3AABBExtents;
+		//	//}
 		}
 		else if (!strcmp(pstrToken, "<Positions>:"))
 		{

@@ -165,15 +165,15 @@ private:
 	///
 	/// \param vVertexBuffers : pair of buffer and vertex count
 	/// \return AccelerationStructureBuffers for TLAS
-	AccelerationStructureBuffers CreateBottomLevelAS(std::vector<std::pair<ComPtr<ID3D12Resource>, uint32_t>> vVertexBuffers); //  GPU 메모리의 정점 버퍼 및 정점 수 하위 레벨 AS를 생성
+	//AccelerationStructureBuffers CreateBottomLevelAS(std::vector<std::pair<ComPtr<ID3D12Resource>, uint32_t>> vVertexBuffers); //  GPU 메모리의 정점 버퍼 및 정점 수 하위 레벨 AS를 생성
 public:
 	/// Create the main acceleration structure that holds
 	/// all instances of the scene
 	/// \param instances : pair of BLAS and transform
-	void CreateTopLevelAS(const std::vector<std::pair<ComPtr<ID3D12Resource>, DirectX::XMMATRIX>>& instances); // 최하위 AS 및 변환 행렬 에서 최상위 AS를 생성
+	//void CreateTopLevelAS(const std::vector<std::pair<ComPtr<ID3D12Resource>, DirectX::XMMATRIX>>& instances); // 최하위 AS 및 변환 행렬 에서 최상위 AS를 생성
 
 	/// Create all acceleration structures, bottom and top
-	void CreateAccelerationStructures(); //위의 방법을 함께 바인딩
+	//void CreateAccelerationStructures(); //위의 방법을 함께 바인딩
 };
 
 extern CGameFramework mainGame;

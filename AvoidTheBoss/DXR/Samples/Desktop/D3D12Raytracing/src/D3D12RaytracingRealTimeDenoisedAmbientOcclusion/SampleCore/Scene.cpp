@@ -15,9 +15,9 @@
 #include "EngineTuning.h"
 #include "EngineProfiling.h"
 #include "GpuTimeManager.h"
-#include "Scene.h"
 #include "RaytracingSceneDefines.h"
 #include "D3D12RaytracingRealTimeDenoisedAmbientOcclusion.h"
+//#include "BinParser.h"
 
 using namespace std;
 using namespace DX;
@@ -403,161 +403,162 @@ void Scene::LoadPBRTScene()
     finish.wait();
 }
 
-void Scene::LoadBinaryScene()
-{
-        auto device = m_deviceResources->GetD3DDevice();
-        auto commandList = m_deviceResources->GetCommandList();
-        auto commandQueue = m_deviceResources->GetCommandQueue();
-        auto commandAllocator = m_deviceResources->GetCommandAllocator();
-
-        PBRTScene binSceneDefinitions[] = {
-            {L"Spaceship", "Assets\\Factory\\Industry_Field.bin"}, 
-    #if !LOAD_ONLY_ONE_PBRT_MESH 
-            {L"Car", "Assets\\Factory\\Industry_Map.pbrt"},
-    #endif
-        };
-
-        ResourceUploadBatch resourceUpload(device);
-        resourceUpload.Begin();
-
-        //에셋들에 대한 로드를 Parse() 함수로 진행
-        //로드한 데이터들을 BLAS에 넘겨준다   
-        bool isVertexAnimated = false;
-        for (auto& binSceneDefinition : binSceneDefinitions)
-        {
-            SceneParser::Scene pbrtScene;
-            BinParser::BinParser().LoadBinScene(device, commandList,binSceneDefinition.path, pbrtScene);
-
-            auto& bottomLevelASGeometry = m_bottomLevelASGeometries[binSceneDefinition.name];
-            bottomLevelASGeometry.SetName(binSceneDefinition.name);
-
-            bottomLevelASGeometry.m_indexFormat = StandardIndexFormat;
-            bottomLevelASGeometry.m_ibStrideInBytes = StandardIndexStride;
-            bottomLevelASGeometry.m_vertexFormat = DXGI_FORMAT_R32G32B32_FLOAT;
-            bottomLevelASGeometry.m_vbStrideInBytes = StandardVertexStride;
-
-            UINT numGeometries = static_cast<UINT>(pbrtScene.m_Meshes.size());
-            auto& geometries = bottomLevelASGeometry.m_geometries;
-            geometries.resize(numGeometries);
-
-            auto& textures = bottomLevelASGeometry.m_textures;
-            auto& numTriangles = bottomLevelASGeometry.m_numTriangles;
-
-            for (UINT i = 0; i < pbrtScene.m_Meshes.size(); i++)
-            {
-                auto& mesh = pbrtScene.m_Meshes[i];
-                if (mesh.m_VertexBuffer.size() == 0 || mesh.m_IndexBuffer.size() == 0)
-                {
-                    continue;
-                }
-                vector<VertexPositionNormalTextureTangent> vertexBuffer;
-                vector<Index> indexBuffer;
-                vertexBuffer.reserve(mesh.m_VertexBuffer.size());
-                indexBuffer.reserve(mesh.m_IndexBuffer.size());
-
-                GeometryDescriptor desc;
-                desc.ib.count = static_cast<UINT>(mesh.m_IndexBuffer.size());
-                desc.vb.count = static_cast<UINT>(mesh.m_VertexBuffer.size());
-
-                for (auto& parseIndex : mesh.m_IndexBuffer)
-                {
-                    Index index = parseIndex;
-                    indexBuffer.push_back(index);
-                }
-                desc.ib.indices = indexBuffer.data();
-
-                for (auto& parseVertex : mesh.m_VertexBuffer)
-                {
-                    VertexPositionNormalTextureTangent vertex;
-
-                    // Apply the initial transform to VB attributes.
-                    XMStoreFloat3(&vertex.normal, XMVector3TransformNormal(parseVertex.Normal.GetXMVECTOR(), mesh.m_transform));
-                    XMStoreFloat3(&vertex.position, XMVector3TransformCoord(parseVertex.Position.GetXMVECTOR(), mesh.m_transform));
-
-                    vertex.tangent = parseVertex.Tangent.xmFloat3;
-                    vertex.textureCoordinate = parseVertex.UV.xmFloat2;
-                    vertexBuffer.push_back(vertex);
-                }
-                desc.vb.vertices = vertexBuffer.data();
-
-                auto& geometry = geometries[i];
-                CreateIndexAndVertexBuffers(desc, &geometry);
-
-                PrimitiveMaterialBuffer cb;
-                cb.Kd = mesh.m_pMaterial->m_Kd.xmFloat3;
-                cb.Ks = mesh.m_pMaterial->m_Ks.xmFloat3;
-                cb.Kr = mesh.m_pMaterial->m_Kr.xmFloat3;
-                cb.Kt = mesh.m_pMaterial->m_Kt.xmFloat3;
-                cb.opacity = mesh.m_pMaterial->m_Opacity.xmFloat3;
-                cb.eta = mesh.m_pMaterial->m_Eta.xmFloat3;
-                cb.roughness = mesh.m_pMaterial->m_Roughness;
-                cb.hasDiffuseTexture = !mesh.m_pMaterial->m_DiffuseTextureFilename.empty();
-                cb.hasNormalTexture = !mesh.m_pMaterial->m_NormalMapTextureFilename.empty();
-                cb.hasPerVertexTangents = true;
-                cb.type = mesh.m_pMaterial->m_Type;
-
-                auto LoadPBRTTexture = [&](auto* pOutTextureHandle, auto& textureFilename)
-                {
-                    wstring filename(textureFilename.begin(), textureFilename.end());
-                    D3DTexture texture;
-
-                    if (filename.find(L".dds") != wstring::npos)
-                    {
-                        LoadDDSTexture(device, commandList, filename.c_str(), m_cbvSrvUavHeap.get(), &texture);
-                    }
-                    else
-                    {
-                        LoadWICTexture(device, &resourceUpload, filename.c_str(), m_cbvSrvUavHeap.get(), &texture.resource, &texture.heapIndex, &texture.cpuDescriptorHandle, &texture.gpuDescriptorHandle, false);
-                    }
-                    textures.push_back(texture);
-
-                    *pOutTextureHandle = textures.back().gpuDescriptorHandle;
-                };
-
-                D3D12_GPU_DESCRIPTOR_HANDLE diffuseTextureHandle = m_nullTexture.gpuDescriptorHandle;
-                if (cb.hasDiffuseTexture)
-                {
-                    LoadPBRTTexture(&diffuseTextureHandle, mesh.m_pMaterial->m_DiffuseTextureFilename);
-                }
-
-                D3D12_GPU_DESCRIPTOR_HANDLE normalTextureHandle = m_nullTexture.gpuDescriptorHandle;
-                if (cb.hasNormalTexture)
-                {
-                    LoadPBRTTexture(&normalTextureHandle, mesh.m_pMaterial->m_NormalMapTextureFilename);
-                }
-
-                UINT materialID = static_cast<UINT>(m_materials.size());
-                m_materials.push_back(cb);
-
-                D3D12_RAYTRACING_GEOMETRY_FLAGS geometryFlags;
-
-
-                if (cb.opacity.x > 0.99f && cb.opacity.y > 0.99f && cb.opacity.z > 0.99f &&
-                    // AO Rays should reflect of perfect occluders, but that'd be more expensive to trace.
-                    // WORKAROUND: to prevent perfect mirrors occluding nearby surfaces.
-                    // Mark fully reflective mirrors as non opaque so that AO rays can skip them 
-                    // as occluders by ignoring non-opaque geometry on TraceRay.
-                    !(cb.type == MaterialType::Mirror && cb.Kr.x > 0.99f && cb.Kr.y > 0.99f && cb.Kr.z > 0.99f))
-                {
-                    geometryFlags = D3D12_RAYTRACING_GEOMETRY_FLAG_OPAQUE;
-                }
-                else
-                {
-                    geometryFlags = D3D12_RAYTRACING_GEOMETRY_FLAG_NONE;
-                }
-
-                bottomLevelASGeometry.m_geometryInstances.push_back(GeometryInstance(geometry, materialID, diffuseTextureHandle, normalTextureHandle, geometryFlags, isVertexAnimated));
-                numTriangles += desc.ib.count / 3;
-            }
-        }
-
-        // Upload the resources to the GPU.
-        auto finish = resourceUpload.End(commandQueue);
-
-        // Wait for the upload thread to terminate
-        finish.wait();
-    
-}
+//void Scene::LoadBinaryScene()
+//{
+//        auto device = m_deviceResources->GetD3DDevice();
+//        auto commandList = m_deviceResources->GetCommandList();
+//        auto commandQueue = m_deviceResources->GetCommandQueue();
+//        auto commandAllocator = m_deviceResources->GetCommandAllocator();
+//
+//        BinScene binSceneDefinitions[] = {
+//            {L"Spaceship", "Assets\\Factory\\Industry_Field.bin"}, 
+//    #if !LOAD_ONLY_ONE_PBRT_MESH 
+//            {L"Car", "Assets\\Factory\\Industry_Map.pbrt"},
+//    #endif
+//        };
+//
+//        ResourceUploadBatch resourceUpload(device);
+//        resourceUpload.Begin();
+//
+//        //에셋들에 대한 로드를 Parse() 함수로 진행
+//        //로드한 데이터들을 BLAS에 넘겨준다   
+//        bool isVertexAnimated = false;
+//        for (auto& binSceneDefinition : binSceneDefinitions)
+//        {
+//            SceneParser::Scene pbrtScene;
+//            BinParser::BinParser().LoadBinScene(device, commandList,binSceneDefinition.path, pbrtScene);
+//            BinParser::BinParser().RasterDataStructureAlignmentToDXR();
+//
+//            auto& bottomLevelASGeometry = m_bottomLevelASGeometries[binSceneDefinition.name];
+//            bottomLevelASGeometry.SetName(binSceneDefinition.name);
+//
+//            bottomLevelASGeometry.m_indexFormat = StandardIndexFormat;
+//            bottomLevelASGeometry.m_ibStrideInBytes = StandardIndexStride;
+//            bottomLevelASGeometry.m_vertexFormat = DXGI_FORMAT_R32G32B32_FLOAT;
+//            bottomLevelASGeometry.m_vbStrideInBytes = StandardVertexStride;
+//
+//            UINT numGeometries = static_cast<UINT>(pbrtScene.m_Meshes.size());
+//            auto& geometries = bottomLevelASGeometry.m_geometries;
+//            geometries.resize(numGeometries);
+//
+//            auto& textures = bottomLevelASGeometry.m_textures;
+//            auto& numTriangles = bottomLevelASGeometry.m_numTriangles;
+//
+//            for (UINT i = 0; i < pbrtScene.m_Meshes.size(); i++)
+//            {
+//                auto& mesh = pbrtScene.m_Meshes[i];
+//                if (mesh.m_VertexBuffer.size() == 0 || mesh.m_IndexBuffer.size() == 0)
+//                {
+//                    continue;
+//                }
+//                vector<VertexPositionNormalTextureTangent> vertexBuffer;
+//                vector<Index> indexBuffer;
+//                vertexBuffer.reserve(mesh.m_VertexBuffer.size());
+//                indexBuffer.reserve(mesh.m_IndexBuffer.size());
+//
+//                GeometryDescriptor desc;
+//                desc.ib.count = static_cast<UINT>(mesh.m_IndexBuffer.size());
+//                desc.vb.count = static_cast<UINT>(mesh.m_VertexBuffer.size());
+//
+//                for (auto& parseIndex : mesh.m_IndexBuffer)
+//                {
+//                    Index index = parseIndex;
+//                    indexBuffer.push_back(index);
+//                }
+//                desc.ib.indices = indexBuffer.data();
+//
+//                for (auto& parseVertex : mesh.m_VertexBuffer)
+//                {
+//                    VertexPositionNormalTextureTangent vertex;
+//
+//                    // Apply the initial transform to VB attributes.
+//                    XMStoreFloat3(&vertex.normal, XMVector3TransformNormal(parseVertex.Normal.GetXMVECTOR(), mesh.m_transform));
+//                    XMStoreFloat3(&vertex.position, XMVector3TransformCoord(parseVertex.Position.GetXMVECTOR(), mesh.m_transform));
+//
+//                    vertex.tangent = parseVertex.Tangent.xmFloat3;
+//                    vertex.textureCoordinate = parseVertex.UV.xmFloat2;
+//                    vertexBuffer.push_back(vertex);
+//                }
+//                desc.vb.vertices = vertexBuffer.data();
+//
+//                auto& geometry = geometries[i];
+//                CreateIndexAndVertexBuffers(desc, &geometry);
+//
+//                PrimitiveMaterialBuffer cb;
+//                cb.Kd = mesh.m_pMaterial->m_Kd.xmFloat3;
+//                cb.Ks = mesh.m_pMaterial->m_Ks.xmFloat3;
+//                cb.Kr = mesh.m_pMaterial->m_Kr.xmFloat3;
+//                cb.Kt = mesh.m_pMaterial->m_Kt.xmFloat3;
+//                cb.opacity = mesh.m_pMaterial->m_Opacity.xmFloat3;
+//                cb.eta = mesh.m_pMaterial->m_Eta.xmFloat3;
+//                cb.roughness = mesh.m_pMaterial->m_Roughness;
+//                cb.hasDiffuseTexture = !mesh.m_pMaterial->m_DiffuseTextureFilename.empty();
+//                cb.hasNormalTexture = !mesh.m_pMaterial->m_NormalMapTextureFilename.empty();
+//                cb.hasPerVertexTangents = true;
+//                cb.type = mesh.m_pMaterial->m_Type;
+//
+//                auto LoadPBRTTexture = [&](auto* pOutTextureHandle, auto& textureFilename)
+//                {
+//                    wstring filename(textureFilename.begin(), textureFilename.end());
+//                    D3DTexture texture;
+//
+//                    if (filename.find(L".dds") != wstring::npos)
+//                    {
+//                        LoadDDSTexture(device, commandList, filename.c_str(), m_cbvSrvUavHeap.get(), &texture);
+//                    }
+//                    else
+//                    {
+//                        LoadWICTexture(device, &resourceUpload, filename.c_str(), m_cbvSrvUavHeap.get(), &texture.resource, &texture.heapIndex, &texture.cpuDescriptorHandle, &texture.gpuDescriptorHandle, false);
+//                    }
+//                    textures.push_back(texture);
+//
+//                    *pOutTextureHandle = textures.back().gpuDescriptorHandle;
+//                };
+//
+//                D3D12_GPU_DESCRIPTOR_HANDLE diffuseTextureHandle = m_nullTexture.gpuDescriptorHandle;
+//                if (cb.hasDiffuseTexture)
+//                {
+//                    LoadPBRTTexture(&diffuseTextureHandle, mesh.m_pMaterial->m_DiffuseTextureFilename);
+//                }
+//
+//                D3D12_GPU_DESCRIPTOR_HANDLE normalTextureHandle = m_nullTexture.gpuDescriptorHandle;
+//                if (cb.hasNormalTexture)
+//                {
+//                    LoadPBRTTexture(&normalTextureHandle, mesh.m_pMaterial->m_NormalMapTextureFilename);
+//                }
+//
+//                UINT materialID = static_cast<UINT>(m_materials.size());
+//                m_materials.push_back(cb);
+//
+//                D3D12_RAYTRACING_GEOMETRY_FLAGS geometryFlags;
+//
+//
+//                if (cb.opacity.x > 0.99f && cb.opacity.y > 0.99f && cb.opacity.z > 0.99f &&
+//                    // AO Rays should reflect of perfect occluders, but that'd be more expensive to trace.
+//                    // WORKAROUND: to prevent perfect mirrors occluding nearby surfaces.
+//                    // Mark fully reflective mirrors as non opaque so that AO rays can skip them 
+//                    // as occluders by ignoring non-opaque geometry on TraceRay.
+//                    !(cb.type == MaterialType::Mirror && cb.Kr.x > 0.99f && cb.Kr.y > 0.99f && cb.Kr.z > 0.99f))
+//                {
+//                    geometryFlags = D3D12_RAYTRACING_GEOMETRY_FLAG_OPAQUE;
+//                }
+//                else
+//                {
+//                    geometryFlags = D3D12_RAYTRACING_GEOMETRY_FLAG_NONE;
+//                }
+//
+//                bottomLevelASGeometry.m_geometryInstances.push_back(GeometryInstance(geometry, materialID, diffuseTextureHandle, normalTextureHandle, geometryFlags, isVertexAnimated));
+//                numTriangles += desc.ib.count / 3;
+//            }
+//        }
+//
+//        // Upload the resources to the GPU.
+//        auto finish = resourceUpload.End(commandQueue);
+//
+//        // Wait for the upload thread to terminate
+//        finish.wait();
+//    
+//}
 
 void Scene::InitializeScene()
 {
@@ -590,7 +591,7 @@ void Scene::InitializeScene()
 void Scene::LoadSceneGeometry()
 {
     LoadPBRTScene();
-    LoadBinaryScene(); // 내가 추가한 에셋 로드 호출 함수
+    //LoadBinaryScene(); // 내가 추가한 에셋 로드 호출 함수
 
 #if RENDER_GRASS_GEOMETRY
     InitializeGrassGeometry();

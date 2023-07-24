@@ -3,7 +3,7 @@
 #include "clientIocpCore.h"
 
 #include <string>
-#include "DXRHelper.h"
+//#include "DXRHelper.h"
 #include "DXRHelpers/nv_helpers_dx12/BottomLevelASGenerator.h"
 //#include "nv_helpers_dx12/RaytracingPipelineGenerator.h"
 //#include "nv_helpers_dx12/RootSignatureGenerator.h"
@@ -71,11 +71,11 @@ bool CGameFramework::OnCreate(HINSTANCE hInstance, HWND hMainWnd)
 	CheckRaytracingSupport();
 	// Setup the acceleration structures (AS) for raytracing. When setting up 
 	// geometry, each bottom-level AS has its own transform matrix. 
-	CreateAccelerationStructures();
+	//CreateAccelerationStructures();
 	// Command lists are created in the recording state, but there is 
 	// nothing to record yet. The main loop expects it to be closed, so 
 	// close it now. 
-	ThrowIfFailed(m_pd3dCommandList->Close());
+	//ThrowIfFailed(m_pd3dCommandList->Close());
 
 	// Create the raytracing pipeline, associating the shader code to symbol names
 // and to their root signatures, and defining the amount of memory carried by
@@ -597,37 +597,37 @@ void CGameFramework::OnKeyUp(UINT8 key)
 	}
 }
 
-AccelerationStructureBuffers CGameFramework::CreateBottomLevelAS(std::vector<std::pair<ComPtr<ID3D12Resource>, uint32_t>> vVertexBuffers)// pair :지오메트리의 정점을 보유하는 리소스에 대한 포인터, 두번쨰 : 정점의 수
-{
-	nv_helpers_dx12::BottomLevelASGenerator bottomLevelAS;
-
-	// Adding all vertex buffers and not transforming their position. 
-	for (const auto& buffer : vVertexBuffers) { bottomLevelAS.AddVertexBuffer(buffer.first.Get(), 0, buffer.second, sizeof(CMesh), 0, 0); } // 정점+색깔 버퍼 클래스 찾아서 넣어야함
-
-	// The AS build requires some scratch space to store temporary information. 
-	// The amount of scratch memory is dependent on the scene complexity. 
-	UINT64 scratchSizeInBytes = 0;
-
-	// The final AS also needs to be stored in addition to the existing vertex 
-	// buffers. It size is also dependent on the scene complexity. 
-	UINT64 resultSizeInBytes = 0;
-	bottomLevelAS.ComputeASBufferSizes(m_pd3dDevice, false, &scratchSizeInBytes, &resultSizeInBytes);
-
-	// Once the sizes are obtained, the application is responsible for allocating 
-	// the necessary buffers. Since the entire generation will be done on the GPU 
-	// we can directly allocate those on the default heap 
-
-	AccelerationStructureBuffers buffers;
-	buffers.pScratch = nv_helpers_dx12::CreateBuffer(m_pd3dDevice, scratchSizeInBytes, D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS, D3D12_RESOURCE_STATE_COMMON, nv_helpers_dx12::kDefaultHeapProps);
-	buffers.pResult = nv_helpers_dx12::CreateBuffer(m_pd3dDevice, resultSizeInBytes, D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS, D3D12_RESOURCE_STATE_RAYTRACING_ACCELERATION_STRUCTURE, nv_helpers_dx12::kDefaultHeapProps);
-
-	// Build the acceleration structure. Note that this call integrates a barrier 
-	// on the generated AS, so that it can be used to compute a top-level AS righ 
-	// after this method. 
-	bottomLevelAS.Generate(m_pd3dCommandList, buffers.pScratch,
-		buffers.pResult, false, nullptr);
-	return buffers;
-}
+//AccelerationStructureBuffers CGameFramework::CreateBottomLevelAS(std::vector<std::pair<ComPtr<ID3D12Resource>, uint32_t>> vVertexBuffers)// pair :지오메트리의 정점을 보유하는 리소스에 대한 포인터, 두번쨰 : 정점의 수
+//{
+//	nv_helpers_dx12::BottomLevelASGenerator bottomLevelAS;
+//
+//	// Adding all vertex buffers and not transforming their position. 
+//	for (const auto& buffer : vVertexBuffers) { bottomLevelAS.AddVertexBuffer(buffer.first.Get(), 0, buffer.second, sizeof(CMesh), 0, 0); } // 정점+색깔 버퍼 클래스 찾아서 넣어야함
+//
+//	// The AS build requires some scratch space to store temporary information. 
+//	// The amount of scratch memory is dependent on the scene complexity. 
+//	UINT64 scratchSizeInBytes = 0;
+//
+//	// The final AS also needs to be stored in addition to the existing vertex 
+//	// buffers. It size is also dependent on the scene complexity. 
+//	UINT64 resultSizeInBytes = 0;
+//	bottomLevelAS.ComputeASBufferSizes(m_pd3dDevice, false, &scratchSizeInBytes, &resultSizeInBytes);
+//
+//	// Once the sizes are obtained, the application is responsible for allocating 
+//	// the necessary buffers. Since the entire generation will be done on the GPU 
+//	// we can directly allocate those on the default heap 
+//
+//	AccelerationStructureBuffers buffers;
+//	buffers.pScratch = nv_helpers_dx12::CreateBuffer(m_pd3dDevice, scratchSizeInBytes, D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS, D3D12_RESOURCE_STATE_COMMON, nv_helpers_dx12::kDefaultHeapProps);
+//	buffers.pResult = nv_helpers_dx12::CreateBuffer(m_pd3dDevice, resultSizeInBytes, D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS, D3D12_RESOURCE_STATE_RAYTRACING_ACCELERATION_STRUCTURE, nv_helpers_dx12::kDefaultHeapProps);
+//
+//	// Build the acceleration structure. Note that this call integrates a barrier 
+//	// on the generated AS, so that it can be used to compute a top-level AS righ 
+//	// after this method. 
+//	bottomLevelAS.Generate(m_pd3dCommandList, buffers.pScratch,
+//		buffers.pResult, false, nullptr);
+//	return buffers;
+//}
 
 //-----------------------------------------------------------------------------
 // Create the main acceleration structure that holds all instances of the scene.
@@ -637,86 +637,86 @@ AccelerationStructureBuffers CGameFramework::CreateBottomLevelAS(std::vector<std
 //
 // pair of bottom level AS and matrix of the instance
 // 다양한 세계 공간 위치에서 렌더링하기 위해 인스턴스별 매트릭스를 사용하여 동일한 BLAS를 여러 번 인스턴스화
-void CGameFramework::CreateTopLevelAS(const std::vector<std::pair<ComPtr<ID3D12Resource>, DirectX::XMMATRIX>>& instances)//pair : LAS에 대한 리소스 포인터, XMMATRIX :배치하기 위한 매트릭스
-{
-	// 입력 데이터 수집, AS 버퍼 크기 계산 및 실제 TLAS 생성
-	// Gather all the instances into the builder helper 
-	for (size_t i = 0; i < instances.size(); i++)
-	{
-		m_topLevelASGenerator.AddInstance(instances[i].first , instances[i].second, static_cast<UINT>(i), static_cast<UINT>(0));
-	}
-
-	// As for the bottom-level AS, the building the AS requires some scratch space 
-	// to store temporary data in addition to the actual AS. In the case of the 
-	// top-level AS, the instance descriptors also need to be stored in GPU 
-	// memory. This call outputs the memory requirements for each (scratch, 
-	// results, instance descriptors) so that the application can allocate the 
-	// corresponding memory 
-			// 스크래치 및 결과 버퍼의 크기를 제공
-	UINT64 scratchSize, resultSize, instanceDescsSize; m_topLevelASGenerator.ComputeASBufferSizes(m_pd3dDevice, true, &scratchSize, &resultSize, &instanceDescsSize);
-
-	// Create the scratch and result buffers. Since the build is all done on GPU, 
-	// those can be allocated on the default heap 
-				// 스크래치 및 결과 버퍼는 기본 힙의 GPU 메모리에 직접 할당
-	m_topLevelASBuffers.pScratch = nv_helpers_dx12::CreateBuffer(m_pd3dDevice, scratchSize, D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS, D3D12_RESOURCE_STATE_UNORDERED_ACCESS, nv_helpers_dx12::kDefaultHeapProps); m_topLevelASBuffers.pResult = nv_helpers_dx12::CreateBuffer(m_pd3dDevice , resultSize, D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS, D3D12_RESOURCE_STATE_RAYTRACING_ACCELERATION_STRUCTURE, nv_helpers_dx12::kDefaultHeapProps);
-
-	// The buffer describing the instances: ID, shader binding information, 
-	// matrices ... Those will be copied into the buffer by the helper through 
-	// mapping, so the buffer has to be allocated on the upload heap. 
-		// 인스턴스 설명자 버퍼는 도우미 내에서 매핑되어야 하며 업로드 힙에 할당
-	m_topLevelASBuffers.pInstanceDesc = nv_helpers_dx12::CreateBuffer(m_pd3dDevice , instanceDescsSize, D3D12_RESOURCE_FLAG_NONE, D3D12_RESOURCE_STATE_GENERIC_READ, nv_helpers_dx12::kUploadHeapProps);
-
-	// After all the buffers are allocated, or if only an update is required, we 
-	// can build the acceleration structure. Note that in the case of the update 
-	// we also pass the existing AS as the 'previous' AS, so that it can be 
-	// refitted in place. 
-	//인스턴스 설명 버퍼와 수행할 빌드 작업의 설명자 채우기
-	// D3D12_RAYTRACING_ACCELERATION_STRUCTURE_TYPE_TOP_LEVEL
-	m_topLevelASGenerator.Generate(m_pd3dCommandList , m_topLevelASBuffers.pScratch , m_topLevelASBuffers.pResult , m_topLevelASBuffers.pInstanceDesc );
-}
+//void CGameFramework::CreateTopLevelAS(const std::vector<std::pair<ComPtr<ID3D12Resource>, DirectX::XMMATRIX>>& instances)//pair : LAS에 대한 리소스 포인터, XMMATRIX :배치하기 위한 매트릭스
+//{
+//	// 입력 데이터 수집, AS 버퍼 크기 계산 및 실제 TLAS 생성
+//	// Gather all the instances into the builder helper 
+//	for (size_t i = 0; i < instances.size(); i++)
+//	{
+//		m_topLevelASGenerator.AddInstance(instances[i].first , instances[i].second, static_cast<UINT>(i), static_cast<UINT>(0));
+//	}
+//
+//	// As for the bottom-level AS, the building the AS requires some scratch space 
+//	// to store temporary data in addition to the actual AS. In the case of the 
+//	// top-level AS, the instance descriptors also need to be stored in GPU 
+//	// memory. This call outputs the memory requirements for each (scratch, 
+//	// results, instance descriptors) so that the application can allocate the 
+//	// corresponding memory 
+//			// 스크래치 및 결과 버퍼의 크기를 제공
+//	UINT64 scratchSize, resultSize, instanceDescsSize; m_topLevelASGenerator.ComputeASBufferSizes(m_pd3dDevice, true, &scratchSize, &resultSize, &instanceDescsSize);
+//
+//	// Create the scratch and result buffers. Since the build is all done on GPU, 
+//	// those can be allocated on the default heap 
+//				// 스크래치 및 결과 버퍼는 기본 힙의 GPU 메모리에 직접 할당
+//	m_topLevelASBuffers.pScratch = nv_helpers_dx12::CreateBuffer(m_pd3dDevice, scratchSize, D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS, D3D12_RESOURCE_STATE_UNORDERED_ACCESS, nv_helpers_dx12::kDefaultHeapProps); m_topLevelASBuffers.pResult = nv_helpers_dx12::CreateBuffer(m_pd3dDevice , resultSize, D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS, D3D12_RESOURCE_STATE_RAYTRACING_ACCELERATION_STRUCTURE, nv_helpers_dx12::kDefaultHeapProps);
+//
+//	// The buffer describing the instances: ID, shader binding information, 
+//	// matrices ... Those will be copied into the buffer by the helper through 
+//	// mapping, so the buffer has to be allocated on the upload heap. 
+//		// 인스턴스 설명자 버퍼는 도우미 내에서 매핑되어야 하며 업로드 힙에 할당
+//	m_topLevelASBuffers.pInstanceDesc = nv_helpers_dx12::CreateBuffer(m_pd3dDevice , instanceDescsSize, D3D12_RESOURCE_FLAG_NONE, D3D12_RESOURCE_STATE_GENERIC_READ, nv_helpers_dx12::kUploadHeapProps);
+//
+//	// After all the buffers are allocated, or if only an update is required, we 
+//	// can build the acceleration structure. Note that in the case of the update 
+//	// we also pass the existing AS as the 'previous' AS, so that it can be 
+//	// refitted in place. 
+//	//인스턴스 설명 버퍼와 수행할 빌드 작업의 설명자 채우기
+//	// D3D12_RAYTRACING_ACCELERATION_STRUCTURE_TYPE_TOP_LEVEL
+//	m_topLevelASGenerator.Generate(m_pd3dCommandList , m_topLevelASBuffers.pScratch , m_topLevelASBuffers.pResult , m_topLevelASBuffers.pInstanceDesc );
+//}
 
 //-----------------------------------------------------------------------------
 //
 // Combine the BLAS and TLAS builds to construct the entire acceleration
 // structure required to raytrace the scene
 //
-void CGameFramework::CreateAccelerationStructures()
-{
-	std::vector<std::pair<ComPtr<ID3D12Resource>, uint32_t>> vVertexBuffers;
-
-	// Build the bottom AS from the Triangle vertex buffer 
-	for (int i = 0; i < m_pScene->m_nGameObjects; i++)
-	{
-		vVertexBuffers.push_back(
-			{ m_pScene->m_ppGameObjects[i]->m_pMesh->GetPositionBuffer(),
-				(uint32_t)
-				(m_pScene->m_ppGameObjects[i]->m_pMesh->GetNumVertices()) }
-			);
-	}
-
-	AccelerationStructureBuffers bottomLevelBuffers = CreateBottomLevelAS({ vVertexBuffers }); //{{m_vertexBuffer.Get(), 3}}
-
-	// Just one instance for now 
-	m_instances = { {bottomLevelBuffers.pResult, XMMatrixIdentity()} }; 
-	CreateTopLevelAS(m_instances);
-
-	// Flush the command list and wait for it to finish 
-	m_pd3dCommandList->Close(); 
-	ID3D12CommandList* ppCommandLists[] = { m_pd3dCommandList };
-	m_pd3dCommandQueue->ExecuteCommandLists(1, ppCommandLists);
-	m_nFenceValues[m_nSwapChainBufferIndex]++;
-	m_pd3dCommandQueue->Signal(m_pd3dFence , m_nFenceValues[m_nSwapChainBufferIndex]);
-	m_pd3dFence->SetEventOnCompletion(m_nFenceValues[m_nSwapChainBufferIndex], m_hFenceEvent);
-	WaitForSingleObject(m_hFenceEvent, INFINITE);
-
-	// Once the command list is finished executing, reset it to be reused for 
-	// rendering 
-	ThrowIfFailed(m_pd3dCommandList->Reset(m_pd3dCommandAllocator, m_pd3dPipelineState));
-
-	// Store the AS buffers. The rest of the buffers will be released once we exit 
-	// the function 
-	m_bottomLevelAS = bottomLevelBuffers.pResult;
-}
+//void CGameFramework::CreateAccelerationStructures()
+//{
+//	std::vector<std::pair<ComPtr<ID3D12Resource>, uint32_t>> vVertexBuffers;
+//
+//	// Build the bottom AS from the Triangle vertex buffer 
+//	for (int i = 0; i < m_pScene->m_nGameObjects; i++)
+//	{
+//		vVertexBuffers.push_back(
+//			{ m_pScene->m_ppGameObjects[i]->m_pMesh->GetPositionBuffer(),
+//				(uint32_t)
+//				(m_pScene->m_ppGameObjects[i]->m_pMesh->GetNumVertices()) }
+//			);
+//	}
+//
+//	AccelerationStructureBuffers bottomLevelBuffers = CreateBottomLevelAS({ vVertexBuffers }); //{{m_vertexBuffer.Get(), 3}}
+//
+//	// Just one instance for now 
+//	m_instances = { {bottomLevelBuffers.pResult, XMMatrixIdentity()} }; 
+//	CreateTopLevelAS(m_instances);
+//
+//	// Flush the command list and wait for it to finish 
+//	m_pd3dCommandList->Close(); 
+//	ID3D12CommandList* ppCommandLists[] = { m_pd3dCommandList };
+//	m_pd3dCommandQueue->ExecuteCommandLists(1, ppCommandLists);
+//	m_nFenceValues[m_nSwapChainBufferIndex]++;
+//	m_pd3dCommandQueue->Signal(m_pd3dFence , m_nFenceValues[m_nSwapChainBufferIndex]);
+//	m_pd3dFence->SetEventOnCompletion(m_nFenceValues[m_nSwapChainBufferIndex], m_hFenceEvent);
+//	WaitForSingleObject(m_hFenceEvent, INFINITE);
+//
+//	// Once the command list is finished executing, reset it to be reused for 
+//	// rendering 
+//	ThrowIfFailed(m_pd3dCommandList->Reset(m_pd3dCommandAllocator, m_pd3dPipelineState));
+//
+//	// Store the AS buffers. The rest of the buffers will be released once we exit 
+//	// the function 
+//	m_bottomLevelAS = bottomLevelBuffers.pResult;
+//}
 
 //----전체 화면 모드
 void CGameFramework::ChangeSwapChainState()
@@ -761,64 +761,64 @@ void CGameFramework::ChangeSwapChainState()
 // The ray generation shader needs to access 2 resources: the raytracing output
 // and the top-level acceleration structure
 //
-ComPtr<id3d12rootsignature> D3D12HelloTriangle::CreateRayGenSignature() {
-	nv_helpers_dx12::RootSignatureGenerator rsc; rsc.AddHeapRangesParameter({ {0 /*u0*/, 1 /*1 descriptor */, 0 /*use the implicit register space 0*/, D3D12_DESCRIPTOR_RANGE_TYPE_UAV /* UAV representing the output buffer*/, 0 /*heap slot where the UAV is defined*/}, {0 /*t0*/, 1, 0, D3D12_DESCRIPTOR_RANGE_TYPE_SRV /*Top-level acceleration structure*/, 1} }); return rsc.Generate(m_device.Get(), true);
-}
+//ComPtr<id3d12rootsignature> D3D12HelloTriangle::CreateRayGenSignature() {
+//	nv_helpers_dx12::RootSignatureGenerator rsc; rsc.AddHeapRangesParameter({ {0 /*u0*/, 1 /*1 descriptor */, 0 /*use the implicit register space 0*/, D3D12_DESCRIPTOR_RANGE_TYPE_UAV /* UAV representing the output buffer*/, 0 /*heap slot where the UAV is defined*/}, {0 /*t0*/, 1, 0, D3D12_DESCRIPTOR_RANGE_TYPE_SRV /*Top-level acceleration structure*/, 1} }); return rsc.Generate(m_device.Get(), true);
+//}
 
 //-----------------------------------------------------------------------------
 // The hit shader communicates only through the ray payload, and therefore does
 // not require any resources
-//
-ComPtr<id3d12rootsignature> D3D12HelloTriangle::CreateHitSignature() {
-	nv_helpers_dx12::RootSignatureGenerator rsc; return rsc.Generate(m_device.Get(), true);
-}
-
-
-//-----------------------------------------------------------------------------
-// The miss shader communicates only through the ray payload, and therefore
-// does not require any resources
-//
-ComPtr<id3d12rootsignature> D3D12HelloTriangle::CreateMissSignature() {
-	nv_helpers_dx12::RootSignatureGenerator rsc; return rsc.Generate(m_device.Get(), true);
-}
-
-//-----------------------------------------------------------------------------
-//
-// The raytracing pipeline binds the shader code, root signatures and pipeline
-// characteristics in a single structure used by DXR to invoke the shaders and
-// manage temporary memory during raytracing
+////
+//ComPtr<id3d12rootsignature> D3D12HelloTriangle::CreateHitSignature() {
+//	nv_helpers_dx12::RootSignatureGenerator rsc; return rsc.Generate(m_device.Get(), true);
+//}
 //
 //
-void D3D12HelloTriangle::CreateRaytracingPipeline()
-{
-	nv_helpers_dx12::RayTracingPipelineGenerator pipeline(m_device.Get()); 
-	// The pipeline contains the DXIL code of all the shaders potentially executed 
-	// during the raytracing process. This section compiles the HLSL code into a 
-	// set of DXIL libraries. We chose to separate the code in several libraries 
-	// by semantic (ray generation, hit, miss) for clarity. Any code layout can be 
-	// used. 
-	m_rayGenLibrary = nv_helpers_dx12::CompileShaderLibrary(L"RayGen.hlsl"); m_missLibrary = nv_helpers_dx12::CompileShaderLibrary(L"Miss.hlsl"); m_hitLibrary = nv_helpers_dx12::CompileShaderLibrary(L"Hit.hlsl");
-
-	/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-		As described at the beginning of this section, to each shader corresponds a root signature defining
-		its external inputs.
-		~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
-		/// To be used, each DX12 shader needs a root signature defining which
-		// parameters and buffers will be accessed.
-		m_rayGenSignature = CreateRayGenSignature(); 
-		m_missSignature = CreateMissSignature(); 
-		m_hitSignature = CreateHitSignature();
-
-/*  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~To be used, each shader needs to be associated to its root signature.A shaders imported from the DXIL libraries needs to be associated with exactly one root signature.The shaders comprising the hit groups need to share the same root signature, which is associated to the hit group(and not to the shaders themselves).Note that a shader does not have to actually access all the resources declared in its root signature, as long as the root signature defines a superset of the resources the shader needs.
-			~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-			*/
-// The following section associates the root signature to each shader. Note // that we can explicitly show that some shaders share the same root signature // (eg. Miss and ShadowMiss). Note that the hit shaders are now only referred
-// to as hit groups, meaning that the underlying intersection, any-hit and 
-// closest-hit shaders share the same root signature. 
-		pipeline.AddRootSignatureAssociation(m_rayGenSignature.Get(), {L"RayGen"}); pipeline.AddRootSignatureAssociation(m_missSignature.Get(), {L"Miss"}); pipeline.AddRootSignatureAssociation(m_hitSignature.Get(), {L"HitGroup"});
-
-		/* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-			The pipeline now has all the information it needs.We generate the pipeline by calling the `Generate`
-			method of the helper, which creates the array of subobjects and calls
-			`ID3D12Device5::CreateStateObject`.*/
-}
+////-----------------------------------------------------------------------------
+//// The miss shader communicates only through the ray payload, and therefore
+//// does not require any resources
+////
+//ComPtr<id3d12rootsignature> D3D12HelloTriangle::CreateMissSignature() {
+//	nv_helpers_dx12::RootSignatureGenerator rsc; return rsc.Generate(m_device.Get(), true);
+//}
+//
+////-----------------------------------------------------------------------------
+////
+//// The raytracing pipeline binds the shader code, root signatures and pipeline
+//// characteristics in a single structure used by DXR to invoke the shaders and
+//// manage temporary memory during raytracing
+////
+////
+//void D3D12HelloTriangle::CreateRaytracingPipeline()
+//{
+//	nv_helpers_dx12::RayTracingPipelineGenerator pipeline(m_device.Get()); 
+//	// The pipeline contains the DXIL code of all the shaders potentially executed 
+//	// during the raytracing process. This section compiles the HLSL code into a 
+//	// set of DXIL libraries. We chose to separate the code in several libraries 
+//	// by semantic (ray generation, hit, miss) for clarity. Any code layout can be 
+//	// used. 
+//	m_rayGenLibrary = nv_helpers_dx12::CompileShaderLibrary(L"RayGen.hlsl"); m_missLibrary = nv_helpers_dx12::CompileShaderLibrary(L"Miss.hlsl"); m_hitLibrary = nv_helpers_dx12::CompileShaderLibrary(L"Hit.hlsl");
+//
+//	/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+//		As described at the beginning of this section, to each shader corresponds a root signature defining
+//		its external inputs.
+//		~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ */
+//		/// To be used, each DX12 shader needs a root signature defining which
+//		// parameters and buffers will be accessed.
+//		m_rayGenSignature = CreateRayGenSignature(); 
+//		m_missSignature = CreateMissSignature(); 
+//		m_hitSignature = CreateHitSignature();
+//
+///*  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~To be used, each shader needs to be associated to its root signature.A shaders imported from the DXIL libraries needs to be associated with exactly one root signature.The shaders comprising the hit groups need to share the same root signature, which is associated to the hit group(and not to the shaders themselves).Note that a shader does not have to actually access all the resources declared in its root signature, as long as the root signature defines a superset of the resources the shader needs.
+//			~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+//			*/
+//// The following section associates the root signature to each shader. Note // that we can explicitly show that some shaders share the same root signature // (eg. Miss and ShadowMiss). Note that the hit shaders are now only referred
+//// to as hit groups, meaning that the underlying intersection, any-hit and 
+//// closest-hit shaders share the same root signature. 
+//		pipeline.AddRootSignatureAssociation(m_rayGenSignature.Get(), {L"RayGen"}); pipeline.AddRootSignatureAssociation(m_missSignature.Get(), {L"Miss"}); pipeline.AddRootSignatureAssociation(m_hitSignature.Get(), {L"HitGroup"});
+//
+//		/* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+//			The pipeline now has all the information it needs.We generate the pipeline by calling the `Generate`
+//			method of the helper, which creates the array of subobjects and calls
+//			`ID3D12Device5::CreateStateObject`.*/
+//}

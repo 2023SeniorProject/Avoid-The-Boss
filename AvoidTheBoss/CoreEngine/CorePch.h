@@ -111,6 +111,75 @@ using Microsoft::WRL::ComPtr;
 #pragma comment(lib, "dxguid.lib")
 
 
+//----DXR
+#pragma once
+
+#ifndef WIN32_LEAN_AND_MEAN
+#define WIN32_LEAN_AND_MEAN             // Exclude rarely-used stuff from Windows headers.
+#endif
+
+
+// Use the C++ standard templated min/max
+#define NOMINMAX
+
+#include <windows.h>
+
+// C RunTime Header Files
+#include <stdlib.h>
+#include <sstream>
+#include <iomanip>
+#include <iostream>
+#include <fstream>
+
+#include <list>
+#include <string>
+#include <wrl.h>
+#include <shellapi.h>
+#include <memory>
+#include <unordered_map>
+#include <vector>
+#include <algorithm>
+#include <atlbase.h>
+#include <assert.h>
+#include <array>
+#include <unordered_map>
+#include <functional>
+#include <random>
+#include <numeric>
+#include <iterator>
+#include <sal.h>
+#include <stack>
+
+#include <stdint.h>
+#include <float.h>
+#include <map>
+#include <set>
+
+#include <dxgi1_6.h>
+#include <d3d12.h>
+#include <atlbase.h>
+#include "d3dx12.h"	
+#include <pix3.h>
+
+#include <DirectXMath.h>
+#include <WICTextureLoader.h>
+#include <DDSTextureLoader.h>
+#include "ResourceUploadBatch.h"
+
+// UI 
+#include <d2d1_3.h>
+#include <dwrite.h>
+#include <d3d11on12.h>
+
+#ifdef _DEBUG
+#include <dxgidebug.h>
+#endif
+
+#include "RaytracingHlslCompat.h"
+#include "RaytracingSceneDefines.h"
+#include "DXSampleHelper.h"
+#include "DeviceResources.h"
+
 //----클라이언트 영역 크기 및 후면 버퍼 크기
 #define FRAME_BUFFER_WIDTH  800
 #define FRAME_BUFFER_HEIGHT 600

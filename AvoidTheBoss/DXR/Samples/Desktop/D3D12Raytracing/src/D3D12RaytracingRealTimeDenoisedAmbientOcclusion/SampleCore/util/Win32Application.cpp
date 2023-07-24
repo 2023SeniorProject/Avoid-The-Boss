@@ -24,60 +24,7 @@ int Win32Application::Run(DXSample* pSample, HINSTANCE hInstance, int nCmdShow)
 {
     try
     {
-        // Parse the command line parameters
-        int argc;
-        LPWSTR* argv = CommandLineToArgvW(GetCommandLineW(), &argc);
-        pSample->ParseCommandLineArgs(argv, argc);
-        LocalFree(argv);
 
-        // Initialize the window class.
-        WNDCLASSEX windowClass = { 0 };
-        windowClass.cbSize = sizeof(WNDCLASSEX);
-        windowClass.style = CS_HREDRAW | CS_VREDRAW;
-        windowClass.lpfnWndProc = WindowProc;
-        windowClass.hInstance = hInstance;
-        windowClass.hCursor = LoadCursor(NULL, IDC_ARROW);
-        windowClass.lpszClassName = L"DXSampleClass";
-        RegisterClassEx(&windowClass);
-
-        RECT windowRect = { 0, 0, static_cast<LONG>(pSample->GetWidth()), static_cast<LONG>(pSample->GetHeight()) };
-        AdjustWindowRect(&windowRect, WS_OVERLAPPEDWINDOW, FALSE);
-
-        // Create the window and store a handle to it.
-        m_hwnd = CreateWindow(
-            windowClass.lpszClassName,
-            pSample->GetTitle(),
-            m_windowStyle,
-            CW_USEDEFAULT,
-            CW_USEDEFAULT,
-            windowRect.right - windowRect.left,
-            windowRect.bottom - windowRect.top,
-            nullptr,        // We have no parent window.
-            nullptr,        // We aren't using menus.
-            hInstance,
-            pSample);
-
-        // Initialize the sample. OnInit is defined in each child-implementation of DXSample.
-        pSample->OnInit();
-
-        ShowWindow(m_hwnd, nCmdShow);
-
-        // Main sample loop.
-        MSG msg = {};
-        while (msg.message != WM_QUIT)
-        {
-            // Process any messages in the queue.
-            if (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
-            {
-                TranslateMessage(&msg);
-                DispatchMessage(&msg);
-            }
-        }
-
-        pSample->OnDestroy();
-
-        // Return this part of the WM_QUIT message to Windows.
-        return static_cast<char>(msg.wParam);
     }
     catch (HrException& e)
     {
@@ -242,11 +189,11 @@ LRESULT CALLBACK Win32Application::WindowProc(HWND hWnd, UINT message, WPARAM wP
         break;
 
     case WM_PAINT:
-        if (pSample)
-        {
-            pSample->OnUpdate();
-            pSample->OnRender();
-        }
+    //    if (pSample)
+    //    {
+    //        pSample->OnUpdate();
+    //        pSample->OnRender();
+    //    }
         return 0;
 
     case WM_SIZE:
@@ -326,4 +273,50 @@ LRESULT CALLBACK Win32Application::WindowProc(HWND hWnd, UINT message, WPARAM wP
 
     // Handle any messages the switch statement didn't.
     return DefWindowProc(hWnd, message, wParam, lParam);
+}
+
+BOOL Win32Application::InitInstance(HINSTANCE hInstance, int nCmdShow)
+{
+    RECT windowRect = { 0, 0, static_cast<LONG>(pSample->GetWidth()), static_cast<LONG>(pSample->GetHeight()) };
+    AdjustWindowRect(&windowRect, WS_OVERLAPPEDWINDOW, FALSE);
+
+    // Create the window and store a handle to it.
+    m_hwnd = CreateWindow(
+        windowClass.lpszClassName,
+        pSample->GetTitle(),
+        m_windowStyle,
+        CW_USEDEFAULT,
+        CW_USEDEFAULT,
+        windowRect.right - windowRect.left,
+        windowRect.bottom - windowRect.top,
+        nullptr,        // We have no parent window.
+        nullptr,        // We aren't using menus.
+        hInstance,
+        pSample);
+
+    // Initialize the sample. OnInit is defined in each child-implementation of DXSample.
+    pSample->OnInit();
+
+    ShowWindow(m_hwnd, nCmdShow);
+    //UpdateWindow(hMainWnd); 기존프로젝트에 있지만 DXR에 없는 함수
+
+    return (TRUE);
+}
+ATOM Win32Application::MyRegisterClass(HINSTANCE hInstance)
+{
+    // Parse the command line parameters
+    int argc;
+    LPWSTR* argv = CommandLineToArgvW(GetCommandLineW(), &argc);
+    pSample->ParseCommandLineArgs(argv, argc);
+    LocalFree(argv);
+
+    // Initialize the window class.
+    WNDCLASSEX windowClass = { 0 };
+    windowClass.cbSize = sizeof(WNDCLASSEX);
+    windowClass.style = CS_HREDRAW | CS_VREDRAW;
+    windowClass.lpfnWndProc = WindowProc;
+    windowClass.hInstance = hInstance;
+    windowClass.hCursor = LoadCursor(NULL, IDC_ARROW);
+    windowClass.lpszClassName = L"DXSampleClass";
+    return RegisterClassEx(&windowClass);
 }

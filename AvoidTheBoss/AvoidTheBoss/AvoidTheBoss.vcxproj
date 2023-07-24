@@ -158,6 +158,66 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\DXR\Samples\Desktop\D3D12Raytracing\src\D3D12RaytracingRealTimeDenoisedAmbientOcclusion\D3D12RaytracingRealTimeDenoisedAmbientOcclusion.h" />
+    <ClInclude Include="..\DXR\Samples\Desktop\D3D12Raytracing\src\D3D12RaytracingRealTimeDenoisedAmbientOcclusion\obj\x64\Debug\CompiledShaders\AORayGenCS.hlsl.h" />
+    <ClInclude Include="..\DXR\Samples\Desktop\D3D12Raytracing\src\D3D12RaytracingRealTimeDenoisedAmbientOcclusion\obj\x64\Debug\CompiledShaders\CalculateMeanVarianceCS.hlsl.h" />
+    <ClInclude Include="..\DXR\Samples\Desktop\D3D12Raytracing\src\D3D12RaytracingRealTimeDenoisedAmbientOcclusion\obj\x64\Debug\CompiledShaders\CalculatePartialDerivativesViaCentralDifferencesCS.hlsl.h" />
+    <ClInclude Include="..\DXR\Samples\Desktop\D3D12Raytracing\src\D3D12RaytracingRealTimeDenoisedAmbientOcclusion\obj\x64\Debug\CompiledShaders\CompositionCS.hlsl.h" />
+    <ClInclude Include="..\DXR\Samples\Desktop\D3D12Raytracing\src\D3D12RaytracingRealTimeDenoisedAmbientOcclusion\obj\x64\Debug\CompiledShaders\CountingSort_SortRays_64x128rayGroupCS.hlsl.h" />
+    <ClInclude Include="..\DXR\Samples\Desktop\D3D12Raytracing\src\D3D12RaytracingRealTimeDenoisedAmbientOcclusion\obj\x64\Debug\CompiledShaders\DisocclusionBlur3x3CS.hlsl.h" />
+    <ClInclude Include="..\DXR\Samples\Desktop\D3D12Raytracing\src\D3D12RaytracingRealTimeDenoisedAmbientOcclusion\obj\x64\Debug\CompiledShaders\DownsampleGBufferDataBilateralFilter2x2CS.hlsl.h" />
+    <ClInclude Include="..\DXR\Samples\Desktop\D3D12Raytracing\src\D3D12RaytracingRealTimeDenoisedAmbientOcclusion\obj\x64\Debug\CompiledShaders\EdgeStoppingFilter_Gaussian3x3CS.hlsl.h" />
+    <ClInclude Include="..\DXR\Samples\Desktop\D3D12Raytracing\src\D3D12RaytracingRealTimeDenoisedAmbientOcclusion\obj\x64\Debug\CompiledShaders\EdgeStoppingFilter_Gaussian5x5CS.hlsl.h" />
+    <ClInclude Include="..\DXR\Samples\Desktop\D3D12Raytracing\src\D3D12RaytracingRealTimeDenoisedAmbientOcclusion\obj\x64\Debug\CompiledShaders\FillInCheckerboard_CrossBox4TapFilterCS.hlsl.h" />
+    <ClInclude Include="..\DXR\Samples\Desktop\D3D12Raytracing\src\D3D12RaytracingRealTimeDenoisedAmbientOcclusion\obj\x64\Debug\CompiledShaders\GaussianFilter3x3CS.hlsl.h" />
+    <ClInclude Include="..\DXR\Samples\Desktop\D3D12Raytracing\src\D3D12RaytracingRealTimeDenoisedAmbientOcclusion\obj\x64\Debug\CompiledShaders\GaussianFilterRG3x3CS.hlsl.h" />
+    <ClInclude Include="..\DXR\Samples\Desktop\D3D12Raytracing\src\D3D12RaytracingRealTimeDenoisedAmbientOcclusion\obj\x64\Debug\CompiledShaders\GenerateGrassStrawsCS.hlsl.h" />
+    <ClInclude Include="..\DXR\Samples\Desktop\D3D12Raytracing\src\D3D12RaytracingRealTimeDenoisedAmbientOcclusion\obj\x64\Debug\CompiledShaders\Pathtracer.hlsl.h" />
+    <ClInclude Include="..\DXR\Samples\Desktop\D3D12Raytracing\src\D3D12RaytracingRealTimeDenoisedAmbientOcclusion\obj\x64\Debug\CompiledShaders\ReduceSumFloatCS.hlsl.h" />
+    <ClInclude Include="..\DXR\Samples\Desktop\D3D12Raytracing\src\D3D12RaytracingRealTimeDenoisedAmbientOcclusion\obj\x64\Debug\CompiledShaders\ReduceSumUintCS.hlsl.h" />
+    <ClInclude Include="..\DXR\Samples\Desktop\D3D12Raytracing\src\D3D12RaytracingRealTimeDenoisedAmbientOcclusion\obj\x64\Debug\CompiledShaders\RTAO.hlsl.h" />
+    <ClInclude Include="..\DXR\Samples\Desktop\D3D12Raytracing\src\D3D12RaytracingRealTimeDenoisedAmbientOcclusion\obj\x64\Debug\CompiledShaders\TemporalSupersampling_BlendWithCurrentFrameCS.hlsl.h" />
+    <ClInclude Include="..\DXR\Samples\Desktop\D3D12Raytracing\src\D3D12RaytracingRealTimeDenoisedAmbientOcclusion\obj\x64\Debug\CompiledShaders\TemporalSupersampling_ReverseReprojectCS.hlsl.h" />
+    <ClInclude Include="..\DXR\Samples\Desktop\D3D12Raytracing\src\D3D12RaytracingRealTimeDenoisedAmbientOcclusion\obj\x64\Debug\CompiledShaders\UpsampleBilateralFilter2x2Float2CS.hlsl.h" />
+    <ClInclude Include="..\DXR\Samples\Desktop\D3D12Raytracing\src\D3D12RaytracingRealTimeDenoisedAmbientOcclusion\obj\x64\Debug\CompiledShaders\UpsampleBilateralFilter2x2FloatCS.hlsl.h" />
+    <ClInclude Include="..\DXR\Samples\Desktop\D3D12Raytracing\src\D3D12RaytracingRealTimeDenoisedAmbientOcclusion\obj\x64\Debug\CompiledShaders\UpsampleBilateralFilter2x2UintCS.hlsl.h" />
+    <ClInclude Include="..\DXR\Samples\Desktop\D3D12Raytracing\src\D3D12RaytracingRealTimeDenoisedAmbientOcclusion\RaytracingHlslCompat.h" />
+    <ClInclude Include="..\DXR\Samples\Desktop\D3D12Raytracing\src\D3D12RaytracingRealTimeDenoisedAmbientOcclusion\RTAO\Denoiser.h" />
+    <ClInclude Include="..\DXR\Samples\Desktop\D3D12Raytracing\src\D3D12RaytracingRealTimeDenoisedAmbientOcclusion\RTAO\RTAO.h" />
+    <ClInclude Include="..\DXR\Samples\Desktop\D3D12Raytracing\src\D3D12RaytracingRealTimeDenoisedAmbientOcclusion\RTAO\RTAOGpuKernels.h" />
+    <ClInclude Include="..\DXR\Samples\Desktop\D3D12Raytracing\src\D3D12RaytracingRealTimeDenoisedAmbientOcclusion\RTAO\Sampler.h" />
+    <ClInclude Include="..\DXR\Samples\Desktop\D3D12Raytracing\src\D3D12RaytracingRealTimeDenoisedAmbientOcclusion\SampleCore\Composition.h" />
+    <ClInclude Include="..\DXR\Samples\Desktop\D3D12Raytracing\src\D3D12RaytracingRealTimeDenoisedAmbientOcclusion\SampleCore\DirectXRaytracingHelper.h" />
+    <ClInclude Include="..\DXR\Samples\Desktop\D3D12Raytracing\src\D3D12RaytracingRealTimeDenoisedAmbientOcclusion\SampleCore\GpuKernels.h" />
+    <ClInclude Include="..\DXR\Samples\Desktop\D3D12Raytracing\src\D3D12RaytracingRealTimeDenoisedAmbientOcclusion\SampleCore\Pathtracer.h" />
+    <ClInclude Include="..\DXR\Samples\Desktop\D3D12Raytracing\src\D3D12RaytracingRealTimeDenoisedAmbientOcclusion\SampleCore\PBRTParser\BinParser.h" />
+    <ClInclude Include="..\DXR\Samples\Desktop\D3D12Raytracing\src\D3D12RaytracingRealTimeDenoisedAmbientOcclusion\SampleCore\PBRTParser\CScene.h" />
+    <ClInclude Include="..\DXR\Samples\Desktop\D3D12Raytracing\src\D3D12RaytracingRealTimeDenoisedAmbientOcclusion\SampleCore\PBRTParser\GameObject.h" />
+    <ClInclude Include="..\DXR\Samples\Desktop\D3D12Raytracing\src\D3D12RaytracingRealTimeDenoisedAmbientOcclusion\SampleCore\PBRTParser\Mesh.h" />
+    <ClInclude Include="..\DXR\Samples\Desktop\D3D12Raytracing\src\D3D12RaytracingRealTimeDenoisedAmbientOcclusion\SampleCore\PBRTParser\PBRTParser.h" />
+    <ClInclude Include="..\DXR\Samples\Desktop\D3D12Raytracing\src\D3D12RaytracingRealTimeDenoisedAmbientOcclusion\SampleCore\PBRTParser\PlyParser.h" />
+    <ClInclude Include="..\DXR\Samples\Desktop\D3D12Raytracing\src\D3D12RaytracingRealTimeDenoisedAmbientOcclusion\SampleCore\PBRTParser\SceneParser.h" />
+    <ClInclude Include="..\DXR\Samples\Desktop\D3D12Raytracing\src\D3D12RaytracingRealTimeDenoisedAmbientOcclusion\SampleCore\RaytracingAccelerationStructure.h" />
+    <ClInclude Include="..\DXR\Samples\Desktop\D3D12Raytracing\src\D3D12RaytracingRealTimeDenoisedAmbientOcclusion\SampleCore\RaytracingSceneDefines.h" />
+    <ClInclude Include="..\DXR\Samples\Desktop\D3D12Raytracing\src\D3D12RaytracingRealTimeDenoisedAmbientOcclusion\SampleCore\Scene.h" />
+    <ClInclude Include="..\DXR\Samples\Desktop\D3D12Raytracing\src\D3D12RaytracingRealTimeDenoisedAmbientOcclusion\SampleCore\SceneParameters.h" />
+    <ClInclude Include="..\DXR\Samples\Desktop\D3D12Raytracing\src\D3D12RaytracingRealTimeDenoisedAmbientOcclusion\SampleCore\util\Camera.h" />
+    <ClInclude Include="..\DXR\Samples\Desktop\D3D12Raytracing\src\D3D12RaytracingRealTimeDenoisedAmbientOcclusion\SampleCore\util\CameraController.h" />
+    <ClInclude Include="..\DXR\Samples\Desktop\D3D12Raytracing\src\D3D12RaytracingRealTimeDenoisedAmbientOcclusion\SampleCore\util\DeviceResources.h" />
+    <ClInclude Include="..\DXR\Samples\Desktop\D3D12Raytracing\src\D3D12RaytracingRealTimeDenoisedAmbientOcclusion\SampleCore\util\DXSample.h" />
+    <ClInclude Include="..\DXR\Samples\Desktop\D3D12Raytracing\src\D3D12RaytracingRealTimeDenoisedAmbientOcclusion\SampleCore\util\DXSampleHelper.h" />
+    <ClInclude Include="..\DXR\Samples\Desktop\D3D12Raytracing\src\D3D12RaytracingRealTimeDenoisedAmbientOcclusion\SampleCore\util\EngineProfiling.h" />
+    <ClInclude Include="..\DXR\Samples\Desktop\D3D12Raytracing\src\D3D12RaytracingRealTimeDenoisedAmbientOcclusion\SampleCore\util\EngineTuning.h" />
+    <ClInclude Include="..\DXR\Samples\Desktop\D3D12Raytracing\src\D3D12RaytracingRealTimeDenoisedAmbientOcclusion\SampleCore\util\GameInput.h" />
+    <ClInclude Include="..\DXR\Samples\Desktop\D3D12Raytracing\src\D3D12RaytracingRealTimeDenoisedAmbientOcclusion\SampleCore\util\GpuResource.h" />
+    <ClInclude Include="..\DXR\Samples\Desktop\D3D12Raytracing\src\D3D12RaytracingRealTimeDenoisedAmbientOcclusion\SampleCore\util\GpuResourceStateTracker.h" />
+    <ClInclude Include="..\DXR\Samples\Desktop\D3D12Raytracing\src\D3D12RaytracingRealTimeDenoisedAmbientOcclusion\SampleCore\util\GpuTimeManager.h" />
+    <ClInclude Include="..\DXR\Samples\Desktop\D3D12Raytracing\src\D3D12RaytracingRealTimeDenoisedAmbientOcclusion\SampleCore\util\PerformanceTimers.h" />
+    <ClInclude Include="..\DXR\Samples\Desktop\D3D12Raytracing\src\D3D12RaytracingRealTimeDenoisedAmbientOcclusion\SampleCore\util\StepTimer.h" />
+    <ClInclude Include="..\DXR\Samples\Desktop\D3D12Raytracing\src\D3D12RaytracingRealTimeDenoisedAmbientOcclusion\SampleCore\util\UILayer.h" />
+    <ClInclude Include="..\DXR\Samples\Desktop\D3D12Raytracing\src\D3D12RaytracingRealTimeDenoisedAmbientOcclusion\SampleCore\util\Utility.h" />
+    <ClInclude Include="..\DXR\Samples\Desktop\D3D12Raytracing\src\D3D12RaytracingRealTimeDenoisedAmbientOcclusion\SampleCore\util\Win32Application.h" />
+    <ClInclude Include="..\DXR\Samples\Desktop\D3D12Raytracing\src\D3D12RaytracingRealTimeDenoisedAmbientOcclusion\stdafx.h" />
     <ClInclude Include="AvoidTheBoss.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="CBoss.h" />
@@ -189,6 +249,40 @@
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\DXR\Samples\Desktop\D3D12Raytracing\src\D3D12RaytracingRealTimeDenoisedAmbientOcclusion\D3D12RaytracingRealTimeDenoisedAmbientOcclusion.cpp" />
+    <ClCompile Include="..\DXR\Samples\Desktop\D3D12Raytracing\src\D3D12RaytracingRealTimeDenoisedAmbientOcclusion\Main.cpp" />
+    <ClCompile Include="..\DXR\Samples\Desktop\D3D12Raytracing\src\D3D12RaytracingRealTimeDenoisedAmbientOcclusion\RTAO\Denoiser.cpp" />
+    <ClCompile Include="..\DXR\Samples\Desktop\D3D12Raytracing\src\D3D12RaytracingRealTimeDenoisedAmbientOcclusion\RTAO\RTAO.cpp" />
+    <ClCompile Include="..\DXR\Samples\Desktop\D3D12Raytracing\src\D3D12RaytracingRealTimeDenoisedAmbientOcclusion\RTAO\RTAOGpuKernels.cpp" />
+    <ClCompile Include="..\DXR\Samples\Desktop\D3D12Raytracing\src\D3D12RaytracingRealTimeDenoisedAmbientOcclusion\RTAO\Sampler.cpp" />
+    <ClCompile Include="..\DXR\Samples\Desktop\D3D12Raytracing\src\D3D12RaytracingRealTimeDenoisedAmbientOcclusion\SampleCore\Composition.cpp" />
+    <ClCompile Include="..\DXR\Samples\Desktop\D3D12Raytracing\src\D3D12RaytracingRealTimeDenoisedAmbientOcclusion\SampleCore\GpuKernels.cpp" />
+    <ClCompile Include="..\DXR\Samples\Desktop\D3D12Raytracing\src\D3D12RaytracingRealTimeDenoisedAmbientOcclusion\SampleCore\Pathtracer.cpp" />
+    <ClCompile Include="..\DXR\Samples\Desktop\D3D12Raytracing\src\D3D12RaytracingRealTimeDenoisedAmbientOcclusion\SampleCore\PBRTParser\BinParser.cpp" />
+    <ClCompile Include="..\DXR\Samples\Desktop\D3D12Raytracing\src\D3D12RaytracingRealTimeDenoisedAmbientOcclusion\SampleCore\PBRTParser\CScene.cpp" />
+    <ClCompile Include="..\DXR\Samples\Desktop\D3D12Raytracing\src\D3D12RaytracingRealTimeDenoisedAmbientOcclusion\SampleCore\PBRTParser\GameObject.cpp" />
+    <ClCompile Include="..\DXR\Samples\Desktop\D3D12Raytracing\src\D3D12RaytracingRealTimeDenoisedAmbientOcclusion\SampleCore\PBRTParser\Mesh.cpp" />
+    <ClCompile Include="..\DXR\Samples\Desktop\D3D12Raytracing\src\D3D12RaytracingRealTimeDenoisedAmbientOcclusion\SampleCore\PBRTParser\PBRTParser.cpp" />
+    <ClCompile Include="..\DXR\Samples\Desktop\D3D12Raytracing\src\D3D12RaytracingRealTimeDenoisedAmbientOcclusion\SampleCore\PBRTParser\PlyParser.cpp" />
+    <ClCompile Include="..\DXR\Samples\Desktop\D3D12Raytracing\src\D3D12RaytracingRealTimeDenoisedAmbientOcclusion\SampleCore\RaytracingAccelerationStructure.cpp" />
+    <ClCompile Include="..\DXR\Samples\Desktop\D3D12Raytracing\src\D3D12RaytracingRealTimeDenoisedAmbientOcclusion\SampleCore\RaytracingSceneDefines.cpp" />
+    <ClCompile Include="..\DXR\Samples\Desktop\D3D12Raytracing\src\D3D12RaytracingRealTimeDenoisedAmbientOcclusion\SampleCore\Scene.cpp" />
+    <ClCompile Include="..\DXR\Samples\Desktop\D3D12Raytracing\src\D3D12RaytracingRealTimeDenoisedAmbientOcclusion\SampleCore\util\Camera.cpp" />
+    <ClCompile Include="..\DXR\Samples\Desktop\D3D12Raytracing\src\D3D12RaytracingRealTimeDenoisedAmbientOcclusion\SampleCore\util\CameraController.cpp" />
+    <ClCompile Include="..\DXR\Samples\Desktop\D3D12Raytracing\src\D3D12RaytracingRealTimeDenoisedAmbientOcclusion\SampleCore\util\DeviceResources.cpp" />
+    <ClCompile Include="..\DXR\Samples\Desktop\D3D12Raytracing\src\D3D12RaytracingRealTimeDenoisedAmbientOcclusion\SampleCore\util\DXSample.cpp" />
+    <ClCompile Include="..\DXR\Samples\Desktop\D3D12Raytracing\src\D3D12RaytracingRealTimeDenoisedAmbientOcclusion\SampleCore\util\EngineProfiling.cpp" />
+    <ClCompile Include="..\DXR\Samples\Desktop\D3D12Raytracing\src\D3D12RaytracingRealTimeDenoisedAmbientOcclusion\SampleCore\util\EngineTuning.cpp" />
+    <ClCompile Include="..\DXR\Samples\Desktop\D3D12Raytracing\src\D3D12RaytracingRealTimeDenoisedAmbientOcclusion\SampleCore\util\GameInput.cpp" />
+    <ClCompile Include="..\DXR\Samples\Desktop\D3D12Raytracing\src\D3D12RaytracingRealTimeDenoisedAmbientOcclusion\SampleCore\util\GpuResourceStateTracker.cpp" />
+    <ClCompile Include="..\DXR\Samples\Desktop\D3D12Raytracing\src\D3D12RaytracingRealTimeDenoisedAmbientOcclusion\SampleCore\util\GpuTimeManager.cpp" />
+    <ClCompile Include="..\DXR\Samples\Desktop\D3D12Raytracing\src\D3D12RaytracingRealTimeDenoisedAmbientOcclusion\SampleCore\util\PerformanceTimers.cpp" />
+    <ClCompile Include="..\DXR\Samples\Desktop\D3D12Raytracing\src\D3D12RaytracingRealTimeDenoisedAmbientOcclusion\SampleCore\util\UILayer.cpp" />
+    <ClCompile Include="..\DXR\Samples\Desktop\D3D12Raytracing\src\D3D12RaytracingRealTimeDenoisedAmbientOcclusion\SampleCore\util\Win32Application.cpp" />
+    <ClCompile Include="..\DXR\Samples\Desktop\D3D12Raytracing\src\D3D12RaytracingRealTimeDenoisedAmbientOcclusion\stdafx.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">pch.h</PrecompiledHeaderFile>
+    </ClCompile>
     <ClCompile Include="AvoidTheBoss.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="CBoss.cpp" />
@@ -308,6 +402,15 @@
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </FxCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\DXR\.gitattributes" />
+    <None Include="..\DXR\.gitignore" />
+    <None Include="..\DXR\LICENSE" />
+    <None Include="..\DXR\README.md" />
+    <None Include="..\DXR\Samples\Desktop\D3D12Raytracing\src\D3D12RaytracingRealTimeDenoisedAmbientOcclusion\Assets\Factory\Industry_Field.bin" />
+    <None Include="..\DXR\Samples\Desktop\D3D12Raytracing\src\D3D12RaytracingRealTimeDenoisedAmbientOcclusion\Assets\Factory\Industry_Map.bin" />
+    <None Include="..\DXR\Samples\Desktop\D3D12Raytracing\src\D3D12RaytracingRealTimeDenoisedAmbientOcclusion\packages.config" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

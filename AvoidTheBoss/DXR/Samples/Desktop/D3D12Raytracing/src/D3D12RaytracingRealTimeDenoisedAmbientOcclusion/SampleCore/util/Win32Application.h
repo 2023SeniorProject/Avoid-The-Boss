@@ -26,7 +26,8 @@ public:
 
 protected:
     static LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
-
+    static BOOL InitInstance(HINSTANCE hInstance, int nCmdShow);
+    static ATOM MyRegisterClass(HINSTANCE hInstance);
 private:
     static HWND m_hwnd;
     static bool m_fullscreenMode;

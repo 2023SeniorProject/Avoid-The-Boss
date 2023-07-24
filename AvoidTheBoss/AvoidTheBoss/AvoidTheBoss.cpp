@@ -5,6 +5,10 @@
 #include "clientIocpCore.h"
 #include "SocketUtil.h"
 #include "ThreadManager.h"
+// DXR 관련 헤더파일
+#include "stdafx.h"
+#include "D3D12RaytracingRealTimeDenoisedAmbientOcclusion.h"
+#include "Sampler.h"
 
 #define MAX_LOADSTRING 100
 
@@ -23,6 +27,8 @@ INT_PTR CALLBACK    About(HWND, UINT, WPARAM, LPARAM);
 
 BOOL CALLBACK MyDialogBox(HWND hWndDlg, UINT message, WPARAM wParam, LPARAM lParam);
 
+bool UseDXR = false;
+
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     _In_opt_ HINSTANCE hPrevInstance,
     _In_ LPWSTR    lpCmdLine,
@@ -30,7 +36,6 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 {
     ::SetConsoleTitle(L"Client");
     ThreadManager* GCThreadManager = nullptr;
-    MSG msg;
     
     UNREFERENCED_PARAMETER(hPrevInstance);
     UNREFERENCED_PARAMETER(lpCmdLine);
@@ -50,13 +55,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
    // 전역 문자열을 초기화합니다.
     ::LoadString(hInstance, IDS_APP_TITLE, szTitle, MAX_LOADSTRING);
     ::LoadString(hInstance, IDC_AVOIDTHEBOSS, szWindowClass, MAX_LOADSTRING);
-    MyRegisterClass(hInstance);
-
-    // 애플리케이션 초기화를 수행합니다:
-    if (!InitInstance(hInstance, nCmdShow))
-    {
-        return FALSE;
-    }
+    
+    Initialize(); //DXR과 ATB모두 초기화
 
     HACCEL hAccelTable = LoadAccelerators(hInstance, MAKEINTRESOURCE(IDC_AVOIDTHEBOSS));
 
@@ -71,7 +71,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
         }
     );
 
-   while (true)
+    MSG msg = {};
+   while (msg.message != WM_QUIT)
    {
        if (::PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
        {
@@ -88,11 +89,22 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
        }
        else
        {
-          mainGame.FrameAdvance(); // 처리할 윈도우 메세지가 큐에 없을 때 게임프로그램이 CPU사용
+           if (UseDXR)
+           {
+               if (pSample)
+               {
+                   pSample->OnUpdate();
+                   pSample->OnRender();
+               }
+           }
+           else
+           {
+               mainGame.FrameAdvance(); // 처리할 윈도우 메세지가 큐에 없을 때 게임프로그램이 CPU사용
+           }
        }
    }
  
-  
+    pSample->OnDestroy();
     mainGame.OnDestroy();
     delete GCThreadManager;
    
@@ -133,9 +145,19 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
     DWORD dwStyle = WS_OVERLAPPED | WS_CAPTION | WS_MINIMIZEBOX | WS_SYSMENU |
         WS_BORDER;
     AdjustWindowRect(&rc, dwStyle, FALSE);   //윈도우가 원하는 클라이언트 영역 크기 가지도록 윈도우크기 계산
-    HWND hMainWnd = CreateWindow(szWindowClass, szTitle, dwStyle, CW_USEDEFAULT,
-        CW_USEDEFAULT, rc.right - rc.left, rc.bottom - rc.top, NULL, NULL, hInst,
+    HWND hMainWnd = CreateWindow(
+        szWindowClass, 
+        szTitle, 
+        dwStyle, 
+        CW_USEDEFAULT,
+        CW_USEDEFAULT, 
+        rc.right - rc.left, 
+        rc.bottom - rc.top, 
+        NULL, 
+        NULL, 
+        hInst,
         NULL);
+
     g_hWnd = hMainWnd;
     if (!hMainWnd)return (FALSE);
 
@@ -262,4 +284,49 @@ BOOL CALLBACK MyDialogBox(HWND hWndDlg, UINT message, WPARAM wParam, LPARAM lPar
         return DefWindowProc(hWndDlg, message, wParam, lParam);
     return FALSE;
     }
+}
+
+void Initialize(HINSTANCE hInstance, HINSTANCE, LPSTR, int nCmdShow)
+{
+    InitializeDXR(hInstance, LPSTR, nCmdShow);
+    InitializeATB(hInstance, LPSTR, nCmdShow);
+}
+void InitializeDXR(HINSTANCE hInstance, HINSTANCE, LPSTR, int nCmdShow)
+{
+    // Initialization For WICTextureLoader.
+    ThrowIfFailed(CoInitializeEx(nullptr, COINITBASE_MULTITHREADED), L"Failed to initialize WIC component");
+
+    D3D12RaytracingRealTimeDenoisedAmbientOcclusion sample(1920, 1080, L"D3D12 Raytracing - Real-Time Denoised Raytraced Ambient Occlusion");
+
+    Win32Application::MyRegisterClass(hInstance);
+
+    if (!Win32Application::InitInstance(hInstance, nCmdShow))
+    {
+        return FALSE;
+    }
+}
+
+void InitializeATB(HINSTANCE hInstance, HINSTANCE, LPSTR, int nCmdShow)
+{
+    MyRegisterClass(hInstance);
+
+    // 애플리케이션 초기화를 수행합니다:
+    if (!InitInstance(hInstance, nCmdShow))
+    {
+        return FALSE;
+    }
+}
+
+void OnRenderDXR()
+{
+    if (pSample)
+    {
+        pSample->OnUpdate();
+        pSample->OnRender();
+    }
+}
+void FrameAdvance()
+{
+    if(UseDXR)
+
 }

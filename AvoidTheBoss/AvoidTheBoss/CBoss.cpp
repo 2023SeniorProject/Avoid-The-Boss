@@ -557,19 +557,19 @@ void CBoss::AnimTrackUpdate()
 			break;
 		case (int32)PLAYER_BEHAVIOR::ATTACK:
 			SetAttackAnimTrack();
-			if (GetOnMoveSound())
-			{
-				SetOnMoveSound(false);
-				SoundManager::SoundStop(4);
-			}
+			//if (GetOnMoveSound())
+			//{
+			//	SetOnMoveSound(false);
+			//	SoundManager::SoundStop(4);
+			//}
 			break;
 		case (int32)PLAYER_BEHAVIOR::RUN_ATTACK:
 			SetRunAttackAnimTrack();
-			if (!GetOnMoveSound())
-			{
-				SoundManager::GetInstance().PlayObjectSound(10, 4);
-				SetOnMoveSound(true);
-			}
+			//if (!GetOnMoveSound())
+			//{
+			//	SoundManager::GetInstance().PlayObjectSound(10, 4);
+			//	SetOnMoveSound(true);
+			//}
 			break;
 	}
 }

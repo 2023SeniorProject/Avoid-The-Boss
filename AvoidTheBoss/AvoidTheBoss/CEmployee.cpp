@@ -664,6 +664,8 @@ void CEmployee::AnimTrackUpdate()
 	switch (m_behavior)
 	{
 	case (int32)PLAYER_BEHAVIOR::RESCUE:
+		SetIdleAnimTrack();
+		break;
 	case (int32)PLAYER_BEHAVIOR::IDLE:
 		SetIdleAnimTrack();
 		if (GetOnMoveSound())

@@ -211,6 +211,20 @@ void Room::Update()
 			
 		}
 	}
+
+
+	// 게임이 끝났다면 게임이 끝났다는 패킷 전송
+	if (GAMESTATE::EMP_WIN == _gameLogic._gState || GAMESTATE::BOSS_WIN == _gameLogic._gState)
+	{
+		std::cout << "RESET GAME\n";
+		_gameLogic.ResetGame();
+
+		SC_EVENTPACKET packet;
+		packet.size = sizeof(SC_EVENTPACKET);
+		packet.type = (uint8)SC_GAME_PACKET_TYPE::GAMEEVENT;
+		packet.eventId = (uint8)EVENT_TYPE::GAME_END;
+		BroadCasting(&packet);
+	}
 }
 
 void Room::AddEvent(QueueEvent* qe, float after)

@@ -313,7 +313,7 @@ void CGameScene::Update(HWND& hWnd)
 
 	mainGame.m_UIRenderer->UpdateGameSceneUI(this);
 
-	if (m_bEmpExit) Exit();
+	if (m_bEmpExit) ExitReady();
 	// 평균 프레임 레이트 출력
 	std::wstring str = L"[";
 	str.append(std::to_wstring(m_sid));
@@ -325,7 +325,7 @@ void CGameScene::Update(HWND& hWnd)
 	str.append(std::to_wstring(m_players[m_playerIdx]->GetPosition().z));
 	str.append(L")- FPS: ");
 	str.append(std::to_wstring(m_curFrame));
-	//if(_timer.GetFrameRate()) str.append(std::to_wstring(1000.f / _timer.GetFrameRate()));
+
 	::SetWindowText(hWnd, str.c_str());
 }
 
@@ -439,54 +439,13 @@ void CGameScene::InitGame(void* packet, int32 sid)
 	m_players[m_playerIdx]->m_clientType = CLIENT_TYPE::OWNER;
 }
 
-bool CGameScene::IsGameOver()
-{
-	// 탈출 조건이 활성화 됐을 때,
-	// 남은 플레이어가 없고, 탈출한 플레이어가 있다면
-	if (m_bEmpExit)
-	{
-		int expected = 0;
-		if (m_remainPlayerCnt.compare_exchange_strong(expected, expected)) return true;
-		else if(!m_remainPlayerCnt.compare_exchange_strong(expected, expected))
-		{
-			int totalCnt = m_remainPlayerCnt.load() + m_ExitedPlayerCnt.load();
-			return (totalCnt == (PLAYERNUM - 1));
-		}
-	}
-
-	return false;
-}
-
-void CGameScene::UpdateGameOverVariable()
-{
-	// 게임 클리어 조건 1. 모든 유저가 CRAWL 상태 2. CRAW 인원 + 탈출 인원 수 = 직원 수
-	// 
- 
-	m_remainPlayerCnt.store(PLAYERNUM - 1); // 보스를 제외한 나머지 플레이어에 대해
-	
-	for (auto i : m_players)
-	{
-		// 플레이어 카운팅
-		if ((int32)PLAYER_BEHAVIOR::CRAWL == i->GetBehavior()) // 탈출 했거나 죽은 플레이어가 있다면
-		{
-			m_remainPlayerCnt.fetch_sub(1); // 남아있는 플레이어 체크 ()
-		}
-		if ((int32)PLAYER_BEHAVIOR::EXIT == i->GetBehavior())
-		{
-			m_ExitedPlayerCnt.fetch_add(1);
-		}
-	}
-
-	if (IsGameOver()) mainGame.m_SceneManager->ChangeScene(4); // 결과 창으로 이동
-}
-
 void CGameScene::AddEvent(queueEvent* ev, float after)
 {
 	std::unique_lock<std::shared_mutex> wl(m_jobQueueLock);
 	m_jobQueue->PushTask(ev, after);
 }
 
-void CGameScene::Exit()
+void CGameScene::ExitReady()
 {
 	if (m_bEmpExit) // 탈출 성공 시 , 해야할 일 처리
 	{
@@ -509,5 +468,21 @@ void CGameScene::Exit()
 			}
 		}
 	}
+}
+
+void CGameScene::ResetGame()
+{
+	// 플레이어 상태 초기화
+	for (auto& i : m_players) i->ResetState();
+	
+	// 발전기 상태 초기화
+	for (int i = 0; i < m_nGenerator; ++i) m_ppGenerator[i]->ResetState();
+
+	m_playerIdx = -1;
+	m_bEmpExit = false;
+	m_curFrame = 0;
+	m_ExitedPlayerCnt = 0;
+	m_remainPlayerCnt = 0;
+	
 }
 

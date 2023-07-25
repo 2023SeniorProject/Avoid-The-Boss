@@ -157,6 +157,14 @@ void CBoss::Move(const int16& dwDirection, float fDistance)
 	CPlayer::Move(dwDirection, BOSS_VELOCITY);
 }
 
+void CBoss::ResetState()
+{
+		SetBehavior(PLAYER_BEHAVIOR::IDLE);
+	 m_runAttackAnimTime = 0;
+	 m_standAttackAnimTime = 0;
+	 m_IsOnAttack = false;
+}
+
 void CBoss::SetAttackAnimOtherClient()
 {
 	if (!GetOnAttack())
@@ -227,16 +235,7 @@ void CBoss::AnimationLogicUpdate()
 			return;
 		}
 		m_standAttackAnimTime++;
-		/*else if (GetBehavior() == (int32)PLAYER_BEHAVIOR::RUN_ATTACK)
-		{
-			if (m_runAttackAnimTime >= BOSS_ATTACK_TIME)
-			{
-				SetOnAttack(false);
-				SetRunAttackAnimTime();
-				return;
-			}
-			m_runAttackAnimTime++;
-		}*/
+		
 	}
 }
 

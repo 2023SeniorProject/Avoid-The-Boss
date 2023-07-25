@@ -45,14 +45,13 @@ public: // 오승담 작성 함수
 
 	void InitGame(void* packet ,int32 sid);
 	
-	bool IsGameOver();
-	void UpdateGameOverVariable();
-	
 	void StopTimer() { m_timer.Stop(); }
 	void StartTimer() { m_timer.Start(); }
 	void AddEvent(queueEvent*, float);
 
-	void Exit();
+	void ExitReady();
+
+	void ResetGame();
 public:
 	WCHAR								txtFrameBuf[20];
 	//마지막으로 마우스 버튼을 클릭할 때의 마우스 커서의 위치이다. 

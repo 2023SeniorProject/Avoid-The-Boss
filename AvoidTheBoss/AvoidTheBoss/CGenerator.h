@@ -53,6 +53,15 @@ public:
 
 	void PipelineAnimate(float fTimeElapsed);
 	void BodyAnimate(float fTimeElapsed);
+
+	void ResetState()
+	{
+		float m_curGuage = 0;
+		m_bGenActive = false; // --> 발전기가 활성화 되었는가
+		m_bOnInteraction = false; // --> 발전기가 상호작용 중인가?
+		m_bAlreadyOn = false;
+		m_bOnGenAnimation = false; // 발전기 애니메이션 활성화 여부
+	};
 };
 
 

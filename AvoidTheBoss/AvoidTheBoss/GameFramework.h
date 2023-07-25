@@ -28,7 +28,7 @@ class CGameFramework
 {
 
 public:	
-	enum class SCENESTATE { TITLE = 0, LOBBY = 1, ROOM = 2, INGAME = 3 };
+	enum class SCENESTATE { TITLE = 0, LOBBY = 1, ROOM = 2, INGAME = 3, RESULT = 4 };
 	
 	friend class queueEvent;
 	friend class moveEvnet;

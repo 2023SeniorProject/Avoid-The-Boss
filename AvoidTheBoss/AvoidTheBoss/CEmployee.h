@@ -52,7 +52,8 @@ public:
 
 	bool IsMovable() 
 	{ 
-		return (m_behavior == (int32)PLAYER_BEHAVIOR::RESCUE || m_behavior == (int32)PLAYER_BEHAVIOR::SWITCH_INTER || m_behavior == (int32)PLAYER_BEHAVIOR::CRAWL);
+		return (m_behavior == (int32)PLAYER_BEHAVIOR::RESCUE || m_behavior == (int32)PLAYER_BEHAVIOR::SWITCH_INTER || m_behavior == (int32)PLAYER_BEHAVIOR::CRAWL 
+			|| m_behavior == (int32)PLAYER_BEHAVIOR::EXIT);
 	}
 	bool IsSeMiBehavior() // 스탠드, 크라울, 다운 상태
 	{
@@ -68,6 +69,29 @@ public:
 	void ResetRescueGuage() { m_curGuage = 0; }
 	bool GetRescueOn() { return m_bIsRescuing; }
 
+	virtual void ResetState()
+	{
+		SetBehavior(PLAYER_BEHAVIOR::IDLE);
+		m_attackedAnimationCount = 0;
+		m_downAnimationCount = 0;
+		m_standAnimationCount = 0;
+
+		m_bIsPlayerOnGenInter = false; // F키를 눌렀다 땠는지 확인하는 용도
+		m_bIsPlayerOnRescueInter = false;
+	
+		m_bIsInvincibility = false;
+		m_UICoolTime = 1.0f;
+
+	
+		m_bIsInGenArea = false;
+		m_bIsInDownPlayerArea = false; // Down된 플레이어와 인접해 있는가?
+
+	
+	    m_curGuage = 0;
+
+		m_bIsRescuing = false;
+
+	}
 
 	// 총알 맞고 쓰러짐 x,2
 	// 피격 2,4

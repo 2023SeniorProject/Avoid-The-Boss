@@ -296,7 +296,13 @@ void CSession::ProcessPacket(char* packet)
 		SC_EVENTPACKET* ev = (SC_EVENTPACKET*)packet;
 		InteractionEvent* gev = new InteractionEvent();
 		gev->eventId = ev->eventId;
-		gs->AddEvent(static_cast<queueEvent*>(gev), 0.f);
+		if (gev->eventId == (uint8)EVENT_TYPE::GAME_END)
+		{
+			gs->ResetGame();
+			mainGame.ChangeScene(CGameFramework::SCENESTATE::RESULT);
+
+		}
+		else gs->AddEvent(static_cast<queueEvent*>(gev), 0.f);
 
 	}
 	break;

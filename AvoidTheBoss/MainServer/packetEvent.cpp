@@ -74,7 +74,7 @@ void InteractionEvent::Task()
 	case EVENT_TYPE::SWITCH_TWO_ACTIVATE_EVENT: // 상호작용 도중에 끝낸 경우
 	case EVENT_TYPE::SWITCH_THREE_ACTIVATE_EVENT: // 상호작용 도중에 끝낸 경우
 	{
-		std::cout << "Active\n";
+		
 		SGenerator& targetGen = gm.GetGeneratorByIdx(eventId - (uint8)EVENT_TYPE::SWITCH_ONE_ACTIVATE_EVENT);
 		targetGen.GenActivate(true);
 		SC_EVENTPACKET packet;
@@ -82,6 +82,9 @@ void InteractionEvent::Task()
 		packet.type = (uint8)SC_GAME_PACKET_TYPE::GAMEEVENT;
 		packet.eventId = eventId;
 		targetRoom.BroadCasting(&packet);
+		// 일단 활성화 사실 알리기
+
+
 	}
 	break;
 	
@@ -95,8 +98,6 @@ void InteractionEvent::Task()
 		if (!p.m_bIsRescue)
 		{
 			p.m_bIsRescue = true;
-			std::cout << "RESCUING\n";
-
 			SC_EVENTPACKET packet;
 			packet.type = (uint8)SC_GAME_PACKET_TYPE::GAMEEVENT;
 			packet.size = sizeof(SC_EVENTPACKET);
@@ -132,6 +133,16 @@ void InteractionEvent::Task()
 		p.ProcessAlive();
 	}
 	break;
+	case EVENT_TYPE::EXIT_PLAYER_ONE:
+	case EVENT_TYPE::EXIT_PLAYER_TWO:
+	case EVENT_TYPE::EXIT_PLAYER_THREE:
+	case EVENT_TYPE::EXIT_PLAYER_FOUR:
+	{
+		int32 playerIdx = eventId - (int8)EVENT_TYPE::EXIT_PLAYER_ONE;
+		SPlayer& p = gm.GetPlayerByIdx((int8)eventId - (int8)EVENT_TYPE::ALIVE_PLAYER_ONE);
+		if(!p.m_isEscaped) p.m_isEscaped = true;
+
+	}
 	default:
 		std::cout << "UnKnown Game Event Please Check Your Packet Type\n";
 		break;

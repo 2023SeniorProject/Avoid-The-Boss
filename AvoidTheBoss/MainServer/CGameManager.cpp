@@ -39,6 +39,9 @@ void CGameManager::InitGame()
 void CGameManager::Update(float eTime)
 {
 	if (GAMESTATE::IN_GAME != _gState) return;
+
+
+
 	{
 		std::unique_lock<std::shared_mutex> ql(_jobQueueLock); // Queue Lock È£Ãâ
 		_jobQueue->DoTasks();
@@ -49,8 +52,17 @@ void CGameManager::Update(float eTime)
 
 void CGameManager::LateUpdate(float eTime)
 {
+	int32 m_activeGenCnt = 0;
 	if (GAMESTATE::IN_GAME != _gState) return;
 	for (auto& i : _players)if (!i.m_hide) i.LateUpdate(eTime);
+	for (auto& i : _generators) if (i._IsActive) m_activeGenCnt++;
+
+	if (m_activeGenCnt >= 3)
+	{
+		if (!_bExitReady) _bExitReady = true;
+	}
+
+	if (_bExitReady) _gState = CheckGameState();
 }
 
 void CGameManager::AddEventAfterTime(float after, QueueEvent* qe)
@@ -68,16 +80,15 @@ void CGameManager::AddEvent(QueueEvent* qe)
 GAMESTATE CGameManager::CheckGameState()
 {
 	int32 crawlCnt = 0;
-	int32 livePlayer = 0;
 	int32 escapeCnt = 0;
+
 	for (auto& i : _players)
 	{
 		if ((int32)PLAYER_BEHAVIOR::CRAWL == i.GetBehavior()) crawlCnt += 1;
-		else livePlayer += 1;
 		if (true == i.GetEscaped()) escapeCnt += 1;
 	}
 	if (PLAYERNUM == crawlCnt) _gState == GAMESTATE::BOSS_WIN;
-	else if (livePlayer == escapeCnt) GAMESTATE::EMP_WIN;
+	else if ((crawlCnt + escapeCnt) == (PLAYERNUM - 1)) GAMESTATE::EMP_WIN;
 
 	return _gState;
 }
@@ -95,7 +106,9 @@ void CGameManager::ResetGame()
 	_players[1].SetPosition(XMFLOAT3(10, 0.25, -18));
 	_players[2].SetPosition(XMFLOAT3(15, 0.25, -18));
 	_players[3].SetPosition(XMFLOAT3(20, 0.25, -18));
-	
+	_bExitReady = false;
+
 	_gState = GAMESTATE::NONE;
+
 }
 

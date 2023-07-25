@@ -178,13 +178,10 @@
     </FxCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="BinParser.h" />
     <ClInclude Include="SampleCore\Composition.h" />
     <ClInclude Include="SampleCore\DirectXRaytracingHelper.h" />
     <ClInclude Include="SampleCore\GpuKernels.h" />
     <ClInclude Include="SampleCore\Pathtracer.h" />
-    <ClInclude Include="SampleCore\PBRTParser\GameObject.h" />
-    <ClInclude Include="SampleCore\PBRTParser\Mesh.h" />
     <ClInclude Include="SampleCore\RaytracingAccelerationStructure.h" />
     <ClInclude Include="SampleCore\RaytracingSceneDefines.h" />
     <ClInclude Include="RaytracingHlslCompat.h" />
@@ -216,14 +213,11 @@
     <ClInclude Include="SampleCore\util\Win32Application.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="BinParser.cpp" />
     <ClCompile Include="SampleCore\Composition.cpp" />
     <ClCompile Include="D3D12RaytracingRealTimeDenoisedAmbientOcclusion.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="SampleCore\GpuKernels.cpp" />
     <ClCompile Include="SampleCore\Pathtracer.cpp" />
-    <ClCompile Include="SampleCore\PBRTParser\GameObject.cpp" />
-    <ClCompile Include="SampleCore\PBRTParser\Mesh.cpp" />
     <ClCompile Include="SampleCore\RaytracingAccelerationStructure.cpp" />
     <ClCompile Include="SampleCore\RaytracingSceneDefines.cpp" />
     <ClCompile Include="RTAO\Denoiser.cpp" />

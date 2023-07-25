@@ -26,9 +26,13 @@ public:
 
 protected:
     static LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
-    static BOOL InitInstance(HINSTANCE hInstance, int nCmdShow);
-    static ATOM MyRegisterClass(HINSTANCE hInstance);
+    static BOOL InitInstance(DXSample* pSample,HINSTANCE hInstance, int nCmdShow);
+    static ATOM MyRegisterClass(DXSample* pSample,HINSTANCE hInstance);
+
+    static BOOL InitializeDXR(DXSample* pSample,HINSTANCE hInstance, int nCmdShow);
+    static void OnRenderDXR(DXSample* pSample);
 private:
+
     static HWND m_hwnd;
     static bool m_fullscreenMode;
     static const UINT m_windowStyle = WS_OVERLAPPEDWINDOW;

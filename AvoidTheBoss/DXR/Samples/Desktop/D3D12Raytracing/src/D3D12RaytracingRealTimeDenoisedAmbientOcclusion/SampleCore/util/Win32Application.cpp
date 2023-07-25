@@ -18,13 +18,50 @@ HWND Win32Application::m_hwnd = nullptr;
 bool Win32Application::m_fullscreenMode = false;
 RECT Win32Application::m_windowRect;
 
+bool UseDXR = true;
+
 using Microsoft::WRL::ComPtr;
 
 int Win32Application::Run(DXSample* pSample, HINSTANCE hInstance, int nCmdShow)
 {
     try
     {
+        InitializeDXR(pSample,hInstance, nCmdShow);
 
+        //HACCEL hAccelTable = LoadAccelerators(hInstance, MAKEINTRESOURCE(IDC_D3D12RAYTRACINGREALTIMEDENOISEDAMBIENTOCCLUSION));
+
+        MSG msg = {};
+        while (msg.message != WM_QUIT)
+        {
+            if (::PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
+            {
+                //if (msg.message == WM_QUIT)
+                //{
+                //    clientCore.Disconnect(0);
+                //    break;
+                //}
+                if (!::TranslateAccelerator(msg.hwnd, NULL, &msg))
+                {
+                    ::TranslateMessage(&msg);
+                    ::DispatchMessage(&msg);
+                }
+            }
+            else
+            {
+                if (UseDXR)
+                {
+                    OnRenderDXR(pSample);
+                }
+                else
+                {
+                   // mainGame.FrameAdvance(); // 처리할 윈도우 메세지가 큐에 없을 때 게임프로그램이 CPU사용
+                }
+            }
+        }
+        pSample->OnDestroy();
+
+        std::cout << "Quit Client\n";
+        return (int)msg.wParam;
     }
     catch (HrException& e)
     {
@@ -150,7 +187,8 @@ void Win32Application::SetWindowZorderToTopMost(bool setToTopMost)
 LRESULT CALLBACK Win32Application::WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
     DXSample* pSample = reinterpret_cast<DXSample*>(GetWindowLongPtr(hWnd, GWLP_USERDATA));
-
+    PAINTSTRUCT ps;
+    HDC hdc;
     switch (message)
     {
     case WM_CREATE:
@@ -194,6 +232,8 @@ LRESULT CALLBACK Win32Application::WindowProc(HWND hWnd, UINT message, WPARAM wP
     //        pSample->OnUpdate();
     //        pSample->OnRender();
     //    }
+        hdc = BeginPaint(hWnd, &ps);
+        EndPaint(hWnd, &ps);
         return 0;
 
     case WM_SIZE:
@@ -274,11 +314,11 @@ LRESULT CALLBACK Win32Application::WindowProc(HWND hWnd, UINT message, WPARAM wP
     // Handle any messages the switch statement didn't.
     return DefWindowProc(hWnd, message, wParam, lParam);
 }
-
-BOOL Win32Application::InitInstance(HINSTANCE hInstance, int nCmdShow)
+WNDCLASSEX windowClass = { 0 };
+BOOL Win32Application::InitInstance(DXSample* pSample,HINSTANCE hInstance, int nCmdShow)
 {
-    RECT windowRect = { 0, 0, static_cast<LONG>(pSample->GetWidth()), static_cast<LONG>(pSample->GetHeight()) };
-    AdjustWindowRect(&windowRect, WS_OVERLAPPEDWINDOW, FALSE);
+    m_windowRect = { 0, 0, static_cast<LONG>(pSample->GetWidth()), static_cast<LONG>(pSample->GetHeight()) };
+    AdjustWindowRect(&m_windowRect, WS_OVERLAPPEDWINDOW, FALSE);
 
     // Create the window and store a handle to it.
     m_hwnd = CreateWindow(
@@ -287,8 +327,8 @@ BOOL Win32Application::InitInstance(HINSTANCE hInstance, int nCmdShow)
         m_windowStyle,
         CW_USEDEFAULT,
         CW_USEDEFAULT,
-        windowRect.right - windowRect.left,
-        windowRect.bottom - windowRect.top,
+        m_windowRect.right - m_windowRect.left,
+        m_windowRect.bottom - m_windowRect.top,
         nullptr,        // We have no parent window.
         nullptr,        // We aren't using menus.
         hInstance,
@@ -302,7 +342,7 @@ BOOL Win32Application::InitInstance(HINSTANCE hInstance, int nCmdShow)
 
     return (TRUE);
 }
-ATOM Win32Application::MyRegisterClass(HINSTANCE hInstance)
+ATOM Win32Application::MyRegisterClass(DXSample* pSample,HINSTANCE hInstance)
 {
     // Parse the command line parameters
     int argc;
@@ -311,7 +351,7 @@ ATOM Win32Application::MyRegisterClass(HINSTANCE hInstance)
     LocalFree(argv);
 
     // Initialize the window class.
-    WNDCLASSEX windowClass = { 0 };
+   // WNDCLASSEX windowClass = { 0 };
     windowClass.cbSize = sizeof(WNDCLASSEX);
     windowClass.style = CS_HREDRAW | CS_VREDRAW;
     windowClass.lpfnWndProc = WindowProc;
@@ -319,4 +359,25 @@ ATOM Win32Application::MyRegisterClass(HINSTANCE hInstance)
     windowClass.hCursor = LoadCursor(NULL, IDC_ARROW);
     windowClass.lpszClassName = L"DXSampleClass";
     return RegisterClassEx(&windowClass);
+}
+
+BOOL Win32Application::InitializeDXR(DXSample* pSample,HINSTANCE hInstance, int nCmdShow)
+{
+    MyRegisterClass(pSample,hInstance);
+
+    if (!InitInstance(pSample,hInstance, nCmdShow))
+    {
+        return FALSE;
+    }
+    return TRUE;
+}
+
+
+void Win32Application::OnRenderDXR(DXSample* pSample)
+{
+    if (pSample)
+    {
+        pSample->OnUpdate();
+        pSample->OnRender();
+    }
 }

@@ -159,12 +159,12 @@ using Microsoft::WRL::ComPtr;
 #include <d3d12.h>
 #include <atlbase.h>
 #include "d3dx12.h"	
-#include <pix3.h>
+#include "C:\AvoidTheBoss\AvoidTheBoss\DXR\Packages\WinPixEventRuntime.1.0.210209001\Include\WinPixEventRuntime\pix3.h"
 
 #include <DirectXMath.h>
-#include <WICTextureLoader.h>
+#include <C:\AvoidTheBoss\AvoidTheBoss\DXR\Packages\directxtk12_desktop_2015.2019.8.23.1\include\WICTextureLoader.h>
 #include <DDSTextureLoader.h>
-#include "ResourceUploadBatch.h"
+#include "C:\AvoidTheBoss\AvoidTheBoss\DXR\Packages\directxtk12_desktop_2015.2019.8.23.1\include\ResourceUploadBatch.h"
 
 // UI 
 #include <d2d1_3.h>

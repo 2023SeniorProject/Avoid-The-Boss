@@ -141,15 +141,6 @@
     <ClInclude Include="D3D12RaytracingRealTimeDenoisedAmbientOcclusion.h">
       <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="BinParser.h">
-      <Filter>Source Files\SampleCore\PBRTParser</Filter>
-    </ClInclude>
-    <ClInclude Include="SampleCore\PBRTParser\GameObject.h">
-      <Filter>Source Files\SampleCore\PBRTParser</Filter>
-    </ClInclude>
-    <ClInclude Include="SampleCore\PBRTParser\Mesh.h">
-      <Filter>Source Files\SampleCore\PBRTParser</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -232,15 +223,6 @@
     </ClCompile>
     <ClCompile Include="D3D12RaytracingRealTimeDenoisedAmbientOcclusion.cpp">
       <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="BinParser.cpp">
-      <Filter>Source Files\SampleCore\PBRTParser</Filter>
-    </ClCompile>
-    <ClCompile Include="SampleCore\PBRTParser\GameObject.cpp">
-      <Filter>Source Files\SampleCore\PBRTParser</Filter>
-    </ClCompile>
-    <ClCompile Include="SampleCore\PBRTParser\Mesh.cpp">
-      <Filter>Source Files\SampleCore\PBRTParser</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

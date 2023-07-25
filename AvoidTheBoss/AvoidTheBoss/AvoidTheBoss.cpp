@@ -286,12 +286,12 @@ BOOL CALLBACK MyDialogBox(HWND hWndDlg, UINT message, WPARAM wParam, LPARAM lPar
     }
 }
 
-void Initialize(HINSTANCE hInstance, HINSTANCE, LPSTR, int nCmdShow)
+void Initialize(HINSTANCE hInstance,int nCmdShow)
 {
-    InitializeDXR(hInstance, LPSTR, nCmdShow);
-    InitializeATB(hInstance, LPSTR, nCmdShow);
+    InitializeDXR(hInstance, nCmdShow);
+    InitializeATB(hInstance, nCmdShow);
 }
-void InitializeDXR(HINSTANCE hInstance, HINSTANCE, LPSTR, int nCmdShow)
+void InitializeDXR(HINSTANCE hInstance, int nCmdShow)
 {
     // Initialization For WICTextureLoader.
     ThrowIfFailed(CoInitializeEx(nullptr, COINITBASE_MULTITHREADED), L"Failed to initialize WIC component");
@@ -306,7 +306,7 @@ void InitializeDXR(HINSTANCE hInstance, HINSTANCE, LPSTR, int nCmdShow)
     }
 }
 
-void InitializeATB(HINSTANCE hInstance, HINSTANCE, LPSTR, int nCmdShow)
+void InitializeATB(HINSTANCE hInstance, int nCmdShow)
 {
     MyRegisterClass(hInstance);
 

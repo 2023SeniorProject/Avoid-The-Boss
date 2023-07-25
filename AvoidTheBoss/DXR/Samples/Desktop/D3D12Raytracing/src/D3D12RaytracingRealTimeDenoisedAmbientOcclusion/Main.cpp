@@ -13,12 +13,12 @@
 #include "D3D12RaytracingRealTimeDenoisedAmbientOcclusion.h"
 #include "Sampler.h"
 
-//_Use_decl_annotations_
-//int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR, int nCmdShow)
-//{
-////    // Initialization For WICTextureLoader.
-////    ThrowIfFailed(CoInitializeEx(nullptr, COINITBASE_MULTITHREADED), /L"Failed /to initialize WIC component");
-////
-////    D3D12RaytracingRealTimeDenoisedAmbientOcclusion sample(1920, 1080, /L"D3D12 /Raytracing - Real-Time Denoised Raytraced Ambient Occlusion");
-//    return Win32Application::Run(&sample, hInstance, nCmdShow);
-//}
+_Use_decl_annotations_
+int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR, int nCmdShow)
+{
+    // Initialization For WICTextureLoader.
+    ThrowIfFailed(CoInitializeEx(nullptr, COINITBASE_MULTITHREADED), L"Failed /to initialize WIC component");
+
+    D3D12RaytracingRealTimeDenoisedAmbientOcclusion sample(1920, 1080, L"D3D12 /Raytracing - Real-Time Denoised Raytraced Ambient Occlusion");
+    return Win32Application::Run(&sample, hInstance, nCmdShow);
+}

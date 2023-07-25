@@ -329,8 +329,6 @@ void CGameScene::Update(HWND& hWnd)
 	::SetWindowText(hWnd, str.c_str());
 }
 
-
-
 void CGameScene::AnimateObjects()
 { 
 	

@@ -300,7 +300,6 @@ void CSession::ProcessPacket(char* packet)
 		{
 			gs->ResetGame();
 			mainGame.ChangeScene(CGameFramework::SCENESTATE::RESULT);
-
 		}
 		else gs->AddEvent(static_cast<queueEvent*>(gev), 0.f);
 

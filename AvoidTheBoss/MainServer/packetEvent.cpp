@@ -141,7 +141,6 @@ void InteractionEvent::Task()
 		int32 playerIdx = eventId - (int8)EVENT_TYPE::EXIT_PLAYER_ONE;
 		SPlayer& p = gm.GetPlayerByIdx((int8)eventId - (int8)EVENT_TYPE::ALIVE_PLAYER_ONE);
 		if(!p.m_isEscaped) p.m_isEscaped = true;
-
 	}
 	default:
 		std::cout << "UnKnown Game Event Please Check Your Packet Type\n";

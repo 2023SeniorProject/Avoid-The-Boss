@@ -39,9 +39,6 @@ void CGameManager::InitGame()
 void CGameManager::Update(float eTime)
 {
 	if (GAMESTATE::IN_GAME != _gState) return;
-
-
-
 	{
 		std::unique_lock<std::shared_mutex> ql(_jobQueueLock); // Queue Lock È£Ãâ
 		_jobQueue->DoTasks();

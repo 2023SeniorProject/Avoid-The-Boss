@@ -54,4 +54,8 @@ void SceneManager::BuildScene(ID3D12Device5* pd3dDevice, ID3D12GraphicsCommandLi
 	m_pScenes[(int32)SCENESTATE::ROOM]->BuildObjects(pd3dDevice, pd3dCommandList);
 	m_pScenes[(int32)SCENESTATE::INGAME] = new CGameScene();
 	m_pScenes[(int32)SCENESTATE::INGAME]->BuildObjects(pd3dDevice, pd3dCommandList);
+
+	m_pScenes[(int32)SCENESTATE::RESULT] = new CResultScene();
+	m_pScenes[(int32)SCENESTATE::RESULT]->BuildObjects(pd3dDevice, pd3dCommandList);
 }
+

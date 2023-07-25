@@ -240,11 +240,28 @@ void CEmployee::LateUpdate(float fTimeElapsed, CLIENT_TYPE ptype)
 		}
 	}
 
-	
+	// 탈출 후 맵에서 일정 범위 이상 넘어가게 되면 EXIT 상태로 만세 애니메이션 재생
+	if (!m_bEmpExit)
+	{
+		if (GetPosition().x < -28 || GetPosition().x > 28 || GetPosition().z > 28 || GetPosition().z < -28)
+		{
+			m_bEmpExit = true;
+			SetBehavior(PLAYER_BEHAVIOR::EXIT);
+			
+			SC_EVENTPACKET packet;
+			packet.size = sizeof(SC_EVENTPACKET);
+			packet.type = (uint8)SC_GAME_PACKET_TYPE::GAMEEVENT;
+			packet.eventId = m_idx + (uint8)EVENT_TYPE::EXIT_PLAYER_ONE;
+			
+			clientCore.DoSend(&packet); // 탈출 시 전송
+		}
+	}
+
 	if (ptype == CLIENT_TYPE::OWNER) m_xmf3Velocity = XMFLOAT3(0.0f, 0.0f, 0.0f);
 	else if (ptype == CLIENT_TYPE::OTHER_PLAYER)
 	{
 		if (m_behavior != (int32)PLAYER_BEHAVIOR::SWITCH_INTER) SetGenInteraction(false);
+		if (m_behavior == (int32)PLAYER_BEHAVIOR::EXIT) m_hide = true;
 	}
 }
 

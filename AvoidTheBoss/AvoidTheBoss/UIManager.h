@@ -138,6 +138,7 @@ public:
     UITextBlock                m_IDPWTextBlocks[2];
     // 레디 버튼
     UIButton                   m_ReadyBitmaps[4];
+    UIButton                   m_ReadyCard[4];
 
     // 레이어 위치 출력을 위한 브러시
     ID2D1SolidColorBrush* redBrush; // 빨강

@@ -285,10 +285,13 @@ void UIManager::DrawOtherSceneUI(int32 Scene,int32 idx)
       
         for (int i = 0; i < 4; ++i)
         {
+
+            if (rs->m_members[i].m_sid != -1) m_pd2dDeviceContext->DrawBitmap(m_ReadyCard[i].resource, m_ReadyCard[i].d2dLayoutRect);
+            
             m_pd2dDeviceContext->DrawRectangle(m_ReadyBitmaps[i].d2dLayoutRect,blackBrush, 6.0f);
-            m_pd2dDeviceContext->FillRectangle(m_ReadyBitmaps[i].d2dLayoutRect, grayBrush);
-            if(rs->m_members[i].isReady)  
-                m_pd2dDeviceContext->DrawBitmap(m_ReadyBitmaps[i].resource, m_ReadyBitmaps[i].d2dLayoutRect);
+            if(rs->m_members[i].isReady) m_pd2dDeviceContext->DrawBitmap(m_ReadyBitmaps[i].resource, m_ReadyBitmaps[i].d2dLayoutRect);
+
+           
         }
     }
 }
@@ -603,6 +606,11 @@ void UIManager::InitializeDevice(ID3D12Device5* pd3dDevice, ID3D12CommandQueue* 
     m_ReadyBitmaps[2].resource = LoadPngFromFile(L"UI/Ready3.png");
     m_ReadyBitmaps[3].resource = LoadPngFromFile(L"UI/Ready4.png");
 
+    m_ReadyCard[0].resource = LoadPngFromFile(L"UI/READY_CARD1.png");
+    m_ReadyCard[1].resource = LoadPngFromFile(L"UI/READY_CARD2.png");
+    m_ReadyCard[2].resource = LoadPngFromFile(L"UI/READY_CARD3.png");
+    m_ReadyCard[3].resource = LoadPngFromFile(L"UI/READY_CARD4.png");
+
     m_ReadyBitmaps[0].d2dLayoutRect = MakeLayoutRectByCorner(LOBBYROOMLIST_X_OFFSET, 
         LOBBYROOMLIST_Y_OFFSET,
         (FRAME_BUFFER_WIDTH - (LOBBYROOMLIST_X_OFFSET * 2.0)) / 2.0,
@@ -622,6 +630,12 @@ void UIManager::InitializeDevice(ID3D12Device5* pd3dDevice, ID3D12CommandQueue* 
         LOBBYROOMLIST_Y_OFFSET + FRAME_BUFFER_HEIGHT / 4.0,
         (FRAME_BUFFER_WIDTH - (LOBBYROOMLIST_X_OFFSET * 2.0)) / 2.0,
         FRAME_BUFFER_HEIGHT / 4.0);
+
+    for (int i = 0; i < 4; ++i)
+    {
+        m_ReadyCard[i].d2dLayoutRect = m_ReadyBitmaps[i].d2dLayoutRect;
+        m_ReadyCard[i].m_hide = true;
+    }
 
     //로비에서 출력할 방 리스트 영역
     for (int i = 0; i < m_nRoomListPerPage; ++i)

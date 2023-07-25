@@ -89,7 +89,10 @@ public:
 
 class CResultScene : public CScene
 {
-	
+public:
+	int32 m_pidx = -1;
+	int32 m_case = 0; // 1  escape 2 arrested
+	int32 m_exitPlayerCnt = 0;
 public:
 	CResultScene() {}
 	~CResultScene() {}

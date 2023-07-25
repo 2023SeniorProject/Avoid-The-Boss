@@ -7,6 +7,7 @@
 #include "CSound.h"
 
 #include "GameScene.h"
+
 #include "InputManager.h"
 #include "SceneManager.h"
 #include "SoundManager.h"
@@ -241,7 +242,7 @@ void CEmployee::LateUpdate(float fTimeElapsed, CLIENT_TYPE ptype)
 	}
 
 	// 탈출 후 맵에서 일정 범위 이상 넘어가게 되면 EXIT 상태로 만세 애니메이션 재생
-	if (!m_bEmpExit)
+	if (!m_bEmpExit && static_cast<CGameScene*>(mainGame.m_SceneManager->GetSceneByIdx(3))->m_bEmpExit)
 	{
 		if (GetPosition().x < -28 || GetPosition().x > 28 || GetPosition().z > 28 || GetPosition().z < -28)
 		{

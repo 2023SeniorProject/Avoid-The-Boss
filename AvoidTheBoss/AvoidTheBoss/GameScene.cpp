@@ -2,6 +2,7 @@
 #include "GameScene.h"
 #include "GameFramework.h"
 #include "UIManager.h"
+#include "SceneManager.h"
 #include "InputManager.h"
 #include "SoundManager.h"
 #include "CSound.h"
@@ -436,6 +437,47 @@ void CGameScene::InitGame(void* packet, int32 sid)
 	m_pCamera->m_fogOn = true;
 
 	m_players[m_playerIdx]->m_clientType = CLIENT_TYPE::OWNER;
+}
+
+bool CGameScene::IsGameOver()
+{
+	// 탈출 조건이 활성화 됐을 때,
+	// 남은 플레이어가 없고, 탈출한 플레이어가 있다면
+	if (m_bEmpExit)
+	{
+		int expected = 0;
+		if (m_remainPlayerCnt.compare_exchange_strong(expected, expected)) return true;
+		else if(!m_remainPlayerCnt.compare_exchange_strong(expected, expected))
+		{
+			int totalCnt = m_remainPlayerCnt.load() + m_ExitedPlayerCnt.load();
+			return (totalCnt == (PLAYERNUM - 1));
+		}
+	}
+
+	return false;
+}
+
+void CGameScene::UpdateGameOverVariable()
+{
+	// 게임 클리어 조건 1. 모든 유저가 CRAWL 상태 2. CRAW 인원 + 탈출 인원 수 = 직원 수
+	// 
+ 
+	m_remainPlayerCnt.store(PLAYERNUM - 1); // 보스를 제외한 나머지 플레이어에 대해
+	
+	for (auto i : m_players)
+	{
+		// 플레이어 카운팅
+		if ((int32)PLAYER_BEHAVIOR::CRAWL == i->GetBehavior()) // 탈출 했거나 죽은 플레이어가 있다면
+		{
+			m_remainPlayerCnt.fetch_sub(1); // 남아있는 플레이어 체크 ()
+		}
+		if ((int32)PLAYER_BEHAVIOR::EXIT == i->GetBehavior())
+		{
+			m_ExitedPlayerCnt.fetch_add(1);
+		}
+	}
+
+	if (IsGameOver()) mainGame.m_SceneManager->ChangeScene(4); // 결과 창으로 이동
 }
 
 void CGameScene::AddEvent(queueEvent* ev, float after)

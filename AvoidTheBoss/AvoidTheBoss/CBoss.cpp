@@ -617,7 +617,7 @@ uint8 CBoss::ProcessInput()
 					{
 						packet.tidx = i;
 						DelayEvent* aev = new DelayEvent(packet);
-						gs->AddEvent(static_cast<queueEvent*>(aev), 1000);
+						gs->AddEvent(static_cast<queueEvent*>(aev), 320);
 						break;
 					}
 				}

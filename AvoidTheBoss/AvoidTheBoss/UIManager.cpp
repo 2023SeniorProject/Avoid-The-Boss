@@ -20,7 +20,7 @@ const int32 PROFILE_UI_OFFSET_Y = FRAME_BUFFER_HEIGHT * 0.1;
 const int32 PROFILE_UI_WIDTH = FRAME_BUFFER_WIDTH * 0.1;
 const int32 PROFILE_UI_HEIGHT = FRAME_BUFFER_HEIGHT * 0.1;
 
-const int32 BIG_PROFILE_UI_OFFSET_Y = PROFILE_UI_OFFSET_Y * 5;
+const int32 BIG_PROFILE_UI_OFFSET_Y = PROFILE_UI_OFFSET_Y * 7;
 const int32 BIG_PROFILE_UI_WIDTH = FRAME_BUFFER_WIDTH * 0.2;
 const int32 BIG_PROFILE_UI_HEIGHT = FRAME_BUFFER_HEIGHT * 0.2;
 
@@ -354,7 +354,7 @@ void UIManager::InitGameSceneUI(CGameScene* gc)
         // 나머지는 자신을 제외한 2명만 출력
         case 1:
         {
-       
+            
             m_CharProfile[2].d2dLayoutRect =
                 MakeLayoutRectByCorner(PROFILE_UI_OFFSET_X, PROFILE_UI_OFFSET_Y, PROFILE_UI_WIDTH, PROFILE_UI_HEIGHT);
             

@@ -9,8 +9,10 @@
 
 enum class C_TITLE_PACKET_TYPE : uint8
 {
+	ACQ_REG = 149,
 	ACQ_LOGIN = 150,
 	ACQ_LOGOUT = 151
+
 };
 
 enum class C_ROOM_PACKET_TYPE : uint8
@@ -35,6 +37,8 @@ enum class C_GAME_PACKET_TYPE : uint8
 
 enum class S_TITLE_PACKET_TYPE : uint8
 {
+	REG_FAIL= 148,
+	REG_OK = 149,
 	LOGIN_OK = 150,
 	LOGIN_FAIL = 151,
 };
@@ -214,6 +218,12 @@ struct S2C_LOGIN_OK
 	uint8 type;
 	int16 sid;
 	int16 cid;
+};
+
+struct S2C_REG
+{
+	uint8 size;
+	uint8 type;
 };
 
 struct S2C_LOGIN_FAIL

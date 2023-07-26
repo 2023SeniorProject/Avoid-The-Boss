@@ -48,6 +48,7 @@ void CSession::Processing(IocpEvent* iocpEvent, int32 numOfBytes)
 	{
 		ConnectEvent* connectEvent = static_cast<ConnectEvent*>(iocpEvent);
 		delete connectEvent;
+		_sid = 0;
 		DoRecv(); // Connect하고 Do recv 수행
 	}
 	break;
@@ -160,6 +161,16 @@ void CSession::ProcessPacket(char* packet)
 	{
 		S2C_LOGIN_FAIL* lo = (S2C_LOGIN_FAIL*)packet;
 		std::cout << "Login Fail" << std::endl;
+	}
+	break;
+	case (uint8)S_TITLE_PACKET_TYPE::REG_OK:
+	{
+		std::cout << "REG OK \n";
+	}
+	break;
+	case (uint8)S_TITLE_PACKET_TYPE::REG_FAIL:
+	{
+		std::cout << "REG FAIL \n";
 	}
 	break;
 #pragma endregion

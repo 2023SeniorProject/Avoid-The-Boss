@@ -18,8 +18,6 @@ public:
 	// 세션 정보를 얻어 내거나 세팅할 수 있는 함수들
 	SOCKET GetSock() { return _sock; }
 	bool DoSend(void* packet);
-	void DoDelaySend(C2S_ATTACK packet, float afterTick);
-	void DoDelayTask();
 	bool DoRecv();
 	void ProcessPacket(char*);
 public:

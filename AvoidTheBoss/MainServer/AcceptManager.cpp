@@ -104,32 +104,7 @@ void AcceptManager::RegisterAccept(AcceptEvent* acceptEvent)
 }
 
 
-void LoginProcess(ServerSession& s, std::wstring sqlexec)
-{
-	USER_DB_MANAGER udb;
-	udb.AllocateHandles();
-	udb.ConnectDataSource(L"USER_DB");
-	const WCHAR* a = sqlexec.c_str();
-	udb.ExecuteStatementDirect(a);
-	udb.RetrieveResult();
 
-	
-	s._cid = udb.user_cid;
-	{
-		READ_SERVER_LOCK;
-		auto i = ServerIocpCore._cList.find(s._sid);
-		if (s._cid == -1 || i != ServerIocpCore._cList.end())
-		{
-			std::cout << "LoginFail" << endl;
-			udb.DisconnectDataSource();
-			s.DoSendLoginPacket(false);
-			return;
-		}
-		std::cout << "client[" << s._sid << "] " << "LoginSuccess" << endl;
-	}
-	udb.DisconnectDataSource();
-	s.DoSendLoginPacket(true);
-}
 
 // Accept 처리 완료 시 , 후처리를 진행한다. callBack 처리
 void AcceptManager::ProcessAccept(AcceptEvent* acceptEvent)
@@ -138,30 +113,34 @@ void AcceptManager::ProcessAccept(AcceptEvent* acceptEvent)
 	ASSERT_CRASH(ServerIocpCore.Register(session)); // iocp핸들에 소켓 등록
 	C2S_LOGIN* lp = reinterpret_cast<C2S_LOGIN*>(acceptEvent->_buf);
 	
-	std::wstring sqlExec(L"EXEC search_user_db ");
-	sqlExec += lp->name;
-	sqlExec += L", ";
-	sqlExec += lp->pw;
+	
+	/*std::wstring sqlExec(L"EXEC search_user_db ");
+	if (lp->type == (uint8)C_TITLE_PACKET_TYPE::ACQ_LOGIN)
+	{
+
+		sqlExec += lp->name;
+		sqlExec += L", ";
+		sqlExec += lp->pw;
+
+		LoginProcess(session, sqlExec);
+	}
+	else
+	{
+		sqlExec = L"EXEC update_user_db ";
+		sqlExec += lp->name;
+		sqlExec += L", ";
+		sqlExec += lp->pw;
+
+		RegisterProcess(session, sqlExec);
+	}*/
 
 	int32 sid = GetNewSessionIdx();
 	session->_sid = sid;
 	session->_cid = sid;
-	//LoginProcess(*session, sqlExec);
+	
+	
 	//클라이언트 소켓과 서버 리슨 소켓과 옵션을 동일하게 맞춰준다.
 	
-	{
-		READ_SERVER_LOCK;
-		auto i = ServerIocpCore._cList.find(session->_sid);
-		if (session->_cid == -1 || i != ServerIocpCore._cList.end())
-		{
-			std::cout << "LoginFail" << endl;
-			session->DoSendLoginPacket(false);
-			delete session;
-		}
-		else session->DoSendLoginPacket(true);
-		std::cout << "client[" << session->_sid << "] " << "LoginSuccess" << endl;
-	}
-
 	if (false == SocketUtil::SetUpdateAcceptSocket(session->_sock, _listenSock))
 	{
 		RegisterAccept(acceptEvent);
@@ -175,10 +154,8 @@ void AcceptManager::ProcessAccept(AcceptEvent* acceptEvent)
 	{ // 맵에다 추가하는 파트 이므로 락 걸어준다.
 
 		WRITE_SERVER_LOCK;
-		ServerIocpCore._cList.insert(sid);                 // 세션 id 추가
-		ServerIocpCore._clients.try_emplace(sid, session); // 세션 추가 후
-		//if (ServerIocpCore._clients[sid]->_cid == 0) ServerIocpCore._rmgr->CreateRoom(sid);
-		//else if(ServerIocpCore._clients[sid]->_cid != 0 &&ServerIocpCore._clients[sid]->_cid != -1) ServerIocpCore._rmgr->EnterRoom(sid,0);
+		ServerIocpCore._cList.insert(sid);                 
+		ServerIocpCore._clients.try_emplace(sid, session); 
 	}
 	
 	

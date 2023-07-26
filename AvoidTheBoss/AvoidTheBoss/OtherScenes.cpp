@@ -246,15 +246,17 @@ void CTitleScene::MouseAction(const POINT& mp)
 
 	if (IntersectRectByPoint(mainGame.m_UIRenderer->GetButtonRect(0,0),mp))
 	{
-		if (mainGame.m_UIRenderer->m_IDPWTextBlocks[0].m_pstrText.length() <= 3
-			|| mainGame.m_UIRenderer->m_IDPWTextBlocks[1].m_pstrText.length() <= 3) return;
+		if (mainGame.m_UIRenderer->m_IDPWTextBlocks[0].m_pstrText.length() <= 0
+			|| mainGame.m_UIRenderer->m_IDPWTextBlocks[1].m_pstrText.length() <= 0) return;
 
-		clientCore.InitConnect("127.0.0.1");
+		
 		C2S_LOGIN loginPacket;
+		loginPacket.size = sizeof(C2S_LOGIN);
+		loginPacket.type = (uint8)C_TITLE_PACKET_TYPE::ACQ_REG;
 		lstrcpyn(loginPacket.name, mainGame.m_UIRenderer->m_IDPWTextBlocks[0].m_pstrText.c_str(), 10);
 		lstrcpyn(loginPacket.pw, mainGame.m_UIRenderer->m_IDPWTextBlocks[1].m_pstrText.c_str(), 10);
-		clientCore.DoConnect(&loginPacket);
-		mainGame.ChangeScene(CGameFramework::SCENESTATE::LOBBY);
+		clientCore.DoSend(&loginPacket);
+
 	}
 
 	else if (IntersectRectByPoint(mainGame.m_UIRenderer->GetButtonRect(0, 1), mp))

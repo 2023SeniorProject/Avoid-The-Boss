@@ -575,12 +575,12 @@ void UIManager::InitializeDevice(ID3D12Device5* pd3dDevice, ID3D12CommandQueue* 
     // ID / PW ÀÔ·Â Ã¢
     m_IDPWTextBlocks[0].m_pd2dTextBrush = CreateBrush(D2D1::ColorF::White);
     m_IDPWTextBlocks[0].m_pdwFormat = m_TitleTextFormat;
-    m_IDPWTextBlocks[0].m_pstrText = L"ID:";
+    m_IDPWTextBlocks[0].m_pstrText = L"";
     
 
     m_IDPWTextBlocks[1].m_pd2dTextBrush = CreateBrush(D2D1::ColorF::White);
     m_IDPWTextBlocks[1].m_pdwFormat = m_TitleTextFormat;
-    m_IDPWTextBlocks[1].m_pstrText = L"PW:";
+    m_IDPWTextBlocks[1].m_pstrText = L"";
 
     m_IDPWTextBlocks[0].m_d2dLayoutRect = MakeLayoutRect(CENTER_X, CENTER_Y + 150, 200, FontSize);
     m_IDPWTextBlocks[1].m_d2dLayoutRect = MakeLayoutRect(CENTER_X, CENTER_Y + 200, 200, FontSize);

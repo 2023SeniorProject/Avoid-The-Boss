@@ -105,7 +105,7 @@ void OcTree::BuildChildTree()
 	}
 }
 
-float clamp(float pos, float min, float max)
+float OcTree::clamp(float pos, float min, float max)
 {
 	float val = (pos < min ? min : pos);
 	val = val > max ? max : val;
@@ -182,7 +182,7 @@ bool OcTree::CheckCollision(DirectX::BoundingSphere& playerBox, XMFLOAT3& player
 }
 
 
-bool OcTree::CheckRayCollision(Ray& ray)
+bool OcTree::CheckRayCollision(DirRay& ray)
 {
 	return false;
 }

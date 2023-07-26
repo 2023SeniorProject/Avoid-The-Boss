@@ -112,59 +112,38 @@ using Microsoft::WRL::ComPtr;
 
 
 //----DXR
-#pragma once
-
-#ifndef WIN32_LEAN_AND_MEAN
-#define WIN32_LEAN_AND_MEAN             // Exclude rarely-used stuff from Windows headers.
-#endif
 
 
 // Use the C++ standard templated min/max
 #define NOMINMAX
 
-#include <windows.h>
 
 // C RunTime Header Files
-#include <stdlib.h>
 #include <sstream>
 #include <iomanip>
-#include <iostream>
 #include <fstream>
-
-#include <list>
-#include <string>
-#include <wrl.h>
 #include <shellapi.h>
-#include <memory>
-#include <unordered_map>
-#include <vector>
+
 #include <algorithm>
 #include <atlbase.h>
 #include <assert.h>
 #include <array>
-#include <unordered_map>
 #include <functional>
 #include <random>
 #include <numeric>
 #include <iterator>
 #include <sal.h>
-#include <stack>
-
 #include <stdint.h>
 #include <float.h>
-#include <map>
-#include <set>
-
 #include <dxgi1_6.h>
 #include <d3d12.h>
 #include <atlbase.h>
 #include "d3dx12.h"	
-#include "C:\AvoidTheBoss\AvoidTheBoss\DXR\Packages\WinPixEventRuntime.1.0.210209001\Include\WinPixEventRuntime\pix3.h"
+#include <pix3.h>
 
-#include <DirectXMath.h>
-#include <C:\AvoidTheBoss\AvoidTheBoss\DXR\Packages\directxtk12_desktop_2015.2019.8.23.1\include\WICTextureLoader.h>
+#include <WICTextureLoader.h>
 #include <DDSTextureLoader.h>
-#include "C:\AvoidTheBoss\AvoidTheBoss\DXR\Packages\directxtk12_desktop_2015.2019.8.23.1\include\ResourceUploadBatch.h"
+#include "ResourceUploadBatch.h"
 
 // UI 
 #include <d2d1_3.h>

@@ -1,16 +1,17 @@
-// stdafx.cpp : 표준 포함 파일만 들어 있는 소스 파일입니다.
-// LabProject03-1.pch는 미리 컴파일된 헤더가 됩니다.
-// stdafx.obj에는 미리 컴파일된 형식 정보가 포함됩니다.
+//*********************************************************
+//
+// Copyright (c) Microsoft. All rights reserved.
+// This code is licensed under the MIT License (MIT).
+// THIS CODE IS PROVIDED *AS IS* WITHOUT WARRANTY OF
+// ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING ANY
+// IMPLIED WARRANTIES OF FITNESS FOR A PARTICULAR
+// PURPOSE, MERCHANTABILITY, OR NON-INFRINGEMENT.
+//
+//*********************************************************
 
 #include "pch.h"
 
-#include "DDSTextureLoader12.h"
-
-UINT gnCbvSrvDescriptorIncrementSize = 0;
-UINT gnRtvDescriptorIncrementSize = 0;
-UINT gnDsvDescriptorIncrementSize = 0;
-
-ID3D12Resource* CreateBufferResource(ID3D12Device5* pd3dDevice, 
+ID3D12Resource* CreateBufferResource(ID3D12Device5* pd3dDevice,
 	ID3D12GraphicsCommandList4* pd3dCommandList, void* pData, UINT nBytes, D3D12_HEAP_TYPE d3dHeapType, D3D12_RESOURCE_STATES d3dResourceStates, ID3D12Resource** ppd3dUploadBuffer)
 {
 	ID3D12Resource* pd3dBuffer = NULL;
@@ -152,4 +153,3 @@ ID3D12Resource* CreateTextureResourceFromDDSFile(ID3D12Device5* pd3dDevice, ID3D
 
 	return(pd3dTexture);
 }
-

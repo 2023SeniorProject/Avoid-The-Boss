@@ -4,8 +4,8 @@
 
 #pragma once
 
-#include "GameObject.h"
-#include "Camera.h"
+#include "CGameObject.h"
+#include "CCamera.h"
 
 class CShader
 {

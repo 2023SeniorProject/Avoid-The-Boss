@@ -1,5 +1,5 @@
 #pragma once
-#include "GameObject.h"
+#include "CGameObject.h"
 
 enum class PLAYER_TYPE
 {

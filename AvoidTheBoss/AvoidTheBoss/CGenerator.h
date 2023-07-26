@@ -1,5 +1,5 @@
 #pragma once
-#include "GameObject.h"
+#include "CGameObject.h"
 
 #define BUTTON_ANIM_FRAME 50
 #define GENERATOR_ANIM_FRAM 50

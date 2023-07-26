@@ -1,6 +1,6 @@
 #include "pch.h"
 #include "Player.h"
-#include "Camera.h"
+#include "CCamera.h"
 
 CCamera::CCamera()
 {

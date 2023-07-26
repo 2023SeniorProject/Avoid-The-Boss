@@ -72,9 +72,9 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <OutDir>$(SolutionDir)Binary\$(Configuration)\</OutDir>
-    <LibraryPath>$(SolutionDir)AvoidTheBoss\AvoidTheBoss\DXR\Libraries\;$(SolutionDir)Library\;$(LibraryPath)</LibraryPath>
-    <IncludePath>C:\AvoidTheBoss\AvoidTheBoss\DXR\MiniEngine\Core;C:\AvoidTheBoss\AvoidTheBoss\DXR\Packages;$(SolutionDir)DXR\;$(SolutionDir))DXR\Packages\WinPixEventRuntime.1.0.180612001\Include;$(SolutionDir)DXR\Packages\WinPixEventRuntime.1.0.210209001\Include\WinPixEventRuntime;$(SolutionDir)CoreEngine\;$(IncludePath)</IncludePath>
-    <IntDir>$(Platform)\$(Configuration)\</IntDir>
+    <LibraryPath>$(SolutionDir)Library\;$(LibraryPath)</LibraryPath>
+    <IncludePath>C:\AvoidTheBoss\AvoidTheBoss\AvoidTheBoss\Packages;C:\AvoidTheBoss\AvoidTheBoss\AvoidTheBoss\Packages\WinPixEventRuntime.1.0.210209001\Include\WinPixEventRuntime;C:\AvoidTheBoss\AvoidTheBoss\AvoidTheBoss\Packages\directxtk12_desktop_2015.2019.8.23.1\include;C:\AvoidTheBoss\AvoidTheBoss\AvoidTheBoss;C:\AvoidTheBoss\AvoidTheBoss\AvoidTheBoss\Packages\WinPixEventRuntime.1.0.180612001\Include\WinPixEventRuntime;C:\AvoidTheBoss\AvoidTheBoss\AvoidTheBoss\MiniEngine\Core;C:\AvoidTheBoss\AvoidTheBoss\CoreEngine;$(IncludePath)</IncludePath>
+    <IntDir>obj\$(Platform)\$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <OutDir>$(SolutionDir)Binary\$(Configuration)\</OutDir>
@@ -133,14 +133,14 @@
       <LanguageStandard>stdcpplatest</LanguageStandard>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>Samplecore\util;RTAO;Samplecore\PBRTParer;SampleCore;$(IntDir);util/PBRTParser;util/Misc;util/Graphics;util;$(ProjectDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\AvoidTheBoss\AvoidTheBoss\AvoidTheBoss\SampleCore\util;C:\AvoidTheBoss\AvoidTheBoss\AvoidTheBoss\RTAO;C:\AvoidTheBoss\AvoidTheBoss\AvoidTheBoss\SampleCore\PBRTParser;C:\AvoidTheBoss\AvoidTheBoss\AvoidTheBoss\SampleCore;$(IntDir);util/PBRTParser;util/Misc;util/Graphics;util;$(ProjectDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
     <FxCompile>
-      <AdditionalIncludeDirectories>SampleCore/shaders/util;SampleCore/shaders;RTAO/Shaders;$(ProcjectDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\AvoidTheBoss\AvoidTheBoss\AvoidTheBoss\obj\x64\Debug\CompiledShaders;C:\AvoidTheBoss\AvoidTheBoss\AvoidTheBoss\SampleCore\Shaders\util;C:\AvoidTheBoss\AvoidTheBoss\AvoidTheBoss\SampleCore\Shaders;C:\AvoidTheBoss\AvoidTheBoss\AvoidTheBoss\RTAO\Shaders;$(ProcjectDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </FxCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -172,40 +172,51 @@
     <ClInclude Include="ClientPacketEvent.h" />
     <ClInclude Include="ClientSession.h" />
     <ClInclude Include="CollisionDetector.h" />
-    <ClInclude Include="D3D12RaytracingRealTimeDenoisedAmbientOcclusion\D3D12RaytracingRealTimeDenoisedAmbientOcclusion.h" />
-    <ClInclude Include="D3D12RaytracingRealTimeDenoisedAmbientOcclusion\RaytracingHlslCompat.h" />
-    <ClInclude Include="D3D12RaytracingRealTimeDenoisedAmbientOcclusion\RTAO\Denoiser.h" />
-    <ClInclude Include="D3D12RaytracingRealTimeDenoisedAmbientOcclusion\RTAO\RTAO.h" />
-    <ClInclude Include="D3D12RaytracingRealTimeDenoisedAmbientOcclusion\RTAO\RTAOGpuKernels.h" />
-    <ClInclude Include="D3D12RaytracingRealTimeDenoisedAmbientOcclusion\RTAO\Sampler.h" />
-    <ClInclude Include="D3D12RaytracingRealTimeDenoisedAmbientOcclusion\SampleCore\Composition.h" />
-    <ClInclude Include="D3D12RaytracingRealTimeDenoisedAmbientOcclusion\SampleCore\DirectXRaytracingHelper.h" />
-    <ClInclude Include="D3D12RaytracingRealTimeDenoisedAmbientOcclusion\SampleCore\GpuKernels.h" />
-    <ClInclude Include="D3D12RaytracingRealTimeDenoisedAmbientOcclusion\SampleCore\Pathtracer.h" />
-    <ClInclude Include="D3D12RaytracingRealTimeDenoisedAmbientOcclusion\SampleCore\PBRTParser\PBRTParser.h" />
-    <ClInclude Include="D3D12RaytracingRealTimeDenoisedAmbientOcclusion\SampleCore\PBRTParser\PlyParser.h" />
-    <ClInclude Include="D3D12RaytracingRealTimeDenoisedAmbientOcclusion\SampleCore\PBRTParser\SceneParser.h" />
-    <ClInclude Include="D3D12RaytracingRealTimeDenoisedAmbientOcclusion\SampleCore\RaytracingAccelerationStructure.h" />
-    <ClInclude Include="D3D12RaytracingRealTimeDenoisedAmbientOcclusion\SampleCore\RaytracingSceneDefines.h" />
-    <ClInclude Include="D3D12RaytracingRealTimeDenoisedAmbientOcclusion\SampleCore\Scene.h" />
-    <ClInclude Include="D3D12RaytracingRealTimeDenoisedAmbientOcclusion\SampleCore\SceneParameters.h" />
-    <ClInclude Include="D3D12RaytracingRealTimeDenoisedAmbientOcclusion\stdafx.h" />
-    <ClInclude Include="DDSTextureLoader12.h" />
+    <ClInclude Include="D3D12RaytracingRealTimeDenoisedAmbientOcclusion.h" />
     <ClInclude Include="clientIocpCore.h" />
-    <ClInclude Include="DXRHelper.h" />
     <ClInclude Include="DXRHelpers\nv_helpers_dx12\BottomLevelASGenerator.h" />
     <ClInclude Include="DXRHelpers\nv_helpers_dx12\RaytracingPipelineGenerator.h" />
     <ClInclude Include="DXRHelpers\nv_helpers_dx12\RootSignatureGenerator.h" />
     <ClInclude Include="DXRHelpers\nv_helpers_dx12\ShaderBindingTableGenerator.h" />
     <ClInclude Include="DXRHelpers\nv_helpers_dx12\TopLevelASGenerator.h" />
-    <ClInclude Include="DXSampleHelper.h" />
     <ClInclude Include="GameFramework.h" />
-    <ClInclude Include="GameObject.h" />
+    <ClInclude Include="CGameObject.h" />
     <ClInclude Include="CJobQueue.h" />
-    <ClInclude Include="Mesh.h" />
+    <ClInclude Include="CMesh.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="CScene.h" />
+    <ClInclude Include="RaytracingHlslCompat.h" />
+    <ClInclude Include="RTAO\Denoiser.h" />
+    <ClInclude Include="RTAO\RTAO.h" />
+    <ClInclude Include="RTAO\RTAOGpuKernels.h" />
+    <ClInclude Include="RTAO\Sampler.h" />
+    <ClInclude Include="SampleCore\Composition.h" />
+    <ClInclude Include="SampleCore\DirectXRaytracingHelper.h" />
+    <ClInclude Include="SampleCore\GpuKernels.h" />
+    <ClInclude Include="SampleCore\Pathtracer.h" />
+    <ClInclude Include="SampleCore\PBRTParser\PBRTParser.h" />
+    <ClInclude Include="SampleCore\PBRTParser\PlyParser.h" />
+    <ClInclude Include="SampleCore\PBRTParser\SceneParser.h" />
+    <ClInclude Include="SampleCore\RaytracingAccelerationStructure.h" />
+    <ClInclude Include="SampleCore\RaytracingSceneDefines.h" />
+    <ClInclude Include="SampleCore\Scene.h" />
+    <ClInclude Include="SampleCore\SceneParameters.h" />
+    <ClInclude Include="SampleCore\util\Camera.h" />
+    <ClInclude Include="SampleCore\util\CameraController.h" />
+    <ClInclude Include="SampleCore\util\DeviceResources.h" />
+    <ClInclude Include="SampleCore\util\DXSample.h" />
+    <ClInclude Include="SampleCore\util\DXSampleHelper.h" />
+    <ClInclude Include="SampleCore\util\EngineProfiling.h" />
+    <ClInclude Include="SampleCore\util\EngineTuning.h" />
+    <ClInclude Include="SampleCore\util\GameInput.h" />
+    <ClInclude Include="SampleCore\util\GpuResource.h" />
+    <ClInclude Include="SampleCore\util\GpuResourceStateTracker.h" />
+    <ClInclude Include="SampleCore\util\GpuTimeManager.h" />
+    <ClInclude Include="SampleCore\util\PerformanceTimers.h" />
+    <ClInclude Include="SampleCore\util\StepTimer.h" />
+    <ClInclude Include="SampleCore\util\UILayer.h" />
+    <ClInclude Include="SampleCore\util\Win32Application.h" />
     <ClInclude Include="SceneInterface.h" />
     <ClInclude Include="Shader.h" />
     <ClInclude Include="Resource.h" />
@@ -222,22 +233,9 @@
     <ClCompile Include="ClientPacketEvent.cpp" />
     <ClCompile Include="ClientSession.cpp" />
     <ClCompile Include="CollisionDetector.cpp" />
-    <ClCompile Include="D3D12RaytracingRealTimeDenoisedAmbientOcclusion\D3D12RaytracingRealTimeDenoisedAmbientOcclusion.cpp" />
-    <ClCompile Include="D3D12RaytracingRealTimeDenoisedAmbientOcclusion\Main.cpp" />
-    <ClCompile Include="D3D12RaytracingRealTimeDenoisedAmbientOcclusion\RTAO\Denoiser.cpp" />
-    <ClCompile Include="D3D12RaytracingRealTimeDenoisedAmbientOcclusion\RTAO\RTAO.cpp" />
-    <ClCompile Include="D3D12RaytracingRealTimeDenoisedAmbientOcclusion\RTAO\RTAOGpuKernels.cpp" />
-    <ClCompile Include="D3D12RaytracingRealTimeDenoisedAmbientOcclusion\RTAO\Sampler.cpp" />
-    <ClCompile Include="D3D12RaytracingRealTimeDenoisedAmbientOcclusion\SampleCore\Composition.cpp" />
-    <ClCompile Include="D3D12RaytracingRealTimeDenoisedAmbientOcclusion\SampleCore\GpuKernels.cpp" />
-    <ClCompile Include="D3D12RaytracingRealTimeDenoisedAmbientOcclusion\SampleCore\Pathtracer.cpp" />
-    <ClCompile Include="D3D12RaytracingRealTimeDenoisedAmbientOcclusion\SampleCore\PBRTParser\PBRTParser.cpp" />
-    <ClCompile Include="D3D12RaytracingRealTimeDenoisedAmbientOcclusion\SampleCore\PBRTParser\PlyParser.cpp" />
-    <ClCompile Include="D3D12RaytracingRealTimeDenoisedAmbientOcclusion\SampleCore\RaytracingAccelerationStructure.cpp" />
-    <ClCompile Include="D3D12RaytracingRealTimeDenoisedAmbientOcclusion\SampleCore\RaytracingSceneDefines.cpp" />
-    <ClCompile Include="D3D12RaytracingRealTimeDenoisedAmbientOcclusion\SampleCore\Scene.cpp" />
-    <ClCompile Include="D3D12RaytracingRealTimeDenoisedAmbientOcclusion\stdafx.cpp" />
-    <ClCompile Include="DDSTextureLoader12.cpp" />
+    <ClCompile Include="D3D12RaytracingRealTimeDenoisedAmbientOcclusion.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="DXRHelpers\nv_helpers_dx12\BottomLevelASGenerator.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
     </ClCompile>
@@ -253,11 +251,11 @@
     <ClCompile Include="DXRHelpers\nv_helpers_dx12\TopLevelASGenerator.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="DXSampleHelper.cpp" />
     <ClCompile Include="GameFramework.cpp" />
-    <ClCompile Include="GameObject.cpp" />
+    <ClCompile Include="CGameObject.cpp" />
     <ClCompile Include="CJobQueue.cpp" />
-    <ClCompile Include="Mesh.cpp" />
+    <ClCompile Include="CMesh.cpp" />
+    <ClCompile Include="Main.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
@@ -266,6 +264,34 @@
     </ClCompile>
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="CScene.cpp" />
+    <ClCompile Include="RTAO\Denoiser.cpp" />
+    <ClCompile Include="RTAO\RTAO.cpp" />
+    <ClCompile Include="RTAO\RTAOGpuKernels.cpp" />
+    <ClCompile Include="RTAO\Sampler.cpp" />
+    <ClCompile Include="SampleCore\Composition.cpp" />
+    <ClCompile Include="SampleCore\GpuKernels.cpp" />
+    <ClCompile Include="SampleCore\Pathtracer.cpp" />
+    <ClCompile Include="SampleCore\PBRTParser\PBRTParser.cpp" />
+    <ClCompile Include="SampleCore\PBRTParser\PlyParser.cpp" />
+    <ClCompile Include="SampleCore\RaytracingAccelerationStructure.cpp" />
+    <ClCompile Include="SampleCore\RaytracingSceneDefines.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Use</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="SampleCore\Scene.cpp" />
+    <ClCompile Include="SampleCore\util\Camera.cpp" />
+    <ClCompile Include="SampleCore\util\CameraController.cpp" />
+    <ClCompile Include="SampleCore\util\DeviceResources.cpp" />
+    <ClCompile Include="SampleCore\util\DXSample.cpp" />
+    <ClCompile Include="SampleCore\util\EngineProfiling.cpp" />
+    <ClCompile Include="SampleCore\util\EngineTuning.cpp" />
+    <ClCompile Include="SampleCore\util\GameInput.cpp" />
+    <ClCompile Include="SampleCore\util\GpuResourceStateTracker.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Use</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="SampleCore\util\GpuTimeManager.cpp" />
+    <ClCompile Include="SampleCore\util\PerformanceTimers.cpp" />
+    <ClCompile Include="SampleCore\util\UILayer.cpp" />
+    <ClCompile Include="SampleCore\util\Win32Application.cpp" />
     <ClCompile Include="SceneInterface.cpp" />
     <ClCompile Include="Shader.cpp" />
   </ItemGroup>
@@ -346,9 +372,6 @@
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </FxCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="D3D12RaytracingRealTimeDenoisedAmbientOcclusion\packages.config" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

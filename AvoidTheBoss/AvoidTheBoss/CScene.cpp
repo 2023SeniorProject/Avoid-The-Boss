@@ -1,5 +1,5 @@
 #include "pch.h"
-#include "Scene.h"
+#include "CScene.h"
 #include "GameFramework.h"
 #include "CJobQueue.h"
 #include "clientIocpCore.h"

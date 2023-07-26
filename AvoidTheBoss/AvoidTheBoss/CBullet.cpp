@@ -1,5 +1,5 @@
 #include "pch.h"
-#include "GameObject.h"
+#include "CGameObject.h"
 #include "CBullet.h"
 
 //CBullet::CBullet(ID3D12Device5* pd3dDevice, 

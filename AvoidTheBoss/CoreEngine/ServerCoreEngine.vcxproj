@@ -82,7 +82,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
     <OutDir>$(SolutionDir)Library\$(Configuration)\</OutDir>
-    <IncludePath>C:\AvoidTheBoss\AvoidTheBoss\DXR\MiniEngine\Core;C:\AvoidTheBoss\AvoidTheBoss\DXR;C:\AvoidTheBoss\AvoidTheBoss\DXR\Packages;$(IncludePath)</IncludePath>
+    <IncludePath>C:\AvoidTheBoss\AvoidTheBoss\AvoidTheBoss\SampleCore;C:\AvoidTheBoss\AvoidTheBoss;C:\AvoidTheBoss\AvoidTheBoss\AvoidTheBoss;C:\AvoidTheBoss\AvoidTheBoss\AvoidTheBoss\Packages\directxtk12_desktop_2015.2019.8.23.1\include;C:\AvoidTheBoss\AvoidTheBoss\AvoidTheBoss\SampleCore\PBRTParser;C:\AvoidTheBoss\AvoidTheBoss\AvoidTheBoss\MiniEngine\Core;C:\AvoidTheBoss\AvoidTheBoss\AvoidTheBoss\SampleCore\util;C:\AvoidTheBoss\AvoidTheBoss\AvoidTheBoss\Packages\WinPixEventRuntime.1.0.210209001\Include\WinPixEventRuntime;C:\AvoidTheBoss\AvoidTheBoss\AvoidTheBoss\Packages\WinPixEventRuntime.1.0.180612001\Include\WinPixEventRuntime;C:\AvoidTheBoss\AvoidTheBoss\AvoidTheBoss\Packages;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>

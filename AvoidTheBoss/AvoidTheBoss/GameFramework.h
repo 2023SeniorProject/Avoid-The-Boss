@@ -2,8 +2,8 @@
 //----CGameFramework 클래스
 //----1 Direct3D 디바이스 생성과 관리 
 //----2 화면 출력을 위한 처리 - 게임 객체 생성과 관리, 사용자 입력, 애니메이션 작업
-#include "Scene.h"
-#include "Camera.h"
+#include "CScene.h"
+#include "CCamera.h"
 #include "DXSampleHelper.h"
 #include <dxcapi.h>
 #include <vector>
@@ -14,12 +14,12 @@
 // 최상위 AS의 경우 동적 변경을 구현할 가능성을 두고 생성한 구조체이다.
 // 가속구조 설명자(버퍼) 구축
 // #DXR
-struct AccelerationStructureBuffers
-{
-	ID3D12Resource* pScratch; // Scratch memory for AS builder 스크래치 메모리
-	ID3D12Resource* pResult; // Where the AS is 구조 실제 저장소
-	ID3D12Resource* pInstanceDesc; // Hold the matrices of the instances 최상위 가속 구조 인스턴스 매트릭스 
-};
+//struct AccelerationStructureBuffers
+//{
+//	ID3D12Resource* pScratch; // Scratch memory for AS builder 스크래치 메모리
+//	ID3D12Resource* pResult; // Where the AS is 구조 실제 저장소
+//	ID3D12Resource* pInstanceDesc; // Hold the matrices of the instances 최상위 가속 구조 인스턴스 매트릭스 
+//};
 
 class CGameFramework
 {
@@ -156,10 +156,10 @@ private:
 	//// to use in the Shader Binding Table
 	//ComPtr<id3d12stateobjectproperties> m_rtStateObjectProps;
 	
-	ComPtr<ID3D12Resource> m_bottomLevelAS; // Storage for the bottom Level AS
-	nv_helpers_dx12::TopLevelASGenerator m_topLevelASGenerator;
-	AccelerationStructureBuffers m_topLevelASBuffers;
-	std::vector<std::pair<ComPtr<ID3D12Resource>, DirectX::XMMATRIX>> m_instances;
+	//ComPtr<ID3D12Resource> m_bottomLevelAS; // Storage for the bottom Level AS
+	//nv_helpers_dx12::TopLevelASGenerator m_topLevelASGenerator;
+	//AccelerationStructureBuffers m_topLevelASBuffers;
+	//std::vector<std::pair<ComPtr<ID3D12Resource>, DirectX::XMMATRIX>> m_instances;
 
 	/// Create the acceleration structure of an instance
 	///

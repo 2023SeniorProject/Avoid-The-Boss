@@ -1,6 +1,6 @@
 #pragma once
 
-struct Ray
+struct DirRay
 {
 	XMFLOAT3 origin;
 	XMFLOAT3 dir;
@@ -83,8 +83,11 @@ public:
 	void BuildTree();
 	void BuildChildTree();
 	bool CheckCollision(DirectX::BoundingSphere& playerBox, XMFLOAT3& playerPos);
-	bool CheckRayCollision(Ray& ray);
+	bool CheckRayCollision(DirRay& ray);
+
+	float clamp(float pos, float min, float max);
 };
 
 extern class OcTree* ClientBoxTree;
+
 

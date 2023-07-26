@@ -5,9 +5,10 @@
 #include "clientIocpCore.h"
 #include "SocketUtil.h"
 #include "ThreadManager.h"
+
 // DXR 관련 헤더파일
-#include "stdafx.h"
 #include "D3D12RaytracingRealTimeDenoisedAmbientOcclusion.h"
+#include "Win32Application.h"
 #include "Sampler.h"
 
 #define MAX_LOADSTRING 100
@@ -26,6 +27,7 @@ LRESULT CALLBACK    WndProc(HWND, UINT, WPARAM, LPARAM);
 INT_PTR CALLBACK    About(HWND, UINT, WPARAM, LPARAM);
 
 BOOL CALLBACK MyDialogBox(HWND hWndDlg, UINT message, WPARAM wParam, LPARAM lParam);
+
 
 bool UseDXR = false;
 
@@ -56,7 +58,21 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     ::LoadString(hInstance, IDS_APP_TITLE, szTitle, MAX_LOADSTRING);
     ::LoadString(hInstance, IDC_AVOIDTHEBOSS, szWindowClass, MAX_LOADSTRING);
     
-    Initialize(); //DXR과 ATB모두 초기화
+    // Initialization For WICTextureLoader.
+    ThrowIfFailed(CoInitializeEx(nullptr, COINITBASE_MULTITHREADED), L"Failed /to initialize WIC component");
+    D3D12RaytracingRealTimeDenoisedAmbientOcclusion sample(1920, 1080,L"D3D12 /Raytracing - Real-Time Denoised Raytraced Ambient Occlusion");
+    //return Win32Application::Run(&sample, hInstance, nCmdShow);
+
+    //dXR 초기화
+    if (!Win32Application::InitializeDXR(&sample, hInstance, nCmdShow))
+        return FALSE;
+
+     MyRegisterClass(hInstance);
+     // 애플리케이션 초기화를 수행합니다:
+     if (!InitInstance(hInstance, nCmdShow))
+     {
+         return FALSE;
+     }
 
     HACCEL hAccelTable = LoadAccelerators(hInstance, MAKEINTRESOURCE(IDC_AVOIDTHEBOSS));
 
@@ -91,11 +107,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
        {
            if (UseDXR)
            {
-               if (pSample)
-               {
-                   pSample->OnUpdate();
-                   pSample->OnRender();
-               }
+               sample.OnUpdate();
+               sample.OnRender();
            }
            else
            {
@@ -104,7 +117,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
        }
    }
  
-    pSample->OnDestroy();
+    sample.OnDestroy();
     mainGame.OnDestroy();
     delete GCThreadManager;
    
@@ -247,11 +260,8 @@ INT_PTR CALLBACK About(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
     return (INT_PTR)FALSE;
 }
 
-
 BOOL CALLBACK MyDialogBox(HWND hWndDlg, UINT message, WPARAM wParam, LPARAM lParam) 
 {
-
-
     switch (message)
     {
     case WM_INITDIALOG:
@@ -284,49 +294,4 @@ BOOL CALLBACK MyDialogBox(HWND hWndDlg, UINT message, WPARAM wParam, LPARAM lPar
         return DefWindowProc(hWndDlg, message, wParam, lParam);
     return FALSE;
     }
-}
-
-void Initialize(HINSTANCE hInstance,int nCmdShow)
-{
-    InitializeDXR(hInstance, nCmdShow);
-    InitializeATB(hInstance, nCmdShow);
-}
-void InitializeDXR(HINSTANCE hInstance, int nCmdShow)
-{
-    // Initialization For WICTextureLoader.
-    ThrowIfFailed(CoInitializeEx(nullptr, COINITBASE_MULTITHREADED), L"Failed to initialize WIC component");
-
-    D3D12RaytracingRealTimeDenoisedAmbientOcclusion sample(1920, 1080, L"D3D12 Raytracing - Real-Time Denoised Raytraced Ambient Occlusion");
-
-    Win32Application::MyRegisterClass(hInstance);
-
-    if (!Win32Application::InitInstance(hInstance, nCmdShow))
-    {
-        return FALSE;
-    }
-}
-
-void InitializeATB(HINSTANCE hInstance, int nCmdShow)
-{
-    MyRegisterClass(hInstance);
-
-    // 애플리케이션 초기화를 수행합니다:
-    if (!InitInstance(hInstance, nCmdShow))
-    {
-        return FALSE;
-    }
-}
-
-void OnRenderDXR()
-{
-    if (pSample)
-    {
-        pSample->OnUpdate();
-        pSample->OnRender();
-    }
-}
-void FrameAdvance()
-{
-    if(UseDXR)
-
 }

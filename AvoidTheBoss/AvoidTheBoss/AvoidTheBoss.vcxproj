@@ -216,7 +216,9 @@
     <ClInclude Include="SampleCore\util\PerformanceTimers.h" />
     <ClInclude Include="SampleCore\util\StepTimer.h" />
     <ClInclude Include="SampleCore\util\UILayer.h" />
-    <ClInclude Include="SampleCore\util\Win32Application.h" />
+    <ClInclude Include="SampleCore\util\Win32Application.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
+    </ClInclude>
     <ClInclude Include="SceneInterface.h" />
     <ClInclude Include="Shader.h" />
     <ClInclude Include="Resource.h" />
@@ -291,7 +293,9 @@
     <ClCompile Include="SampleCore\util\GpuTimeManager.cpp" />
     <ClCompile Include="SampleCore\util\PerformanceTimers.cpp" />
     <ClCompile Include="SampleCore\util\UILayer.cpp" />
-    <ClCompile Include="SampleCore\util\Win32Application.cpp" />
+    <ClCompile Include="SampleCore\util\Win32Application.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="SceneInterface.cpp" />
     <ClCompile Include="Shader.cpp" />
   </ItemGroup>

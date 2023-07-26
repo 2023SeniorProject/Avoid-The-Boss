@@ -51,7 +51,7 @@ D3D12RaytracingRealTimeDenoisedAmbientOcclusion::D3D12RaytracingRealTimeDenoised
     m_generatorURNG.seed(1729);
 }
 
-void D3D12RaytracingRealTimeDenoisedAmbientOcclusion::OnInit()
+void D3D12RaytracingRealTimeDenoisedAmbientOcclusion::OnInit(HWND hMainWnd)
 {
     UINT flags =
         m_syncInterval > 0
@@ -69,9 +69,9 @@ void D3D12RaytracingRealTimeDenoisedAmbientOcclusion::OnInit()
         m_adapterIDoverride
         );
     m_deviceResources->RegisterDeviceNotify(this);
-    m_deviceResources->SetWindow(Win32Application::GetHwnd(), m_width, m_height);
+    m_deviceResources->SetWindow(hMainWnd, m_width, m_height);
 
-    g_hWnd = Win32Application::GetHwnd();
+    g_hWnd = hMainWnd;
     GameInput::Initialize();
     EngineTuning::Initialize();
 
@@ -281,7 +281,7 @@ void D3D12RaytracingRealTimeDenoisedAmbientOcclusion::OnUpdate()
     {
         m_isSceneInitializationRequested = false;
         m_deviceResources->WaitForGpu();
-        OnInit();
+        OnInit(g_hWnd);
     }
 
     if (m_isRecreateRaytracingResourcesRequested)

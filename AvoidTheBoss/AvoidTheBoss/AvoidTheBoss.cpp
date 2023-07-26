@@ -22,14 +22,14 @@ WCHAR szWindowClass[MAX_LOADSTRING];            // 기본 창 클래스 이름�
 
 // 이 코드 모듈에 포함된 함수의 선언을 전달합니다:
 ATOM                MyRegisterClass(HINSTANCE hInstance);
-BOOL                InitInstance(HINSTANCE, int);
+BOOL                InitInstance(DXSample*,HINSTANCE, int);
 LRESULT CALLBACK    WndProc(HWND, UINT, WPARAM, LPARAM);
 INT_PTR CALLBACK    About(HWND, UINT, WPARAM, LPARAM);
 
 BOOL CALLBACK MyDialogBox(HWND hWndDlg, UINT message, WPARAM wParam, LPARAM lParam);
 
 
-bool UseDXR = false;
+bool UseDXR = true;
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     _In_opt_ HINSTANCE hPrevInstance,
@@ -64,12 +64,12 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     //return Win32Application::Run(&sample, hInstance, nCmdShow);
 
     //dXR 초기화
-    if (!Win32Application::InitializeDXR(&sample, hInstance, nCmdShow))
-        return FALSE;
+   // if (!InitializeDXR(&sample, hInstance, nCmdShow))
+   //     return FALSE;
 
      MyRegisterClass(hInstance);
      // 애플리케이션 초기화를 수행합니다:
-     if (!InitInstance(hInstance, nCmdShow))
+     if (!InitInstance(&sample,hInstance, nCmdShow))
      {
          return FALSE;
      }
@@ -112,7 +112,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
            }
            else
            {
-               mainGame.FrameAdvance(); // 처리할 윈도우 메세지가 큐에 없을 때 게임프로그램이 CPU사용
+               //mainGame.FrameAdvance(); // 처리할 윈도우 메세지가 큐에 없을 때 게임프로그램이 CPU사용
            }
        }
    }
@@ -150,7 +150,7 @@ ATOM MyRegisterClass(HINSTANCE hInstance)
 }
 
 
-BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
+BOOL InitInstance(DXSample* pSample,HINSTANCE hInstance, int nCmdShow)
 {
     hInst = hInstance; // 인스턴스 핸들을 전역 변수에 저장합니다.
 
@@ -175,7 +175,11 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
     if (!hMainWnd)return (FALSE);
 
     //----프레임워크 객체 초기화
-    mainGame.OnCreate(hInst, hMainWnd);
+    if (UseDXR)
+        // Initialize the sample. OnInit is defined in each child-implementation of DXSample.
+        pSample->OnInit(hInst, hMainWnd);
+    else
+        mainGame.OnCreate(hInst, hMainWnd);
     //clientCore.InitGameLoop(hInst, hMainWnd);
 
     ShowWindow(hMainWnd, nCmdShow);

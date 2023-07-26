@@ -15,27 +15,26 @@
 
 class DXSample;
 
-class Win32Application
-{
-public:
-    static int Run(DXSample* pSample, HINSTANCE hInstance, int nCmdShow);
-    static void ToggleFullscreenWindow(IDXGISwapChain* pOutput = nullptr);
-    static void SetWindowZorderToTopMost(bool setToTopMost);
-    static HWND GetHwnd() { return m_hwnd; }
-    static bool IsFullscreen() { return m_fullscreenMode; }
-
-    static BOOL InitializeDXR(DXSample* pSample, HINSTANCE hInstance, int nCmdShow);
-    static void OnRenderDXR(DXSample* pSample);
-
-protected:
-    static LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
-    static BOOL InitInstance(DXSample* pSample,HINSTANCE hInstance, int nCmdShow);
-    static ATOM MyRegisterClass(DXSample* pSample,HINSTANCE hInstance);
-
-private:
-
-    static HWND m_hwnd;
-    static bool m_fullscreenMode;
-    static const UINT m_windowStyle = WS_OVERLAPPEDWINDOW;
-    static RECT m_windowRect;
-};
+//class Win32Application
+//{
+//public:
+//    static int Run(DXSample* pSample, HINSTANCE hInstance, int nCmdShow);
+//    static void ToggleFullscreenWindow(IDXGISwapChain* pOutput = nullptr);
+//    static void SetWindowZorderToTopMost(bool setToTopMost);
+//    static HWND GetHwnd() { return m_hwnd; }
+//    static bool IsFullscreen() { return m_fullscreenMode; }
+//
+//    static BOOL InitializeDXR(DXSample* pSample, HINSTANCE hInstance, int nCmdShow);
+//    static void OnRenderDXR(DXSample* pSample);
+//
+//protected:
+//    static LRESULT CALLBACK WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
+//    static BOOL InitInstance(DXSample* pSample,HINSTANCE hInstance, int nCmdShow);
+//    static ATOM MyRegisterClass(DXSample* pSample,HINSTANCE hInstance);
+//
+//private:
+//    static HWND m_hwnd;
+//    static bool m_fullscreenMode;
+//    static const UINT m_windowStyle = WS_OVERLAPPEDWINDOW;
+//    static RECT m_windowRect;
+//};

@@ -64,7 +64,7 @@ public:
     virtual void OnCreateWindowSizeDependentResources() override { CreateWindowSizeDependentResources(); };
 
     // Messages
-    virtual void OnInit();
+    virtual void OnInit(HINSTANCE hInstance, HWND hMainWnd);
     virtual void OnKeyDown(UINT8 key);
     virtual void OnUpdate();
     virtual void OnRender();

@@ -22,7 +22,7 @@ public:
 	~CLobbyScene() {}
 	virtual void BuildObjects(ID3D12Device5* pd3dDevice, ID3D12GraphicsCommandList4* pd3dCommandList);
 	virtual void ProcessInput(HWND& hWnd);
-	virtual void Update(HWND hWnd);
+	virtual void Update(HWND& hWnd);
 	virtual void Render(ID3D12GraphicsCommandList4* pd3dCommandList, CCamera* pCamera, bool);
 	void		 BuildDefaultLightsAndMaterials();
 
@@ -50,7 +50,7 @@ public:
 	~CTitleScene() {}
 	virtual void BuildObjects(ID3D12Device5* pd3dDevice, ID3D12GraphicsCommandList4* pd3dCommandList);
 	virtual void ProcessInput(HWND& hWnd);
-	virtual void Update(HWND hWnd);
+	virtual void Update(HWND& hWnd);
 	virtual void Render(ID3D12GraphicsCommandList4* pd3dCommandList, CCamera* pCamera, bool);
 	virtual void MouseAction(const POINT& mp) override;
 	void		 BuildDefaultLightsAndMaterials();
@@ -75,7 +75,7 @@ public:
 	~CRoomScene() {}
 	virtual void BuildObjects(ID3D12Device5* pd3dDevice, ID3D12GraphicsCommandList4* pd3dCommandList);
 	virtual void ProcessInput(HWND& hWnd);
-	virtual void Update(HWND hWnd);
+	virtual void Update(HWND& hWnd);
 	virtual void UpdateReady(int32 sid, bool val) 
 	{ 
 		for (auto& i : m_members)
@@ -99,7 +99,7 @@ public:
 	~CResultScene() {}
 	virtual void BuildObjects(ID3D12Device5* pd3dDevice, ID3D12GraphicsCommandList4* pd3dCommandList) {};
 	virtual void ProcessInput(HWND& hWnd) {};
-	virtual void Update(HWND hWnd) {};
+	virtual void Update(HWND& hWnd) {};
 	
 	virtual void Render(ID3D12GraphicsCommandList4* pd3dCommandList, CCamera* pCamera, bool bRaster) {};
 	

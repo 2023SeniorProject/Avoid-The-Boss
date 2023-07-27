@@ -28,7 +28,7 @@ void CLobbyScene::ProcessInput(HWND& hWnd)
 {
 }
 
-void CLobbyScene::Update(HWND hWnd)
+void CLobbyScene::Update(HWND& hWnd)
 {
 }
 
@@ -213,16 +213,23 @@ void CTitleScene::ProcessInput(HWND& hWnd)
 					1);
 	}
 }
-void CTitleScene::Update(HWND hWnd)
+void CTitleScene::Update(HWND& hWnd)
 {
-	m_timer.Tick(60);
+	m_timer.Tick(0.0f);
 	for (int i = 0; i < 3; ++i)
 	{
-		if (!mainGame.m_UIRenderer->m_LoginResult[i].m_hide) mainGame.m_UIRenderer->m_LoginResult[i].animTime -= m_timer.GetTimeElapsed();
-		if (mainGame.m_UIRenderer->m_LoginResult[i].animTime <= 0)
+		if (!mainGame.m_UIRenderer->m_LoginResult[i].m_hide)
 		{
-			mainGame.m_UIRenderer->m_LoginResult[i].animTime = 1.0f;
-			mainGame.m_UIRenderer->m_LoginResult[i].m_hide = true;
+			mainGame.m_UIRenderer->m_LoginResult[i].animTime -= m_timer.GetTimeElapsed();
+			std::cout << mainGame.m_UIRenderer->m_LoginResult[i].animTime << "\n";
+			if (mainGame.m_UIRenderer->m_LoginResult[i].animTime <= 0)
+			{
+				mainGame.m_UIRenderer->m_LoginResult[i].animTime = 1.0f;
+				mainGame.m_UIRenderer->m_LoginResult[i].m_hide = true;
+				if (0 == i) mainGame.ChangeScene(CGameFramework::SCENESTATE::LOBBY);
+			}
+			
+			break;
 		}
 	}
 }
@@ -243,7 +250,7 @@ void CRoomScene::ProcessInput(HWND& hWnd)
 {
 }
 
-void CRoomScene::Update(HWND hWnd)
+void CRoomScene::Update(HWND& hWnd)
 {
 }
 

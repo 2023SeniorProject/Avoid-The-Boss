@@ -159,7 +159,7 @@ void CSession::ProcessPacket(char* packet)
 		mainGame.m_UIRenderer->m_LoginResult[1].m_hide = true;
 		mainGame.m_UIRenderer->m_LoginResult[2].m_hide = true;
 
-		mainGame.ChangeScene(CGameFramework::SCENESTATE::LOBBY);
+		//mainGame.ChangeScene(CGameFramework::SCENESTATE::LOBBY);
 	}
 	break;
 	case (uint8)S_TITLE_PACKET_TYPE::LOGIN_FAIL:
@@ -176,12 +176,7 @@ void CSession::ProcessPacket(char* packet)
 		mainGame.m_UIRenderer->m_LoginResult[2].m_hide = false;
 	}
 	break;
-	case (uint8)S_TITLE_PACKET_TYPE::REG_FAIL:
-	{
 
-	
-	}
-	break;
 #pragma endregion
 	// ================ ·Îºñ¾À ÆÐÅ¶      ===============
 #pragma region  Lobby

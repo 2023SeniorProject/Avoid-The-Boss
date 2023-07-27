@@ -13,11 +13,11 @@ public:
 	SceneManager() 
 	{
 	}
-	~SceneManager(){}
+	~SceneManager() { ReleaseScene(); }
 	
 	void Render(ID3D12GraphicsCommandList4* pd3dCommandList, int32, bool);
 	void Update(HWND& hWnd, int32);
-	void Animate();
+	void Animate(int32);
 	void ProcessInput(HWND& hWnd, int32);
 
 

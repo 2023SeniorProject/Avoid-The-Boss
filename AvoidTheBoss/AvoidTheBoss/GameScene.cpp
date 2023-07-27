@@ -421,8 +421,10 @@ void CGameScene::InitGame(void* packet, int32 sid)
 	{
 		if (gsp->sids[i] == sid) m_playerIdx = i;
 		m_players[i]->SetPlayerSid(gsp->sids[i]);
+		std::cout << "[" << m_players[i]->m_sid << "|";
 		// 각 플레이어 별로 세션 아이디 부여
 	}
+	std::cout << "]\n";
 
 	std::cout << "PLAYER_IDX: " << m_playerIdx << "\n";
 	m_players[0]->SetPosition(XMFLOAT3(0, 0, -18));
@@ -471,7 +473,7 @@ void CGameScene::ExitReady()
 void CGameScene::ResetGame()
 {
 	// 플레이어 상태 초기화
-	for (auto& i : m_players) i->ResetState();
+	for (auto& i : m_players) if(i) i->ResetState();
 	
 	// 발전기 상태 초기화
 	for (int i = 0; i < m_nGenerator; ++i) m_ppGenerator[i]->ResetState();

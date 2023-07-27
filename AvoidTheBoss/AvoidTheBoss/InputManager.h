@@ -15,6 +15,17 @@ enum class KEY_TYPE
 	E = 0x45,
 	F = 0x46,
 	G = 0x47,
+
+	NUM0 = 0x30,
+	NUM1 = 0x31,
+	NUM2 = 0x32,
+	NUM3 = 0x33,
+	NUM4 = 0x34,
+	NUM5 = 0x35,
+	NUM6 = 0x36,
+	NUM7 = 0x37,
+	NUM8 = 0x38,
+	NUM9 = 0x39,
 };
 
 enum class KEY_STATUS : int8

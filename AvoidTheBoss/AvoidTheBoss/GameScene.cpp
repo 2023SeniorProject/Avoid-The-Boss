@@ -94,7 +94,7 @@ void CGameScene::BuildDefaultLightsAndMaterials()
 	m_pLights[0].m_nType = POINT_LIGHT;
 	m_pLights[0].m_fRange = 25.0f;
 	m_pLights[0].m_xmf4Ambient = XMFLOAT4(0.3f, 0.3f, 0.3f, 1.0f);
-	m_pLights[0].m_xmf4Diffuse = XMFLOAT4(0.7f, 0.2f, 0.2f, 1.0f);
+	m_pLights[0].m_xmf4Diffuse = XMFLOAT4(0.7f, 0.7f, 0.7f, 1.0f);
 	m_pLights[0].m_xmf4Specular = XMFLOAT4(0.5f, 0.5f, 0.5f, 0.0f);
 	m_pLights[0].m_xmf3Position = XMFLOAT3(-15.0f, 25.0f, -15.0f);
 	m_pLights[0].m_xmf3Attenuation = XMFLOAT3(1.0f, 0.001f, 0.0001f);
@@ -156,9 +156,11 @@ void CGameScene::BuildObjects(ID3D12Device5* pd3dDevice,ID3D12GraphicsCommandLis
 
 	m_pSkyBox = new CSkyBox(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature);
 	m_pSkyBox->SetScale(50.0f, 50.0f, 50.0f);
+	m_pSkyBox->SetPosition(0.0f, 100.0f, 0.0f);
+	m_pSkyBox->Rotate(0.0f, 150.0f, 0.0f);
 
-	XMFLOAT3 xmf3Scale(8.0f, 2.0f, 8.0f);
-	XMFLOAT4 xmf4Color(0.0f, 0.3f, 0.0f, 0.0f);
+	//XMFLOAT3 xmf3Scale(8.0f, 2.0f, 8.0f);
+	//XMFLOAT4 xmf4Color(0.0f, 0.3f, 0.0f, 0.0f);
 
 	m_nShaders = 6;
 	m_ppShaders = new CShader * [m_nShaders];

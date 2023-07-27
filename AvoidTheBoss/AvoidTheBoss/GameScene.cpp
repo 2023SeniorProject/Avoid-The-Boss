@@ -94,22 +94,22 @@ void CGameScene::BuildDefaultLightsAndMaterials()
 	m_pLights[0].m_nType = POINT_LIGHT;
 	m_pLights[0].m_fRange = 25.0f;
 	m_pLights[0].m_xmf4Ambient = XMFLOAT4(0.3f, 0.3f, 0.3f, 1.0f);
-	m_pLights[0].m_xmf4Diffuse = XMFLOAT4(0.7f, 0.7f, 0.7f, 1.0f);
+	m_pLights[0].m_xmf4Diffuse = XMFLOAT4(1.0f, 0.53f, 0.27f, 1.0f);
 	m_pLights[0].m_xmf4Specular = XMFLOAT4(0.5f, 0.5f, 0.5f, 0.0f);
 	m_pLights[0].m_xmf3Position = XMFLOAT3(-15.0f, 25.0f, -15.0f);
 	m_pLights[0].m_xmf3Attenuation = XMFLOAT3(1.0f, 0.001f, 0.0001f);
 
 	m_pLights[1].m_bEnable = true;
 	m_pLights[1].m_nType = SPOT_LIGHT;
-	m_pLights[1].m_fRange = 50.0f;
-	m_pLights[1].m_xmf4Ambient = XMFLOAT4(0.1f, 0.1f, 0.1f, 1.0f);
-	m_pLights[1].m_xmf4Diffuse = XMFLOAT4(0.4f, 0.4f, 0.4f, 1.0f);
+	m_pLights[1].m_fRange = 35.0f;
+	m_pLights[1].m_xmf4Ambient = XMFLOAT4(0.5f, 0.5f, 0.5f, 1.0f);
+	m_pLights[1].m_xmf4Diffuse = XMFLOAT4(1.0f, 0.53f, 0.27f, 1.0f);
 	m_pLights[1].m_xmf4Specular = XMFLOAT4(0.3f, 0.3f, 0.3f, 0.0f);
-	m_pLights[1].m_xmf3Position = XMFLOAT3(-0.0f, 20.0f, -0.0f);
-	m_pLights[1].m_xmf3Direction = XMFLOAT3(0.0f, -1.0f, 1.0f);
+	m_pLights[1].m_xmf3Position = XMFLOAT3(-0.0f, 18.0f, 23.0f);
+	m_pLights[1].m_xmf3Direction = XMFLOAT3(0.0f, -1.0f, -0.1f);
 	m_pLights[1].m_xmf3Attenuation = XMFLOAT3(1.0f, 0.01f, 0.0001f);
-	m_pLights[1].m_fFalloff = 8.0f;
-	m_pLights[1].m_fPhi = (float)cos(XMConvertToRadians(40.0f));
+	m_pLights[1].m_fFalloff = 40.0f;
+	m_pLights[1].m_fPhi = (float)cos(XMConvertToRadians(150.0f));
 	m_pLights[1].m_fTheta = (float)cos(XMConvertToRadians(20.0f));
 
 	m_pLights[2].m_bEnable = true;
@@ -303,8 +303,6 @@ void CGameScene::Update(HWND& hWnd)
 		m_jobQueue->DoTasks();
 	}
 	
-	
-
 	for (int k = 0; k < PLAYERNUM; ++k)
 	{
 		if (k == m_playerIdx) m_players[k]->Update(m_timer.GetTimeElapsed(), CLIENT_TYPE::OWNER);
@@ -312,8 +310,8 @@ void CGameScene::Update(HWND& hWnd)
 	}
 	for (int k = 0; k < m_nGenerator; ++k) m_ppGenerator[k]->Update(m_timer.GetTimeElapsed());
 	
-	m_pLights[SPOT_LIGHT].m_xmf3Position = m_players[m_playerIdx]->GetCamera()->GetPosition();
-	m_pLights[SPOT_LIGHT].m_xmf3Direction = m_players[m_playerIdx]->GetLook();
+	//m_pLights[SPOT_LIGHT].m_xmf3Position = m_players[m_playerIdx]->GetCamera()->GetPosition();
+	//m_pLights[SPOT_LIGHT].m_xmf3Direction = m_players[m_playerIdx]->GetLook();
 
 	mainGame.m_UIRenderer->UpdateGameSceneUI(this);
 
@@ -345,11 +343,11 @@ void CGameScene::AnimateObjects()
 		if(m_players[i])
 			m_players[i]->Animate(m_timer.GetTimeElapsed());
 	}
-	if (m_pLights)
-	{
-		m_pLights[1].m_xmf3Position = m_players[m_playerIdx]->GetPosition();
-		m_pLights[1].m_xmf3Direction = m_players[m_playerIdx]->GetLookVector();
-	}
+	//if (m_pLights)
+	//{
+	//	m_pLights[1].m_xmf3Position = m_players[m_playerIdx]->GetPosition();
+	//	m_pLights[1].m_xmf3Direction = m_players[m_playerIdx]->GetLookVector();
+	//}
 }
 
 void CGameScene::Render(ID3D12GraphicsCommandList4* pd3dCommandList, CCamera* pCamera, bool bRaster)

@@ -137,7 +137,7 @@ void CTitleScene::MouseAction(const POINT& mp)
 		
 		C2S_LOGIN loginPacket;
 		loginPacket.size = sizeof(C2S_LOGIN);
-		loginPacket.type = (uint8)C_TITLE_PACKET_TYPE::ACQ_REG;
+		loginPacket.type = (uint8)C_TITLE_PACKET_TYPE::ACQ_LOGIN;
 		lstrcpyn(loginPacket.name, mainGame.m_UIRenderer->m_IDPWTextBlocks[0].m_pstrText.c_str(), 10);
 		lstrcpyn(loginPacket.pw, mainGame.m_UIRenderer->m_IDPWTextBlocks[1].m_pstrText.c_str(), 10);
 		clientCore.DoSend(&loginPacket);

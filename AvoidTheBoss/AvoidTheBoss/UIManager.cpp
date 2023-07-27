@@ -460,7 +460,7 @@ void UIManager::UpdateGameSceneUI(CGameScene* gc)
             {
                 m_GenerateUIButtons[20].m_hide = false;
             }
-            else if (myPlayer->GetIsInGenArea() == false) m_GenerateUIButtons[20].m_hide = true;
+            else  m_GenerateUIButtons[20].m_hide = true;
 
             if (myPlayer->GetIsPlayerOnGenInter())
             {

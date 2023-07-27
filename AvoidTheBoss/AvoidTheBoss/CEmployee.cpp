@@ -901,7 +901,7 @@ CGenerator* CEmployee::GetAvailGen()
 			else m_bIsInGenArea = false;
 		}
 	}
-	
+	m_bIsInGenArea = false;
 	return nullptr;
 }
 

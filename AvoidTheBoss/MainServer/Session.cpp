@@ -23,22 +23,35 @@ void LoginProcess(ServerSession* s, std::wstring sqlexec)
 
 
 	s->_cid = udb.user_cid;
-	
+
 	{
 		READ_SERVER_LOCK;
-		auto i = ServerIocpCore._cList.find(s->_sid);
-		if (s->_cid == -1 || i != ServerIocpCore._cList.end())
+		for (auto i : ServerIocpCore._clients)
 		{
-			std::cout << "LoginFail" << endl;
-			udb.DisconnectDataSource();
-			s->DoSendLoginPacket(false);
-			return;
+			if (i.second->_cid == s->_cid)
+			{
+				s->_cid = -1;
+				udb.DisconnectDataSource();
+				s->DoSendLoginPacket(false);
+				return;
+			}
 		}
+
 	}
+
+	if (s->_cid == -1)
+	{
+		std::cout << "LoginFail" << endl;
+		udb.DisconnectDataSource();
+		s->DoSendLoginPacket(false);
+		return;
+	}
+
 
 	std::cout << "client[" << s->_sid << "] " << "LoginSuccess" << endl;
 	udb.DisconnectDataSource();
 	s->DoSendLoginPacket(true);
+	SQL_NULL_DATA;
 }
 
 

@@ -257,21 +257,15 @@ void UIManager::DrawOtherSceneUI(int32 Scene,int32 idx)
 {
     if (Scene == 0) // ≈∏¿Ã∆≤ æ¿
     {
-        //m_pd2dDeviceContext->DrawRectangle(m_TitleButtons[0].d2dLayoutRect, redBrush);
         m_pd2dDeviceContext->DrawBitmap(m_TitleButtons[0].resource, m_TitleButtons[0].d2dLayoutRect);
-        //m_pd2dDeviceContext->DrawRectangle(m_TitleButtons[1].d2dLayoutRect, redBrush);
         m_pd2dDeviceContext->DrawBitmap(m_TitleButtons[1].resource, m_TitleButtons[1].d2dLayoutRect);
-
+        
+        for (int i = 0; i < 3; ++i) if(!m_LoginResult[i].m_hide) m_pd2dDeviceContext->DrawBitmap(m_LoginResult[i].resource, m_LoginResult[i].d2dLayoutRect, m_LoginResult[i].animTime);
     }
     else if (Scene == 1) // ∑Œ∫Ò æ¿
     {
-        //m_pd2dDeviceContext->DrawRectangle(m_LobbyButtons[0].d2dLayoutRect, redBrush);
         m_pd2dDeviceContext->DrawBitmap(m_LobbyButtons[0].resource, m_LobbyButtons[0].d2dLayoutRect);
-        
-        //m_pd2dDeviceContext->DrawRectangle(m_LobbyButtons[1].d2dLayoutRect, redBrush);
         m_pd2dDeviceContext->DrawBitmap(m_LobbyButtons[1].resource, m_LobbyButtons[1].d2dLayoutRect);
-        
-        //m_pd2dDeviceContext->DrawRectangle(m_LobbyButtons[2].d2dLayoutRect, redBrush);
         m_pd2dDeviceContext->DrawBitmap(m_LobbyButtons[2].resource, m_LobbyButtons[2].d2dLayoutRect);
     }
     else if (Scene == 2) // ∞‘¿” ∑Î æ¿
@@ -560,7 +554,7 @@ void UIManager::InitializeDevice(ID3D12Device5* pd3dDevice, ID3D12CommandQueue* 
     grayBrush = CreateBrush(D2D1::ColorF::Gray);
     blackBrush = CreateBrush(D2D1::ColorF::Black);
     // ∆˘∆Æ
-    m_TitleTextFormat = CreateTextFormat(L"Headliner No. 45", 40);
+    m_TitleTextFormat = CreateTextFormat(L"∏º¿∫ ∞ÌµÒ", 40);
     m_LobbyTextFormat = CreateTextFormat(L"∏º¿∫ ∞ÌµÒ", 40);
     // πË∞Ê ∏Æº“Ω∫µÈ
     m_backGround[0].resource = LoadPngFromFile(L"UI/Title.png");
@@ -585,6 +579,16 @@ void UIManager::InitializeDevice(ID3D12Device5* pd3dDevice, ID3D12CommandQueue* 
     m_IDPWTextBlocks[0].m_d2dLayoutRect = MakeLayoutRect(CENTER_X, CENTER_Y + 150, 200, FontSize);
     m_IDPWTextBlocks[1].m_d2dLayoutRect = MakeLayoutRect(CENTER_X, CENTER_Y + 200, 200, FontSize);
     
+    m_LoginResult[0].resource = LoadPngFromFile(L"UI/LOGIN_OK.png");
+    m_LoginResult[1].resource = LoadPngFromFile(L"UI/LOGIN_FAIL.png");
+    m_LoginResult[2].resource = LoadPngFromFile(L"UI/REG.png");
+
+    for (int i = 0; i < 3; ++i)
+    {
+        m_LoginResult[i].d2dLayoutRect = MakeLayoutRect(CENTER_X, CENTER_Y, 300, 100);
+        m_LoginResult[i].m_hide = true;
+    }
+
 
     // ∑Œ∫Ò æ¿ø° « ø‰«— πˆ∆∞
     m_LobbyButtons[0].resource = LoadPngFromFile(L"UI/Enter_Room.png");

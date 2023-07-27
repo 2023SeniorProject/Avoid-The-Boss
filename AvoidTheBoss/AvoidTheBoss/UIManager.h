@@ -21,6 +21,14 @@ struct UIButton
     ID2D1Bitmap*                    resource = NULL;
     bool                            m_hide = false;
 };
+
+struct ANIMButton
+{
+    D2D1_RECT_F d2dLayoutRect;
+    ID2D1Bitmap* resource = NULL;
+    bool m_hide = false;
+    float animTime = 1.0;
+};
 struct UIBackGround
 {
     D2D1_RECT_F                     d2dLayoutRect; // 출력할 레이아웃 영역
@@ -101,6 +109,9 @@ public:
     
     // 배경 레이어 비트맵들
     UIBackGround m_backGround[3];
+
+    // 타이틀 전용
+    ANIMButton m_LoginResult[3];
 
     // 버튼 비트맵들
     UINT m_nRoomListPerPage = 5;

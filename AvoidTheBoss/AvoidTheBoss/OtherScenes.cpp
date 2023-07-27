@@ -229,7 +229,6 @@ void CTitleScene::Update(HWND& hWnd)
 		if (!mainGame.m_UIRenderer->m_LoginResult[i].m_hide)
 		{
 			mainGame.m_UIRenderer->m_LoginResult[i].animTime -= m_timer.GetTimeElapsed();
-			std::cout << mainGame.m_UIRenderer->m_LoginResult[i].animTime << "\n";
 			if (mainGame.m_UIRenderer->m_LoginResult[i].animTime <= 0)
 			{
 				mainGame.m_UIRenderer->m_LoginResult[i].animTime = 1.0f;

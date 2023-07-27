@@ -35,6 +35,11 @@ struct UIBackGround
     ID2D1Bitmap*                    resource = NULL;
 };
 
+struct GuageUI
+{
+    bool                            m_hide;
+    D2D1_RECT_F                     d2dLayoutRect[2]; // 테두리랑 다 채운 용도 하나
+};
 
 struct InGameUI
 {
@@ -108,7 +113,7 @@ public:
     
     
     // 배경 레이어 비트맵들
-    UIBackGround m_backGround[3];
+    UIBackGround m_backGround[5];
 
     // 타이틀 전용
     ANIMButton m_LoginResult[3];
@@ -127,10 +132,13 @@ public:
 
     // 방 전용
     UIButton m_RoomButtons[2];
-    InGameUI m_CharCrossHead;
 
+    InGameUI m_CharCrossHead;
+    InGameUI m_RescueIcon;
     InGameUI m_AttackedEffect;
+   
     float m_AttackedOpacity = 1.0;
+
     // 인 게임 전용
     int32                      m_playerIdx = -1;
     UIButton                   m_GenerateUIButtons[21];
@@ -143,7 +151,7 @@ public:
 
     InGameUI                   m_CharStatus[3]; // 캐릭터 상태
     InGameUI                   m_HPUi[MAX_HP];    // 캐릭터 HP
-
+    GuageUI                    m_RescueGuage;
 
     // 동적으로 바뀌는 텍스트 버튼들 Id,PW 
     UITextBlock                m_IDPWTextBlocks[2];
@@ -151,6 +159,10 @@ public:
     UIButton                   m_ReadyBitmaps[4];
     UIButton                   m_ReadyCard[4];
 
+   
+    // 결과창 
+    UITextBlock m_ResultTextBlock[2];
+    
     // 레이어 위치 출력을 위한 브러시
     ID2D1SolidColorBrush* redBrush; // 빨강
     ID2D1SolidColorBrush* grayBrush; // 회색

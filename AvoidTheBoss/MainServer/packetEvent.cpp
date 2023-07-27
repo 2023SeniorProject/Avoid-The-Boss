@@ -154,12 +154,12 @@ void moveEvent::Task()
 	int16 roomNum = ServerIocpCore._clients[_sid]->_myRm;
 	CGameManager& gm = ServerIocpCore._rmgr->GetRoom(roomNum)._gameLogic;
 	Room& targetRoom = ServerIocpCore._rmgr->GetRoom(roomNum);
-	SPlayer& targetPlayer = gm.GetPlayerBySid(_sid);
+	//SPlayer& targetPlayer = gm.GetPlayerBySid(_sid);
 	
-	targetPlayer.SetDirection(_dir);
+	gm.GetPlayerBySid(_sid).SetDirection(_dir);
 	
-	if (targetPlayer.m_idx == 0) targetPlayer.Move(_key, BOSS_VELOCITY);
-	else targetPlayer.Move(_key, EMPLOYEE_VELOCITY);
+	if (gm.GetPlayerBySid(_sid).m_idx == 0) gm.GetPlayerBySid(_sid).Move(_key, BOSS_VELOCITY);
+	else gm.GetPlayerBySid(_sid).Move(_key, EMPLOYEE_VELOCITY);
 
 	if (_key == 0)
 	{
@@ -167,8 +167,8 @@ void moveEvent::Task()
 		packet.sid = _sid;
 		packet.size = sizeof(S2C_POS);
 		packet.type = (uint8)S_GAME_PACKET_TYPE::SPOS;
-		packet.x = targetPlayer.GetPosition().x;
-		packet.z = targetPlayer.GetPosition().z;
+		packet.x = gm.GetPlayerBySid(_sid).GetPosition().x;
+		packet.z = gm.GetPlayerBySid(_sid).GetPosition().z;
 		
 		targetRoom.BroadCastingExcept(&packet, _sid);
 	}

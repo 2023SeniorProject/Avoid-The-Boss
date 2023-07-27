@@ -114,25 +114,7 @@ void AcceptManager::ProcessAccept(AcceptEvent* acceptEvent)
 	C2S_LOGIN* lp = reinterpret_cast<C2S_LOGIN*>(acceptEvent->_buf);
 	
 	
-	/*std::wstring sqlExec(L"EXEC search_user_db ");
-	if (lp->type == (uint8)C_TITLE_PACKET_TYPE::ACQ_LOGIN)
-	{
-
-		sqlExec += lp->name;
-		sqlExec += L", ";
-		sqlExec += lp->pw;
-
-		LoginProcess(session, sqlExec);
-	}
-	else
-	{
-		sqlExec = L"EXEC update_user_db ";
-		sqlExec += lp->name;
-		sqlExec += L", ";
-		sqlExec += lp->pw;
-
-		RegisterProcess(session, sqlExec);
-	}*/
+	
 
 	int32 sid = GetNewSessionIdx();
 	session->_sid = sid;

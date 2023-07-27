@@ -6,6 +6,7 @@ class CGenerator;
 
 class CEmployee : public CPlayer
 {
+	friend class UIManager;
 public:
 	bool m_bIsPlayerOnGenInter = false; // F키를 눌렀다 땠는지 확인하는 용도
 	bool m_bIsPlayerOnRescueInter = false;
@@ -17,7 +18,7 @@ private:
 	bool m_bIsInGenArea = false;
 	bool m_bIsInDownPlayerArea = false; // Down된 플레이어와 인접해 있는가?
 	//bool m_bIsDown
-private:
+protected:
 	float m_maxRGuage = 100;
 	float m_curGuage = 0;
 	float m_rVel = 10.0f;
@@ -25,6 +26,9 @@ private:
 private:
 	int32 m_curInterGen = -1;
 public:
+	int32 m_deadCnt = 0;
+	int32 m_activeCnt = 0;
+	
 	int32 m_attackedAnimationCount = 0;
 	int32 m_downAnimationCount = 0;
 	int32 m_standAnimationCount = 0;
@@ -52,7 +56,8 @@ public:
 
 	bool IsMovable() 
 	{ 
-		return (m_behavior == (int32)PLAYER_BEHAVIOR::RESCUE || m_behavior == (int32)PLAYER_BEHAVIOR::SWITCH_INTER || m_behavior == (int32)PLAYER_BEHAVIOR::CRAWL);
+		return (m_behavior == (int32)PLAYER_BEHAVIOR::RESCUE || m_behavior == (int32)PLAYER_BEHAVIOR::SWITCH_INTER || m_behavior == (int32)PLAYER_BEHAVIOR::CRAWL 
+			|| m_behavior == (int32)PLAYER_BEHAVIOR::EXIT);
 	}
 	bool IsSeMiBehavior() // 스탠드, 크라울, 다운 상태
 	{
@@ -68,6 +73,29 @@ public:
 	void ResetRescueGuage() { m_curGuage = 0; }
 	bool GetRescueOn() { return m_bIsRescuing; }
 
+	virtual void ResetState()
+	{
+		SetBehavior(PLAYER_BEHAVIOR::IDLE);
+		m_attackedAnimationCount = 0;
+		m_downAnimationCount = 0;
+		m_standAnimationCount = 0;
+
+		m_bIsPlayerOnGenInter = false; // F키를 눌렀다 땠는지 확인하는 용도
+		m_bIsPlayerOnRescueInter = false;
+	
+		m_bIsInvincibility = false;
+		m_UICoolTime = 1.0f;
+
+	
+		m_bIsInGenArea = false;
+		m_bIsInDownPlayerArea = false; // Down된 플레이어와 인접해 있는가?
+
+	
+	    m_curGuage = 0;
+
+		m_bIsRescuing = false;
+
+	}
 
 	// 총알 맞고 쓰러짐 x,2
 	// 피격 2,4
@@ -84,7 +112,7 @@ public:
 	void SetCrawlAnimTrack();	// 쓰러진 상태 x,3
 	void SetStandAnimTrack(); 	// 일어나기 x,5
 	void SetInteractionAnimTrack(); 	// 발전기 상호작용 3,6
-	
+	void SetExitMotionAnimTrack();
 
 	virtual void AnimTrackUpdate();
 

@@ -5,19 +5,19 @@ class CScene;
 class SceneManager
 {
 public:
-	enum class SCENESTATE { TITLE = 0, LOBBY = 1, ROOM = 2, INGAME = 3 };
+	enum class SCENESTATE { TITLE = 0, LOBBY = 1, ROOM = 2, INGAME = 3, RESULT = 4 };
 protected:
 
-	CScene* m_pScenes[4];
+	CScene* m_pScenes[5];
 public:
 	SceneManager() 
 	{
 	}
-	~SceneManager(){}
+	~SceneManager() { ReleaseScene(); }
 	
 	void Render(ID3D12GraphicsCommandList4* pd3dCommandList, int32, bool);
 	void Update(HWND& hWnd, int32);
-	void Animate();
+	void Animate(int32);
 	void ProcessInput(HWND& hWnd, int32);
 
 

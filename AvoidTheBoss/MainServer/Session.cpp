@@ -7,8 +7,79 @@
 #include "OBDC_MGR.h"
 
 
+
 using namespace std;
 // =========== 서버 세션 ============
+
+
+
+void LoginProcess(ServerSession* s, std::wstring sqlexec)
+{
+	USER_DB_MANAGER udb;
+	udb.AllocateHandles();
+	udb.ConnectDataSource(L"USER_DB");
+	udb.ExecuteStatementDirect(sqlexec.c_str());
+	udb.RetrieveResult();
+
+
+	s->_cid = udb.user_cid;
+
+	/*{
+		READ_SERVER_LOCK;
+		for (auto i : ServerIocpCore._clients)
+		{
+			if (i.second->_cid == s->_cid)
+			{
+				s->_cid = -1;
+				udb.DisconnectDataSource();
+				s->DoSendLoginPacket(false);
+				return;
+			}
+		}
+
+	}*/
+
+	if (s->_cid == -1)
+	{
+		std::cout << "LoginFail" << endl;
+		udb.DisconnectDataSource();
+		s->DoSendLoginPacket(false);
+		return;
+	}
+
+
+	std::cout << "client[" << s->_sid << "] " << "LoginSuccess" << endl;
+	udb.DisconnectDataSource();
+	s->DoSendLoginPacket(true);
+	SQL_NULL_DATA;
+}
+
+
+void RegisterProcess(ServerSession* s, std::wstring sqlexec)
+{
+	USER_DB_MANAGER udb;
+	udb.AllocateHandles();
+	udb.ConnectDataSource(L"USER_DB");
+	const WCHAR* a = sqlexec.c_str();
+	udb.ExecuteStatementDirect(sqlexec.c_str());
+
+	if(udb.retcode == SQL_SUCCESS || udb.retcode == SQL_SUCCESS_WITH_INFO)
+	{
+		S2C_REG packet;
+		packet.size = sizeof(S2C_REG);
+		packet.type = (uint8)S_TITLE_PACKET_TYPE::REG_OK;
+		s->DoSend(&packet);
+	}
+	else
+	{
+
+		S2C_REG packet;
+		packet.size = sizeof(S2C_REG);
+		packet.type = (uint8)S_TITLE_PACKET_TYPE::REG_FAIL;
+		s->DoSend(&packet);
+	}
+	udb.DisconnectDataSource();
+}
 
 ServerSession::ServerSession() 
 {
@@ -130,9 +201,29 @@ void ServerSession::DoSendLoginPacket(bool isSuccess)
 
 void ServerSession::ProcessPacket(char* packet)
 {
-	
 	switch ((uint8)packet[1])
 	{
+		case (uint8)C_TITLE_PACKET_TYPE::ACQ_LOGIN:
+		{
+			C2S_LOGIN* lp = reinterpret_cast<C2S_LOGIN*>(packet);
+			std::wstring sqlExec(L"EXEC search_user_db ");
+			sqlExec.append(lp->name);
+			sqlExec.append(L", ");
+			sqlExec.append(lp->pw);
+			LoginProcess(this, sqlExec);
+		}
+		break;
+		case (uint8)C_TITLE_PACKET_TYPE::ACQ_REG:
+		{
+			C2S_LOGIN* lp  = reinterpret_cast<C2S_LOGIN*>(packet);
+			std::wstring sqlExec(L"EXEC update_user_status ");
+			sqlExec.append(lp->name);
+			sqlExec.append(L", ");
+			sqlExec.append(lp->pw);
+			RegisterProcess(this, sqlExec);
+		}
+		break;
+
 		// ======== 방 시스템 패킷
 		case (uint8)C_ROOM_PACKET_TYPE::ACQ_ENTER_RM:
 		{

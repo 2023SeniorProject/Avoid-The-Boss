@@ -68,7 +68,7 @@ void CPlayer::Update(float fTimeElapsed, CLIENT_TYPE ptype)
 	}
 
 	if (nCameraMode == THIRD_PERSON_CAMERA) m_pCamera->SetLookAt(m_xmf3Position);
-	//else m_pCamera->SetPosition(Vector3::Add(m_xmf3Position, m_pCamera->GetOffset())); //Ä«¸Þ¶ó offset
+	
 	m_pCamera->RegenerateViewMatrix();
 }
 

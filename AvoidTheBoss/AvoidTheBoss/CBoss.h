@@ -49,5 +49,6 @@ public:
 		m_runAttackAnimTime = 0;
 	}
 
+	virtual void ResetState();
 	void SetAttackAnimOtherClient();
 };

@@ -2,6 +2,7 @@
 #include "GameScene.h"
 #include "GameFramework.h"
 #include "UIManager.h"
+#include "SceneManager.h"
 #include "InputManager.h"
 #include "SoundManager.h"
 #include "CSound.h"
@@ -315,7 +316,7 @@ void CGameScene::Update(HWND& hWnd)
 
 	mainGame.m_UIRenderer->UpdateGameSceneUI(this);
 
-	if (m_bEmpExit) Exit();
+	if (m_bEmpExit) ExitReady();
 	// 평균 프레임 레이트 출력
 	std::wstring str = L"[";
 	str.append(std::to_wstring(m_sid));
@@ -327,11 +328,9 @@ void CGameScene::Update(HWND& hWnd)
 	str.append(std::to_wstring(m_players[m_playerIdx]->GetPosition().z));
 	str.append(L")- FPS: ");
 	str.append(std::to_wstring(m_curFrame));
-	//if(_timer.GetFrameRate()) str.append(std::to_wstring(1000.f / _timer.GetFrameRate()));
+
 	::SetWindowText(hWnd, str.c_str());
 }
-
-
 
 void CGameScene::AnimateObjects()
 { 
@@ -425,8 +424,10 @@ void CGameScene::InitGame(void* packet, int32 sid)
 	{
 		if (gsp->sids[i] == sid) m_playerIdx = i;
 		m_players[i]->SetPlayerSid(gsp->sids[i]);
+		std::cout << "[" << m_players[i]->m_sid << "|";
 		// 각 플레이어 별로 세션 아이디 부여
 	}
+	std::cout << "]\n";
 
 	std::cout << "PLAYER_IDX: " << m_playerIdx << "\n";
 	m_players[0]->SetPosition(XMFLOAT3(0, 0, -18));
@@ -447,7 +448,7 @@ void CGameScene::AddEvent(queueEvent* ev, float after)
 	m_jobQueue->PushTask(ev, after);
 }
 
-void CGameScene::Exit()
+void CGameScene::ExitReady()
 {
 	if (m_bEmpExit) // 탈출 성공 시 , 해야할 일 처리
 	{
@@ -470,5 +471,21 @@ void CGameScene::Exit()
 			}
 		}
 	}
+}
+
+void CGameScene::ResetGame()
+{
+	// 플레이어 상태 초기화
+	for (auto& i : m_players) if(i) i->ResetState();
+	
+	// 발전기 상태 초기화
+	for (int i = 0; i < m_nGenerator; ++i) m_ppGenerator[i]->ResetState();
+
+	m_playerIdx = -1;
+	m_bEmpExit = false;
+	m_curFrame = 0;
+	m_ExitedPlayerCnt = 0;
+	m_remainPlayerCnt = 0;
+	
 }
 

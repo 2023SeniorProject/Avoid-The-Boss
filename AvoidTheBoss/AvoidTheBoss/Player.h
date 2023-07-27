@@ -19,7 +19,7 @@ enum class CHARACTER_TYPE: uint8
 static const char *g_pstrThirdCharactorRefernece[5] =
 {
 	"null",
-	"Model/Character/Character1_Idle.bin",
+	"Model/Character/Character1_Down.bin",
 	"Model/Character/Character2_Idle.bin",
 	"Model/Character/Character3_Idle.bin",
 	"Model/Character/Character4_Idle.bin"
@@ -151,7 +151,7 @@ public: //04-29 추가함수
 	virtual void AnimTrackUpdate(float ,CLIENT_TYPE) {};
 	virtual void SetBehavior(PLAYER_BEHAVIOR b) { m_behavior = (int32)b; };
 	virtual int32 GetBehavior() { return m_behavior; }
-
+	virtual void ResetState() {};
 	virtual void BuildObjects(ID3D12Device5* pd3dDevice, ID3D12GraphicsCommandList4
 		* pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature) {}
 };

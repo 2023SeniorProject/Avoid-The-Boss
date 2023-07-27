@@ -14,13 +14,15 @@
 #include <d2d1_1.h>
 #include <wincodec.h>
 
+const int32 MAX_RESCUE_GUAGE = FRAME_BUFFER_WIDTH / 4.0f;
+
 const int32 PROFILE_UI_OFFSET_X = FRAME_BUFFER_WIDTH * 0.01;
 const int32 PROFILE_UI_OFFSET_Y = FRAME_BUFFER_HEIGHT * 0.1;
 
 const int32 PROFILE_UI_WIDTH = FRAME_BUFFER_WIDTH * 0.1;
 const int32 PROFILE_UI_HEIGHT = FRAME_BUFFER_HEIGHT * 0.1;
 
-const int32 BIG_PROFILE_UI_OFFSET_Y = PROFILE_UI_OFFSET_Y * 5;
+const int32 BIG_PROFILE_UI_OFFSET_Y = PROFILE_UI_OFFSET_Y * 7;
 const int32 BIG_PROFILE_UI_WIDTH = FRAME_BUFFER_WIDTH * 0.2;
 const int32 BIG_PROFILE_UI_HEIGHT = FRAME_BUFFER_HEIGHT * 0.2;
 
@@ -250,6 +252,10 @@ void UIManager::DrawOtherSceneBackGround(int32 Scene)
         break;
     case 3:
         break;
+    case 4:
+        m_pd2dDeviceContext->DrawBitmap(m_backGround[3].resource, D2D1_RECT_F{ 0,0,m_fWidth,m_fHeight });
+        m_pd2dDeviceContext->DrawBitmap(m_backGround[4].resource, D2D1_RECT_F{ 0,0,m_fWidth,m_fHeight });
+        break;
     }
 }
 
@@ -257,21 +263,17 @@ void UIManager::DrawOtherSceneUI(int32 Scene,int32 idx)
 {
     if (Scene == 0) // 타이틀 씬
     {
-        //m_pd2dDeviceContext->DrawRectangle(m_TitleButtons[0].d2dLayoutRect, redBrush);
         m_pd2dDeviceContext->DrawBitmap(m_TitleButtons[0].resource, m_TitleButtons[0].d2dLayoutRect);
-        //m_pd2dDeviceContext->DrawRectangle(m_TitleButtons[1].d2dLayoutRect, redBrush);
         m_pd2dDeviceContext->DrawBitmap(m_TitleButtons[1].resource, m_TitleButtons[1].d2dLayoutRect);
+        m_pd2dDeviceContext->DrawBitmap(m_TitleButtons[2].resource, m_TitleButtons[2].d2dLayoutRect);
 
+
+        for (int i = 0; i < 3; ++i) if(!m_LoginResult[i].m_hide) m_pd2dDeviceContext->DrawBitmap(m_LoginResult[i].resource, m_LoginResult[i].d2dLayoutRect, m_LoginResult[i].animTime);
     }
     else if (Scene == 1) // 로비 씬
     {
-        //m_pd2dDeviceContext->DrawRectangle(m_LobbyButtons[0].d2dLayoutRect, redBrush);
         m_pd2dDeviceContext->DrawBitmap(m_LobbyButtons[0].resource, m_LobbyButtons[0].d2dLayoutRect);
-        
-        //m_pd2dDeviceContext->DrawRectangle(m_LobbyButtons[1].d2dLayoutRect, redBrush);
         m_pd2dDeviceContext->DrawBitmap(m_LobbyButtons[1].resource, m_LobbyButtons[1].d2dLayoutRect);
-        
-        //m_pd2dDeviceContext->DrawRectangle(m_LobbyButtons[2].d2dLayoutRect, redBrush);
         m_pd2dDeviceContext->DrawBitmap(m_LobbyButtons[2].resource, m_LobbyButtons[2].d2dLayoutRect);
     }
     else if (Scene == 2) // 게임 룸 씬
@@ -285,10 +287,13 @@ void UIManager::DrawOtherSceneUI(int32 Scene,int32 idx)
       
         for (int i = 0; i < 4; ++i)
         {
+
+            if (rs->m_members[i].m_sid != -1) m_pd2dDeviceContext->DrawBitmap(m_ReadyCard[i].resource, m_ReadyCard[i].d2dLayoutRect);
+            
             m_pd2dDeviceContext->DrawRectangle(m_ReadyBitmaps[i].d2dLayoutRect,blackBrush, 6.0f);
-            m_pd2dDeviceContext->FillRectangle(m_ReadyBitmaps[i].d2dLayoutRect, grayBrush);
-            if(rs->m_members[i].isReady)  
-                m_pd2dDeviceContext->DrawBitmap(m_ReadyBitmaps[i].resource, m_ReadyBitmaps[i].d2dLayoutRect);
+            if(rs->m_members[i].isReady) m_pd2dDeviceContext->DrawBitmap(m_ReadyBitmaps[i].resource, m_ReadyBitmaps[i].d2dLayoutRect);
+
+           
         }
     }
 }
@@ -354,7 +359,7 @@ void UIManager::InitGameSceneUI(CGameScene* gc)
         // 나머지는 자신을 제외한 2명만 출력
         case 1:
         {
-       
+            
             m_CharProfile[2].d2dLayoutRect =
                 MakeLayoutRectByCorner(PROFILE_UI_OFFSET_X, PROFILE_UI_OFFSET_Y, PROFILE_UI_WIDTH, PROFILE_UI_HEIGHT);
             
@@ -451,7 +456,7 @@ void UIManager::UpdateGameSceneUI(CGameScene* gc)
         }
     }
 
-    // 발전기
+    // 발전기 && 구하기
     
     if (gc->GetScenePlayerByIdx(m_playerIdx))
     {
@@ -463,7 +468,7 @@ void UIManager::UpdateGameSceneUI(CGameScene* gc)
             {
                 m_GenerateUIButtons[20].m_hide = false;
             }
-            else if (myPlayer->GetIsInGenArea() == false) m_GenerateUIButtons[20].m_hide = true;
+            else  m_GenerateUIButtons[20].m_hide = true;
 
             if (myPlayer->GetIsPlayerOnGenInter())
             {
@@ -476,8 +481,24 @@ void UIManager::UpdateGameSceneUI(CGameScene* gc)
             {
                 for (int i = 0; i < 20; ++i)  m_GenerateUIButtons[i].m_hide = true;
             }
+
+            if (myPlayer->GetIsPlayerOnRescueInter())
+            {
+                CEmployee* targetEmp = myPlayer->GetAvailEMP();
+                if (targetEmp && targetEmp->m_curGuage < 100.f)
+                {
+                    m_RescueGuage.m_hide = false;
+                    m_RescueGuage.d2dLayoutRect[1].right *= targetEmp->m_curGuage / 100;
+                }
+                else if (targetEmp && targetEmp->m_curGuage >= 100)
+                {
+                    m_RescueGuage.m_hide = false;
+                    m_RescueGuage.d2dLayoutRect[1].right = MAX_RESCUE_GUAGE;
+                }
+            }
         }
     }
+    // 구하기
 }
 
 void UIManager::DrawGameSceneUI(int32 Scene)
@@ -503,6 +524,13 @@ void UIManager::DrawGameSceneUI(int32 Scene)
     {
         for(auto i : m_HPUi)  if (!i.m_hide) m_pd2dDeviceContext->DrawBitmap(i.resource, i.d2dLayoutRect);
         if (!m_AttackedEffect.m_hide) m_pd2dDeviceContext->DrawBitmap(m_AttackedEffect.resource, m_AttackedEffect.d2dLayoutRect, m_AttackedOpacity);
+        if (!m_RescueIcon.m_hide) m_pd2dDeviceContext->DrawBitmap(m_RescueIcon.resource, m_RescueIcon.d2dLayoutRect);
+
+        if (!m_RescueGuage.m_hide)
+        {
+            m_pd2dDeviceContext->DrawRectangle(m_RescueGuage.d2dLayoutRect[0],blackBrush, 5.0f);
+            m_pd2dDeviceContext->FillRectangle(m_RescueGuage.d2dLayoutRect[1], redBrush);
+        }
     }
 
     if (m_playerIdx == 0) m_pd2dDeviceContext->DrawBitmap(m_CharCrossHead.resource, m_CharCrossHead.d2dLayoutRect);
@@ -557,31 +585,47 @@ void UIManager::InitializeDevice(ID3D12Device5* pd3dDevice, ID3D12CommandQueue* 
     grayBrush = CreateBrush(D2D1::ColorF::Gray);
     blackBrush = CreateBrush(D2D1::ColorF::Black);
     // 폰트
-    m_TitleTextFormat = CreateTextFormat(L"Headliner No. 45", 40);
+    m_TitleTextFormat = CreateTextFormat(L"맑은 고딕", 40);
     m_LobbyTextFormat = CreateTextFormat(L"맑은 고딕", 40);
     // 배경 리소스들
     m_backGround[0].resource = LoadPngFromFile(L"UI/Title.png");
     m_backGround[1].resource = LoadPngFromFile(L"UI/Lobby.png");
     m_backGround[2].resource = LoadPngFromFile(L"UI/Game.png");
 
+    m_backGround[3].resource = LoadPngFromFile(L"UI/Boss_Result.png");
+    m_backGround[4].resource = LoadPngFromFile(L"UI/Emp_Result.png");
+
     // 타이틀 씬에 필요한 버튼
     m_TitleButtons[0].resource      = LoadPngFromFile(L"UI/Title_Start.png");  
     m_TitleButtons[1].resource      = LoadPngFromFile(L"UI/Title_Quit.png");
-    m_TitleButtons[0].d2dLayoutRect = MakeLayoutRect(CENTER_X + TITLEBUTTON_X_OFFSET, CENTER_Y + TITLEBUTTON_Y_OFFSET,     200, 50);
-    m_TitleButtons[1].d2dLayoutRect = MakeLayoutRect(CENTER_X + TITLEBUTTON_X_OFFSET, CENTER_Y + TITLEBUTTON_Y_OFFSET * 2, 200, 50);
+    m_TitleButtons[2].resource      = LoadPngFromFile(L"UI/Title_Register.png");
+
+    m_TitleButtons[0].d2dLayoutRect = MakeLayoutRect(CENTER_X + TITLEBUTTON_X_OFFSET, CENTER_Y + TITLEBUTTON_Y_OFFSET, 200, 50);
+    m_TitleButtons[1].d2dLayoutRect = MakeLayoutRect(CENTER_X , CENTER_Y + TITLEBUTTON_Y_OFFSET * 4, 200, 50);
+    m_TitleButtons[2].d2dLayoutRect = MakeLayoutRect(CENTER_X - TITLEBUTTON_X_OFFSET, CENTER_Y + TITLEBUTTON_Y_OFFSET, 200, 50);
     // ID / PW 입력 창
     m_IDPWTextBlocks[0].m_pd2dTextBrush = CreateBrush(D2D1::ColorF::White);
     m_IDPWTextBlocks[0].m_pdwFormat = m_TitleTextFormat;
-    m_IDPWTextBlocks[0].m_pstrText = L"ID:";
+    m_IDPWTextBlocks[0].m_pstrText = L"";
     
 
     m_IDPWTextBlocks[1].m_pd2dTextBrush = CreateBrush(D2D1::ColorF::White);
     m_IDPWTextBlocks[1].m_pdwFormat = m_TitleTextFormat;
-    m_IDPWTextBlocks[1].m_pstrText = L"PW:";
+    m_IDPWTextBlocks[1].m_pstrText = L"";
 
-    m_IDPWTextBlocks[0].m_d2dLayoutRect = MakeLayoutRect(CENTER_X, CENTER_Y + 150, 200, FontSize);
-    m_IDPWTextBlocks[1].m_d2dLayoutRect = MakeLayoutRect(CENTER_X, CENTER_Y + 200, 200, FontSize);
+    m_IDPWTextBlocks[0].m_d2dLayoutRect = MakeLayoutRect(CENTER_X, CENTER_Y + FRAME_BUFFER_HEIGHT / 4.0f,  400, FontSize);
+    m_IDPWTextBlocks[1].m_d2dLayoutRect = MakeLayoutRect(CENTER_X, CENTER_Y + FRAME_BUFFER_HEIGHT / 3.0f , 400, FontSize);
     
+    m_LoginResult[0].resource = LoadPngFromFile(L"UI/LOGIN_OK.png");
+    m_LoginResult[1].resource = LoadPngFromFile(L"UI/LOGIN_FAIL.png");
+    m_LoginResult[2].resource = LoadPngFromFile(L"UI/REG.png");
+
+    for (int i = 0; i < 3; ++i)
+    {
+        m_LoginResult[i].d2dLayoutRect = MakeLayoutRect(CENTER_X, CENTER_Y, 300, 100);
+        m_LoginResult[i].m_hide = true;
+    }
+
 
     // 로비 씬에 필요한 버튼
     m_LobbyButtons[0].resource = LoadPngFromFile(L"UI/Enter_Room.png");
@@ -603,6 +647,11 @@ void UIManager::InitializeDevice(ID3D12Device5* pd3dDevice, ID3D12CommandQueue* 
     m_ReadyBitmaps[2].resource = LoadPngFromFile(L"UI/Ready3.png");
     m_ReadyBitmaps[3].resource = LoadPngFromFile(L"UI/Ready4.png");
 
+    m_ReadyCard[0].resource = LoadPngFromFile(L"UI/READY_CARD1.png");
+    m_ReadyCard[1].resource = LoadPngFromFile(L"UI/READY_CARD2.png");
+    m_ReadyCard[2].resource = LoadPngFromFile(L"UI/READY_CARD3.png");
+    m_ReadyCard[3].resource = LoadPngFromFile(L"UI/READY_CARD4.png");
+
     m_ReadyBitmaps[0].d2dLayoutRect = MakeLayoutRectByCorner(LOBBYROOMLIST_X_OFFSET, 
         LOBBYROOMLIST_Y_OFFSET,
         (FRAME_BUFFER_WIDTH - (LOBBYROOMLIST_X_OFFSET * 2.0)) / 2.0,
@@ -622,6 +671,12 @@ void UIManager::InitializeDevice(ID3D12Device5* pd3dDevice, ID3D12CommandQueue* 
         LOBBYROOMLIST_Y_OFFSET + FRAME_BUFFER_HEIGHT / 4.0,
         (FRAME_BUFFER_WIDTH - (LOBBYROOMLIST_X_OFFSET * 2.0)) / 2.0,
         FRAME_BUFFER_HEIGHT / 4.0);
+
+    for (int i = 0; i < 4; ++i)
+    {
+        m_ReadyCard[i].d2dLayoutRect = m_ReadyBitmaps[i].d2dLayoutRect;
+        m_ReadyCard[i].m_hide = true;
+    }
 
     //로비에서 출력할 방 리스트 영역
     for (int i = 0; i < m_nRoomListPerPage; ++i)
@@ -666,6 +721,7 @@ void UIManager::InitializeDevice(ID3D12Device5* pd3dDevice, ID3D12CommandQueue* 
     m_AttackedEffect.d2dLayoutRect = MakeLayoutRectByCorner(0, 0, FRAME_BUFFER_WIDTH, FRAME_BUFFER_HEIGHT);
     m_AttackedEffect.m_hide = false;
 
+  
     // 발전기 게이지
     for (int i = 0; i < 20; ++i)
     {
@@ -683,6 +739,16 @@ void UIManager::InitializeDevice(ID3D12Device5* pd3dDevice, ID3D12CommandQueue* 
     m_GenerateUIButtons[20].resource = LoadPngFromFile(L"UI/F.png");
     m_GenerateUIButtons[20].d2dLayoutRect = MakeLayoutRect(FRAME_BUFFER_WIDTH / 2.0, FRAME_BUFFER_HEIGHT * 0.9, FRAME_BUFFER_WIDTH * 0.1f, FRAME_BUFFER_HEIGHT * 0.1f);
     m_GenerateUIButtons[20].m_hide = true;
+
+    // 살리기 아이콘
+    m_RescueIcon.resource = LoadPngFromFile(L"UI/Rescue.png");
+    m_RescueIcon.d2dLayoutRect = m_GenerateUIButtons[20].d2dLayoutRect;
+    m_RescueIcon.m_hide = true;
+
+    m_RescueGuage.m_hide = true;
+    m_RescueGuage.d2dLayoutRect[0] = MakeLayoutRect(FRAME_BUFFER_WIDTH / 2.0, FRAME_BUFFER_HEIGHT / 2.0, MAX_RESCUE_GUAGE, FRAME_BUFFER_HEIGHT * 0.1f);
+    m_RescueGuage.d2dLayoutRect[1] = MakeLayoutRect(FRAME_BUFFER_WIDTH / 2.0, FRAME_BUFFER_HEIGHT / 2.0, MAX_RESCUE_GUAGE, FRAME_BUFFER_HEIGHT * 0.1f);
+    //
 }
 
 void UIManager::Render2D(UINT nFrame, int32 curScene)

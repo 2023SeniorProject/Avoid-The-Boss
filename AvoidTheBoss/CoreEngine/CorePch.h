@@ -114,8 +114,8 @@ using Microsoft::WRL::ComPtr;
 
 const float CENTER_X = FRAME_BUFFER_WIDTH / 2.0;
 const float CENTER_Y = FRAME_BUFFER_HEIGHT / 2.0;
-const float TITLEBUTTON_X_OFFSET = FRAME_BUFFER_WIDTH / 2.0 - 100.f;
-const float TITLEBUTTON_Y_OFFSET = 100.f;
+const float TITLEBUTTON_X_OFFSET = (FRAME_BUFFER_WIDTH / 8.0f);
+const float TITLEBUTTON_Y_OFFSET = FRAME_BUFFER_HEIGHT / 10;
 
 const float LOBBYBUTTON_X_OFFSET = FRAME_BUFFER_WIDTH / 3.0;
 const float LOBBYBUTTON_Y_OFFSET = FRAME_BUFFER_HEIGHT / 4.0f * 3;
@@ -136,6 +136,7 @@ const float IDPW_Y_OFFSET = FontSize / 2.0f;
 #define UNIT 1.0f // 1m = 1 unit
 
 #define PLAYERNUM 2
+#define GENCNT 1
 const float EMPLOYEE_VELOCITY = UNIT * 3.f;
 const float BOSS_VELOCITY = UNIT * 2.f;
 

@@ -39,9 +39,9 @@ void SceneManager::ReleaseScene()
 {
 	for (int i = 0; i < 4; ++i)  m_pScenes[i]->ReleaseObjects();
 }
-void SceneManager::Animate()
+void SceneManager::Animate(int32 idx)
 {
-	for (int i = 0; i < 4; ++i)  m_pScenes[i]->AnimateObjects();
+	m_pScenes[idx]->AnimateObjects();
 }
 
 void SceneManager::BuildScene(ID3D12Device5* pd3dDevice, ID3D12GraphicsCommandList4* pd3dCommandList)
@@ -54,4 +54,8 @@ void SceneManager::BuildScene(ID3D12Device5* pd3dDevice, ID3D12GraphicsCommandLi
 	m_pScenes[(int32)SCENESTATE::ROOM]->BuildObjects(pd3dDevice, pd3dCommandList);
 	m_pScenes[(int32)SCENESTATE::INGAME] = new CGameScene();
 	m_pScenes[(int32)SCENESTATE::INGAME]->BuildObjects(pd3dDevice, pd3dCommandList);
+
+	m_pScenes[(int32)SCENESTATE::RESULT] = new CResultScene();
+	m_pScenes[(int32)SCENESTATE::RESULT]->BuildObjects(pd3dDevice, pd3dCommandList);
 }
+

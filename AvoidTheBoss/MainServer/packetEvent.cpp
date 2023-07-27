@@ -24,7 +24,7 @@ void InteractionEvent::Task()
 			}
 			else
 			{
-				std::cout << "Gen\n";
+				
 				targetGen.GenInteractionOn(true);
 				SC_EVENTPACKET packet;
 				packet.size = sizeof(SC_EVENTPACKET);
@@ -74,7 +74,7 @@ void InteractionEvent::Task()
 	case EVENT_TYPE::SWITCH_TWO_ACTIVATE_EVENT: // 상호작용 도중에 끝낸 경우
 	case EVENT_TYPE::SWITCH_THREE_ACTIVATE_EVENT: // 상호작용 도중에 끝낸 경우
 	{
-		std::cout << "Active\n";
+		
 		SGenerator& targetGen = gm.GetGeneratorByIdx(eventId - (uint8)EVENT_TYPE::SWITCH_ONE_ACTIVATE_EVENT);
 		targetGen.GenActivate(true);
 		SC_EVENTPACKET packet;
@@ -82,6 +82,9 @@ void InteractionEvent::Task()
 		packet.type = (uint8)SC_GAME_PACKET_TYPE::GAMEEVENT;
 		packet.eventId = eventId;
 		targetRoom.BroadCasting(&packet);
+		// 일단 활성화 사실 알리기
+
+
 	}
 	break;
 	
@@ -95,8 +98,6 @@ void InteractionEvent::Task()
 		if (!p.m_bIsRescue)
 		{
 			p.m_bIsRescue = true;
-			std::cout << "RESCUING\n";
-
 			SC_EVENTPACKET packet;
 			packet.type = (uint8)SC_GAME_PACKET_TYPE::GAMEEVENT;
 			packet.size = sizeof(SC_EVENTPACKET);
@@ -132,6 +133,17 @@ void InteractionEvent::Task()
 		p.ProcessAlive();
 	}
 	break;
+	case EVENT_TYPE::EXIT_PLAYER_ONE:
+	case EVENT_TYPE::EXIT_PLAYER_TWO:
+	case EVENT_TYPE::EXIT_PLAYER_THREE:
+	case EVENT_TYPE::EXIT_PLAYER_FOUR:
+	{
+		int32 playerIdx = eventId - (int8)EVENT_TYPE::EXIT_PLAYER_ONE;
+		SPlayer& p = gm.GetPlayerByIdx(playerIdx);
+		if(!p.m_isEscaped) p.m_isEscaped = true;
+	}
+	break;
+
 	default:
 		std::cout << "UnKnown Game Event Please Check Your Packet Type\n";
 		break;
@@ -144,12 +156,12 @@ void moveEvent::Task()
 	int16 roomNum = ServerIocpCore._clients[_sid]->_myRm;
 	CGameManager& gm = ServerIocpCore._rmgr->GetRoom(roomNum)._gameLogic;
 	Room& targetRoom = ServerIocpCore._rmgr->GetRoom(roomNum);
-	SPlayer& targetPlayer = gm.GetPlayerBySid(_sid);
+	//SPlayer& targetPlayer = gm.GetPlayerBySid(_sid);
 	
-	targetPlayer.SetDirection(_dir);
+	gm.GetPlayerBySid(_sid).SetDirection(_dir);
 	
-	if (targetPlayer.m_idx == 0) targetPlayer.Move(_key, BOSS_VELOCITY);
-	else targetPlayer.Move(_key, EMPLOYEE_VELOCITY);
+	if (gm.GetPlayerBySid(_sid).m_idx == 0) gm.GetPlayerBySid(_sid).Move(_key, BOSS_VELOCITY);
+	else gm.GetPlayerBySid(_sid).Move(_key, EMPLOYEE_VELOCITY);
 
 	if (_key == 0)
 	{
@@ -157,8 +169,8 @@ void moveEvent::Task()
 		packet.sid = _sid;
 		packet.size = sizeof(S2C_POS);
 		packet.type = (uint8)S_GAME_PACKET_TYPE::SPOS;
-		packet.x = targetPlayer.GetPosition().x;
-		packet.z = targetPlayer.GetPosition().z;
+		packet.x = gm.GetPlayerBySid(_sid).GetPosition().x;
+		packet.z = gm.GetPlayerBySid(_sid).GetPosition().z;
 		
 		targetRoom.BroadCastingExcept(&packet, _sid);
 	}

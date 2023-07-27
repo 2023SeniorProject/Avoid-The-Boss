@@ -13,6 +13,9 @@ class CGameManager
 {
 	friend class Room;
 protected:
+	bool	_bExitReady = false; // 탈출 조건이 완료 됐는가.
+
+
 	SPlayer _players[4];
 	SGenerator _generators[3];
 	GAMESTATE _gState = GAMESTATE::NONE;
@@ -47,7 +50,6 @@ public:
 
 	GAMESTATE CheckGameState();
 	void ResetGame();
-	
 
 };
 

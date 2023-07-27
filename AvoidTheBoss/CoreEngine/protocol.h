@@ -9,8 +9,10 @@
 
 enum class C_TITLE_PACKET_TYPE : uint8
 {
+	ACQ_REG = 149,
 	ACQ_LOGIN = 150,
 	ACQ_LOGOUT = 151
+
 };
 
 enum class C_ROOM_PACKET_TYPE : uint8
@@ -35,6 +37,8 @@ enum class C_GAME_PACKET_TYPE : uint8
 
 enum class S_TITLE_PACKET_TYPE : uint8
 {
+	REG_FAIL= 148,
+	REG_OK = 149,
 	LOGIN_OK = 150,
 	LOGIN_FAIL = 151,
 };
@@ -77,25 +81,25 @@ enum class ANIMTRACK : uint8
  
 // 방 생성 응답, 방 입장 응답, 종료
 
-enum class PLAYER_BEHAVIOR {IDLE = 0, RUN, WALK, SWITCH_INTER, ATTACKED, DOWN, RESCUE, ATTACK, RUN_ATTACK, CRAWL, STAND};
+enum class PLAYER_BEHAVIOR {IDLE = 0, RUN, WALK, SWITCH_INTER, ATTACKED, DOWN, RESCUE, ATTACK, RUN_ATTACK, CRAWL, STAND, EXIT};
 
-enum class EVENT_TYPE : uint8 
+enum class EVENT_TYPE : uint8
 {
 	ATTACK_EVENT = 0,
 	COOLTIME_EVENT = 1,
-	
+
 	// ========= 스위치 관련 상호작용 이벤트 =========
 	SWITCH_ONE_START_EVENT,
 	SWITCH_TWO_START_EVENT,
 	SWITCH_THREE_START_EVENT,
-	
+
 	SWITCH_ONE_END_EVENT,
 	SWITCH_TWO_END_EVENT,
 	SWITCH_THREE_END_EVENT,
 
 	SWITCH_ONE_ACTIVATE_EVENT,
 	SWITCH_TWO_ACTIVATE_EVENT,
-	SWITCH_THREE_ACTIVATE_EVENT ,
+	SWITCH_THREE_ACTIVATE_EVENT,
 
 	// ========  플레이어 숨기는 이벤트 ==============
 	HIDE_PLAYER_ONE,
@@ -129,6 +133,13 @@ enum class EVENT_TYPE : uint8
 	ALIVE_PLAYER_FOUR = 30,
 
 	ADD_FRAME = 31,
+
+	EXIT_PLAYER_ONE = 32,
+	EXIT_PLAYER_TWO = 33,
+	EXIT_PLAYER_THREE = 34,
+	EXIT_PLAYER_FOUR = 35,
+
+	GAME_END = 36,
 };
 
 #pragma pack (push, 1)
@@ -207,6 +218,12 @@ struct S2C_LOGIN_OK
 	uint8 type;
 	int16 sid;
 	int16 cid;
+};
+
+struct S2C_REG
+{
+	uint8 size;
+	uint8 type;
 };
 
 struct S2C_LOGIN_FAIL

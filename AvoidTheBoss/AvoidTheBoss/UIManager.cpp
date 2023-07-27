@@ -259,7 +259,9 @@ void UIManager::DrawOtherSceneUI(int32 Scene,int32 idx)
     {
         m_pd2dDeviceContext->DrawBitmap(m_TitleButtons[0].resource, m_TitleButtons[0].d2dLayoutRect);
         m_pd2dDeviceContext->DrawBitmap(m_TitleButtons[1].resource, m_TitleButtons[1].d2dLayoutRect);
-        
+        m_pd2dDeviceContext->DrawBitmap(m_TitleButtons[2].resource, m_TitleButtons[2].d2dLayoutRect);
+
+
         for (int i = 0; i < 3; ++i) if(!m_LoginResult[i].m_hide) m_pd2dDeviceContext->DrawBitmap(m_LoginResult[i].resource, m_LoginResult[i].d2dLayoutRect, m_LoginResult[i].animTime);
     }
     else if (Scene == 1) // 로비 씬
@@ -564,8 +566,10 @@ void UIManager::InitializeDevice(ID3D12Device5* pd3dDevice, ID3D12CommandQueue* 
     // 타이틀 씬에 필요한 버튼
     m_TitleButtons[0].resource      = LoadPngFromFile(L"UI/Title_Start.png");  
     m_TitleButtons[1].resource      = LoadPngFromFile(L"UI/Title_Quit.png");
-    m_TitleButtons[0].d2dLayoutRect = MakeLayoutRect(CENTER_X + TITLEBUTTON_X_OFFSET, CENTER_Y + TITLEBUTTON_Y_OFFSET,     200, 50);
-    m_TitleButtons[1].d2dLayoutRect = MakeLayoutRect(CENTER_X + TITLEBUTTON_X_OFFSET, CENTER_Y + TITLEBUTTON_Y_OFFSET * 2, 200, 50);
+    m_TitleButtons[2].resource      = LoadPngFromFile(L"UI/Title_Quit.png");
+    m_TitleButtons[0].d2dLayoutRect = MakeLayoutRect(CENTER_X + TITLEBUTTON_X_OFFSET, CENTER_Y + TITLEBUTTON_Y_OFFSET, 200, 50);
+    m_TitleButtons[1].d2dLayoutRect = MakeLayoutRect(CENTER_X , CENTER_Y + TITLEBUTTON_Y_OFFSET * 3, 200, 50);
+    m_TitleButtons[2].d2dLayoutRect = MakeLayoutRect(CENTER_X - TITLEBUTTON_X_OFFSET, CENTER_Y + TITLEBUTTON_Y_OFFSET, 200, 50);
     // ID / PW 입력 창
     m_IDPWTextBlocks[0].m_pd2dTextBrush = CreateBrush(D2D1::ColorF::White);
     m_IDPWTextBlocks[0].m_pdwFormat = m_TitleTextFormat;
@@ -576,8 +580,8 @@ void UIManager::InitializeDevice(ID3D12Device5* pd3dDevice, ID3D12CommandQueue* 
     m_IDPWTextBlocks[1].m_pdwFormat = m_TitleTextFormat;
     m_IDPWTextBlocks[1].m_pstrText = L"";
 
-    m_IDPWTextBlocks[0].m_d2dLayoutRect = MakeLayoutRect(CENTER_X, CENTER_Y + 150, 200, FontSize);
-    m_IDPWTextBlocks[1].m_d2dLayoutRect = MakeLayoutRect(CENTER_X, CENTER_Y + 200, 200, FontSize);
+    m_IDPWTextBlocks[0].m_d2dLayoutRect = MakeLayoutRect(CENTER_X, CENTER_Y + FRAME_BUFFER_HEIGHT / 4.0f,  400, FontSize);
+    m_IDPWTextBlocks[1].m_d2dLayoutRect = MakeLayoutRect(CENTER_X, CENTER_Y + FRAME_BUFFER_HEIGHT / 3.0f , 400, FontSize);
     
     m_LoginResult[0].resource = LoadPngFromFile(L"UI/LOGIN_OK.png");
     m_LoginResult[1].resource = LoadPngFromFile(L"UI/LOGIN_FAIL.png");

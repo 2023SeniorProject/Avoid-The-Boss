@@ -115,7 +115,7 @@ public:
 
     // 버튼 비트맵들
     UINT m_nRoomListPerPage = 5;
-    UIButton m_TitleButtons[2];
+    UIButton m_TitleButtons[3];
     
     // 로비 전용
     UIButton m_LobbyButtons[3];

@@ -28,7 +28,6 @@ void InteractionEvent::Task()
 	case EVENT_TYPE::SWITCH_TWO_END_EVENT:
 	case EVENT_TYPE::SWITCH_THREE_END_EVENT:
 	{
-		std::cout << "Switch Cancel\n";
 		CGenerator* targetGen = gc->GetSceneGenByIdx(eventId - (uint8)EVENT_TYPE::SWITCH_ONE_END_EVENT);
 		if (targetGen == nullptr) break;
 		if(targetGen->m_bAlreadyOn) targetGen->SetAlreadyOn(false);
@@ -43,7 +42,8 @@ void InteractionEvent::Task()
 		if (targetGen == nullptr) break;
 		targetGen->m_bGenActive = true;
 		gc->m_ActiveGeneratorCnt += 1;
-		if (gc->m_ActiveGeneratorCnt >= 1) gc->m_bEmpExit = true; // Å»Ãâ Á¶°Ç true
+
+		if (gc->m_ActiveGeneratorCnt >= GENCNT) gc->m_bEmpExit = true; // Å»Ãâ Á¶°Ç true
 
 	}
 	break;
@@ -119,8 +119,6 @@ void InteractionEvent::Task()
 		CPlayer* player = gc->m_players[eventId - (int8)(EVENT_TYPE::ALIVE_PLAYER_ONE)];
 		if (player == nullptr) break;
 		static_cast<CEmployee*>(player)->SetBehavior(PLAYER_BEHAVIOR::EXIT);
-		gc->m_ExitedPlayerCnt += 1;
-		gc->m_remainPlayerCnt -= 1;
 
 	}
 	break;

@@ -137,10 +137,11 @@ void CSession::ProcessPacket(char* packet)
 		static_cast<CGameScene*>(mainGame.m_SceneManager->GetSceneByIdx((int32)CGameFramework::SCENESTATE::INGAME));
 	CLobbyScene* ls = static_cast<CLobbyScene*>(mainGame.m_SceneManager->GetSceneByIdx((int32)CGameFramework::SCENESTATE::LOBBY));
 	CRoomScene* rs = static_cast<CRoomScene*>(mainGame.m_SceneManager->GetSceneByIdx((int32)CGameFramework::SCENESTATE::ROOM));
-	
+	CResultScene* rrs = static_cast<CResultScene*>(mainGame.m_SceneManager->GetSceneByIdx((int32)CGameFramework::SCENESTATE::RESULT));
 	if (!gs) return; // something error detected;
 	if (!ls) return; // something error detected;
 	if (!rs) return;
+	if (!rrs) return;
 
 	switch ((uint8)packet[1])
 	{
@@ -152,6 +153,7 @@ void CSession::ProcessPacket(char* packet)
 		S2C_LOGIN_OK* lo = (S2C_LOGIN_OK*)packet;
 		_cid = lo->cid;
 		_sid = lo->sid;
+		std::cout << _sid << "\n";
 		CScene::m_sid = lo->sid;
 		CScene::m_cid = lo->cid;
 
@@ -250,7 +252,7 @@ void CSession::ProcessPacket(char* packet)
 			rs->m_members[i].m_sid = -1;
 			
 		}
-
+		
 		 gs->InitGame(packet, _sid);
 		// ================= 朝五虞 実特 ================================
 		std::wstring str = L"Client";
@@ -313,7 +315,9 @@ void CSession::ProcessPacket(char* packet)
 		gev->eventId = ev->eventId;
 		if (gev->eventId == (uint8)EVENT_TYPE::GAME_END)
 		{
+			std::cout << "Go to Result\n";
 			gs->ResetGame();
+			rrs->m_timer.Reset();
 			mainGame.ChangeScene(CGameFramework::SCENESTATE::RESULT);
 		}
 		else gs->AddEvent(static_cast<queueEvent*>(gev), 0.f);

@@ -55,7 +55,7 @@ CEmployee::CEmployee(ID3D12Device5* pd3dDevice, ID3D12GraphicsCommandList4* pd3d
 	if (m_pCamera->m_nMode == (DWORD)FIRST_PERSON_CAMERA)
 		//달리기, 버튼, 느리게 걷기, 대기
 	{
-		m_pSkinnedAnimationController2->SetTrackEnable(0, true);
+		m_pSkinnedAnimationController2->SetTrackEnable(0, false);
 		m_pSkinnedAnimationController2->SetTrackEnable(1, false);
 		m_pSkinnedAnimationController2->SetTrackEnable(2, false);
 		m_pSkinnedAnimationController2->SetTrackEnable(3, false);
@@ -67,6 +67,7 @@ CEmployee::CEmployee(ID3D12Device5* pd3dDevice, ID3D12GraphicsCommandList4* pd3d
 		m_pSkinnedAnimationController1->SetTrackEnable(4, false);
 		m_pSkinnedAnimationController1->SetTrackEnable(5, false);
 		m_pSkinnedAnimationController1->SetTrackEnable(6, false);
+		m_pSkinnedAnimationController1->SetTrackEnable(7, true);
 	}
 	if (m_pCamera->m_nMode == (DWORD)THIRD_PERSON_CAMERA)
 	{
@@ -75,13 +76,13 @@ CEmployee::CEmployee(ID3D12Device5* pd3dDevice, ID3D12GraphicsCommandList4* pd3d
 		m_pSkinnedAnimationController2->SetTrackEnable(2, false);
 		m_pSkinnedAnimationController2->SetTrackEnable(3, false);
 
-		m_pSkinnedAnimationController1->SetTrackEnable(0, true);
+		m_pSkinnedAnimationController1->SetTrackEnable(0, false);
 		m_pSkinnedAnimationController1->SetTrackEnable(1, false);
 		m_pSkinnedAnimationController1->SetTrackEnable(2, false);
 		m_pSkinnedAnimationController1->SetTrackEnable(3, false);
 		m_pSkinnedAnimationController1->SetTrackEnable(4, false);
 		m_pSkinnedAnimationController1->SetTrackEnable(5, false);
-		m_pSkinnedAnimationController1->SetTrackEnable(6, false);
+		m_pSkinnedAnimationController1->SetTrackEnable(7, true);
 
 	}
 
@@ -250,8 +251,11 @@ void CEmployee::LateUpdate(float fTimeElapsed, CLIENT_TYPE ptype)
 		// 결과 씬에 넘겨주기
 		static_cast<CResultScene*>(mainGame.m_SceneManager->GetSceneByIdx(4))->m_activeCnt = m_activeCnt;
 		static_cast<CResultScene*>(mainGame.m_SceneManager->GetSceneByIdx(4))->m_deadCnt = m_deadCnt;
-		static_cast<CResultScene*>(mainGame.m_SceneManager->GetSceneByIdx(4))->m_deadCnt = m_idx;
-
+\
+		ChangeCamera(FIRST_PERSON_CAMERA, 0);
+		mainGame.m_SceneManager->GetSceneByIdx(3)->m_pCamera = m_pCamera;
+		mainGame.m_SceneManager->GetSceneByIdx(3)->m_pCamera->CreateShaderVariables(mainGame.m_pd3dDevice, mainGame.m_pd3dCommandList);
+		
 		if (GetPosition().x < -28 || GetPosition().x > 28 || GetPosition().z > 28 || GetPosition().z < -28)
 		{
 			m_bEmpExit = true;
@@ -306,14 +310,14 @@ void CEmployee::SetIdleAnimTrack()
 		m_pSkinnedAnimationController2->SetTrackEnable(3, false);
 
 		if (m_pSkinnedAnimationController1 == nullptr) return;
-		m_pSkinnedAnimationController1->SetTrackEnable(0, true);
+		m_pSkinnedAnimationController1->SetTrackEnable(0, false);
 		m_pSkinnedAnimationController1->SetTrackEnable(1, false);
 		m_pSkinnedAnimationController1->SetTrackEnable(2, false);
 		m_pSkinnedAnimationController1->SetTrackEnable(3, false);
 		m_pSkinnedAnimationController1->SetTrackEnable(4, false);
 		m_pSkinnedAnimationController1->SetTrackEnable(5, false);
 		m_pSkinnedAnimationController1->SetTrackEnable(6, false);
-		m_pSkinnedAnimationController1->SetTrackEnable(7, false);
+		m_pSkinnedAnimationController1->SetTrackEnable(7, true);
 	}
 
 	m_pSkinnedAnimationController2->SetTrackPosition(0, 0);
@@ -485,7 +489,6 @@ void CEmployee::SetInteractionAnimTrack()
 	m_pSkinnedAnimationController2->SetTrackPosition(2, 0);
 	m_pSkinnedAnimationController2->SetTrackPosition(3, 0);
 }
-
 
 // 쓰러진 상태 x,3
 void CEmployee::SetCrawlAnimTrack()
@@ -786,7 +789,6 @@ void CEmployee::SetExitMotionAnimTrack()
 	m_pSkinnedAnimationController1->SetTrackPosition(7, 0);
 }
 
-
 void CEmployee::AnimTrackUpdate()
 {
 	switch (m_behavior)
@@ -923,8 +925,15 @@ CEmployee* CEmployee::GetAvailEMP()
 		XMFLOAT3 ppos = p->GetPosition();
 		ppos = Vector3::Subtract(m_xmf3Position, ppos);
 		float dist = Vector3::Length(ppos);
-		if (dist < 1.5 && p->GetBehavior() == (int32)PLAYER_BEHAVIOR::CRAWL && !p->GetRescueOn()) return p;
+		if (dist < 1.5 && p->GetBehavior() == (int32)PLAYER_BEHAVIOR::CRAWL && !p->GetRescueOn())
+		{
+			mainGame.m_UIRenderer->m_RescueIcon.m_hide = false;
+			return p;
+		}
+		
 	}
+
+	mainGame.m_UIRenderer->m_RescueIcon.m_hide = true;
 	return nullptr;
 }
 
@@ -972,6 +981,7 @@ bool CEmployee::GenTasking()
 
 	CGenerator* targetGen = GetAvailGen();
 	
+	if(targetGen)std::cout << targetGen->m_idx << "Available\n";
 	
 	//  F키를 눌렀고, 구하기 상호작용 중이 아닐 때
 	if (InputManager::GetInstance().GetKeyBuffer(KEY_TYPE::F) > 0 && !GetIsPlayerOnRescueInter())
@@ -1000,14 +1010,14 @@ bool CEmployee::GenTasking()
 	}
 	else if (!InputManager::GetInstance().GetKeyBuffer(KEY_TYPE::F))
 	{
-			if (InputManager::GetInstance().GetKeyBuffer(KEY_TYPE::F) == (int8)KEY_STATUS::KEY_UP || !targetGen)
+			if (InputManager::GetInstance().GetKeyBuffer(KEY_TYPE::F) == (int8)KEY_STATUS::KEY_UP)
 			{
 				if (GetIsPlayerOnGenInter()) // 내가 상호작용 도중이였다면
 				{
 					std::cout << "Cancel\n";
 					SetGenInteraction(false);
 					SetBehavior(PLAYER_BEHAVIOR::IDLE);
-					
+					if (targetGen) targetGen->SetInteractionOn(false);
 					SoundManager::GetInstance().SoundStop(6);
 					//========= 패킷 송신 처리 ==============
 					SC_EVENTPACKET packet;
@@ -1043,6 +1053,7 @@ bool CEmployee::RescueTasking()
 				packet.type = (uint8)SC_GAME_PACKET_TYPE::GAMEEVENT;
 				clientCore.DoSend(&packet);
 				std::cout << targetPlayer->m_idx << " Rescuing\n";
+			
 			}
 			return true;
 		}

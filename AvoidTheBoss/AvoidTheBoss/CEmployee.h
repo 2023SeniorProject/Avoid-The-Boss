@@ -6,6 +6,7 @@ class CGenerator;
 
 class CEmployee : public CPlayer
 {
+	friend class UIManager;
 public:
 	bool m_bIsPlayerOnGenInter = false; // F키를 눌렀다 땠는지 확인하는 용도
 	bool m_bIsPlayerOnRescueInter = false;
@@ -17,7 +18,7 @@ private:
 	bool m_bIsInGenArea = false;
 	bool m_bIsInDownPlayerArea = false; // Down된 플레이어와 인접해 있는가?
 	//bool m_bIsDown
-private:
+protected:
 	float m_maxRGuage = 100;
 	float m_curGuage = 0;
 	float m_rVel = 10.0f;
@@ -27,7 +28,7 @@ private:
 public:
 	int32 m_deadCnt = 0;
 	int32 m_activeCnt = 0;
-
+	
 	int32 m_attackedAnimationCount = 0;
 	int32 m_downAnimationCount = 0;
 	int32 m_standAnimationCount = 0;

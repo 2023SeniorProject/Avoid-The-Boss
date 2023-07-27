@@ -19,7 +19,7 @@ enum class CHARACTER_TYPE: uint8
 static const char *g_pstrThirdCharactorRefernece[5] =
 {
 	"null",
-	"Model/Character/Character1_Idle.bin",
+	"Model/Character/Character1_Down.bin",
 	"Model/Character/Character2_Idle.bin",
 	"Model/Character/Character3_Idle.bin",
 	"Model/Character/Character4_Idle.bin"

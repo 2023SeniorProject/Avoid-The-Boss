@@ -108,7 +108,7 @@ public:
 	void SetCrawlAnimTrack();	// 쓰러진 상태 x,3
 	void SetStandAnimTrack(); 	// 일어나기 x,5
 	void SetInteractionAnimTrack(); 	// 발전기 상호작용 3,6
-	
+	void SetExitMotionAnimTrack();
 
 	virtual void AnimTrackUpdate();
 

@@ -136,6 +136,7 @@ const float IDPW_Y_OFFSET = FontSize / 2.0f;
 #define UNIT 1.0f // 1m = 1 unit
 
 #define PLAYERNUM 2
+#define GENCNT 1
 const float EMPLOYEE_VELOCITY = UNIT * 3.f;
 const float BOSS_VELOCITY = UNIT * 2.f;
 

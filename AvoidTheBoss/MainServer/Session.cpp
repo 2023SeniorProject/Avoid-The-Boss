@@ -24,7 +24,7 @@ void LoginProcess(ServerSession* s, std::wstring sqlexec)
 
 	s->_cid = udb.user_cid;
 
-	{
+	/*{
 		READ_SERVER_LOCK;
 		for (auto i : ServerIocpCore._clients)
 		{
@@ -37,7 +37,7 @@ void LoginProcess(ServerSession* s, std::wstring sqlexec)
 			}
 		}
 
-	}
+	}*/
 
 	if (s->_cid == -1)
 	{
@@ -201,7 +201,6 @@ void ServerSession::DoSendLoginPacket(bool isSuccess)
 
 void ServerSession::ProcessPacket(char* packet)
 {
-	
 	switch ((uint8)packet[1])
 	{
 		case (uint8)C_TITLE_PACKET_TYPE::ACQ_LOGIN:

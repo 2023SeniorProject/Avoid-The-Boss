@@ -54,7 +54,7 @@ void CGameManager::LateUpdate(float eTime)
 	for (auto& i : _players)if (!i.m_hide) i.LateUpdate(eTime);
 	for (auto& i : _generators) if (i._IsActive) m_activeGenCnt++;
 
-	if (m_activeGenCnt >= 3)
+	if (m_activeGenCnt >= GENCNT)
 	{
 		if (!_bExitReady) _bExitReady = true;
 	}
@@ -76,6 +76,7 @@ void CGameManager::AddEvent(QueueEvent* qe)
 
 GAMESTATE CGameManager::CheckGameState()
 {
+
 	int32 crawlCnt = 0;
 	int32 escapeCnt = 0;
 
@@ -84,8 +85,8 @@ GAMESTATE CGameManager::CheckGameState()
 		if ((int32)PLAYER_BEHAVIOR::CRAWL == i.GetBehavior()) crawlCnt += 1;
 		if (true == i.GetEscaped()) escapeCnt += 1;
 	}
-	if (PLAYERNUM == crawlCnt) _gState == GAMESTATE::BOSS_WIN;
-	else if ((crawlCnt + escapeCnt) == (PLAYERNUM - 1)) GAMESTATE::EMP_WIN;
+	if (PLAYERNUM == crawlCnt) _gState = GAMESTATE::BOSS_WIN;
+	else if ((crawlCnt + escapeCnt) == (PLAYERNUM - 1)) _gState = GAMESTATE::EMP_WIN;
 
 	return _gState;
 }
@@ -106,6 +107,8 @@ void CGameManager::ResetGame()
 	_bExitReady = false;
 
 	_gState = GAMESTATE::NONE;
+
+
 
 }
 

@@ -44,6 +44,7 @@ class CTitleScene : public CScene
 	int32 focus = 0;
 	bool cap = false;
 	CPlayer* m_player = NULL;
+	Timer m_timer;
 public:
 	CTitleScene() {}
 	~CTitleScene() {}

@@ -154,23 +154,32 @@ void CSession::ProcessPacket(char* packet)
 		_sid = lo->sid;
 		CScene::m_sid = lo->sid;
 		CScene::m_cid = lo->cid;
+
+		mainGame.m_UIRenderer->m_LoginResult[0].m_hide = false;
+		mainGame.m_UIRenderer->m_LoginResult[1].m_hide = true;
+		mainGame.m_UIRenderer->m_LoginResult[2].m_hide = true;
+
 		mainGame.ChangeScene(CGameFramework::SCENESTATE::LOBBY);
 	}
 	break;
 	case (uint8)S_TITLE_PACKET_TYPE::LOGIN_FAIL:
 	{
-		S2C_LOGIN_FAIL* lo = (S2C_LOGIN_FAIL*)packet;
-		std::cout << "Login Fail" << std::endl;
+		mainGame.m_UIRenderer->m_LoginResult[0].m_hide = true;
+		mainGame.m_UIRenderer->m_LoginResult[1].m_hide = false;
+		mainGame.m_UIRenderer->m_LoginResult[2].m_hide = true;
 	}
 	break;
 	case (uint8)S_TITLE_PACKET_TYPE::REG_OK:
 	{
-		std::cout << "REG OK \n";
+		mainGame.m_UIRenderer->m_LoginResult[0].m_hide = true;
+		mainGame.m_UIRenderer->m_LoginResult[1].m_hide = true;
+		mainGame.m_UIRenderer->m_LoginResult[2].m_hide = false;
 	}
 	break;
 	case (uint8)S_TITLE_PACKET_TYPE::REG_FAIL:
 	{
-		std::cout << "REG FAIL \n";
+
+	
 	}
 	break;
 #pragma endregion

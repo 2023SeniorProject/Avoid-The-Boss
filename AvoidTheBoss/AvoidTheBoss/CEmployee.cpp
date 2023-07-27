@@ -7,6 +7,7 @@
 #include "CSound.h"
 
 #include "GameScene.h"
+#include "OtherScenes.h"
 
 #include "InputManager.h"
 #include "SceneManager.h"
@@ -244,8 +245,13 @@ void CEmployee::LateUpdate(float fTimeElapsed, CLIENT_TYPE ptype)
 	}
 
 	// 탈출 후 맵에서 일정 범위 이상 넘어가게 되면 EXIT 상태로 만세 애니메이션 재생
-	if (!m_bEmpExit && static_cast<CGameScene*>(mainGame.m_SceneManager->GetSceneByIdx(3))->m_bEmpExit)
+	if (!m_bEmpExit && static_cast<CGameScene*>(mainGame.m_SceneManager->GetSceneByIdx(3))->m_bEmpExit && m_clientType == CLIENT_TYPE::OWNER)
 	{
+		// 결과 씬에 넘겨주기
+		static_cast<CResultScene*>(mainGame.m_SceneManager->GetSceneByIdx(4))->m_activeCnt = m_activeCnt;
+		static_cast<CResultScene*>(mainGame.m_SceneManager->GetSceneByIdx(4))->m_deadCnt = m_deadCnt;
+		static_cast<CResultScene*>(mainGame.m_SceneManager->GetSceneByIdx(4))->m_deadCnt = m_idx;
+
 		if (GetPosition().x < -28 || GetPosition().x > 28 || GetPosition().z > 28 || GetPosition().z < -28)
 		{
 			m_bEmpExit = true;
@@ -953,6 +959,7 @@ void CEmployee::PlayerDown()
 	
 		mainGame.m_SceneManager->GetSceneByIdx(3)->m_pCamera = m_pCamera;
 		mainGame.m_SceneManager->GetSceneByIdx(3)->m_pCamera->CreateShaderVariables(mainGame.m_pd3dDevice, mainGame.m_pd3dCommandList);
+		m_deadCnt += 1;
 	}
 
 	SetBehavior(PLAYER_BEHAVIOR::DOWN);

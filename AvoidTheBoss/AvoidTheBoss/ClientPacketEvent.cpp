@@ -21,7 +21,7 @@ void InteractionEvent::Task()
 	{
 		CGenerator* targetGen = gc->GetSceneGenByIdx(eventId - (uint8)EVENT_TYPE::SWITCH_ONE_START_EVENT);
 		if(targetGen == nullptr) break;
-		targetGen->SetAlreadyOn(true);
+		if (!targetGen->m_bAlreadyOn) targetGen->SetAlreadyOn(true);
 	}
 	break;
 	case EVENT_TYPE::SWITCH_ONE_END_EVENT:
@@ -31,7 +31,7 @@ void InteractionEvent::Task()
 		std::cout << "Switch Cancel\n";
 		CGenerator* targetGen = gc->GetSceneGenByIdx(eventId - (uint8)EVENT_TYPE::SWITCH_ONE_END_EVENT);
 		if (targetGen == nullptr) break;
-		targetGen->SetAlreadyOn(false);
+		if(targetGen->m_bAlreadyOn) targetGen->SetAlreadyOn(false);
 	}
 	break;
 	// 만약 스위치 활성화가 됐다는 패킷이 전송 되었을 때,
@@ -109,6 +109,22 @@ void InteractionEvent::Task()
 		static_cast<CEmployee*>(player)->m_standAnimationCount = EMPLOYEE_STAND_TIME;
 	}
 	break;
+
+	case EVENT_TYPE::EXIT_PLAYER_TWO:
+	case EVENT_TYPE::EXIT_PLAYER_THREE:
+	case EVENT_TYPE::EXIT_PLAYER_FOUR:
+		// ========= 플레이어 피격 관련 애니메이션 재생
+		// ========= 플레이어 HP 제거 ================
+	{
+		CPlayer* player = gc->m_players[eventId - (int8)(EVENT_TYPE::ALIVE_PLAYER_ONE)];
+		if (player == nullptr) break;
+		static_cast<CEmployee*>(player)->SetBehavior(PLAYER_BEHAVIOR::EXIT);
+		gc->m_ExitedPlayerCnt += 1;
+		gc->m_remainPlayerCnt -= 1;
+
+	}
+	break;
+
 	default:
 		break;
 	}

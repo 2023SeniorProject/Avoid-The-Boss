@@ -47,6 +47,8 @@ public:
 	friend class CTitleScene;
 
 	friend class UIManager;
+
+	friend class CGenerator;
 private:
 	HINSTANCE m_hInstance;
 	HWND m_hWnd;

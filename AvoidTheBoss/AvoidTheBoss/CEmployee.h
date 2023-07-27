@@ -25,6 +25,9 @@ private:
 private:
 	int32 m_curInterGen = -1;
 public:
+	int32 m_deadCnt = 0;
+	int32 m_activeCnt = 0;
+
 	int32 m_attackedAnimationCount = 0;
 	int32 m_downAnimationCount = 0;
 	int32 m_standAnimationCount = 0;

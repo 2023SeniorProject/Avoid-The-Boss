@@ -93,13 +93,31 @@ class CResultScene : public CScene
 public:
 	int32 m_pidx = -1;
 	int32 m_case = 0; // 1  escape 2 arrested
+	
+	
+	// 사장
+	// 탈출 직원 수
 	int32 m_exitPlayerCnt = 0;
+	// 죽인 횟수
+
+	// 직원
+	int32 m_deadCnt;   //  죽은 횟수
+	int32 m_activeCnt; //  발전기 활성화 횟수
+
+	Timer m_timer;
+	float m_showTime = 3.0f; // 결과창 보여주는 시각
+	
 public:
 	CResultScene() {}
 	~CResultScene() {}
 	virtual void BuildObjects(ID3D12Device5* pd3dDevice, ID3D12GraphicsCommandList4* pd3dCommandList) {};
 	virtual void ProcessInput(HWND& hWnd) {};
-	virtual void Update(HWND& hWnd) {};
+	virtual void Update(HWND& hWnd) 
+	{
+		m_timer.Tick(0.0f);
+		if (m_showTime > 0) m_showTime -= m_timer.GetTimeElapsed();
+		if (m_showTime < 0) mainGame.ChangeScene(CGameFramework::SCENESTATE::LOBBY);
+	};
 	
 	virtual void Render(ID3D12GraphicsCommandList4* pd3dCommandList, CCamera* pCamera, bool bRaster) {};
 	

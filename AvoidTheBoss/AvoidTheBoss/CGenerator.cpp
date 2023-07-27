@@ -1,6 +1,9 @@
 ﻿#include "pch.h"
 #include "clientIocpCore.h"
 #include "CGenerator.h"
+#include "SceneManager.h"
+#include "GameScene.h"
+#include "CEmployee.h"
 
 CGenerator::CGenerator()
 {
@@ -46,10 +49,9 @@ void CGenerator::LogicUpdate()
 
 void CGenerator::Update(float fTimeElapsed)
 {
-	if (m_bOnInteraction && !m_bGenActive)
+	if (m_bOnInteraction && !m_bGenActive && !m_bAlreadyOn)
 	{
 		m_curGuage += m_guageSpeed * fTimeElapsed;
-		std::cout << m_curGuage << "\n";
 	}
 
 	if (m_curGuage > m_maxGuage && !m_bGenActive)
@@ -63,7 +65,9 @@ void CGenerator::Update(float fTimeElapsed)
 		packet.size = sizeof(SC_EVENTPACKET);
 		packet.eventId = (uint8)EVENT_TYPE::SWITCH_ONE_ACTIVATE_EVENT + m_idx;
 		clientCore.DoSend(&packet);
-		std::cout << "Gen Active\n";
+		std::cout << m_idx << ") Gen Active\n";
+		CGameScene* gs = static_cast<CGameScene*>(mainGame.m_SceneManager->GetSceneByIdx(3));
+		static_cast<CEmployee*>(gs->GetScenePlayerByIdx(gs->m_playerIdx))->m_activeCnt += 1;
 	}
 }
 
@@ -83,7 +87,7 @@ void CGenerator::OnPrepareAnimate()
 
 void CGenerator::BodyAnimate(float fTimeElapsed)
 {
-	if (m_bOnInteraction)
+	if (m_bOnInteraction || m_bAlreadyOn)
 	{
 		XMMATRIX xmmtxTranslate;
 		float move = 0.001f;
@@ -116,7 +120,7 @@ void CGenerator::BodyAnimate(float fTimeElapsed)
 
 void CGenerator::PipelineAnimate(float fTimeElapsed)
 {
-	if (m_bOnInteraction)
+	if (m_bOnInteraction || m_bAlreadyOn)
 	{
 		float delta = 0.01f;
 		for (int i = 0; i < m_nPipe; i++) //1.8 ->1.7    ̵  10.f

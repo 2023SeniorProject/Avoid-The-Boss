@@ -1046,6 +1046,7 @@ bool CEmployee::RescueTasking()
 		{
 			if (targetPlayer)
 			{
+				SetBehavior(PLAYER_BEHAVIOR::RESCUE);
 				SetRescueInteraction(true);
 				targetPlayer->m_bIsRescuing = true;
 				SC_EVENTPACKET packet;

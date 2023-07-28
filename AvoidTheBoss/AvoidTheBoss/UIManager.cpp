@@ -484,16 +484,19 @@ void UIManager::UpdateGameSceneUI(CGameScene* gc)
 
             if (myPlayer->GetIsPlayerOnRescueInter())
             {
+              
                 CEmployee* targetEmp = myPlayer->GetAvailEMP();
+                std::cout << targetEmp->m_curGuage << "\n";
                 if (targetEmp && targetEmp->m_curGuage < 100.f)
                 {
                     m_RescueGuage.m_hide = false;
-                    m_RescueGuage.d2dLayoutRect[1].right *= targetEmp->m_curGuage / 100;
+                    m_RescueGuage.d2dLayoutRect[1].right = m_RescueGuage.d2dLayoutRect[1].left + targetEmp->m_curGuage;
+                   
                 }
                 else if (targetEmp && targetEmp->m_curGuage >= 100)
                 {
-                    m_RescueGuage.m_hide = false;
-                    m_RescueGuage.d2dLayoutRect[1].right = MAX_RESCUE_GUAGE;
+                    m_RescueGuage.m_hide = true;
+                    m_RescueGuage.d2dLayoutRect[1] = m_RescueGuage.d2dLayoutRect[0];
                 }
             }
         }
@@ -746,8 +749,8 @@ void UIManager::InitializeDevice(ID3D12Device5* pd3dDevice, ID3D12CommandQueue* 
     m_RescueIcon.m_hide = true;
 
     m_RescueGuage.m_hide = true;
-    m_RescueGuage.d2dLayoutRect[0] = MakeLayoutRect(FRAME_BUFFER_WIDTH / 2.0, FRAME_BUFFER_HEIGHT / 2.0, MAX_RESCUE_GUAGE, FRAME_BUFFER_HEIGHT * 0.1f);
-    m_RescueGuage.d2dLayoutRect[1] = MakeLayoutRect(FRAME_BUFFER_WIDTH / 2.0, FRAME_BUFFER_HEIGHT / 2.0, MAX_RESCUE_GUAGE, FRAME_BUFFER_HEIGHT * 0.1f);
+    m_RescueGuage.d2dLayoutRect[0] = MakeLayoutRect(CENTER_X, CENTER_Y, MAX_RESCUE_GUAGE,50);
+    m_RescueGuage.d2dLayoutRect[1] = MakeLayoutRect(CENTER_X, CENTER_Y, MAX_RESCUE_GUAGE,50);
     //
 }
 

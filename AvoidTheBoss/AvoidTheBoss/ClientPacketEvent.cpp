@@ -7,6 +7,7 @@
 #include "CGenerator.h"
 #include "SceneManager.h"
 #include "GameScene.h"
+
 void InteractionEvent::Task()
 {
 	if ((int32)CGameFramework::SCENESTATE::INGAME != mainGame.m_curScene) return; // something error detected;

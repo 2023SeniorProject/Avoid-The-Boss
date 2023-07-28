@@ -598,6 +598,12 @@ uint8 CBoss::ProcessInput()
 		packet.size = sizeof(C2S_ATTACK);
 		packet.wf = mainGame.m_curFrame;
 
+		SC_EVENTPACKET epacket;
+		epacket.size = sizeof(packet);
+		epacket.type = (uint8)SC_GAME_PACKET_TYPE::GAMEEVENT;
+		epacket.eventId = (uint8)EVENT_TYPE::ATTACK_ANIM;
+
+		clientCore.DoSend(&epacket);
 
 		XMFLOAT3 bossPos = GetPosition();
 		XMFLOAT3 bossDir = GetLook();

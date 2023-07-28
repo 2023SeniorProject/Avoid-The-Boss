@@ -331,12 +331,20 @@ void CSession::ProcessPacket(char* packet)
 		uint8 idx = sw->idx;
 		CPlayer* myPlayer = nullptr;
 	
-		myPlayer = gs->GetScenePlayerBySid(idx);
+		myPlayer = gs->GetScenePlayerByIdx(idx);
 		if (myPlayer != nullptr)
 		{
-			if (sw->track == (uint8)ANIMTRACK::GEN_ANIM) myPlayer->SetBehavior(PLAYER_BEHAVIOR::SWITCH_INTER);
-			else if (sw->track == (uint8)ANIMTRACK::ATTACK_ANIM) static_cast<CBoss*>(myPlayer)->SetAttackAnimOtherClient();
-			else myPlayer->SetBehavior(PLAYER_BEHAVIOR::IDLE);
+			if (idx != 0)
+			{
+				if (sw->track == (uint8)ANIMTRACK::GEN_ANIM) myPlayer->SetBehavior(PLAYER_BEHAVIOR::SWITCH_INTER);
+				else myPlayer->SetBehavior(PLAYER_BEHAVIOR::IDLE);
+			}
+			else if (sw->track == (uint8)ANIMTRACK::ATTACK_ANIM)
+			{
+				std::cout << "Attack Anim\n";
+				static_cast<CBoss*>(myPlayer)->SetAttackAnimOtherClient();
+			}
+			
 		}
 	}
 	break;

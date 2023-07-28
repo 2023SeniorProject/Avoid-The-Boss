@@ -199,7 +199,7 @@ void AttackEvent::Task()
 		S2C_ANIMPACKET apacket;
 		apacket.size = sizeof(S2C_ANIMPACKET);
 		apacket.type = (uint8)S_GAME_PACKET_TYPE::ANIM;
-		apacket.track = 172;
+		apacket.track = (uint8)ANIMTRACK::ATTACK_ANIM;
 		ServerIocpCore._rmgr->GetRoom(roomNum).BroadCastingExcept(&apacket, _sid);
 
 		SC_EVENTPACKET epacket;

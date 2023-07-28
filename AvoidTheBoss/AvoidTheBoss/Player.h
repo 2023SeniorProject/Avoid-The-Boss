@@ -16,13 +16,12 @@ enum class CHARACTER_TYPE: uint8
 	BOSS = 0, YELLOW_EMP = 1, MASK_EMP, CAP_EMP, GOGGLE_EMP, COUNT
 };
 
-static const char *g_pstrThirdCharactorRefernece[5] =
+static const char *g_pstrThirdCharactorRefernece[4] =
 {
 	"null",
-	"Model/Character/Character1_Down.bin",
-	"Model/Character/Character2_Idle.bin",
-	"Model/Character/Character3_Idle.bin",
-	"Model/Character/Character4_Idle.bin"
+	"Model/Character/Character_Helmet.bin",
+	"Model/Character/Character_Mask.bin",
+	"Model/Character/Character_Cap.bin",
 };
 
 static const char* g_pstrFirstCharactorRefernece[4] =

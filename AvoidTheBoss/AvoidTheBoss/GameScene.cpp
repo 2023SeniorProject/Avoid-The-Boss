@@ -63,9 +63,7 @@ void CGameScene::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPARAM 
 	case WM_KEYUP:
 		switch (wParam)
 		{
-		case VK_ESCAPE:
-			::PostQuitMessage(0);
-			break;
+		
 		case VK_RETURN:
 			break;
 			/*‘F1’ 키를 누르면 1인칭 카메라, ‘F3’ 키를 누르면 3인칭 카메라로 변경한다.*/

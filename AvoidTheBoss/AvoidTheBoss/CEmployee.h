@@ -19,7 +19,7 @@ private:
 	bool m_bIsInDownPlayerArea = false; // Down된 플레이어와 인접해 있는가?
 	//bool m_bIsDown
 protected:
-	float m_maxRGuage = 100;
+	float m_maxRGuage = 200;
 	float m_curGuage = 0;
 	float m_rVel = 10.0f;
 	float m_bIsRescuing = false;

@@ -53,7 +53,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     
     HACCEL hAccelTable = LoadAccelerators(hInstance, MAKEINTRESOURCE(IDC_AVOIDTHEBOSS));
 
-    clientCore.InitConnect("127.0.0.1");
+    clientCore.InitConnect("192.168.0.2");
     clientCore.DoConnect(nullptr);
 
     // 기본 메시지 루프입니다:

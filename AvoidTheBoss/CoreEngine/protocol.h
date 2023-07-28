@@ -76,6 +76,7 @@ enum class ANIMTRACK : uint8
 	GEN_ANIM = 170,
 	GEN_ANIM_CANCEL = 171,
 	ATTACK_ANIM = 172,
+	RESCUE = 173,
 };
 
  

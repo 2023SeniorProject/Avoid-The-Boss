@@ -111,7 +111,8 @@ public:
 	Microsoft::WRL::ComPtr<ID3D11On12Device>	 m_d3d11On12Device;
 public:
 	Atomic<int32> m_curFrame = 0;
-
+	bool  m_activeDelay = false;
+	std::mutex dalock;
 protected:
 	static const int							m_nScene = 4;
 public:

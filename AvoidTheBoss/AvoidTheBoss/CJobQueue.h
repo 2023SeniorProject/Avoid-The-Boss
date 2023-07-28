@@ -30,7 +30,7 @@ public:
 	{
 		return std::chrono::duration_cast<std::chrono::milliseconds>(Clock::now() - _BeginTickPoint).count();
 	}
-
+	void Clear();
 private:
 
 	std::queue<queueEvent*> _normalQueue;

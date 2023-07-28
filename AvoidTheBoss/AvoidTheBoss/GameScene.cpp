@@ -71,6 +71,23 @@ void CGameScene::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPARAM 
 			//“F9” 키가 눌려지면 윈도우 모드와 전체화면 모드의 전환을 처리한다. 
 			mainGame.ChangeSwapChainState();
 			break;
+		case VK_F1:
+			if (mainGame.m_activeDelay)
+			{
+				mainGame.dalock.lock();
+				mainGame.m_activeDelay = false;
+				{
+					std::unique_lock<std::shared_mutex> ql(m_jobQueueLock);
+					m_jobQueue->Clear();
+				}
+				mainGame.dalock.unlock();
+			}
+			else if (!mainGame.m_activeDelay)
+			{
+				mainGame.dalock.lock();
+				mainGame.m_activeDelay = true;
+				mainGame.dalock.unlock();
+			}
 		default:
 			break;
 		}

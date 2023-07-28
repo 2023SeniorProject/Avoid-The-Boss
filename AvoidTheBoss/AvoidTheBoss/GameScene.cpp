@@ -84,25 +84,38 @@ void CGameScene::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPARAM 
 
 void CGameScene::BuildDefaultLightsAndMaterials()
 {
-	m_nLights = 7;
+	m_nLights = 11;
 	m_pLights = new LIGHT[m_nLights];
 	::ZeroMemory(m_pLights, sizeof(LIGHT) * m_nLights);
 
 	m_xmf4GlobalAmbient = XMFLOAT4(0.15f, 0.15f, 0.15f, 1.0f);
 
-	m_pLights[0].m_bEnable = false;
+	// 비상구 조명
+	XMFLOAT4 fAmbientExist = XMFLOAT4(0.0f, 0.7f, 0.1f, 1.0f);
+	XMFLOAT4 f4DiffuseExist = XMFLOAT4(0.0f, 0.7f, 0.1f, 1.0f);
+	m_pLights[0].m_bEnable = true;
 	m_pLights[0].m_nType = POINT_LIGHT;
-	m_pLights[0].m_fRange = 25.0f;
-	m_pLights[0].m_xmf4Ambient = XMFLOAT4(0.3f, 0.3f, 0.3f, 1.0f);
-	m_pLights[0].m_xmf4Diffuse = XMFLOAT4(1.0f, 0.53f, 0.27f, 1.0f);
+	m_pLights[0].m_fRange = 4.5f;
+	m_pLights[0].m_xmf4Ambient = fAmbientExist;
+	m_pLights[0].m_xmf4Diffuse = f4DiffuseExist;
 	m_pLights[0].m_xmf4Specular = XMFLOAT4(0.5f, 0.5f, 0.5f, 0.0f);
-	m_pLights[0].m_xmf3Position = XMFLOAT3(-15.0f, 25.0f, -15.0f);
+	m_pLights[0].m_xmf3Position = XMFLOAT3(24.6359, 1.168867f, -21.98898f);
 	m_pLights[0].m_xmf3Attenuation = XMFLOAT3(1.0f, 0.001f, 0.0001f);
 
+	m_pLights[10].m_bEnable = true;
+	m_pLights[10].m_nType = POINT_LIGHT;
+	m_pLights[10].m_fRange = 4.5f;
+	m_pLights[10].m_xmf4Ambient = fAmbientExist;
+	m_pLights[10].m_xmf4Diffuse = f4DiffuseExist;
+	m_pLights[10].m_xmf4Specular = XMFLOAT4(0.5f, 0.5f, 0.5f, 0.0f);
+	m_pLights[10].m_xmf3Position = XMFLOAT3(-24.6359, 1.168867f, -21.98898f);
+	m_pLights[10].m_xmf3Attenuation = XMFLOAT3(1.0f, 0.001f, 0.0001f);
+
+	// 입구 문틈 햇빛 효과
 	m_pLights[1].m_bEnable = true;
 	m_pLights[1].m_nType = SPOT_LIGHT;
 	m_pLights[1].m_fRange = 35.0f;
-	m_pLights[1].m_xmf4Ambient = XMFLOAT4(0.5f, 0.5f, 0.5f, 1.0f);
+	m_pLights[1].m_xmf4Ambient = XMFLOAT4(0.3f, 0.3f, 0.3f, 1.0f);
 	m_pLights[1].m_xmf4Diffuse = XMFLOAT4(1.0f, 0.53f, 0.27f, 1.0f);
 	m_pLights[1].m_xmf4Specular = XMFLOAT4(0.3f, 0.3f, 0.3f, 0.0f);
 	m_pLights[1].m_xmf3Position = XMFLOAT3(-0.0f, 18.0f, 23.0f);
@@ -112,6 +125,7 @@ void CGameScene::BuildDefaultLightsAndMaterials()
 	m_pLights[1].m_fPhi = (float)cos(XMConvertToRadians(150.0f));
 	m_pLights[1].m_fTheta = (float)cos(XMConvertToRadians(20.0f));
 
+	// 전역 조명
 	m_pLights[2].m_bEnable = true;
 	m_pLights[2].m_nType = DIRECTIONAL_LIGHT;
 	m_pLights[2].m_xmf4Ambient = XMFLOAT4(0.3f, 0.3f, 0.3f, 1.0f);
@@ -119,32 +133,82 @@ void CGameScene::BuildDefaultLightsAndMaterials()
 	m_pLights[2].m_xmf4Specular = XMFLOAT4(0.4f, 0.4f, 0.4f, 0.0f);
 	m_pLights[2].m_xmf3Direction = XMFLOAT3(0.0f, -1.0f, -1.0f);
 
+	// 발전기 조명
+	XMFLOAT4 fAmbientGen = XMFLOAT4(0.7f, 0.3f, 0.3f, 1.0f);
+	XMFLOAT4 f4DiffuseGen = XMFLOAT4(0.7f, 0.3f, 0.3f, 1.0f);
 	m_pLights[4].m_bEnable = true;
 	m_pLights[4].m_nType = POINT_LIGHT;
 	m_pLights[4].m_fRange = 3.5f;
-	m_pLights[4].m_xmf4Ambient = XMFLOAT4(0.7f, 0.3f, 0.3f, 1.0f);
-	m_pLights[4].m_xmf4Diffuse = XMFLOAT4(0.7f, 0.3f, 0.3f, 1.0f);
+	m_pLights[4].m_xmf4Ambient = fAmbientGen;
+	m_pLights[4].m_xmf4Diffuse = f4DiffuseGen;
 	m_pLights[4].m_xmf4Specular = XMFLOAT4(0.5f, 0.5f, 0.5f, 0.0f);
-	m_pLights[4].m_xmf3Position = XMFLOAT3(0.874719, 1.083242, -23.05909);
+	m_pLights[4].m_xmf3Position = XMFLOAT3(0.874719f, 1.083242f, -23.05909f);
 	m_pLights[4].m_xmf3Attenuation = XMFLOAT3(1.0f, 0.001f, 0.0001f);
 
 	m_pLights[5].m_bEnable = true;
 	m_pLights[5].m_nType = POINT_LIGHT;
 	m_pLights[5].m_fRange = 3.5f;
-	m_pLights[5].m_xmf4Ambient = XMFLOAT4(0.7f, 0.3f, 0.3f, 1.0f);
-	m_pLights[5].m_xmf4Diffuse = XMFLOAT4(0.7f, 0.3f, 0.3f, 1.0f);
+	m_pLights[5].m_xmf4Ambient = fAmbientGen;
+	m_pLights[5].m_xmf4Diffuse = f4DiffuseGen;
 	m_pLights[5].m_xmf4Specular = XMFLOAT4(0.5f, 0.5f, 0.5f, 0.0f);
-	m_pLights[5].m_xmf3Position = XMFLOAT3(23.08867, 1.083242, 3.35997);
+	m_pLights[5].m_xmf3Position = XMFLOAT3(23.08867f, 1.083242f, 3.35997f);
 	m_pLights[5].m_xmf3Attenuation = XMFLOAT3(1.0f, 0.001f, 0.0001f);
 
 	m_pLights[6].m_bEnable = true;
 	m_pLights[6].m_nType = POINT_LIGHT;
 	m_pLights[6].m_fRange = 3.5f;
-	m_pLights[6].m_xmf4Ambient = XMFLOAT4(0.7f, 0.3f, 0.3f, 1.0f);
-	m_pLights[6].m_xmf4Diffuse = XMFLOAT4(0.7f, 0.3f, 0.3f, 1.0f);
+	m_pLights[6].m_xmf4Ambient = fAmbientGen;
+	m_pLights[6].m_xmf4Diffuse = f4DiffuseGen;
 	m_pLights[6].m_xmf4Specular = XMFLOAT4(0.5f, 0.5f, 0.5f, 0.0f);
-	m_pLights[6].m_xmf3Position = XMFLOAT3(-23.12724, 1.146619, 1.614123);
+	m_pLights[6].m_xmf3Position = XMFLOAT3(-23.12724f, 1.146619f, 1.614123f);
 	m_pLights[6].m_xmf3Attenuation = XMFLOAT3(1.0f, 0.001f, 0.0001f);
+
+	// 창문 햇살 조명
+	XMFLOAT4 fAmbientWin = XMFLOAT4(0.5f, 0.5f, 0.5f, 1.0f); // 기본 색상 (발산광)
+	XMFLOAT4 f4DiffuseWin = XMFLOAT4(1.0f, 0.53f, 0.27f, 1.0f); // 간접광 색상 
+	XMFLOAT3 fDirectionWin = XMFLOAT3(0.0f, -1.0f, -1.0f); // 라이트 방향
+	float fFalloff = 0.5f; // 빛나는 영역 - 없어지는 영역관 부드러움 설정 (1.0f이상은 선명하다)
+	float fRangeWin = 20.0f; // 원 크기
+	float fphiWin = (float)cos(XMConvertToRadians(25.0f)); // 강도를 감쇠하기 시작하는 각도 (스포트라이트의 내부 원뿔 각도)
+	float fThetaWin = (float)cos(XMConvertToRadians(10.0f)); // 강도를 감쇠하기 시작하는 각도(외부 원뿔 각도)
+	m_pLights[7].m_bEnable = true;
+	m_pLights[7].m_nType = SPOT_LIGHT;
+	m_pLights[7].m_fRange = fRangeWin;
+	m_pLights[7].m_xmf4Ambient = fAmbientWin;
+	m_pLights[7].m_xmf4Diffuse = f4DiffuseWin;
+	m_pLights[7].m_xmf4Specular = XMFLOAT4(0.3f, 0.3f, 0.3f, 0.0f);
+	m_pLights[7].m_xmf3Position = XMFLOAT3(0.0f, 20.0f, 20.0f);
+	m_pLights[7].m_xmf3Direction = XMFLOAT3(0.0f, -1.0f, 1.0f);;
+	m_pLights[7].m_xmf3Attenuation = XMFLOAT3(1.0f, 0.01f, 0.0001f);
+	m_pLights[7].m_fFalloff = fFalloff;
+	m_pLights[7].m_fPhi = fphiWin;
+	m_pLights[7].m_fTheta = fThetaWin;
+
+	m_pLights[8].m_bEnable = true;
+	m_pLights[8].m_nType = SPOT_LIGHT;
+	m_pLights[8].m_fRange = fRangeWin + 10.0f;
+	m_pLights[8].m_xmf4Ambient = fAmbientWin;
+	m_pLights[8].m_xmf4Diffuse = f4DiffuseWin;
+	m_pLights[8].m_xmf4Specular = XMFLOAT4(0.3f, 0.3f, 0.3f, 0.0f);
+	m_pLights[8].m_xmf3Position = XMFLOAT3(0.0f, 23.0f, -18.0f);
+	m_pLights[8].m_xmf3Direction = fDirectionWin;
+	m_pLights[8].m_xmf3Attenuation = XMFLOAT3(1.0f, 0.01f, 0.0001f);
+	m_pLights[8].m_fFalloff = fFalloff;
+	m_pLights[8].m_fPhi = (float)cos(XMConvertToRadians(fphiWin + 25.0f));
+	m_pLights[8].m_fTheta = fThetaWin;
+
+	m_pLights[9].m_bEnable = false;
+	m_pLights[9].m_nType = SPOT_LIGHT;
+	m_pLights[9].m_fRange = fRangeWin;
+	m_pLights[9].m_xmf4Ambient = fAmbientWin;
+	m_pLights[9].m_xmf4Diffuse = f4DiffuseWin;
+	m_pLights[9].m_xmf4Specular = XMFLOAT4(0.3f, 0.3f, 0.3f, 0.0f);
+	m_pLights[9].m_xmf3Position = XMFLOAT3(-10.0f, 23.0f, -20.0f);
+	m_pLights[9].m_xmf3Direction = fDirectionWin;
+	m_pLights[9].m_xmf3Attenuation = XMFLOAT3(1.0f, 0.01f, 0.0001f);
+	m_pLights[9].m_fFalloff = fFalloff;
+	m_pLights[9].m_fPhi = fphiWin;
+	m_pLights[9].m_fTheta = fThetaWin;
 }
 
 void CGameScene::BuildObjects(ID3D12Device5* pd3dDevice,ID3D12GraphicsCommandList4*  pd3dCommandList)

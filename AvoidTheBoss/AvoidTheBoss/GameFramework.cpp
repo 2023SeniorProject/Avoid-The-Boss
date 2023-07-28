@@ -393,7 +393,6 @@ void CGameFramework::ProcessInput()
 void CGameFramework::UpdateObject()
 {
 	m_SceneManager->Update(m_hWnd, m_curScene);
-	
 }
 
 void CGameFramework::AnimateObjects()
@@ -418,7 +417,7 @@ void CGameFramework::FrameAdvance() // 여기서 업데이트랑 렌더링 동시에 진행하는 
 	WaitForGpuComplete();
 	//GPU가 모든 명령 리스트를 실행할 때 까지 기다린다.
 	
-	m_UIRenderer->Render2D(m_nSwapChainBufferIndex, m_curScene);
+	m_UIRenderer->Render2D(m_nSwapChainBufferIndex, m_curScene.load());
 	
 
 #ifdef _WITH_PRESENT_PARAMETERS
@@ -508,7 +507,7 @@ void CGameFramework::Render()
 	//렌더 타겟 뷰(서술자)와 깊이-스텐실 뷰(서술자)를 출력-병합 단계(OM)에 연결한다.
 
 	//=======렌더링 코드는 여기에 추가될 것이다
-	m_SceneManager->Render(m_pd3dCommandList, m_curScene, m_raster);
+	m_SceneManager->Render(m_pd3dCommandList, m_curScene, true);
 	//3인칭 카메라일 때 플레이어가 항상 보이도록 렌더링한다. 
 
 #ifdef _WITH_PLAYER_TOP

@@ -763,6 +763,7 @@ void UIManager::Render2D(UINT nFrame, int32 curScene)
     m_pd3d11On12Device->AcquireWrappedResources(ppResources, _countof(ppResources));
 
     m_pd2dDeviceContext->BeginDraw();
+    
     DrawOtherSceneBackGround(curScene);
     DrawOtherSceneUI(curScene,0);
     DrawOtherSceneUI(curScene,1);

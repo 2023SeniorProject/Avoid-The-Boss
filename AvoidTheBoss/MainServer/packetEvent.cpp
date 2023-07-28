@@ -131,6 +131,11 @@ void InteractionEvent::Task()
 	{
 		SPlayer& p = gm.GetPlayerByIdx((int8)eventId - (int8)EVENT_TYPE::ALIVE_PLAYER_ONE);
 		p.ProcessAlive();
+		SC_EVENTPACKET packet;
+		packet.type = (uint8)SC_GAME_PACKET_TYPE::GAMEEVENT;
+		packet.size = sizeof(SC_EVENTPACKET);
+		packet.eventId = eventId;
+		targetRoom.BroadCastingExcept(&packet, _sid);
 	}
 	break;
 	case EVENT_TYPE::EXIT_PLAYER_ONE:
@@ -194,7 +199,7 @@ void AttackEvent::Task()
 		S2C_ANIMPACKET apacket;
 		apacket.size = sizeof(S2C_ANIMPACKET);
 		apacket.type = (uint8)S_GAME_PACKET_TYPE::ANIM;
-		apacket.track = 6;
+		apacket.track = 172;
 		ServerIocpCore._rmgr->GetRoom(roomNum).BroadCastingExcept(&apacket, _sid);
 
 		SC_EVENTPACKET epacket;

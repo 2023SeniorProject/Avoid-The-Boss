@@ -94,6 +94,7 @@ void InteractionEvent::Task()
 		CPlayer* player = gc->m_players[eventId - (int8)(EVENT_TYPE::RESCUE_CANCEL_PLAYER_ONE)];
 		if (player == nullptr) break;
 		static_cast<CEmployee*>(player)->RescueOn(false);
+		std::cout << "Rescue False\n";
 	}
 	break;
 

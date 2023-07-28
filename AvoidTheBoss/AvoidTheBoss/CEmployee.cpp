@@ -58,7 +58,7 @@ CEmployee::CEmployee(ID3D12Device5* pd3dDevice, ID3D12GraphicsCommandList4* pd3d
 		m_pSkinnedAnimationController2->SetTrackEnable(0, false);
 		m_pSkinnedAnimationController2->SetTrackEnable(1, false);
 		m_pSkinnedAnimationController2->SetTrackEnable(2, false);
-		m_pSkinnedAnimationController2->SetTrackEnable(3, false);
+		m_pSkinnedAnimationController2->SetTrackEnable(3, true);
 
 		m_pSkinnedAnimationController1->SetTrackEnable(0, false);
 		m_pSkinnedAnimationController1->SetTrackEnable(1, false);
@@ -67,7 +67,7 @@ CEmployee::CEmployee(ID3D12Device5* pd3dDevice, ID3D12GraphicsCommandList4* pd3d
 		m_pSkinnedAnimationController1->SetTrackEnable(4, false);
 		m_pSkinnedAnimationController1->SetTrackEnable(5, false);
 		m_pSkinnedAnimationController1->SetTrackEnable(6, false);
-		m_pSkinnedAnimationController1->SetTrackEnable(7, true);
+		m_pSkinnedAnimationController1->SetTrackEnable(7, false);
 	}
 	if (m_pCamera->m_nMode == (DWORD)THIRD_PERSON_CAMERA)
 	{
@@ -76,13 +76,13 @@ CEmployee::CEmployee(ID3D12Device5* pd3dDevice, ID3D12GraphicsCommandList4* pd3d
 		m_pSkinnedAnimationController2->SetTrackEnable(2, false);
 		m_pSkinnedAnimationController2->SetTrackEnable(3, false);
 
-		m_pSkinnedAnimationController1->SetTrackEnable(0, false);
+		m_pSkinnedAnimationController1->SetTrackEnable(0, true); // idle
 		m_pSkinnedAnimationController1->SetTrackEnable(1, false);
 		m_pSkinnedAnimationController1->SetTrackEnable(2, false);
 		m_pSkinnedAnimationController1->SetTrackEnable(3, false);
 		m_pSkinnedAnimationController1->SetTrackEnable(4, false);
 		m_pSkinnedAnimationController1->SetTrackEnable(5, false);
-		m_pSkinnedAnimationController1->SetTrackEnable(7, true);
+		m_pSkinnedAnimationController1->SetTrackEnable(7, false);
 
 	}
 
@@ -122,7 +122,7 @@ CCamera* CEmployee::ChangeCamera(DWORD nNewCameraMode, float fTimeElapsed)
 		break;
 	}
 	m_pCamera->SetPosition(m_xmf3Position);
-
+	m_pCamera->SetPosition(Vector3::Add(m_xmf3Position,m_pCamera->GetOffset()));
 	Update(fTimeElapsed, m_clientType);
 
 	return(m_pCamera);
@@ -310,14 +310,14 @@ void CEmployee::SetIdleAnimTrack()
 		m_pSkinnedAnimationController2->SetTrackEnable(3, false);
 
 		if (m_pSkinnedAnimationController1 == nullptr) return;
-		m_pSkinnedAnimationController1->SetTrackEnable(0, false);
+		m_pSkinnedAnimationController1->SetTrackEnable(0, true);
 		m_pSkinnedAnimationController1->SetTrackEnable(1, false);
 		m_pSkinnedAnimationController1->SetTrackEnable(2, false);
 		m_pSkinnedAnimationController1->SetTrackEnable(3, false);
 		m_pSkinnedAnimationController1->SetTrackEnable(4, false);
 		m_pSkinnedAnimationController1->SetTrackEnable(5, false);
 		m_pSkinnedAnimationController1->SetTrackEnable(6, false);
-		m_pSkinnedAnimationController1->SetTrackEnable(7, true);
+		m_pSkinnedAnimationController1->SetTrackEnable(7, false);
 	}
 
 	m_pSkinnedAnimationController2->SetTrackPosition(0, 0);
@@ -1047,6 +1047,7 @@ bool CEmployee::RescueTasking()
 			if (targetPlayer)
 			{
 				SetRescueInteraction(true);
+				targetPlayer->m_bIsRescuing = true;
 				SC_EVENTPACKET packet;
 				packet.eventId = targetPlayer->m_idx + (int32)EVENT_TYPE::RESCUE_PLAYER_ONE;
 				packet.size = sizeof(SC_EVENTPACKET);
@@ -1071,6 +1072,8 @@ bool CEmployee::RescueTasking()
 						packet.eventId = targetPlayer->m_idx + (int32)EVENT_TYPE::RESCUE_CANCEL_PLAYER_ONE;
 						packet.size = sizeof(SC_EVENTPACKET);
 						packet.type = (uint8)SC_GAME_PACKET_TYPE::GAMEEVENT;
+
+						if (targetPlayer->m_bIsRescuing) targetPlayer->m_bIsRescuing = false;
 						clientCore.DoSend(&packet);
 
 						std::cout << targetPlayer->m_idx << " Rescue Cancel\n";

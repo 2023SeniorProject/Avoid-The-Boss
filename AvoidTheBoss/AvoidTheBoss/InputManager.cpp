@@ -11,6 +11,12 @@ void InputManager::InputStatusUpdate()
 	{
 		Update(i);
 	}
+
+	for (int i = 0; i < 10; ++i)
+	{
+		Update((int32)KEY_TYPE::NUM0 + i);
+	}
+
 	Update(VK_BACK);
 	Update(VK_SPACE);
 	Update(VK_TAB);

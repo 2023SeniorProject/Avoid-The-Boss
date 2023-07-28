@@ -33,7 +33,7 @@ public:
 	int32 m_behavior = (int32)PLAYER_BEHAVIOR::IDLE;
 	int32 m_attackedAnimationCount = 0;
 	int32 m_downAnimationCount = 0;
-private:
+public:
 	bool m_isEscaped = false;
 public:
 	SPlayer();
@@ -74,9 +74,12 @@ public:
 
 	void ProcessAttack() 
 	{ 
+		if (m_isEscaped || m_behavior == (int32)PLAYER_BEHAVIOR::CRAWL) return;
+
 		if(m_hp > 0) m_hp -= 1;
 		if (m_hp <= 0)
 		{
+			m_hp = 0;
 			SetBehavior(PLAYER_BEHAVIOR::CRAWL);
 		}
 	}

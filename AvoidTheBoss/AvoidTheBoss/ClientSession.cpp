@@ -48,6 +48,7 @@ void CSession::Processing(IocpEvent* iocpEvent, int32 numOfBytes)
 	{
 		ConnectEvent* connectEvent = static_cast<ConnectEvent*>(iocpEvent);
 		delete connectEvent;
+		_sid = 0;
 		DoRecv(); // Connect하고 Do recv 수행
 	}
 	break;
@@ -136,10 +137,11 @@ void CSession::ProcessPacket(char* packet)
 		static_cast<CGameScene*>(mainGame.m_SceneManager->GetSceneByIdx((int32)CGameFramework::SCENESTATE::INGAME));
 	CLobbyScene* ls = static_cast<CLobbyScene*>(mainGame.m_SceneManager->GetSceneByIdx((int32)CGameFramework::SCENESTATE::LOBBY));
 	CRoomScene* rs = static_cast<CRoomScene*>(mainGame.m_SceneManager->GetSceneByIdx((int32)CGameFramework::SCENESTATE::ROOM));
-	
+	CResultScene* rrs = static_cast<CResultScene*>(mainGame.m_SceneManager->GetSceneByIdx((int32)CGameFramework::SCENESTATE::RESULT));
 	if (!gs) return; // something error detected;
 	if (!ls) return; // something error detected;
 	if (!rs) return;
+	if (!rrs) return;
 
 	switch ((uint8)packet[1])
 	{
@@ -151,17 +153,32 @@ void CSession::ProcessPacket(char* packet)
 		S2C_LOGIN_OK* lo = (S2C_LOGIN_OK*)packet;
 		_cid = lo->cid;
 		_sid = lo->sid;
+		std::cout << _sid << "\n";
 		CScene::m_sid = lo->sid;
 		CScene::m_cid = lo->cid;
-		mainGame.ChangeScene(CGameFramework::SCENESTATE::LOBBY);
+
+		mainGame.m_UIRenderer->m_LoginResult[0].m_hide = false;
+		mainGame.m_UIRenderer->m_LoginResult[1].m_hide = true;
+		mainGame.m_UIRenderer->m_LoginResult[2].m_hide = true;
+
+		//mainGame.ChangeScene(CGameFramework::SCENESTATE::LOBBY);
 	}
 	break;
 	case (uint8)S_TITLE_PACKET_TYPE::LOGIN_FAIL:
 	{
-		S2C_LOGIN_FAIL* lo = (S2C_LOGIN_FAIL*)packet;
-		std::cout << "Login Fail" << std::endl;
+		mainGame.m_UIRenderer->m_LoginResult[0].m_hide = true;
+		mainGame.m_UIRenderer->m_LoginResult[1].m_hide = false;
+		mainGame.m_UIRenderer->m_LoginResult[2].m_hide = true;
 	}
 	break;
+	case (uint8)S_TITLE_PACKET_TYPE::REG_OK:
+	{
+		mainGame.m_UIRenderer->m_LoginResult[0].m_hide = true;
+		mainGame.m_UIRenderer->m_LoginResult[1].m_hide = true;
+		mainGame.m_UIRenderer->m_LoginResult[2].m_hide = false;
+	}
+	break;
+
 #pragma endregion
 	// ================ 로비씬 패킷      ===============
 #pragma region  Lobby
@@ -235,7 +252,7 @@ void CSession::ProcessPacket(char* packet)
 			rs->m_members[i].m_sid = -1;
 			
 		}
-
+		
 		 gs->InitGame(packet, _sid);
 		// ================= 카메라 셋팅 ================================
 		std::wstring str = L"Client";
@@ -296,7 +313,14 @@ void CSession::ProcessPacket(char* packet)
 		SC_EVENTPACKET* ev = (SC_EVENTPACKET*)packet;
 		InteractionEvent* gev = new InteractionEvent();
 		gev->eventId = ev->eventId;
-		gs->AddEvent(static_cast<queueEvent*>(gev), 0.f);
+		if (gev->eventId == (uint8)EVENT_TYPE::GAME_END)
+		{
+			std::cout << "Go to Result\n";
+			gs->ResetGame();
+			rrs->m_timer.Reset();
+			mainGame.ChangeScene(CGameFramework::SCENESTATE::RESULT);
+		}
+		else gs->AddEvent(static_cast<queueEvent*>(gev), 0.f);
 
 	}
 	break;

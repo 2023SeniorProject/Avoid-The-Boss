@@ -28,7 +28,7 @@ class CGameFramework
 {
 
 public:	
-	enum class SCENESTATE { TITLE = 0, LOBBY = 1, ROOM = 2, INGAME = 3 };
+	enum class SCENESTATE { TITLE = 0, LOBBY = 1, ROOM = 2, INGAME = 3, RESULT = 4 };
 	
 	friend class queueEvent;
 	friend class moveEvnet;
@@ -47,6 +47,8 @@ public:
 	friend class CTitleScene;
 
 	friend class UIManager;
+
+	friend class CGenerator;
 private:
 	HINSTANCE m_hInstance;
 	HWND m_hWnd;
@@ -108,10 +110,11 @@ public:
 	Microsoft::WRL::ComPtr<ID3D11DeviceContext>  m_d3d11DeviceContext;
 	Microsoft::WRL::ComPtr<ID3D11On12Device>	 m_d3d11On12Device;
 public:
-	int32 m_curFrame = 0;
+	Atomic<int32> m_curFrame = 0;
 
 protected:
 	static const int							m_nScene = 4;
+public:
 	Atomic<int32>								m_curScene = 3;
 
 public:

@@ -44,11 +44,14 @@ public: // 오승담 작성 함수
 	CGenerator* GetSceneGenByIdx(const int32 idx);
 
 	void InitGame(void* packet ,int32 sid);
+	
 	void StopTimer() { m_timer.Stop(); }
 	void StartTimer() { m_timer.Start(); }
 	void AddEvent(queueEvent*, float);
 
-	void Exit();
+	void ExitReady();
+
+	void ResetGame();
 public:
 	WCHAR								txtFrameBuf[20];
 	//마지막으로 마우스 버튼을 클릭할 때의 마우스 커서의 위치이다. 
@@ -69,11 +72,15 @@ public:
 public:
 	int32						m_ActiveGeneratorCnt = 0; // 활성화 된 스위치 카운트;
 public:
+	Atomic<int32>				m_remainPlayerCnt = PLAYERNUM; // 남아 있는 플레이어
+	Atomic<int32>				m_ExitedPlayerCnt = 0;
 	bool						m_bEmpExit = false;
-	bool						m_bBossWin = false;
+
 public:
 	Scheduler*					m_jobQueue;
 	std::shared_mutex			m_jobQueueLock;
+public:
+	XMFLOAT3					m_xmf3ClearPoint[3]; // 클리어 좌표
 public:
 	int32						m_curFrame;
 };

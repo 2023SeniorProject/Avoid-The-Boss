@@ -1,5 +1,6 @@
 #include "pch.h"
 #include "OBDC_MGR.h"
+#include "Session.h"
 
 
 void USER_DB_MANAGER::AllocateHandles()
@@ -57,7 +58,7 @@ void USER_DB_MANAGER::RetrieveResult()
     // Bind columns 1, 2, and 3 
     if (retcode == SQL_SUCCESS || retcode == SQL_SUCCESS_WITH_INFO) 
     {
-        retcode = SQLBindCol(hstmt, 1, SQL_C_LONG, &user_cid, 4, &cb_cid);
+        retcode = SQLBindCol(hstmt, 2, SQL_C_LONG, &user_cid, 4, &cb_cid);
         // 실제 데이터를 꺼낸다
         // Fetch and print each row of data. On an error, display a message and exit.  
         for (int i = 0; ; i++) {

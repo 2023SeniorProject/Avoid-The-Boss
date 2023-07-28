@@ -22,7 +22,7 @@ public:
 	~CLobbyScene() {}
 	virtual void BuildObjects(ID3D12Device5* pd3dDevice, ID3D12GraphicsCommandList4* pd3dCommandList);
 	virtual void ProcessInput(HWND& hWnd);
-	virtual void Update(HWND hWnd);
+	virtual void Update(HWND& hWnd);
 	virtual void Render(ID3D12GraphicsCommandList4* pd3dCommandList, CCamera* pCamera, bool);
 	void		 BuildDefaultLightsAndMaterials();
 
@@ -44,12 +44,13 @@ class CTitleScene : public CScene
 	int32 focus = 0;
 	bool cap = false;
 	CPlayer* m_player = NULL;
+	Timer m_timer;
 public:
 	CTitleScene() {}
 	~CTitleScene() {}
 	virtual void BuildObjects(ID3D12Device5* pd3dDevice, ID3D12GraphicsCommandList4* pd3dCommandList);
 	virtual void ProcessInput(HWND& hWnd);
-	virtual void Update(HWND hWnd);
+	virtual void Update(HWND& hWnd);
 	virtual void Render(ID3D12GraphicsCommandList4* pd3dCommandList, CCamera* pCamera, bool);
 	virtual void MouseAction(const POINT& mp) override;
 	void		 BuildDefaultLightsAndMaterials();
@@ -74,7 +75,7 @@ public:
 	~CRoomScene() {}
 	virtual void BuildObjects(ID3D12Device5* pd3dDevice, ID3D12GraphicsCommandList4* pd3dCommandList);
 	virtual void ProcessInput(HWND& hWnd);
-	virtual void Update(HWND hWnd);
+	virtual void Update(HWND& hWnd);
 	virtual void UpdateReady(int32 sid, bool val) 
 	{ 
 		for (auto& i : m_members)
@@ -85,4 +86,40 @@ public:
 	virtual void Render(ID3D12GraphicsCommandList4* pd3dCommandList, CCamera* pCamera,bool);
 	void		 BuildDefaultLightsAndMaterials();
 	virtual void MouseAction(const POINT& mp) override;
+};
+
+class CResultScene : public CScene
+{
+public:
+	int32 m_pidx = -1;
+	int32 m_case = 0; // 1  escape 2 arrested
+	
+	
+	// 사장
+	// 탈출 직원 수
+	int32 m_exitPlayerCnt = 0;
+	// 죽인 횟수
+
+	// 직원
+	int32 m_deadCnt;   //  죽은 횟수
+	int32 m_activeCnt; //  발전기 활성화 횟수
+
+	Timer m_timer;
+	float m_showTime = 5.0f; // 결과창 보여주는 시각
+	
+public:
+	CResultScene() {}
+	~CResultScene() {}
+	virtual void BuildObjects(ID3D12Device5* pd3dDevice, ID3D12GraphicsCommandList4* pd3dCommandList) {};
+	virtual void ProcessInput(HWND& hWnd) {};
+	virtual void Update(HWND& hWnd) 
+	{
+		m_timer.Tick(0.0f);
+		if (m_showTime > 0) m_showTime -= m_timer.GetTimeElapsed();
+		if (m_showTime < 0) mainGame.ChangeScene(CGameFramework::SCENESTATE::LOBBY);
+	};
+	
+	virtual void Render(ID3D12GraphicsCommandList4* pd3dCommandList, CCamera* pCamera, bool bRaster) {};
+	
+	virtual void MouseAction(const POINT& mp) override {};
 };

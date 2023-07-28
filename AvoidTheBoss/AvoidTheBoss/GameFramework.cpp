@@ -399,7 +399,7 @@ void CGameFramework::UpdateObject()
 void CGameFramework::AnimateObjects()
 {
 	
-	m_SceneManager->Animate();
+	m_SceneManager->Animate(m_curScene);
 }
 
 void CGameFramework::FrameAdvance() // 여기서 업데이트랑 렌더링 동시에 진행하는 곳
@@ -549,7 +549,7 @@ void CGameFramework::MoveToNextFrame()
 
 void CGameFramework::ChangeScene(SCENESTATE ss)
 {
-	m_curScene = (int32)ss;
+	m_curScene.store((int32)ss);
 	SoundManager::GetInstance().PlayBackGroundSound(m_curScene); // 씬 전환 시, 사운드 재생 변경
 }
 

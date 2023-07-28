@@ -1,6 +1,9 @@
 ﻿#include "pch.h"
 #include "clientIocpCore.h"
 #include "CGenerator.h"
+#include "SceneManager.h"
+#include "GameScene.h"
+#include "CEmployee.h"
 
 CGenerator::CGenerator()
 {
@@ -10,25 +13,27 @@ CGenerator::CGenerator()
 		m_nPipeStartAnimation[i] = false;
 		m_nGenerPipeAnimationCount[i] = 0;
 	}
+	m_bAlreadyOn = false;
 }
+
 void CGenerator::SetNormalVector()
 {
 	xmf4NormalVector = XMFLOAT4(m_pBody->GetParentUp().x, m_pBody->GetParentUp().y, m_pBody->GetParentUp().z, 0.0f);
 }
+
 void CGenerator::LogicUpdate()
 {
-	if (m_bOnInteraction)
+	if (m_bOnInteraction || m_bAlreadyOn)
 	{  
-		m_nPipeStartAnimation[0] = true;
-		//m_bOnGenAnimation = true;
+		m_nPipeStartAnimation[0] = true;	
 	}
-	else
+	else if(!m_bOnInteraction && !m_bAlreadyOn)
 	{
 		for (int i = 0; i < m_nPipe; i++)
 		{
 			m_nPipeStartAnimation[i] = false;
 		}
-		//m_bOnGenAnimation = false;
+		
 	}
 	if (m_nGenerPipeAnimationCount[0] == 4)
 		m_nPipeStartAnimation[1] = true;
@@ -40,7 +45,7 @@ void CGenerator::LogicUpdate()
 		if(m_nPipeStartAnimation[i])
 			m_nGenerPipeAnimationCount[i] += 1;
 	}
-	if(m_bOnInteraction)
+	if(m_bOnInteraction || m_bAlreadyOn)
 		m_nGenerBodyAnimationCount++;
 }
 
@@ -49,7 +54,6 @@ void CGenerator::Update(float fTimeElapsed)
 	if (m_bOnInteraction && !m_bGenActive)
 	{
 		m_curGuage += m_guageSpeed * fTimeElapsed;
-		std::cout << m_curGuage << "\n";
 	}
 
 	if (m_curGuage > m_maxGuage && !m_bGenActive)
@@ -63,7 +67,9 @@ void CGenerator::Update(float fTimeElapsed)
 		packet.size = sizeof(SC_EVENTPACKET);
 		packet.eventId = (uint8)EVENT_TYPE::SWITCH_ONE_ACTIVATE_EVENT + m_idx;
 		clientCore.DoSend(&packet);
-		std::cout << "Gen Active\n";
+		std::cout << m_idx << ") Gen Active\n";
+		CGameScene* gs = static_cast<CGameScene*>(mainGame.m_SceneManager->GetSceneByIdx(3));
+		static_cast<CEmployee*>(gs->GetScenePlayerByIdx(gs->m_playerIdx))->m_activeCnt += 1;
 	}
 }
 
@@ -83,7 +89,7 @@ void CGenerator::OnPrepareAnimate()
 
 void CGenerator::BodyAnimate(float fTimeElapsed)
 {
-	if (m_bOnInteraction)
+	if (m_bOnInteraction || m_bAlreadyOn)
 	{
 		XMMATRIX xmmtxTranslate;
 		float move = 0.001f;
@@ -108,15 +114,12 @@ void CGenerator::BodyAnimate(float fTimeElapsed)
 				xmmtxTranslate = DirectX::XMMatrixTranslation(0.0f, -move, -move);
 		}
 		m_pBody->m_xmf4x4ToParent = Matrix4x4::Multiply(xmmtxTranslate, m_pBody->m_xmf4x4ToParent);
-
-		std::cout << "Gemerator" << GetPosition().x <<", " << GetPosition().y << ", " << GetPosition().z << std::endl;
 	}
 }
 
-
 void CGenerator::PipelineAnimate(float fTimeElapsed)
 {
-	if (m_bOnInteraction)
+	if (m_bOnInteraction || m_bAlreadyOn)
 	{
 		float delta = 0.01f;
 		for (int i = 0; i < m_nPipe; i++) //1.8 ->1.7    ̵  10.f
@@ -145,8 +148,9 @@ void CGenerator::PipelineAnimate(float fTimeElapsed)
 
 void CGenerator::Animate(float fTimeElapsed)
 {
+	if (!m_bAlreadyOn && !m_bGenActive && !m_bOnInteraction) return;
+	
 	LogicUpdate();
-
 	PipelineAnimate(fTimeElapsed);
 	BodyAnimate(fTimeElapsed);
 

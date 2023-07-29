@@ -160,8 +160,6 @@ void CSession::ProcessPacket(char* packet)
 		mainGame.m_UIRenderer->m_LoginResult[0].m_hide = false;
 		mainGame.m_UIRenderer->m_LoginResult[1].m_hide = true;
 		mainGame.m_UIRenderer->m_LoginResult[2].m_hide = true;
-
-		//mainGame.ChangeScene(CGameFramework::SCENESTATE::LOBBY);
 	}
 	break;
 	case (uint8)S_TITLE_PACKET_TYPE::LOGIN_FAIL:
@@ -279,7 +277,10 @@ void CSession::ProcessPacket(char* packet)
 		mev->_dir.z = movePacket->z;
 		mev->_key = movePacket->key;
 
-		gs->AddEvent(static_cast<queueEvent*>(mev), 0);
+		mainGame.dalock.lock();
+		if(mainGame.m_activeDelay) gs->AddEvent(static_cast<queueEvent*>(mev), 320);
+		else if(!mainGame.m_activeDelay) gs->AddEvent(static_cast<queueEvent*>(mev), 0);
+		mainGame.dalock.unlock();
 	}
 	break;
 	case (uint8)S_GAME_PACKET_TYPE::SROT:
@@ -304,8 +305,10 @@ void CSession::ProcessPacket(char* packet)
 		pe->player = player;
 		pe->_pos = newPos;
 
-		gs->AddEvent(static_cast<queueEvent*>(pe), 0.f);
-
+		mainGame.dalock.lock();
+		if (mainGame.m_activeDelay) gs->AddEvent(static_cast<queueEvent*>(pe), 320);
+		else if (!mainGame.m_activeDelay) gs->AddEvent(static_cast<queueEvent*>(pe), 0);
+		mainGame.dalock.unlock();
 	}
 	break;
 	case (uint8)SC_GAME_PACKET_TYPE::GAMEEVENT:
@@ -320,8 +323,13 @@ void CSession::ProcessPacket(char* packet)
 			rrs->m_timer.Reset();
 			mainGame.ChangeScene(CGameFramework::SCENESTATE::RESULT);
 		}
-		else gs->AddEvent(static_cast<queueEvent*>(gev), 0.f);
-
+		else
+		{
+			mainGame.dalock.lock();
+			if (mainGame.m_activeDelay) gs->AddEvent(static_cast<queueEvent*>(gev), 320);
+			else if (!mainGame.m_activeDelay) gs->AddEvent(static_cast<queueEvent*>(gev), 0);
+			mainGame.dalock.unlock();
+		}
 	}
 	break;
 	// ================= 플레이어 스위치 애니메이션 관련 패킷 ==================
@@ -331,12 +339,21 @@ void CSession::ProcessPacket(char* packet)
 		uint8 idx = sw->idx;
 		CPlayer* myPlayer = nullptr;
 	
-		myPlayer = gs->GetScenePlayerBySid(idx);
+		myPlayer = gs->GetScenePlayerByIdx(idx);
 		if (myPlayer != nullptr)
 		{
-			if (sw->track == (uint8)ANIMTRACK::GEN_ANIM) myPlayer->SetBehavior(PLAYER_BEHAVIOR::SWITCH_INTER);
-			else if (sw->track == (uint8)ANIMTRACK::ATTACK_ANIM) static_cast<CBoss*>(myPlayer)->SetAttackAnimOtherClient();
-			else myPlayer->SetBehavior(PLAYER_BEHAVIOR::IDLE);
+			if (idx != 0)
+			{
+				if (sw->track == (uint8)ANIMTRACK::GEN_ANIM) myPlayer->SetBehavior(PLAYER_BEHAVIOR::SWITCH_INTER);
+				else if (sw->track == (uint8)ANIMTRACK::RESCUE) myPlayer->SetBehavior(PLAYER_BEHAVIOR::RESCUE);
+				else myPlayer->SetBehavior(PLAYER_BEHAVIOR::IDLE);
+			}
+			else if (sw->track == (uint8)ANIMTRACK::ATTACK_ANIM)
+			{
+				std::cout << "Attack Anim\n";
+				static_cast<CBoss*>(myPlayer)->SetAttackAnimOtherClient();
+			}
+			
 		}
 	}
 	break;
@@ -344,7 +361,12 @@ void CSession::ProcessPacket(char* packet)
 	{
 		S2C_FRAMEPACKET* fp = (S2C_FRAMEPACKET*)packet;
 		FrameEvent* fe = new FrameEvent(fp->wf);
-		gs->AddEvent(static_cast<queueEvent*>(fe),0);
+
+		mainGame.dalock.lock();
+		if (mainGame.m_activeDelay) gs->AddEvent(static_cast<queueEvent*>(fe), 320);
+		else if (!mainGame.m_activeDelay) gs->AddEvent(static_cast<queueEvent*>(fe), 0);
+		mainGame.dalock.unlock();
+	
 	}
 	break;
 #pragma endregion

@@ -24,9 +24,10 @@ void Scheduler::PushTask(queueEvent* task)
 void Scheduler::DoTasks()
 {
 	/// tick update
-
+	int32 cycleCnt = 0;
 	while (!_TaskQueue.empty())
 	{
+		if (cycleCnt > 100) break; // 100번 돌아도 계속 무한 루프면 한번 빠져나온다.
 		_CurrentTick = GetCurrentTick(); // 현재 틱값을 구한다.
 		queueEvent* jobElem = _TaskQueue.top(); // 가장 우선적으로 나와야할 이벤트에 대해서
 		if (_CurrentTick < jobElem->generateTime)
@@ -35,6 +36,7 @@ void Scheduler::DoTasks()
 			// 팝하고 다시 집어넣는다.
 			_TaskQueue.pop();
 			_TaskQueue.push(jobElem);
+			cycleCnt += 1;
 			continue; // 아직 호출할 시점이 되지 않았을 경우 루프를 나온다.
 		}
 		jobElem->Task(); // 만약 호출할 시점이 됐다면 해당 잡을 수행하고 queue에서 제거
@@ -43,6 +45,16 @@ void Scheduler::DoTasks()
 		
 	}
 
+}
+
+void Scheduler::Clear()
+{
+		while (!_TaskQueue.empty())
+		{
+			queueEvent* jobElem = _TaskQueue.top();
+			_TaskQueue.pop();
+			delete jobElem;
+		}
 }
 
 void Scheduler::DoNormalTasks()

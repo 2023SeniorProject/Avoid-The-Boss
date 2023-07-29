@@ -59,7 +59,7 @@ void CGameManager::LateUpdate(float eTime)
 		if (!_bExitReady) _bExitReady = true;
 	}
 
-	if (_bExitReady) _gState = CheckGameState();
+    _gState = CheckGameState();
 }
 
 void CGameManager::AddEventAfterTime(float after, QueueEvent* qe)
@@ -86,7 +86,7 @@ GAMESTATE CGameManager::CheckGameState()
 		if (true == i.GetEscaped()) escapeCnt += 1;
 	}
 	if (PLAYERNUM == crawlCnt) _gState = GAMESTATE::BOSS_WIN;
-	else if ((crawlCnt + escapeCnt) == (PLAYERNUM - 1)) _gState = GAMESTATE::EMP_WIN;
+	else if ((crawlCnt + escapeCnt) == (PLAYERNUM - 1) && _bExitReady) _gState = GAMESTATE::EMP_WIN;
 
 	return _gState;
 }

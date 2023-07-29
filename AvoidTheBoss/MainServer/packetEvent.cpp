@@ -58,10 +58,11 @@ void InteractionEvent::Task()
 			packet.type = (uint8)SC_GAME_PACKET_TYPE::GAMEEVENT;
 			packet.eventId = eventId; // 0: 발전기 시작 // 발전기 종료 // 1: 발전기 완료 // 2: 사장님 공격 처리 // 3: 사장님 공격 쿨타임
 
+			// 애니메이션 캔슬 패킷 전송
 			S2C_ANIMPACKET animPacket;
 			animPacket.size = sizeof(S2C_ANIMPACKET);
 			animPacket.type = (uint8)S_GAME_PACKET_TYPE::ANIM;
-			animPacket.idx = _sid;
+			animPacket.idx = targetRoom.GetSidIndexBySid(_sid);
 			animPacket.track = (uint8)ANIMTRACK::GEN_ANIM_CANCEL;
 
 			targetRoom.BroadCastingExcept(&animPacket, _sid);
@@ -103,6 +104,11 @@ void InteractionEvent::Task()
 			packet.size = sizeof(SC_EVENTPACKET);
 			packet.eventId = eventId;
 			targetRoom.BroadCastingExcept(&packet, _sid);
+			S2C_ANIMPACKET ap;
+			ap.idx = gm.GetPlayerBySid(_sid).m_idx;
+			ap.size = sizeof(ap);
+			ap.type = (uint8)S_GAME_PACKET_TYPE::ANIM;
+			ap.track = (uint8)ANIMTRACK::RESCUE;
 		}
 
 	}
@@ -148,7 +154,16 @@ void InteractionEvent::Task()
 		if(!p.m_isEscaped) p.m_isEscaped = true;
 	}
 	break;
-
+	case EVENT_TYPE::ATTACK_ANIM:
+	{
+		S2C_ANIMPACKET packet;
+		packet.type = (uint8)S_GAME_PACKET_TYPE::ANIM;
+		packet.size = sizeof(S2C_ANIMPACKET);
+		packet.idx = 0;
+		packet.track = (uint8)ANIMTRACK::ATTACK_ANIM;
+		targetRoom.BroadCastingExcept(&packet, _sid);
+	}
+		break;
 	default:
 		std::cout << "UnKnown Game Event Please Check Your Packet Type\n";
 		break;

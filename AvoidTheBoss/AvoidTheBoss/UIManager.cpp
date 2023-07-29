@@ -420,6 +420,8 @@ void UIManager::InitGameSceneUI(CGameScene* gc)
 
 void UIManager::UpdateGameSceneUI(CGameScene* gc)
 {
+    if (!gc) return;
+
   // 직원에 해당하는 동적 UI들 hp, status
     for (int i = 0; i < PLAYERNUM; ++i)
     {
@@ -463,7 +465,8 @@ void UIManager::UpdateGameSceneUI(CGameScene* gc)
         if (m_playerIdx != 0)
         {
             CEmployee* myPlayer = static_cast<CEmployee*>(gc->GetScenePlayerByIdx(m_playerIdx));
-           
+            if (!myPlayer) return;
+
             if (myPlayer->GetIsInGenArea())
             {
                 m_GenerateUIButtons[20].m_hide = false;
@@ -487,7 +490,8 @@ void UIManager::UpdateGameSceneUI(CGameScene* gc)
               
                 CEmployee* targetEmp = myPlayer->GetAvailEMP();
                 std::cout << targetEmp->m_curGuage << "\n";
-                if (targetEmp && targetEmp->m_curGuage < 100.f)
+
+                if (targetEmp && targetEmp->m_curGuage <= 100.f)
                 {
                     m_RescueGuage.m_hide = false;
                     m_RescueGuage.d2dLayoutRect[1].right = m_RescueGuage.d2dLayoutRect[1].left + targetEmp->m_curGuage;

@@ -76,6 +76,7 @@ enum class ANIMTRACK : uint8
 	GEN_ANIM = 170,
 	GEN_ANIM_CANCEL = 171,
 	ATTACK_ANIM = 172,
+	RESCUE = 173,
 };
 
  
@@ -140,6 +141,7 @@ enum class EVENT_TYPE : uint8
 	EXIT_PLAYER_FOUR = 35,
 
 	GAME_END = 36,
+	ATTACK_ANIM = 37,
 };
 
 #pragma pack (push, 1)

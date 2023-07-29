@@ -48,6 +48,32 @@ void CGenerator::LogicUpdate()
 	}
 	if(m_bOnInteraction || m_bAlreadyOn)
 		m_nGenerBodyAnimationCount++;
+
+	if (m_bOnInteraction)
+	{
+		if (!GetbIsStartGenInter())
+		{
+			if (m_bGenActive)
+			{
+				SoundManager::SoundStop(6);
+				return;
+			}
+			SoundManager::GetInstance().PlayObjectSound(17, 6);
+			SoundManager::GetInstance().PlayObjectSound(6, 6);
+			SetbIsStartGenInter(true);
+		}
+		std::cout << "startGenInteraction : " << GetbIsStartGenInter() << std::endl;
+
+	}
+	else
+	{
+		//if (GetbIsStartGenInter())
+		//{
+		//	SoundManager::SoundStop(6);
+		//	SetbIsStartGenInter(false);
+		//	std::cout << "startGenInteraction : " << GetbIsStartGenInter() << std::endl;
+		//}
+	}
 }
 
 void CGenerator::Update(float fTimeElapsed)
@@ -55,23 +81,6 @@ void CGenerator::Update(float fTimeElapsed)
 	if (m_bOnInteraction && !m_bGenActive)
 	{
 		m_curGuage += m_guageSpeed * fTimeElapsed;
-	}
-	if (m_bOnInteraction || m_bAlreadyOn)
-	{
-		if (!GetbIsStartGenInter())
-		{
-			SoundManager::GetInstance().PlayObjectSound(17, 6);
-			SoundManager::GetInstance().PlayObjectSound(6, 6);
-			SetbIsStartGenInter(true);
-		}
-	}
-	else
-	{
-		if (GetbIsStartGenInter())
-		{
-			SoundManager::GetInstance().SoundStop(6);
-			SetbIsStartGenInter(false);
-		}
 	}
 	if (m_curGuage > m_maxGuage && !m_bGenActive)
 	{

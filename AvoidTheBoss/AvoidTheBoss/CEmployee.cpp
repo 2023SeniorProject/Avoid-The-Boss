@@ -1011,8 +1011,14 @@ bool CEmployee::GenTasking()
 					std::cout << "Cancel\n";
 					SetGenInteraction(false);
 					SetBehavior(PLAYER_BEHAVIOR::IDLE);
-					if (targetGen) targetGen->SetInteractionOn(false);
-
+					if (targetGen) {
+						SoundManager::SoundStop(6);
+						targetGen->SetInteractionOn(false);
+						targetGen->SetbIsStartGenInter(false);
+						std::cout << "startGenInteraction : " << targetGen->GetbIsStartGenInter() << std::endl;
+	
+					}				
+					
 					//========= 패킷 송신 처리 ==============
 					SC_EVENTPACKET packet;
 					packet.eventId = m_curInterGen + (int32)EVENT_TYPE::SWITCH_ONE_END_EVENT;

@@ -27,7 +27,6 @@ void CSound::SoundSystem()
 	FMOD_System_CreateSound(pSystem, "Sound/Boss_Shot4.mp3", FMOD_LOOP_OFF, nullptr, &pSound[5]);
 
 	// 공장직원
-	FMOD_System_CreateSound(pSystem, "Sound/Button_Press.mp3", FMOD_LOOP_OFF, nullptr, &pSound[6]);
 	FMOD_System_CreateSound(pSystem, "Sound/Character_Down.mp3", FMOD_LOOP_OFF, nullptr, &pSound[7]);
 	FMOD_System_CreateSound(pSystem, "Sound/Character_Hit.mp3", FMOD_LOOP_OFF, nullptr, &pSound[8]);
 	FMOD_System_CreateSound(pSystem, "Sound/Character_Hit2.mp3", FMOD_LOOP_OFF, nullptr, &pSound[9]);
@@ -38,6 +37,7 @@ void CSound::SoundSystem()
 	FMOD_System_CreateSound(pSystem, "Sound/Character_Walk.mp3", FMOD_LOOP_NORMAL, nullptr, &pSound[14]);
 
 	// 오브젝트
+	FMOD_System_CreateSound(pSystem, "Sound/Button_Press.mp3", FMOD_LOOP_OFF, nullptr, &pSound[6]);
 	FMOD_System_CreateSound(pSystem, "Sound/Dangerous_Alarm.mp3", FMOD_LOOP_OFF, nullptr, &pSound[15]);
 	FMOD_System_CreateSound(pSystem, "Sound/Emergency_Door_Open.mp3", FMOD_LOOP_OFF, nullptr, &pSound[16]);
 	FMOD_System_CreateSound(pSystem, "Sound/Generator.mp3", FMOD_LOOP_NORMAL, nullptr, &pSound[17]);
@@ -49,6 +49,11 @@ void CSound::SoundSystem()
 }
 
 void CSound::PlayBackGroundSound(int nSound, int nChannel)
+{
+	FMOD_System_PlaySound(pSystem, pSound[nSound], nullptr, 0, &pChannel[nChannel]);
+}
+
+void CSound::PlaySound(int nSound, int nChannel)
 {
 	FMOD_System_PlaySound(pSystem, pSound[nSound], nullptr, 0, &pChannel[nChannel]);
 }

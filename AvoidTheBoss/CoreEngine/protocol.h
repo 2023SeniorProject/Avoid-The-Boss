@@ -141,8 +141,9 @@ enum class EVENT_TYPE : uint8
 	EXIT_PLAYER_THREE = 34,
 	EXIT_PLAYER_FOUR = 35,
 
-	GAME_END = 36,
-	ATTACK_ANIM = 37,
+	EMP_WIN = 36,
+	BOSS_WIN = 37,
+	ATTACK_ANIM = 38,
 };
 
 #pragma pack (push, 1)

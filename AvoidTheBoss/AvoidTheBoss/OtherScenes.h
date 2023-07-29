@@ -106,7 +106,7 @@ public:
 	int32 m_activeCnt; //  발전기 활성화 횟수
 
 	Timer m_timer;
-	float m_showTime = 5.0f; // 결과창 보여주는 시각
+	float m_showTime = 4.0f; // 결과창 보여주는 시각
 	
 public:
 	CResultScene() {}

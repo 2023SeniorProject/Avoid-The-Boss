@@ -324,10 +324,13 @@ void CSession::ProcessPacket(char* packet)
 		SC_EVENTPACKET* ev = (SC_EVENTPACKET*)packet;
 		InteractionEvent* gev = new InteractionEvent();
 		gev->eventId = ev->eventId;
-		if (gev->eventId == (uint8)EVENT_TYPE::GAME_END)
+		if (gev->eventId == (uint8)EVENT_TYPE::BOSS_WIN || gev->eventId == (uint8)EVENT_TYPE::EMP_WIN)
 		{
 			std::cout << "Go to Result\n";
 			gs->ResetGame();
+			if (gev->eventId == (uint8)EVENT_TYPE::BOSS_WIN) rrs->m_case = 1;
+			if (gev->eventId == (uint8)EVENT_TYPE::EMP_WIN) rrs->m_case = 0;
+
 			rrs->m_timer.Reset();
 			mainGame.scLock.lock();
 			mainGame.ChangeScene(CGameFramework::SCENESTATE::RESULT);

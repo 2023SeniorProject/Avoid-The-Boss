@@ -25,6 +25,7 @@ void Room::UserOut(int32 sid)
 {
 	int idx = 0;
 
+
 	if (_gameLogic._gState == GAMESTATE::IN_GAME)
 	{
 		_gameLogic.GetPlayerBySid(sid).SetVelocity(XMFLOAT3(0, 0, 0)); // 속도 0
@@ -35,10 +36,23 @@ void Room::UserOut(int32 sid)
 		{
 			_gameLogic.ResetGame();
 			SC_EVENTPACKET packet;
-			packet.type = (uint8)EVENT_TYPE::GAME_END;
+			packet.type = (uint8)EVENT_TYPE::EMP_WIN;
 			packet.size = sizeof(SC_EVENTPACKET);
 			BroadCastingExcept(&packet, sid);
 			std::cout << "GAME END\n";
+
+			{
+				// cList Lock 쓰기 호출	
+				std::unique_lock<std::shared_mutex> wll(_listLock);
+				_memCnt.fetch_sub(1);
+
+				for (int i = 0; i < PLAYERNUM; ++i)
+				{
+						_cArr[i].sid = -1;
+						_cArr[i].isReady = false;
+				}
+				SendRoomListPacket();
+			}
 		}
 		else 
 		{
@@ -58,6 +72,7 @@ void Room::UserOut(int32 sid)
 			{
 				_cArr[i].sid = -1;
 				_cArr[i].isReady = false;
+				break;
 			}
 		}
 		SendRoomListPacket();
@@ -93,10 +108,11 @@ void Room::UserOut(int32 sid)
 	{
 		_gameLogic.ResetGame();
 		_status = (uint8)ROOM_STATUS::EMPTY;
+		for (auto& i : _cArr) i.sid = false;
 		for (auto& i : _cArr) i.isReady = false;
 		std::cout << "Destroy Room\n";
 	}
-	
+	SendRoomListPacket();
 }
 
 void Room::UserIn(int32 sid)
@@ -215,7 +231,7 @@ void Room::Update()
 	
 		for (int i = 0; i < PLAYERNUM; ++i)
 		{
-			//if (!_gameLogic.IsAvailablePlayer(i)) continue;
+		
 			SPlayer& ps = _gameLogic.GetPlayerByIdx(i);
 
 			S2C_POS packet;
@@ -240,7 +256,9 @@ void Room::Update()
 		SC_EVENTPACKET packet;
 		packet.size = sizeof(SC_EVENTPACKET);
 		packet.type = (uint8)SC_GAME_PACKET_TYPE::GAMEEVENT;
-		packet.eventId = (uint8)EVENT_TYPE::GAME_END;
+		if (GAMESTATE::BOSS_WIN == _gameLogic._gState) packet.eventId = (uint8)EVENT_TYPE::BOSS_WIN;
+		else  packet.eventId = (uint8)EVENT_TYPE::EMP_WIN;
+
 		BroadCasting(&packet);
 		std::cout << "Game END\n";
 

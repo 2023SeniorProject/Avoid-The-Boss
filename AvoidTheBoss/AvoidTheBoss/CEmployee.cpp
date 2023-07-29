@@ -123,6 +123,7 @@ CCamera* CEmployee::ChangeCamera(DWORD nNewCameraMode, float fTimeElapsed)
 	}
 	m_pCamera->SetPosition(m_xmf3Position);
 	m_pCamera->SetPosition(Vector3::Add(m_xmf3Position,m_pCamera->GetOffset()));
+	m_pCamera->m_fogOn = true;
 	Update(fTimeElapsed, m_clientType);
 
 	return(m_pCamera);
@@ -876,6 +877,7 @@ void CEmployee::AnimTrackUpdate()
 					
 					mainGame.m_SceneManager->GetSceneByIdx(3)->m_pCamera = m_pCamera;
 					mainGame.m_SceneManager->GetSceneByIdx(3)->m_pCamera->CreateShaderVariables(mainGame.m_pd3dDevice, mainGame.m_pd3dCommandList);
+					mainGame.m_SceneManager->GetSceneByIdx(3)->m_pCamera->m_playerIdx = m_idx;
 					if (m_pCamera)
 					{
 						if (!m_pCamera->m_fogOn)m_pCamera->m_fogOn = true;

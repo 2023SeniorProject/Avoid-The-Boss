@@ -108,7 +108,7 @@ public:
 
 public:
 	void ReleaseUploadBuffers();
-	void ReleaseObjects();
+	virtual void ReleaseObjects();
 public:
 	virtual void OnProcessingMouseMessage(HWND hWnd, UINT nMessageID, WPARAM wParam, LPARAM	lParam);
 	virtual void OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPARAM wParam, LPARAM lParam);

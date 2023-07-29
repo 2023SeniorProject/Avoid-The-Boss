@@ -25,7 +25,7 @@ public:
 	virtual void Update(HWND& hWnd);
 	virtual void Render(ID3D12GraphicsCommandList4* pd3dCommandList, CCamera* pCamera, bool);
 	void		 BuildDefaultLightsAndMaterials();
-
+	void ReleaseObjects() {}
 	virtual void MouseAction(const POINT& mp) override;
 
 	void ChangePage(int32);
@@ -83,6 +83,7 @@ public:
 			if(sid == i.m_sid) i.isReady = val;
 		}
 	}
+	void ReleaseObjects() {}
 	virtual void Render(ID3D12GraphicsCommandList4* pd3dCommandList, CCamera* pCamera,bool);
 	void		 BuildDefaultLightsAndMaterials();
 	virtual void MouseAction(const POINT& mp) override;
@@ -118,7 +119,7 @@ public:
 		if (m_showTime > 0) m_showTime -= m_timer.GetTimeElapsed();
 		if (m_showTime < 0) mainGame.ChangeScene(CGameFramework::SCENESTATE::LOBBY);
 	};
-	
+	void ReleaseObjects() {}
 	virtual void Render(ID3D12GraphicsCommandList4* pd3dCommandList, CCamera* pCamera, bool bRaster) {};
 	
 	virtual void MouseAction(const POINT& mp) override {};

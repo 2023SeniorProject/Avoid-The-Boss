@@ -155,6 +155,7 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
     return (TRUE);
 }
 
+
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
     int wmId, wmEvent;
@@ -197,8 +198,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
     break;
     case WM_CREATE:
         // 윈도우 스타일을 변경하여 상단바를 숨깁니다.
-        SetWindowLong(hWnd, GWL_STYLE, GetWindowLong(hWnd, GWL_STYLE) & ~WS_CAPTION);
-        SetWindowPos(hWnd, NULL, 0, 0, FRAME_BUFFER_WIDTH, FRAME_BUFFER_HEIGHT, SWP_FRAMECHANGED);
+        //SetWindowLong(hWnd, GWL_STYLE, GetWindowLong(hWnd, GWL_STYLE) & WS_CAPTION);
+        //SetWindowPos(hWnd, NULL, 0, 0, FRAME_BUFFER_WIDTH, FRAME_BUFFER_HEIGHT, SWP_FRAMECHANGED);
         break;
     case WM_DESTROY:
         ::PostQuitMessage(0);

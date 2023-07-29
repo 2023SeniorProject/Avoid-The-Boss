@@ -81,6 +81,7 @@ public:
 		{
 			m_hp = 0;
 			SetBehavior(PLAYER_BEHAVIOR::CRAWL);
+			std::cout << "Crawl\n";
 		}
 	}
 	void ProcessAlive()

@@ -130,6 +130,12 @@ void InteractionEvent::Task()
 		packet.eventId = eventId;
 		targetRoom.BroadCastingExcept(&packet,_sid);
 
+		S2C_ANIMPACKET ap;
+		ap.idx = gm.GetPlayerBySid(_sid).m_idx;
+		ap.size = sizeof(ap);
+		ap.type = (uint8)S_GAME_PACKET_TYPE::ANIM;
+		ap.track = (uint8)ANIMTRACK::RESCUE_CANCEL;
+		targetRoom.BroadCastingExcept(&ap, _sid);
 	}
 	break;
 	case EVENT_TYPE::ALIVE_PLAYER_ONE:
@@ -144,6 +150,13 @@ void InteractionEvent::Task()
 		packet.size = sizeof(SC_EVENTPACKET);
 		packet.eventId = eventId;
 		targetRoom.BroadCastingExcept(&packet, _sid);
+
+		S2C_ANIMPACKET ap;
+		ap.idx = gm.GetPlayerBySid(_sid).m_idx;
+		ap.size = sizeof(ap);
+		ap.type = (uint8)S_GAME_PACKET_TYPE::ANIM;
+		ap.track = (uint8)ANIMTRACK::RESCUE_CANCEL;
+		targetRoom.BroadCastingExcept(&ap, _sid);
 	}
 	break;
 	case EVENT_TYPE::EXIT_PLAYER_ONE:

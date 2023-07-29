@@ -46,6 +46,7 @@ void Room::UserOut(int32 sid)
 		}
 	}
 
+
 	{
 		// cList Lock 쓰기 호출	
 		std::unique_lock<std::shared_mutex> wll(_listLock);
@@ -76,7 +77,7 @@ void Room::UserOut(int32 sid)
 		packet.eventId = (uint8)EVENT_TYPE::HIDE_PLAYER_ONE + idx;
 		BroadCasting(&packet);
 	}
-	else if (_status == (uint8)ROOM_STATUS::NOT_FULL /*&& _gameLogic._gState == GAMESTATE::NONE*/) // 아직 게임중이 아닐 경우~
+	else if (_status == (uint8)ROOM_STATUS::NOT_FULL || _status == (uint8)ROOM_STATUS::FULL) // 아직 게임중이 아닐 경우~
 	{
 		S2C_ROOM_READY rcpacket;
 		rcpacket.type = (uint8)S_ROOM_PACKET_TYPE::REP_READY_CANCEL;
@@ -232,6 +233,13 @@ void Room::Update()
 	// 게임이 끝났다면 게임이 끝났다는 패킷 전송
 	if (GAMESTATE::EMP_WIN == _gameLogic._gState || GAMESTATE::BOSS_WIN == _gameLogic._gState)
 	{
+		_status = (uint8)ROOM_STATUS::FULL;
+
+		for (auto& i : _cArr)
+		{
+			if (i.sid != -1) UserOut(i.sid);
+		}
+
 		_gameLogic.ResetGame();
 
 		SC_EVENTPACKET packet;

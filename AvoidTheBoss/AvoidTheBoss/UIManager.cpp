@@ -14,20 +14,20 @@
 #include <d2d1_1.h>
 #include <wincodec.h>
 
-const int32 MAX_RESCUE_GUAGE = FRAME_BUFFER_WIDTH / 4.0f;
+const float MAX_RESCUE_GUAGE = FRAME_BUFFER_WIDTH / 4.0f;
 
-const int32 PROFILE_UI_OFFSET_X = FRAME_BUFFER_WIDTH * 0.01;
-const int32 PROFILE_UI_OFFSET_Y = FRAME_BUFFER_HEIGHT * 0.1;
+const float PROFILE_UI_OFFSET_X = FRAME_BUFFER_WIDTH * 0.01;
+const float PROFILE_UI_OFFSET_Y = FRAME_BUFFER_HEIGHT * 0.1;
 
-const int32 PROFILE_UI_WIDTH = FRAME_BUFFER_WIDTH * 0.1;
-const int32 PROFILE_UI_HEIGHT = FRAME_BUFFER_HEIGHT * 0.1;
+const float PROFILE_UI_WIDTH = FRAME_BUFFER_WIDTH * 0.1;
+const float PROFILE_UI_HEIGHT = FRAME_BUFFER_HEIGHT * 0.1;
 
-const int32 BIG_PROFILE_UI_OFFSET_Y = PROFILE_UI_OFFSET_Y * 7;
-const int32 BIG_PROFILE_UI_WIDTH = FRAME_BUFFER_WIDTH * 0.2;
-const int32 BIG_PROFILE_UI_HEIGHT = FRAME_BUFFER_HEIGHT * 0.2;
+const float BIG_PROFILE_UI_OFFSET_Y = PROFILE_UI_OFFSET_Y * 7;
+const float BIG_PROFILE_UI_WIDTH = FRAME_BUFFER_WIDTH * 0.2;
+const float BIG_PROFILE_UI_HEIGHT = FRAME_BUFFER_HEIGHT * 0.2;
 
-const int32 STATUS_UI_WIDTH = PROFILE_UI_WIDTH * 0.8;
-const int32 STATUS_UI_HEIGHT = PROFILE_UI_HEIGHT * 0.8;
+const float STATUS_UI_WIDTH = PROFILE_UI_WIDTH * 0.8;
+const float STATUS_UI_HEIGHT = PROFILE_UI_HEIGHT * 0.8;
 
 #pragma comment(lib,"windowscodecs.lib")
 
@@ -253,8 +253,12 @@ void UIManager::DrawOtherSceneBackGround(int32 Scene)
     case 3:
         break;
     case 4:
-        m_pd2dDeviceContext->DrawBitmap(m_backGround[3].resource, D2D1_RECT_F{ 0,0,m_fWidth,m_fHeight });
-        m_pd2dDeviceContext->DrawBitmap(m_backGround[4].resource, D2D1_RECT_F{ 0,0,m_fWidth,m_fHeight });
+        if (static_cast<CResultScene*>(mainGame.m_SceneManager->GetSceneByIdx(4))->m_case == 1)
+        {
+            m_pd2dDeviceContext->DrawBitmap(m_backGround[3].resource, D2D1_RECT_F{ 0,0,m_fWidth,m_fHeight });
+        }
+        else m_pd2dDeviceContext->DrawBitmap(m_backGround[4].resource, D2D1_RECT_F{ 0,0,m_fWidth,m_fHeight });
+        
         break;
     }
 }
@@ -559,6 +563,7 @@ D2D1_RECT_F UIManager::GetButtonRect(int32 Scene, int32 idx)
         return m_RoomButtons[idx].d2dLayoutRect;
         break;
     }
+    return D2D1_RECT_F{ 0,0,0,0 };
 }
 
 
@@ -678,7 +683,7 @@ void UIManager::InitializeDevice(ID3D12Device5* pd3dDevice, ID3D12CommandQueue* 
         LOBBYROOMLIST_X_OFFSET + (FRAME_BUFFER_WIDTH - (LOBBYROOMLIST_X_OFFSET * 2.0)) / 2.0,
         LOBBYROOMLIST_Y_OFFSET + FRAME_BUFFER_HEIGHT / 4.0,
         (FRAME_BUFFER_WIDTH - (LOBBYROOMLIST_X_OFFSET * 2.0)) / 2.0,
-        FRAME_BUFFER_HEIGHT / 4.0);
+        FRAME_BUFFER_HEIGHT / 4.0f);
 
     for (int i = 0; i < 4; ++i)
     {

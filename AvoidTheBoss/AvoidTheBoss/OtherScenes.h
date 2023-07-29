@@ -61,7 +61,7 @@ class CRoomScene : public CScene
 	struct Member
 	{
 		int32 m_sid = -1;
-		bool isReady;
+		bool isReady = false;
 	};
 public:
 	Member m_members[4];

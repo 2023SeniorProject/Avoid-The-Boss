@@ -88,7 +88,6 @@ void CGameScene::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPARAM 
 				mainGame.m_activeDelay = true;
 				mainGame.dalock.unlock();
 			}
-		default:
 			break;
 		}
 		break;

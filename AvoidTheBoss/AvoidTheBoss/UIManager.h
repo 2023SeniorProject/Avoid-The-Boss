@@ -11,8 +11,8 @@ struct UITextBlock
 {
     std::wstring                    m_pstrText; // 출력할 텍스처
     D2D1_RECT_F                     m_d2dLayoutRect; // 출력할 레이아웃 영역
-    IDWriteTextFormat*              m_pdwFormat; // 입력 포맷
-    ID2D1SolidColorBrush*           m_pd2dTextBrush; // 텍스처를 출력할 브러쉬
+    IDWriteTextFormat*              m_pdwFormat = NULL; // 입력 포맷
+    ID2D1SolidColorBrush*           m_pd2dTextBrush= NULL; // 텍스처를 출력할 브러쉬
     bool                            m_hide = false;
 };
 struct UIButton
@@ -119,7 +119,7 @@ public:
     ANIMButton m_LoginResult[3];
 
     // 버튼 비트맵들
-    UINT m_nRoomListPerPage = 5;
+    int m_nRoomListPerPage = 5;
     UIButton m_TitleButtons[3];
     
     // 로비 전용

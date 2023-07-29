@@ -12,8 +12,9 @@ protected:
 public:
 	SceneManager() 
 	{
+		for (int i = 0; i < 5; ++i) m_pScenes[i] = nullptr;
 	}
-	~SceneManager() { ReleaseScene(); }
+	~SceneManager() { }
 	
 	void Render(ID3D12GraphicsCommandList4* pd3dCommandList, int32, bool);
 	void Update(HWND& hWnd, int32);

@@ -6,7 +6,7 @@ class CPlayer;
 class queueEvent
 {
 public:
-	int64 generateTime = 0.f;
+	int64 generateTime = 0;
 	
 public:
 	queueEvent() {};

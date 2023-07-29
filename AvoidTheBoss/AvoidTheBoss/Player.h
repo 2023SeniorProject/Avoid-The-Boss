@@ -143,7 +143,7 @@ public:
 public: //04-29 추가함수 
 	virtual uint8 ProcessInput() { return 0; };
 	virtual void SetAnimationTrack(int32 num) {};
-	virtual void Move(const int8& dwDirection, float fDistance);
+	virtual void Move(const int16& dwDirection, float fDistance);
 	virtual void Update(float fTimeElapsed, CLIENT_TYPE ptype);
 	virtual void LateUpdate() {};
 	// 05-22 추가 함수

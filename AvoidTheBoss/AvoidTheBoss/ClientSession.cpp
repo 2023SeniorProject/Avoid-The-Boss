@@ -246,16 +246,20 @@ void CSession::ProcessPacket(char* packet)
 	case (uint8)S_ROOM_PACKET_TYPE::GAME_START:
 	{
 		// ================= 플레이어 초기 위치 초기화 ==================
+		rs->m_memLock.lock();
 		for (int i = 0; i < PLAYERNUM; ++i)
 		{
 			rs->m_members[i].m_sid = -1;
-			
+			rs->m_members->isReady = false;
 		}
-		
+		rs->m_memLock.unlock();
+
 		 gs->InitGame(packet, _sid);
+		 if(gs->m_playerIdx == 0)rrs->m_case = 0;
+		 else rrs->m_case = 1;
 		// ================= 카메라 셋팅 ================================
 		std::wstring str = L"Client";
-		str.append(std::to_wstring(gs->m_playerIdx));
+		str.append(std::to_wstring(mainGame.m_curScene));
 		::SetConsoleTitle(str.c_str());
 		mainGame.m_UIRenderer->InitGameSceneUI(gs);
 

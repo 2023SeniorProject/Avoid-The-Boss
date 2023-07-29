@@ -198,7 +198,9 @@ void CEmployee::Update(float fTimeElapsed, CLIENT_TYPE ptype)
 {
 	// 일단 주인이면 기본적으로 3인칭 렌더링을 수행한다.
 	if (CLIENT_TYPE::OWNER == m_clientType)
+	{
 		m_IsFirst = true;
+	}
 	// 근데 만약 다른 플레이어거나, 주인이 3인칭 카메라로 시점을 변경하게 된다면 삭제한다.
 	if (CLIENT_TYPE::OTHER_PLAYER == m_clientType || THIRD_PERSON_CAMERA == m_pCamera->GetMode())
 		m_IsFirst = false;
@@ -848,6 +850,10 @@ void CEmployee::AnimTrackUpdate()
 		break;
 	case (int32)PLAYER_BEHAVIOR::CRAWL:
 		SetCrawlAnimTrack();
+		if (m_pCamera)
+		{
+			if (m_pCamera->m_fogOn)m_pCamera->m_fogOn = false;
+		}
 		break;
 
 	case (int32)PLAYER_BEHAVIOR::EXIT:
@@ -870,6 +876,10 @@ void CEmployee::AnimTrackUpdate()
 					
 					mainGame.m_SceneManager->GetSceneByIdx(3)->m_pCamera = m_pCamera;
 					mainGame.m_SceneManager->GetSceneByIdx(3)->m_pCamera->CreateShaderVariables(mainGame.m_pd3dDevice, mainGame.m_pd3dCommandList);
+					if (m_pCamera)
+					{
+						if (!m_pCamera->m_fogOn)m_pCamera->m_fogOn = true;
+					}
 				}
 				SetBehavior(PLAYER_BEHAVIOR::IDLE);
 				m_bIsInvincibility = false;
@@ -915,7 +925,6 @@ CGenerator* CEmployee::GetAvailGen()
 
 CEmployee* CEmployee::GetAvailEMP()
 {
-
 	CGameScene* gs = static_cast<CGameScene*>(mainGame.m_SceneManager->GetSceneByIdx((int32)CGameFramework::SCENESTATE::INGAME));
 	for (int i = 1; i < PLAYERNUM; ++i)
 	{

@@ -20,6 +20,7 @@ struct VS_CB_CAMERA_INFO
 
 class CPlayer;
 
+#define FOG_RENDER_CYCLE_TIME 60
 class CCamera
 {
 public:
@@ -63,6 +64,7 @@ protected:
 	ID3D12Resource* m_pd3dcbCamera = NULL;
 	VS_CB_CAMERA_INFO* m_pcbMappedCamera = NULL;
 	
+	int m_fFogRenderCountTime = 0;
 public:
 	int32		m_playerIdx = -1;
 	bool		m_fogOn = false;
@@ -137,7 +139,7 @@ public:
 	virtual void Rotate(float fPitch = 0.0f, float fYaw = 0.0f, float fRoll = 0.0f) { }
 
 	//카메라의 이동, 회전에 따라 카메라의 정보를 갱신하는 가상함수이다. 
-	virtual void Update(XMFLOAT3& xmf3LookAt, float fTimeElapsed) { }
+	virtual void Update(XMFLOAT3& xmf3LookAt, float fTimeElapsed) {}
 
 	//3인칭 카메라에서 카메라가 바라보는 지점을 설정한다. 일반적으로 플레이어를 바라보도록 설정한다.
 	virtual void SetLookAt(XMFLOAT3& xmf3LookAt) { }

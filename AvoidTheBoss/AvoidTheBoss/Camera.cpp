@@ -307,6 +307,7 @@ void CThirdPersonCamera::Update(XMFLOAT3& xmf3LookAt, float fTimeElapsed)
 			//카메라가 플레이어를 바라보도록 한다. 
 			SetLookAt(xmf3LookAt);
 		}
+		CCamera::Update(xmf3LookAt, fTimeElapsed);
 	}
 
 }

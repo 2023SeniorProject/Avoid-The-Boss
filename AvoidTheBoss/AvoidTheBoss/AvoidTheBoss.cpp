@@ -101,7 +101,6 @@ ATOM MyRegisterClass(HINSTANCE hInstance)
     WNDCLASSEXW wcex;
 
     wcex.cbSize = sizeof(WNDCLASSEX);
-
     wcex.style = CS_HREDRAW | CS_VREDRAW;
     wcex.lpfnWndProc = WndProc;
     wcex.cbClsExtra = 0;
@@ -118,7 +117,6 @@ ATOM MyRegisterClass(HINSTANCE hInstance)
     return ::RegisterClassEx(&wcex);
 }
 
-
 BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 {
     hInst = hInstance; // 인스턴스 핸들을 전역 변수에 저장합니다.
@@ -127,10 +125,20 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
     DWORD dwStyle = WS_OVERLAPPED | WS_CAPTION | WS_MINIMIZEBOX | WS_SYSMENU |
         WS_BORDER;
     AdjustWindowRect(&rc, dwStyle, FALSE);   //윈도우가 원하는 클라이언트 영역 크기 가지도록 윈도우크기 계산
-    HWND hMainWnd = CreateWindow(szWindowClass, szTitle, dwStyle, CW_USEDEFAULT,
-        CW_USEDEFAULT, rc.right - rc.left, rc.bottom - rc.top, NULL, NULL, hInst,
+    HWND hMainWnd = CreateWindow(
+        szWindowClass, 
+        szTitle, 
+        dwStyle, 
+        CW_USEDEFAULT,
+        CW_USEDEFAULT, 
+        rc.right - rc.left, 
+        rc.bottom - rc.top, 
+        NULL, 
+        NULL, 
+        hInst,
         NULL);
     g_hWnd = hMainWnd;
+
     if (!hMainWnd)return (FALSE);
 
     //----프레임워크 객체 초기화
@@ -173,9 +181,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         // 메뉴 선택을 구문 분석합니다:
         switch (wmId)
         {
-        case IDM_ABOUT:
-            ::DialogBox(hInst, MAKEINTRESOURCE(IDD_ABOUTBOX), hWnd, About);
-            break;
         case IDM_EXIT:
             DestroyWindow(hWnd);
             break;
@@ -190,6 +195,11 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         EndPaint(hWnd, &ps);
     }
     break;
+    case WM_CREATE:
+        // 윈도우 스타일을 변경하여 상단바를 숨깁니다.
+        SetWindowLong(hWnd, GWL_STYLE, GetWindowLong(hWnd, GWL_STYLE) & ~WS_CAPTION);
+        SetWindowPos(hWnd, NULL, 0, 0, FRAME_BUFFER_WIDTH, FRAME_BUFFER_HEIGHT, SWP_FRAMECHANGED);
+        break;
     case WM_DESTROY:
         ::PostQuitMessage(0);
         break;
@@ -200,23 +210,5 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
     return 0;
 }
 
-// 정보 대화 상자의 메시지 처리기입니다.
-INT_PTR CALLBACK About(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
-{
-    UNREFERENCED_PARAMETER(lParam);
-    switch (message)
-    {
-    case WM_INITDIALOG:
-        return (INT_PTR)TRUE;
-    case WM_COMMAND:
-        if (LOWORD(wParam) == IDOK || LOWORD(wParam) == IDCANCEL)
-        {
-            EndDialog(hDlg, LOWORD(wParam));
-            return (INT_PTR)TRUE;
-        }
-        break;
-    }
-    return (INT_PTR)FALSE;
-}
 
 

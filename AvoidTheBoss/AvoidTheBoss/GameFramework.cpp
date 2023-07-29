@@ -71,7 +71,6 @@ bool CGameFramework::OnCreate(HINSTANCE hInstance, HWND hMainWnd)
 	CreateDepthStencilView();
 	
 	//렌더링할 게임 객체를 생성한다.
-
 	BuildScenes();
 
 	return(true);
@@ -184,6 +183,9 @@ void CGameFramework::CreateSwapChain()
 
 	hResult = m_pdxgiFactory->MakeWindowAssociation(m_hWnd, DXGI_MWA_NO_ALT_ENTER);
 
+#ifndef _WITH_SWAPCHAIN_FULLSCREEN_STATE // 23.7.29 추가코드
+	CreateRenderTargetViews();
+#endif
 }
 
 void CGameFramework::CreateRtvAndDsvDescriptorHeaps()
@@ -562,8 +564,25 @@ void CGameFramework::OnProcessingMouseMessage(HWND hWnd, UINT nMessageID, WPARAM
 void CGameFramework::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPARAM wParam, LPARAM lParam)
 {
 	if (m_hWnd != ::GetActiveWindow()) return;
+	switch (nMessageID)
+	{
+	case WM_KEYUP:
+		switch (wParam)
+		{
+		case VK_ESCAPE:
+			::PostQuitMessage(0);
+			break;
+		case VK_F9:
+			//“F9” 키가 눌려지면 윈도우 모드와 전체화면 모드의 전환을 처리한다. 
+			//ChangeSwapChainState();
+			break;
+		default:
+			break;
+		}
+		break;
+	}
 	m_SceneManager->GetSceneByIdx(m_curScene)->OnProcessingKeyboardMessage(hWnd, nMessageID, wParam, lParam);
-
+	return;
 }
 
 LRESULT CGameFramework::OnProcessingWindowMessage(HWND hWnd, UINT nMessageID, WPARAM wParam, LPARAM lParam)

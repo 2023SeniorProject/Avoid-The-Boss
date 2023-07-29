@@ -329,7 +329,9 @@ void CSession::ProcessPacket(char* packet)
 			std::cout << "Go to Result\n";
 			gs->ResetGame();
 			rrs->m_timer.Reset();
+			mainGame.scLock.lock();
 			mainGame.ChangeScene(CGameFramework::SCENESTATE::RESULT);
+			mainGame.scLock.unlock();
 		}
 		else
 		{

@@ -235,12 +235,7 @@ void Room::Update()
 	{
 		_status = (uint8)ROOM_STATUS::FULL;
 
-		for (auto& i : _cArr)
-		{
-			if (i.sid != -1) UserOut(i.sid);
-		}
-
-		_gameLogic.ResetGame();
+		
 
 		SC_EVENTPACKET packet;
 		packet.size = sizeof(SC_EVENTPACKET);
@@ -248,6 +243,13 @@ void Room::Update()
 		packet.eventId = (uint8)EVENT_TYPE::GAME_END;
 		BroadCasting(&packet);
 		std::cout << "Game END\n";
+
+		for (auto& i : _cArr)
+		{
+			if (i.sid != -1) UserOut(i.sid);
+		}
+
+		_gameLogic.ResetGame();
 	}
 }
 

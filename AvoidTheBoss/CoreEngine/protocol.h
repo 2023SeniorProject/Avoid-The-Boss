@@ -299,6 +299,7 @@ struct S2C_ROOM_INFO
 	uint8 size;
 	uint8 type;
 	int16 sids[4];
+	bool  rd[4];
 };
 
 struct S2C_ROOM_READY

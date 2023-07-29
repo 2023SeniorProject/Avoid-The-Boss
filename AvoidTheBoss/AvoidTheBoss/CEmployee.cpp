@@ -1044,7 +1044,7 @@ bool CEmployee::RescueTasking()
 
 	
 		// 구하는 이벤트에 관한 패킷을 전송하도록 한다.
-	if (InputManager::GetKeyBuffer(KEY_TYPE::E) == (int8)KEY_STATUS::KEY_PRESS)
+	if (InputManager::GetKeyBuffer(KEY_TYPE::E) == (int8)KEY_STATUS::KEY_PRESS && !GetIsPlayerOnRescueInter())
 	{
 		if (targetPlayer)
 		{
@@ -1067,17 +1067,18 @@ bool CEmployee::RescueTasking()
 			{
 				SetBehavior(PLAYER_BEHAVIOR::IDLE);
 				SetRescueInteraction(false);
-				SC_EVENTPACKET packet;
-				packet.eventId = targetPlayer->m_idx + (int32)EVENT_TYPE::RESCUE_CANCEL_PLAYER_ONE;
-				packet.size = sizeof(SC_EVENTPACKET);
-				packet.type = (uint8)SC_GAME_PACKET_TYPE::GAMEEVENT;
-				clientCore.DoSend(&packet);
+				
 				if (targetPlayer)
 				{
 					if (targetPlayer->m_bIsRescuing) targetPlayer->m_bIsRescuing = false;
-					std::cout << targetPlayer->m_idx << " Rescue Cancel\n";
+					SC_EVENTPACKET packet;
+					packet.eventId = targetPlayer->m_idx + (int32)EVENT_TYPE::RESCUE_CANCEL_PLAYER_ONE;
+					packet.size = sizeof(SC_EVENTPACKET);
+					packet.type = (uint8)SC_GAME_PACKET_TYPE::GAMEEVENT;
+					clientCore.DoSend(&packet);
 				}
-			}		
+			}
+			SetRescueInteraction(false);
 		}
 	}
 	

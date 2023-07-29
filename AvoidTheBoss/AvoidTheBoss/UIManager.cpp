@@ -770,9 +770,11 @@ void UIManager::Render2D(UINT nFrame, int32 curScene)
     m_pd2dDeviceContext->BeginDraw();
     
     DrawOtherSceneBackGround(curScene);
-    DrawOtherSceneUI(curScene,0);
-    DrawOtherSceneUI(curScene,1);
+  
+    DrawOtherSceneUI(curScene, 0);
+    DrawOtherSceneUI(curScene, 1);
     DrawOtherSceneUITextBlock(curScene);
+    
     DrawGameSceneUI(curScene);
     m_pd2dDeviceContext->EndDraw();
     m_pd3d11On12Device->ReleaseWrappedResources(ppResources, _countof(ppResources));

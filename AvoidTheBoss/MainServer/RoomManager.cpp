@@ -38,6 +38,7 @@ void Room::UserOut(int32 sid)
 			packet.type = (uint8)EVENT_TYPE::GAME_END;
 			packet.size = sizeof(SC_EVENTPACKET);
 			BroadCastingExcept(&packet, sid);
+			std::cout << "GAME END\n";
 		}
 		else 
 		{
@@ -272,7 +273,12 @@ void Room::SendRoomInfoPacket()
 	rmifpacket.type = (uint8)S_ROOM_PACKET_TYPE::ROOM_INFO;
 	{
 		shared_lock<std::shared_mutex> rl(_listLock);
-		for (int i = 0; i < PLAYERNUM; ++i) rmifpacket.sids[i] = _cArr[i].sid;
+		for (int i = 0; i < PLAYERNUM; ++i)
+		{
+			rmifpacket.sids[i] = _cArr[i].sid;
+			rmifpacket.rd[i] = _cArr[i].isReady;
+		}
+
 	}
 	BroadCasting(&rmifpacket);
 	

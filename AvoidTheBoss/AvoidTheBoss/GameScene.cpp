@@ -388,7 +388,7 @@ void CGameScene::Update(HWND& hWnd)
 		if (k == m_playerIdx) m_players[k]->Update(m_timer.GetTimeElapsed(), CLIENT_TYPE::OWNER);
 		else m_players[k]->Update(m_timer.GetTimeElapsed(), CLIENT_TYPE::OTHER_PLAYER);
 	}
-	for (int k = 0; k < m_nGenerator; ++k) m_ppGenerator[k]->Update(m_timer.GetTimeElapsed());
+	for (int k = 0; k < m_nGenerator; ++k) m_ppGenerator[k]->Update(m_timer.GetTimeElapsed()); // 발전기 업데이트 위치
 	
 	//m_pLights[SPOT_LIGHT].m_xmf3Position = m_players[m_playerIdx]->GetCamera()->GetPosition();
 	//m_pLights[SPOT_LIGHT].m_xmf3Direction = m_players[m_playerIdx]->GetLook();
@@ -413,7 +413,6 @@ void CGameScene::Update(HWND& hWnd)
 
 void CGameScene::AnimateObjects()
 { 
-	
 	for (int i = 0; i < m_nShaders; i++) if (m_ppShaders[i]) m_ppShaders[i]->AnimateObjects(m_timer.GetTimeElapsed());
 
 	for (int i = 0; i < PLAYERNUM; i++)
@@ -443,8 +442,9 @@ void CGameScene::Render(ID3D12GraphicsCommandList4* pd3dCommandList, CCamera* pC
 
 	if (m_pSkyBox) m_pSkyBox->Render(pd3dCommandList, pCamera,bRaster);
 
-	for (int i = 0; i < m_nGameObjects; i++) if (m_ppGameObjects[i]) m_ppGameObjects[i]->Render(pd3dCommandList, pCamera,bRaster);
-	for (int i = 0; i < m_nShaders; i++) if (m_ppShaders[i]) m_ppShaders[i]->Render(pd3dCommandList, pCamera,bRaster);
+	for (int i = 0; i < m_nGameObjects; i++) if (m_ppGameObjects[i]) m_ppGameObjects[i]->Render(pd3dCommandList, pCamera, bRaster);
+
+	for (int i = 0; i < m_nShaders; i++) if (m_ppShaders[i]) m_ppShaders[i]->Render(pd3dCommandList, pCamera, bRaster);
 
 	for (int i = 0; i < m_nHierarchicalGameObjects; i++)
 	{
@@ -465,8 +465,6 @@ void CGameScene::Render(ID3D12GraphicsCommandList4* pd3dCommandList, CCamera* pC
 		}
 	}
 
-	//for (int i = 0; i < m_nGenerator; ++i)	
-	//	m_ppGenerator[i]->Animate(m_fElapsedTime);
 	for (int i = 0; i < PLAYERNUM; ++i)
 	{
 		if(!m_players[i]->m_hide) m_players[i]->Render(pd3dCommandList, pCamera, bRaster);

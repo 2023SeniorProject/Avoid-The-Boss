@@ -772,20 +772,19 @@ void CGeneratorObjectsShader::BuildObjects(ID3D12Device5* pd3dDevice, ID3D12Grap
 	CreateShaderVariables(pd3dDevice, pd3dCommandList);
 }
 
-void CGeneratorObjectsShader::Render(ID3D12GraphicsCommandList4* pd3dCommandList, CCamera* pCamera, bool bRaster)
-{
-	CStandardShader::Render(pd3dCommandList, pCamera, bRaster);
-	for (int j = 0; j < m_nObjects; j++)
-	{
-			if (m_ppObjects[j])
-			{
-				
-				static_cast<CGenerator*>(m_ppObjects[j])->Animate(m_fElapsedTime);
-				static_cast<CGenerator*>(m_ppObjects[j])->UpdateTransform(NULL);
-				static_cast<CGenerator*>(m_ppObjects[j])->Render(pd3dCommandList, pCamera, bRaster);
-			}
-	}
-}
+//void CGeneratorObjectsShader::Render(ID3D12GraphicsCommandList4* /pd3dCommandList, /CCamera* pCamera, bool bRaster)
+//{
+//	CStandardShader::Render(pd3dCommandList, pCamera, bRaster);
+//	for (int j = 0; j < m_nObjects; j++)
+//	{
+//			if (m_ppObjects[j])
+//			{
+//				static_cast<CGenerator*>(m_ppObjects[j])->Animate(m_fElapsedTime);
+//				static_cast<CGenerator*>(m_ppObjects[j])->UpdateTransform(NULL);
+//				static_cast<CGenerator*>(m_ppObjects[j])->Render/(pd3dCommandList, /pCamera, bRaster);
+//			}
+//	}
+//}
 
 
 CVirtualObjectsShader::CVirtualObjectsShader()

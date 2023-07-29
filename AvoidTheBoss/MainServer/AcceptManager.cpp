@@ -138,6 +138,7 @@ void AcceptManager::ProcessAccept(AcceptEvent* acceptEvent)
 		WRITE_SERVER_LOCK;
 		ServerIocpCore._cList.insert(sid);                 
 		ServerIocpCore._clients.try_emplace(sid, session); 
+		std::cout << sid << " Accept Success\n";
 	}
 	
 	

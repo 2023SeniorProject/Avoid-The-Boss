@@ -210,13 +210,6 @@ void AttackEvent::Task()
 	if (retVal)
 	{
 		emp.ProcessAttack();
-
-		S2C_ANIMPACKET apacket;
-		apacket.size = sizeof(S2C_ANIMPACKET);
-		apacket.type = (uint8)S_GAME_PACKET_TYPE::ANIM;
-		apacket.track = (uint8)ANIMTRACK::ATTACK_ANIM;
-		ServerIocpCore._rmgr->GetRoom(roomNum).BroadCastingExcept(&apacket, _sid);
-
 		SC_EVENTPACKET epacket;
 		epacket.size = sizeof(SC_EVENTPACKET);
 		epacket.type = (uint8)SC_GAME_PACKET_TYPE::GAMEEVENT;

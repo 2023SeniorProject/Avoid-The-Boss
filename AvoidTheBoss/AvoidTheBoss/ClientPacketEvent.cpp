@@ -56,6 +56,7 @@ void InteractionEvent::Task()
 		std::cout << "PLAYER_HIDE\n";
 		CPlayer* player = gc->m_players[eventId - (uint8)EVENT_TYPE::HIDE_PLAYER_ONE];
 		if (player == nullptr) break;
+		player->m_hp = 0;
 		player->m_hide = true;
 	}
 	break;

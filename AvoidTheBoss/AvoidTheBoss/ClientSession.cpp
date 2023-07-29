@@ -338,7 +338,6 @@ void CSession::ProcessPacket(char* packet)
 		S2C_ANIMPACKET* sw = (S2C_ANIMPACKET*)packet;
 		uint8 idx = sw->idx;
 		CPlayer* myPlayer = nullptr;
-	
 		myPlayer = gs->GetScenePlayerByIdx(idx);
 		if (myPlayer != nullptr)
 		{

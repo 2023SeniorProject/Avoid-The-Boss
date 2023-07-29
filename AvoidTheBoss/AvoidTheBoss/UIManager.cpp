@@ -489,7 +489,7 @@ void UIManager::UpdateGameSceneUI(CGameScene* gc)
             {
               
                 CEmployee* targetEmp = myPlayer->GetAvailEMP();
-                std::cout << targetEmp->m_curGuage << "\n";
+                if(targetEmp) std::cout << targetEmp->m_curGuage << "\n";
 
                 if (targetEmp && targetEmp->m_curGuage <= 100.f)
                 {

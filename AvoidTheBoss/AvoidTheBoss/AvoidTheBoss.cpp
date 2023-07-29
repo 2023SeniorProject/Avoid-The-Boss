@@ -53,7 +53,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     
     HACCEL hAccelTable = LoadAccelerators(hInstance, MAKEINTRESOURCE(IDC_AVOIDTHEBOSS));
 
-    clientCore.InitConnect("192.168.0.2");
+    clientCore.InitConnect("14.51.97.232");
     clientCore.DoConnect(nullptr);
 
     // 기본 메시지 루프입니다:
@@ -137,13 +137,11 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
     mainGame.OnCreate(hInst, hMainWnd);
     //clientCore.InitGameLoop(hInst, hMainWnd);
 
-    //PlaySound(L"Sound/Land.wav", NULL, SND_LOOP | SND_ASYNC);
-
     ShowWindow(hMainWnd, nCmdShow);
     UpdateWindow(hMainWnd);
 
 #ifdef _WITH_SWAPCHAIN_FULLSCREEN_STATE
-    gGameFramework.ChangeSwapChainState();
+    mainGame.ChangeSwapChainState();
 #endif
 
     return (TRUE);

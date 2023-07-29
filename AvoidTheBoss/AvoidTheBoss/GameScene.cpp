@@ -170,7 +170,7 @@ void CGameScene::BuildDefaultLightsAndMaterials()
 	float fRangeWin = 20.0f; // 원 크기
 	float fphiWin = (float)cos(XMConvertToRadians(25.0f)); // 강도를 감쇠하기 시작하는 각도 (스포트라이트의 내부 원뿔 각도)
 	float fThetaWin = (float)cos(XMConvertToRadians(10.0f)); // 강도를 감쇠하기 시작하는 각도(외부 원뿔 각도)
-	m_pLights[7].m_bEnable = true;
+	m_pLights[7].m_bEnable = false;
 	m_pLights[7].m_nType = SPOT_LIGHT;
 	m_pLights[7].m_fRange = fRangeWin;
 	m_pLights[7].m_xmf4Ambient = fAmbientWin;

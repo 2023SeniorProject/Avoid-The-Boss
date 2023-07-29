@@ -62,6 +62,9 @@ public:
 		m_bAlreadyOn = false;
 		m_bOnGenAnimation = false; // 발전기 애니메이션 활성화 여부
 	};
+	bool m_bIsStartGenInter = false;
+	void SetbIsStartGenInter(bool value) { m_bIsStartGenInter = value; }
+	bool GetbIsStartGenInter() { return m_bIsStartGenInter; }
 };
 
 

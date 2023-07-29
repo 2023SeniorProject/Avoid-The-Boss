@@ -72,7 +72,6 @@ bool CGameFramework::OnCreate(HINSTANCE hInstance, HWND hMainWnd)
 	
 	//렌더링할 게임 객체를 생성한다.
 
-
 	BuildScenes();
 
 	return(true);
@@ -119,7 +118,7 @@ void CGameFramework::OnDestroy()
 #endif
 }
 
-//#define _WITH_SWAPCHAIN
+#define _WITH_SWAPCHAIN
 void CGameFramework::CreateSwapChain()
 {
 	RECT rcClient;
@@ -550,6 +549,7 @@ void CGameFramework::ChangeScene(SCENESTATE ss)
 {
 	m_curScene.store((int32)ss);
 	SoundManager::GetInstance().PlayBackGroundSound(m_curScene); // 씬 전환 시, 사운드 재생 변경
+	SoundManager::GetInstance().SetVolum(m_curScene,0.5f);
 }
 
 void CGameFramework::OnProcessingMouseMessage(HWND hWnd, UINT nMessageID, WPARAM wParam, LPARAM lParam)

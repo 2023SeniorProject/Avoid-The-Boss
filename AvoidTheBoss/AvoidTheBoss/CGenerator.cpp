@@ -4,6 +4,7 @@
 #include "SceneManager.h"
 #include "GameScene.h"
 #include "CEmployee.h"
+#include "SoundManager.h"
 
 CGenerator::CGenerator()
 {
@@ -55,7 +56,23 @@ void CGenerator::Update(float fTimeElapsed)
 	{
 		m_curGuage += m_guageSpeed * fTimeElapsed;
 	}
-
+	if (m_bOnInteraction || m_bAlreadyOn)
+	{
+		if (!GetbIsStartGenInter())
+		{
+			SoundManager::GetInstance().PlayObjectSound(17, 6);
+			SoundManager::GetInstance().PlayObjectSound(6, 6);
+			SetbIsStartGenInter(true);
+		}
+	}
+	else
+	{
+		if (GetbIsStartGenInter())
+		{
+			SoundManager::GetInstance().SoundStop(6);
+			SetbIsStartGenInter(false);
+		}
+	}
 	if (m_curGuage > m_maxGuage && !m_bGenActive)
 	{
 		m_bGenActive = true;

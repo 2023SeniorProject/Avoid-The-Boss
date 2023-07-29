@@ -51,7 +51,7 @@ public:
 	bool GetIsPlayerOnGenInter() { return m_bIsPlayerOnGenInter; }
 	void SetRescueInteraction(bool value) { m_bIsPlayerOnRescueInter = value; }
 	bool GetIsPlayerOnRescueInter() { return m_bIsPlayerOnRescueInter; }
-
+	
 	// ============= 애니메이션 트랙 셋팅 관련 ============
 
 	bool IsMovable() 

@@ -202,8 +202,7 @@ void CEmployee::Update(float fTimeElapsed, CLIENT_TYPE ptype)
 	// 근데 만약 다른 플레이어거나, 주인이 3인칭 카메라로 시점을 변경하게 된다면 삭제한다.
 	if (CLIENT_TYPE::OTHER_PLAYER == m_clientType || THIRD_PERSON_CAMERA == m_pCamera->GetMode())
 		m_IsFirst = false;
-
-
+	
 	CPlayer::Update(fTimeElapsed, ptype);
 	LateUpdate(fTimeElapsed,ptype);
 }
@@ -977,8 +976,6 @@ void CEmployee::PlayerDown()
 
 bool CEmployee::GenTasking()
 {
-
-
 	CGenerator* targetGen = GetAvailGen();
 	
 	if(targetGen)std::cout << targetGen->m_idx << "Available\n";
@@ -993,12 +990,9 @@ bool CEmployee::GenTasking()
 			SetBehavior(PLAYER_BEHAVIOR::SWITCH_INTER);
 
 			targetGen->SetInteractionOn(true); // 발전기 애니메이션 재생을 시작한다.
-		
+
 			if (InputManager::GetInstance().GetKeyBuffer(KEY_TYPE::F) == (int8)KEY_STATUS::KEY_PRESS)
 			{
-				SoundManager::GetInstance().PlayObjectSound(17, 4);
-				SoundManager::GetInstance().PlayObjectSound(6, 4);
-
 				SC_EVENTPACKET packet;
 				packet.eventId = m_curInterGen + (int32)EVENT_TYPE::SWITCH_ONE_START_EVENT;
 				packet.size = sizeof(SC_EVENTPACKET);
@@ -1018,7 +1012,7 @@ bool CEmployee::GenTasking()
 					SetGenInteraction(false);
 					SetBehavior(PLAYER_BEHAVIOR::IDLE);
 					if (targetGen) targetGen->SetInteractionOn(false);
-					SoundManager::GetInstance().SoundStop(6);
+
 					//========= 패킷 송신 처리 ==============
 					SC_EVENTPACKET packet;
 					packet.eventId = m_curInterGen + (int32)EVENT_TYPE::SWITCH_ONE_END_EVENT;

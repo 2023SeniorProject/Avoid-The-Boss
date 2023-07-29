@@ -110,6 +110,7 @@ void InteractionEvent::Task()
 		if (player == nullptr) break;
 		static_cast<CEmployee*>(player)->SetBehavior(PLAYER_BEHAVIOR::STAND);
 		static_cast<CEmployee*>(player)->m_standAnimationCount = EMPLOYEE_STAND_TIME;
+		static_cast<CEmployee*>(player)->m_hp = 3;
 	}
 	break;
 

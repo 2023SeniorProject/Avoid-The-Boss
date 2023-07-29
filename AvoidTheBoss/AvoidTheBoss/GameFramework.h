@@ -113,8 +113,9 @@ public:
 	Atomic<int32> m_curFrame = 0;
 	bool  m_activeDelay = false;
 	std::mutex dalock;
+	std::mutex scLock;
 protected:
-	static const int							m_nScene = 4;
+	static const int							m_nScene = 5;
 public:
 	Atomic<int32>								m_curScene = 3;
 

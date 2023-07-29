@@ -27,9 +27,9 @@ static const char *g_pstrThirdCharactorRefernece[4] =
 static const char* g_pstrFirstCharactorRefernece[4] =
 {
 	"null",
-	"Model/Character/Character1_Button_1st_View.bin",
-	"Model/Character/Character2_Button_1st_View.bin",
-	"Model/Character/Character3_Button_1st_View.bin",
+	"Model/Character/Character_Helmet_1st_View.bin",
+	"Model/Character/Character_Mask_1st_View.bin",
+	"Model/Character/Character_Cap_1st_View.bin",
 };
 
 #define BOSS_ATTACK_TIME 25 //25프레임 (기존 65)

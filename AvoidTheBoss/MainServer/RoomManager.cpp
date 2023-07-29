@@ -29,7 +29,21 @@ void Room::UserOut(int32 sid)
 	{
 		_gameLogic.GetPlayerBySid(sid).SetVelocity(XMFLOAT3(0, 0, 0)); // 속도 0
 		idx = _gameLogic.GetPlayerBySid(sid).m_idx; /// 인덱스 가져오기
-		_gameLogic.GetPlayerBySid(sid).m_hide = true; // 업데이트 false로 변경
+		_gameLogic.GetPlayerBySid(sid).m_hide = true; // 업데이트 false로 
+		
+		if (idx == 0) // 사장 플레이어가 나간 경우
+		{
+			_gameLogic.ResetGame();
+			SC_EVENTPACKET packet;
+			packet.type = (uint8)EVENT_TYPE::GAME_END;
+			packet.size = sizeof(SC_EVENTPACKET);
+			BroadCastingExcept(&packet, sid);
+			std::cout << "GAME END\n";
+		}
+		else 
+		{
+			_gameLogic.GetPlayerBySid(sid).SetBehavior(PLAYER_BEHAVIOR::CRAWL);
+		}
 	}
 
 	{
@@ -259,7 +273,12 @@ void Room::SendRoomInfoPacket()
 	rmifpacket.type = (uint8)S_ROOM_PACKET_TYPE::ROOM_INFO;
 	{
 		shared_lock<std::shared_mutex> rl(_listLock);
-		for (int i = 0; i < PLAYERNUM; ++i) rmifpacket.sids[i] = _cArr[i].sid;
+		for (int i = 0; i < PLAYERNUM; ++i)
+		{
+			rmifpacket.sids[i] = _cArr[i].sid;
+			rmifpacket.rd[i] = _cArr[i].isReady;
+		}
+
 	}
 	BroadCasting(&rmifpacket);
 	

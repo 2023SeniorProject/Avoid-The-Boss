@@ -401,11 +401,8 @@ void CGameScene::Update(HWND& hWnd)
 	str.append(std::to_wstring(m_sid));
 	str.append(L"] (");
 	str.append(std::to_wstring(m_players[m_playerIdx]->GetPosition().x));
-	str.append(L" ");
-	str.append(std::to_wstring(m_players[m_playerIdx]->GetPosition().y));
-	str.append(L" ");
 	str.append(std::to_wstring(m_players[m_playerIdx]->GetPosition().z));
-	str.append(L")- FPS: ");
+	str.append(L")- WorldFrame: ");
 	str.append(std::to_wstring(m_curFrame));
 
 	::SetWindowText(hWnd, str.c_str());

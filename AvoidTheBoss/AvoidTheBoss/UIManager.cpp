@@ -465,14 +465,14 @@ void UIManager::UpdateGameSceneUI(CGameScene* gc)
         if (m_playerIdx != 0)
         {
             CEmployee* myPlayer = static_cast<CEmployee*>(gc->GetScenePlayerByIdx(m_playerIdx));
-            if (!myPlayer) return;
-
+           
             if (myPlayer->GetIsInGenArea())
             {
                 m_GenerateUIButtons[20].m_hide = false;
             }
             else  m_GenerateUIButtons[20].m_hide = true;
 
+            // ¹ßÀü±â
             if (myPlayer->GetIsPlayerOnGenInter())
             {
                 
@@ -489,18 +489,19 @@ void UIManager::UpdateGameSceneUI(CGameScene* gc)
             {
               
                 CEmployee* targetEmp = myPlayer->GetAvailEMP();
-                if(targetEmp) std::cout << targetEmp->m_curGuage << "\n";
+                if (targetEmp)
+                {
+                    if (targetEmp->m_curGuage <= 200)
+                    {
+                        m_RescueGuage.m_hide = false;
+                        m_RescueGuage.d2dLayoutRect[1].right = m_RescueGuage.d2dLayoutRect[1].left + targetEmp->m_curGuage;
 
-                if (targetEmp && targetEmp->m_curGuage <= 100.f)
-                {
-                    m_RescueGuage.m_hide = false;
-                    m_RescueGuage.d2dLayoutRect[1].right = m_RescueGuage.d2dLayoutRect[1].left + targetEmp->m_curGuage;
-                   
-                }
-                else if (targetEmp && targetEmp->m_curGuage >= 100)
-                {
-                    m_RescueGuage.m_hide = true;
-                    m_RescueGuage.d2dLayoutRect[1] = m_RescueGuage.d2dLayoutRect[0];
+                    }
+                    else if (targetEmp->m_curGuage >= 200)
+                    {
+                        m_RescueGuage.m_hide = true;
+                        m_RescueGuage.d2dLayoutRect[1] = m_RescueGuage.d2dLayoutRect[0];
+                    }
                 }
             }
         }
@@ -769,9 +770,11 @@ void UIManager::Render2D(UINT nFrame, int32 curScene)
     m_pd2dDeviceContext->BeginDraw();
     
     DrawOtherSceneBackGround(curScene);
-    DrawOtherSceneUI(curScene,0);
-    DrawOtherSceneUI(curScene,1);
+  
+    DrawOtherSceneUI(curScene, 0);
+    DrawOtherSceneUI(curScene, 1);
     DrawOtherSceneUITextBlock(curScene);
+    
     DrawGameSceneUI(curScene);
     m_pd2dDeviceContext->EndDraw();
     m_pd3d11On12Device->ReleaseWrappedResources(ppResources, _countof(ppResources));

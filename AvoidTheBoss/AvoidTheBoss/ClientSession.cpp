@@ -239,6 +239,7 @@ void CSession::ProcessPacket(char* packet)
 		S2C_ROOM_INFO* rp = (S2C_ROOM_INFO*)packet;
 		rs->m_memLock.lock();
 		for (int i = 0; i < PLAYERNUM; ++i) rs->m_members[i].m_sid = rp->sids[i];
+		for (int i = 0; i < PLAYERNUM; ++i) rs->m_members[i].isReady = rp->rd[i];
 		rs->m_memLock.unlock();
 	}
 	break;
@@ -257,7 +258,10 @@ void CSession::ProcessPacket(char* packet)
 		str.append(std::to_wstring(gs->m_playerIdx));
 		::SetConsoleTitle(str.c_str());
 		mainGame.m_UIRenderer->InitGameSceneUI(gs);
+
+		mainGame.scLock.lock();
 		mainGame.ChangeScene(CGameFramework::SCENESTATE::INGAME);
+		mainGame.scLock.unlock();
 		gs->InitScene();
 	}
 	break;

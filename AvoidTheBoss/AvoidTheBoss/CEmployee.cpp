@@ -882,6 +882,7 @@ void CEmployee::AnimTrackUpdate()
 					}
 				}
 				SetBehavior(PLAYER_BEHAVIOR::IDLE);
+				m_bIsInvincibility = false;
 			}
 		}
 		break;
@@ -973,9 +974,11 @@ void CEmployee::PlayerDown()
 	if (CLIENT_TYPE::OWNER == m_clientType)
 	{
 		ChangeCamera(THIRD_PERSON_CAMERA, 0);
-	
+		m_pCamera->ReleaseShaderVariables();
+		m_pCamera->CreateShaderVariables(mainGame.m_pd3dDevice, mainGame.m_pd3dCommandList);
+
 		mainGame.m_SceneManager->GetSceneByIdx(3)->m_pCamera = m_pCamera;
-		mainGame.m_SceneManager->GetSceneByIdx(3)->m_pCamera->CreateShaderVariables(mainGame.m_pd3dDevice, mainGame.m_pd3dCommandList);
+		//mainGame.m_SceneManager->GetSceneByIdx(3)->m_pCamera->CreateShaderVariables(mainGame.m_pd3dDevice, mainGame.m_pd3dCommandList);
 		m_deadCnt += 1;
 	}
 
@@ -1048,50 +1051,46 @@ bool CEmployee::RescueTasking()
 	CEmployee* targetPlayer = GetAvailEMP();
 	// 1. 현재 켜져 있지 않고, 다른 플레이어에 의해 상호작용 중이지 않은 발전기를 가져온다.
 
-	if (!GetIsPlayerOnGenInter()) // 스위치 상호작용 중이 아닐 때
-	{
+	
 		// 구하는 이벤트에 관한 패킷을 전송하도록 한다.
-		if (InputManager::GetKeyBuffer(KEY_TYPE::E) == (int8)KEY_STATUS::KEY_PRESS)
+	if (InputManager::GetKeyBuffer(KEY_TYPE::E) == (int8)KEY_STATUS::KEY_PRESS && !GetIsPlayerOnRescueInter())
+	{
+		if (targetPlayer)
 		{
-			if (targetPlayer)
-			{
-				SetBehavior(PLAYER_BEHAVIOR::RESCUE);
-				SetRescueInteraction(true);
-				targetPlayer->m_bIsRescuing = true;
-				SC_EVENTPACKET packet;
-				packet.eventId = targetPlayer->m_idx + (int32)EVENT_TYPE::RESCUE_PLAYER_ONE;
-				packet.size = sizeof(SC_EVENTPACKET);
-				packet.type = (uint8)SC_GAME_PACKET_TYPE::GAMEEVENT;
-				clientCore.DoSend(&packet);
-				std::cout << targetPlayer->m_idx << " Rescuing\n";
-			
-			}
-			return true;
+			SetBehavior(PLAYER_BEHAVIOR::RESCUE);
+			SetRescueInteraction(true);
+			targetPlayer->m_bIsRescuing = true;
+			SC_EVENTPACKET packet;
+			packet.eventId = targetPlayer->m_idx + (int32)EVENT_TYPE::RESCUE_PLAYER_ONE;
+			packet.size = sizeof(SC_EVENTPACKET);
+			packet.type = (uint8)SC_GAME_PACKET_TYPE::GAMEEVENT;
+			clientCore.DoSend(&packet);
 		}
-		else if (!InputManager::GetInstance().GetKeyBuffer(KEY_TYPE::E))
+		return true;
+	}
+	else if (!InputManager::GetInstance().GetKeyBuffer(KEY_TYPE::E))
+	{
+		if (InputManager::GetKeyBuffer(KEY_TYPE::E) == (int8)KEY_STATUS::KEY_UP)
 		{
-			if (InputManager::GetKeyBuffer(KEY_TYPE::E) == (int8)KEY_STATUS::KEY_UP)
+			if (GetIsPlayerOnRescueInter())
 			{
+				SetBehavior(PLAYER_BEHAVIOR::IDLE);
+				SetRescueInteraction(false);
+				
 				if (targetPlayer)
 				{
-					if (GetIsPlayerOnRescueInter())
-					{
-						SetBehavior(PLAYER_BEHAVIOR::IDLE);
-						SetRescueInteraction(false);
-						SC_EVENTPACKET packet;
-						packet.eventId = targetPlayer->m_idx + (int32)EVENT_TYPE::RESCUE_CANCEL_PLAYER_ONE;
-						packet.size = sizeof(SC_EVENTPACKET);
-						packet.type = (uint8)SC_GAME_PACKET_TYPE::GAMEEVENT;
-
-						if (targetPlayer->m_bIsRescuing) targetPlayer->m_bIsRescuing = false;
-						clientCore.DoSend(&packet);
-
-						std::cout << targetPlayer->m_idx << " Rescue Cancel\n";
-					}
+					if (targetPlayer->m_bIsRescuing) targetPlayer->m_bIsRescuing = false;
+					SC_EVENTPACKET packet;
+					packet.eventId = targetPlayer->m_idx + (int32)EVENT_TYPE::RESCUE_CANCEL_PLAYER_ONE;
+					packet.size = sizeof(SC_EVENTPACKET);
+					packet.type = (uint8)SC_GAME_PACKET_TYPE::GAMEEVENT;
+					clientCore.DoSend(&packet);
 				}
 			}
+			SetRescueInteraction(false);
 		}
 	}
+	
 	return false;
 }
 

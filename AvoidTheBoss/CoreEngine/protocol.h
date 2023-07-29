@@ -77,6 +77,7 @@ enum class ANIMTRACK : uint8
 	GEN_ANIM_CANCEL = 171,
 	ATTACK_ANIM = 172,
 	RESCUE = 173,
+	RESCUE_CANCEL = 174,
 };
 
  
@@ -298,6 +299,7 @@ struct S2C_ROOM_INFO
 	uint8 size;
 	uint8 type;
 	int16 sids[4];
+	bool  rd[4];
 };
 
 struct S2C_ROOM_READY

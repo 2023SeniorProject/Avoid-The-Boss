@@ -99,11 +99,13 @@ void InteractionEvent::Task()
 		if (!p.m_bIsRescue)
 		{
 			p.m_bIsRescue = true;
+			
 			SC_EVENTPACKET packet;
 			packet.type = (uint8)SC_GAME_PACKET_TYPE::GAMEEVENT;
 			packet.size = sizeof(SC_EVENTPACKET);
 			packet.eventId = eventId;
 			targetRoom.BroadCastingExcept(&packet, _sid);
+
 			S2C_ANIMPACKET ap;
 			ap.idx = gm.GetPlayerBySid(_sid).m_idx;
 			ap.size = sizeof(ap);
@@ -120,7 +122,7 @@ void InteractionEvent::Task()
 	{
 		SPlayer& p = gm.GetPlayerByIdx((int8)eventId - (int8)EVENT_TYPE::RESCUE_CANCEL_PLAYER_ONE);
 		if (p.m_bIsRescue) p.m_bIsRescue = false;
-		std::cout << "RESCUE CANCEL\n";
+		
 
 		SC_EVENTPACKET packet;
 		packet.type = (uint8)SC_GAME_PACKET_TYPE::GAMEEVENT;
@@ -128,6 +130,12 @@ void InteractionEvent::Task()
 		packet.eventId = eventId;
 		targetRoom.BroadCastingExcept(&packet,_sid);
 
+		S2C_ANIMPACKET ap;
+		ap.idx = gm.GetPlayerBySid(_sid).m_idx;
+		ap.size = sizeof(ap);
+		ap.type = (uint8)S_GAME_PACKET_TYPE::ANIM;
+		ap.track = (uint8)ANIMTRACK::RESCUE_CANCEL;
+		targetRoom.BroadCastingExcept(&ap, _sid);
 	}
 	break;
 	case EVENT_TYPE::ALIVE_PLAYER_ONE:
@@ -142,6 +150,13 @@ void InteractionEvent::Task()
 		packet.size = sizeof(SC_EVENTPACKET);
 		packet.eventId = eventId;
 		targetRoom.BroadCastingExcept(&packet, _sid);
+
+		S2C_ANIMPACKET ap;
+		ap.idx = gm.GetPlayerBySid(_sid).m_idx;
+		ap.size = sizeof(ap);
+		ap.type = (uint8)S_GAME_PACKET_TYPE::ANIM;
+		ap.track = (uint8)ANIMTRACK::RESCUE_CANCEL;
+		targetRoom.BroadCastingExcept(&ap, _sid);
 	}
 	break;
 	case EVENT_TYPE::EXIT_PLAYER_ONE:

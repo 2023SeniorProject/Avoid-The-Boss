@@ -406,6 +406,7 @@ void CGameFramework::FrameAdvance() // 여기서 업데이트랑 렌더링 동시에 진행하는 
 {
 	//타이머의 시간이 갱신되도록 하고 프레임 레이트를 계산한다. 
 
+	scLock.lock();
 	//1 인풋 처리
 	ProcessInput();
 	//2 업데이트 처리
@@ -442,7 +443,7 @@ void CGameFramework::FrameAdvance() // 여기서 업데이트랑 렌더링 동시에 진행하는 
 	//	하여 “ FPS)” 문자열과 합친다.
 
 	MoveToNextFrame();
-	
+	scLock.unlock();
 }
 
 void CGameFramework::WaitForGpuComplete()

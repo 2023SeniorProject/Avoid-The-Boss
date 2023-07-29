@@ -85,7 +85,7 @@ GAMESTATE CGameManager::CheckGameState()
 		if ((int32)PLAYER_BEHAVIOR::CRAWL == i.GetBehavior()) crawlCnt += 1;
 		if (true == i.GetEscaped()) escapeCnt += 1;
 	}
-	if (PLAYERNUM == crawlCnt) _gState = GAMESTATE::BOSS_WIN;
+	if ((PLAYERNUM - 1) == crawlCnt) _gState = GAMESTATE::BOSS_WIN;
 	else if ((crawlCnt + escapeCnt) == (PLAYERNUM - 1) && _bExitReady) _gState = GAMESTATE::EMP_WIN;
 
 	return _gState;

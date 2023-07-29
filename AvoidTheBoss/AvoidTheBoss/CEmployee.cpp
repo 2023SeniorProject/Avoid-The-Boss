@@ -872,6 +872,7 @@ void CEmployee::AnimTrackUpdate()
 					mainGame.m_SceneManager->GetSceneByIdx(3)->m_pCamera->CreateShaderVariables(mainGame.m_pd3dDevice, mainGame.m_pd3dCommandList);
 				}
 				SetBehavior(PLAYER_BEHAVIOR::IDLE);
+				m_bIsInvincibility = false;
 			}
 		}
 		break;
@@ -1073,10 +1074,9 @@ bool CEmployee::RescueTasking()
 						packet.eventId = targetPlayer->m_idx + (int32)EVENT_TYPE::RESCUE_CANCEL_PLAYER_ONE;
 						packet.size = sizeof(SC_EVENTPACKET);
 						packet.type = (uint8)SC_GAME_PACKET_TYPE::GAMEEVENT;
-
-						if (targetPlayer->m_bIsRescuing) targetPlayer->m_bIsRescuing = false;
 						clientCore.DoSend(&packet);
 
+						if (targetPlayer->m_bIsRescuing) targetPlayer->m_bIsRescuing = false;
 						std::cout << targetPlayer->m_idx << " Rescue Cancel\n";
 					}
 				}

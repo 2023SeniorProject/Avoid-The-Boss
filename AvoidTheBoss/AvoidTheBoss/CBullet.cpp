@@ -36,7 +36,7 @@ void CBullet::Update(float fTimeElapsed)
 	}
 	if (m_OnHit)
 	{
-		m_pHitEffect->SetPosition(GetPosition().x, 1.0f, GetPosition().z); // 충돌 지점 위치 넘겨주기
+		m_pHitEffect->SetPosition(GetPosition().x, 1.1f, GetPosition().z); // 충돌 지점 위치 넘겨주기
 		m_pHitEffect->SetOnHit(true);
 		m_OnHit = false;
 	}

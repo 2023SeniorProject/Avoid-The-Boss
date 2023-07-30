@@ -108,7 +108,7 @@ public:
 		XMFLOAT3 layDir = cw._bossDir;
 		BoundingSphere playerBV;
 		playerBV.Center = targetLoc;
-		playerBV.Radius = 0.3f;
+		playerBV.Radius = 0.8f;
 
 		// RTT를 고려해서 5 프레임이상 차이까지는 과거 패킷이 아닌 것으로 간주한다.
 		if (frame + 5 <= _curFrame) std::cout << "Past Attacked Packet Detected. CurFrame :" << _curFrame << " Packet Frame : " << frame << "\n";

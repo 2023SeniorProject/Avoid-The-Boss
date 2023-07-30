@@ -11,9 +11,7 @@
 #include "SoundManager.h";
 #include "GameScene.h"
 
-CBoss::CBoss(ID3D12Device5* pd3dDevice, 
-	
-	ID3D12GraphicsCommandList4  * pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature)
+CBoss::CBoss(ID3D12Device5* pd3dDevice, ID3D12GraphicsCommandList4  * pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature)
 {
 	m_type = 0;
 
@@ -21,26 +19,19 @@ CBoss::CBoss(ID3D12Device5* pd3dDevice,
 	m_nCharacterType = CHARACTER_TYPE::BOSS;
 	m_pCamera = ChangeCamera(FIRST_PERSON_CAMERA, 0.0f);
 
-	{
 		CLoadedModelInfo* pBossArmModel = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "Model/Character/Boss_Idle_First.bin", NULL, Layout::PLAYER);
 		SetChild(pBossArmModel->m_pModelRootObject, true);
-
 		m_pSkinnedAnimationController2 = new CAnimationController(pd3dDevice, pd3dCommandList, 4, pBossArmModel);
 
 		m_pSkinnedAnimationController2->SetTrackAnimationSet(0, 0);//Idle
 		m_pSkinnedAnimationController2->SetTrackAnimationSet(1, 1);//Run
 		m_pSkinnedAnimationController2->SetTrackAnimationSet(2, 2);//Shoot
 		m_pSkinnedAnimationController2->SetTrackAnimationSet(3, 3);//RunningShoot 
-	}
 
-
-	{
 		CLoadedModelInfo* pBossUpperModel = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "Model/Character/Boss_Shooting_Run_UpperBody.bin", NULL, Layout::PLAYER);
 		SetChild(pBossUpperModel->m_pModelRootObject, true);
-
 		CLoadedModelInfo* pBossLowerModel = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "Model/Character/Boss_Shooting_Run_LowerBody.bin", NULL, Layout::PLAYER);
 		SetChild(pBossLowerModel->m_pModelRootObject, true);
-
 		m_pSkinnedAnimationController =  new CAnimationController(pd3dDevice, pd3dCommandList, 4, pBossUpperModel);
 		m_pSkinnedAnimationController1 = new CAnimationController(pd3dDevice, pd3dCommandList, 4, pBossLowerModel);
 
@@ -49,19 +40,10 @@ CBoss::CBoss(ID3D12Device5* pd3dDevice,
 		m_pSkinnedAnimationController->SetTrackAnimationSet(2, 3);//Shoot 2
 		m_pSkinnedAnimationController->SetTrackAnimationSet(3, 0);//RunningShoot 
 		
-		m_pSkinnedAnimationController->SetTrackEnable(0, true);
-		m_pSkinnedAnimationController->SetTrackEnable(1, false);
-		m_pSkinnedAnimationController->SetTrackEnable(2, false);
-		m_pSkinnedAnimationController->SetTrackEnable(3, false);
-
-
 		m_pSkinnedAnimationController1->SetTrackAnimationSet(0, 1);//Idle
 		m_pSkinnedAnimationController1->SetTrackAnimationSet(1, 0);//Run
 		m_pSkinnedAnimationController1->SetTrackAnimationSet(2, 2);//Run
 		m_pSkinnedAnimationController1->SetTrackAnimationSet(3, 3);//Run
-
-
-	}
 
 	if (m_pCamera->m_nMode == (DWORD)FIRST_PERSON_CAMERA)
 	{
@@ -98,6 +80,10 @@ CBoss::CBoss(ID3D12Device5* pd3dDevice,
 		m_pSkinnedAnimationController1->SetTrackEnable(3, false);
 	}
 	CreateShaderVariables(pd3dDevice, pd3dCommandList);
+
+	if (pBossArmModel)delete pBossArmModel;
+	if (pBossUpperModel)delete pBossUpperModel;
+	if (pBossLowerModel)delete pBossLowerModel;
 }
 
 CBoss::~CBoss()

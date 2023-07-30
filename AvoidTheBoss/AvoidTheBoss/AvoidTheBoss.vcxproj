@@ -76,7 +76,7 @@
     <IncludePath>$(SolutionDir)CoreEngine\;$(SolutionDir)AvoidTheBoss\FMOD\inc;C:\AvoidTheBoss\AvoidTheBoss\CoreEngine;$(IncludePath);$(SolutionDir)\</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <OutDir>$(SolutionDir)Binary\$(Configuration)\</OutDir>
+    <OutDir>Binary\$(Configuration)\</OutDir>
     <IncludePath>$(SolutionDir);$(SolutionDir)CoreEngine\;$(IncludePath);$(SolutionDir)\</IncludePath>
     <LibraryPath>$(SolutionDir)Library\;$(LibraryPath)</LibraryPath>
   </PropertyGroup>

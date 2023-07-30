@@ -456,23 +456,22 @@ void CMapObjectsShader::BuildObjects(ID3D12Device5 * pd3dDevice,ID3D12GraphicsCo
 	m_ppObjects = new CGameObject * [m_nObjects];
 
 	CGameObject* pMap = CGameObject::LoadGeometryFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "Model/Map/Industry_Map(6).bin", NULL,Layout::MAP);
-
 	m_ppObjects[0] = new CGameObject();
 	m_ppObjects[0]->SetChild(pMap);
 	m_ppObjects[0]->SetPosition(XMFLOAT3(0.0f, 0.0f, 0.0f));
+	pMap->AddRef();
 
 	CGameObject* pTile = CGameObject::LoadGeometryFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "Model/Map/Industry_Field2(1).bin", NULL, Layout::MAP);
-
 	m_ppObjects[1] = new CGameObject();
 	m_ppObjects[1]->SetChild(pTile);
 	m_ppObjects[1]->SetPosition(XMFLOAT3(0.0f, 0.0f, 0.0f));
+	pTile->AddRef();
 
 	CGameObject* pCrane = CGameObject::LoadGeometryFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "Model/Map/Crane.bin", NULL, Layout::MAP);
-
 	m_ppObjects[2] = new CGameObject();
 	m_ppObjects[2]->SetChild(pCrane);
 	m_ppObjects[2]->SetPosition(XMFLOAT3(0.0f, 0.0f, 0.0f));
-
+	pCrane->AddRef();
 	CreateShaderVariables(pd3dDevice, pd3dCommandList);
 }
 
@@ -563,6 +562,7 @@ void CDoorObjectsShader::BuildObjects(ID3D12Device5* pd3dDevice, ID3D12GraphicsC
 	m_ppObjects[0]->SetPosition(XMFLOAT3(0.0f, 0.0f, 0.0f));
 	m_ppObjects[0]->OnPrepareAnimate();
 	m_ppObjects[0]->objLayer = Layout::DOOR;
+	pFrontDoor->AddRef();
 
 	m_ppObjects[1] = new CEmergencyDoor();
 	m_ppObjects[1]->SetChild(pEmergencyDoor);
@@ -570,6 +570,7 @@ void CDoorObjectsShader::BuildObjects(ID3D12Device5* pd3dDevice, ID3D12GraphicsC
 	m_ppObjects[1]->Rotate(0.0f, 90.0f, 0.0f);
 	m_ppObjects[1]->OnPrepareAnimate();
 	m_ppObjects[1]->objLayer = Layout::DOOR;
+	pEmergencyDoor->AddRef();
 
 	m_ppObjects[2] = new CEmergencyDoor();
 	m_ppObjects[2]->SetChild(pEmergencyDoor);
@@ -577,6 +578,7 @@ void CDoorObjectsShader::BuildObjects(ID3D12Device5* pd3dDevice, ID3D12GraphicsC
 	m_ppObjects[2]->Rotate(0.0f, -90.0f, 0.0f);
 	m_ppObjects[2]->OnPrepareAnimate();
 	m_ppObjects[2]->objLayer = Layout::DOOR;
+	pEmergencyDoor->AddRef();
 
 	m_ppObjects[3] = new CShutterDoor();
 	m_ppObjects[3]->SetChild(pShutterDoor);
@@ -584,6 +586,7 @@ void CDoorObjectsShader::BuildObjects(ID3D12Device5* pd3dDevice, ID3D12GraphicsC
 	m_ppObjects[3]->Rotate(-90.0f, 0.0f, 90.0f);
 	m_ppObjects[3]->OnPrepareAnimate();
 	m_ppObjects[3]->objLayer = Layout::DOOR;
+	pShutterDoor->AddRef();
 
 	m_ppObjects[4] = new CShutterDoor();
 	m_ppObjects[4]->SetChild(pShutterDoor);
@@ -591,6 +594,7 @@ void CDoorObjectsShader::BuildObjects(ID3D12Device5* pd3dDevice, ID3D12GraphicsC
 	m_ppObjects[4]->Rotate(-90.0f, 0.0f, 90.0f);
 	m_ppObjects[4]->OnPrepareAnimate();
 	m_ppObjects[4]->objLayer = Layout::DOOR;
+	pShutterDoor->AddRef();
 
 	CreateShaderVariables(pd3dDevice, pd3dCommandList);
 }
@@ -616,7 +620,7 @@ void CSirenObjectsShader::BuildObjects(ID3D12Device5* pd3dDevice, ID3D12Graphics
 	m_ppObjects[0]->Rotate(-0.0f, -0.0f, 90.0f);
 	m_ppObjects[0]->OnPrepareAnimate();
 	m_ppObjects[0]->objLayer = Layout::SIREN;
-
+	pSiren->AddRef();
 
 	m_ppObjects[1] = new CSiren();
 	m_ppObjects[1]->SetChild(pSiren);
@@ -624,7 +628,7 @@ void CSirenObjectsShader::BuildObjects(ID3D12Device5* pd3dDevice, ID3D12Graphics
 	m_ppObjects[1]->Rotate(-0.0f, -0.0f, 90.0f);
 	m_ppObjects[1]->OnPrepareAnimate();
 	m_ppObjects[1]->objLayer = Layout::SIREN;
-
+	pSiren->AddRef();
 
 	m_ppObjects[2] = new CSiren();
 	m_ppObjects[2]->SetChild(pSiren);
@@ -632,7 +636,7 @@ void CSirenObjectsShader::BuildObjects(ID3D12Device5* pd3dDevice, ID3D12Graphics
 	m_ppObjects[2]->Rotate(-0.0f, -0.0f, 90.0f);
 	m_ppObjects[2]->OnPrepareAnimate();
 	m_ppObjects[2]->objLayer = Layout::SIREN;
-
+	pSiren->AddRef();
 
 	m_ppObjects[3] = new CSiren();
 	m_ppObjects[3]->SetChild(pSiren);
@@ -640,7 +644,7 @@ void CSirenObjectsShader::BuildObjects(ID3D12Device5* pd3dDevice, ID3D12Graphics
 	m_ppObjects[3]->Rotate(0.0f, -0.0f, 90.0f);
 	m_ppObjects[3]->OnPrepareAnimate();
 	m_ppObjects[3]->objLayer = Layout::SIREN;
-
+	pSiren->AddRef();
 
 	m_ppObjects[4] = new CSiren();
 	m_ppObjects[4]->SetChild(pSiren);
@@ -648,6 +652,7 @@ void CSirenObjectsShader::BuildObjects(ID3D12Device5* pd3dDevice, ID3D12Graphics
 	m_ppObjects[4]->Rotate(0.0f, 0.0f, -90.0f);
 	m_ppObjects[4]->OnPrepareAnimate();
 	m_ppObjects[1]->objLayer = Layout::SIREN;
+	pSiren->AddRef();
 
 	m_ppObjects[5] = new CSiren();
 	m_ppObjects[5]->SetChild(pSiren);
@@ -655,6 +660,7 @@ void CSirenObjectsShader::BuildObjects(ID3D12Device5* pd3dDevice, ID3D12Graphics
 	m_ppObjects[5]->Rotate(0.0f, 0.0f, -90.0f);;
 	m_ppObjects[5]->OnPrepareAnimate();
 	m_ppObjects[5]->objLayer = Layout::SIREN;
+	pSiren->AddRef();
 
 	m_ppObjects[6] = new CSiren();
 	m_ppObjects[6]->SetChild(pSiren);
@@ -662,6 +668,7 @@ void CSirenObjectsShader::BuildObjects(ID3D12Device5* pd3dDevice, ID3D12Graphics
 	m_ppObjects[6]->Rotate(0.0f, 0.0f, -90.0f);
 	m_ppObjects[6]->OnPrepareAnimate();
 	m_ppObjects[6]->objLayer = Layout::SIREN;
+	pSiren->AddRef();
 
 	m_ppObjects[7] = new CSiren();
 	m_ppObjects[7]->SetChild(pSiren);
@@ -669,6 +676,7 @@ void CSirenObjectsShader::BuildObjects(ID3D12Device5* pd3dDevice, ID3D12Graphics
 	m_ppObjects[7]->Rotate(0.0f, 0.0f, -90.0f);
 	m_ppObjects[7]->OnPrepareAnimate();
 	m_ppObjects[7]->objLayer = Layout::SIREN;
+	pSiren->AddRef();
 
 	m_ppObjects[8] = new CSiren();
 	m_ppObjects[8]->SetChild(pSiren);
@@ -676,6 +684,7 @@ void CSirenObjectsShader::BuildObjects(ID3D12Device5* pd3dDevice, ID3D12Graphics
 	m_ppObjects[8]->Rotate(90.0f, 0.0f, 0.0f);
 	m_ppObjects[8]->OnPrepareAnimate();
 	m_ppObjects[8]->objLayer = Layout::SIREN;
+	pSiren->AddRef();
 
 	m_ppObjects[9] = new CSiren();
 	m_ppObjects[9]->SetChild(pSiren);
@@ -683,6 +692,7 @@ void CSirenObjectsShader::BuildObjects(ID3D12Device5* pd3dDevice, ID3D12Graphics
 	m_ppObjects[9]->Rotate(90.0f, 0.0f, 0.0f);
 	m_ppObjects[9]->OnPrepareAnimate();
 	m_ppObjects[9]->objLayer = Layout::SIREN;
+	pSiren->AddRef();
 
 	m_ppObjects[10] = new CSiren();
 	m_ppObjects[10]->SetChild(pSiren);
@@ -690,6 +700,7 @@ void CSirenObjectsShader::BuildObjects(ID3D12Device5* pd3dDevice, ID3D12Graphics
 	m_ppObjects[10]->Rotate(90.0f, 0.0f, 0.0f);
 	m_ppObjects[10]->OnPrepareAnimate();
 	m_ppObjects[10]->objLayer = Layout::SIREN;
+	pSiren->AddRef();
 
 	m_ppObjects[11] = new CSiren();
 	m_ppObjects[11]->SetChild(pSiren);
@@ -697,6 +708,7 @@ void CSirenObjectsShader::BuildObjects(ID3D12Device5* pd3dDevice, ID3D12Graphics
 	m_ppObjects[11]->Rotate(90.0f, 0.0f, 0.0f);
 	m_ppObjects[11]->OnPrepareAnimate();
 	m_ppObjects[11]->objLayer = Layout::SIREN;
+	pSiren->AddRef();
 
 	m_ppObjects[12] = new CSiren();
 	m_ppObjects[12]->SetChild(pSiren);
@@ -704,6 +716,7 @@ void CSirenObjectsShader::BuildObjects(ID3D12Device5* pd3dDevice, ID3D12Graphics
 	m_ppObjects[12]->Rotate(-90.0f, 0.0f, 0.0f);
 	m_ppObjects[12]->OnPrepareAnimate();
 	m_ppObjects[12]->objLayer = Layout::SIREN;
+	pSiren->AddRef();
 
 	m_ppObjects[13] = new CSiren();
 	m_ppObjects[13]->SetChild(pSiren);
@@ -711,6 +724,7 @@ void CSirenObjectsShader::BuildObjects(ID3D12Device5* pd3dDevice, ID3D12Graphics
 	m_ppObjects[13]->Rotate(-90.0f, -0.0f, 0.0f);
 	m_ppObjects[13]->OnPrepareAnimate();
 	m_ppObjects[13]->objLayer = Layout::SIREN;
+	pSiren->AddRef();
 
 	m_ppObjects[14] = new CSiren();
 	m_ppObjects[14]->SetChild(pSiren);
@@ -718,6 +732,7 @@ void CSirenObjectsShader::BuildObjects(ID3D12Device5* pd3dDevice, ID3D12Graphics
 	m_ppObjects[14]->Rotate(-90.0f, 0.0f, 0.0f);
 	m_ppObjects[14]->OnPrepareAnimate();
 	m_ppObjects[14]->objLayer = Layout::SIREN;
+	pSiren->AddRef();
 
 	m_ppObjects[15] = new CSiren();
 	m_ppObjects[15]->SetChild(pSiren);
@@ -725,7 +740,7 @@ void CSirenObjectsShader::BuildObjects(ID3D12Device5* pd3dDevice, ID3D12Graphics
 	m_ppObjects[15]->Rotate(-90.0f, 0.0f, 0.0f);
 	m_ppObjects[15]->OnPrepareAnimate();
 	m_ppObjects[15]->objLayer = Layout::SIREN;
-
+	pSiren->AddRef();
 
 	CreateShaderVariables(pd3dDevice, pd3dCommandList);
 }
@@ -752,6 +767,7 @@ void CGeneratorObjectsShader::BuildObjects(ID3D12Device5* pd3dDevice, ID3D12Grap
 	m_ppObjects[0]->OnPrepareAnimate();
 	m_ppObjects[0]->SetNormalVector();
 	m_ppObjects[0]->objLayer = Layout::GENERATOR;
+	pGenerator->AddRef();
 
 	m_ppObjects[1] = new CGenerator();
 	m_ppObjects[1]->SetChild(pGenerator);
@@ -760,6 +776,7 @@ void CGeneratorObjectsShader::BuildObjects(ID3D12Device5* pd3dDevice, ID3D12Grap
 	m_ppObjects[1]->OnPrepareAnimate();
 	m_ppObjects[1]->SetNormalVector();
 	m_ppObjects[1]->objLayer = Layout::GENERATOR;
+	pGenerator->AddRef();
 
 	m_ppObjects[2] = new CGenerator();
 	m_ppObjects[2]->SetChild(pGenerator);
@@ -768,6 +785,7 @@ void CGeneratorObjectsShader::BuildObjects(ID3D12Device5* pd3dDevice, ID3D12Grap
 	m_ppObjects[2]->OnPrepareAnimate();
 	m_ppObjects[2]->SetNormalVector();
 	m_ppObjects[2]->objLayer = Layout::GENERATOR;
+	pGenerator->AddRef();
 
 	CreateShaderVariables(pd3dDevice, pd3dCommandList);
 }
@@ -821,7 +839,6 @@ void CHitEffectObjectsShader::BuildObjects(ID3D12Device5* pd3dDevice, ID3D12Grap
 	m_ppObjects[0]->SetPosition(XMFLOAT3(0.2f, 1.114f, 3.7f));
 	m_ppObjects[0]->SetScale(0.5f, 0.5f, 0.5f);
 	//m_ppObjects[0]->Rotate(0.0f, 0.0f, 58.449f);
-
 	pHit->AddRef();
 
 	CreateShaderVariables(pd3dDevice, pd3dCommandList);

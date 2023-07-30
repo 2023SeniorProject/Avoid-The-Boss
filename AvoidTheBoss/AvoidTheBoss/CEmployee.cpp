@@ -20,26 +20,22 @@ CEmployee::CEmployee(ID3D12Device5* pd3dDevice, ID3D12GraphicsCommandList4* pd3d
 	m_nCharacterType = nType;
 	m_pCamera = ChangeCamera(FIRST_PERSON_CAMERA, 0.0f);
 
-
-	// 1 인칭 애니메이션 로드
-	{
+	// 1 인칭 애니메이션 로드	
 		//달리기, 버튼, 느리게 걷기, 대기
-		CLoadedModelInfo* pEmployeeModel = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, g_pstrFirstCharactorRefernece[(int)m_nCharacterType], NULL, Layout::PLAYER);
-		SetChild(pEmployeeModel->m_pModelRootObject, true);
+		CLoadedModelInfo* pEmployeeModel1v = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, g_pstrFirstCharactorRefernece[(int)m_nCharacterType], NULL, Layout::PLAYER);
+		SetChild(pEmployeeModel1v->m_pModelRootObject, true);
 
-		m_pSkinnedAnimationController2 = new CAnimationController(pd3dDevice, pd3dCommandList, 4, pEmployeeModel);
+		m_pSkinnedAnimationController2 = new CAnimationController(pd3dDevice, pd3dCommandList, 4, pEmployeeModel1v);
 		m_pSkinnedAnimationController2->SetTrackAnimationSet(0, 3);//idle
 		m_pSkinnedAnimationController2->SetTrackAnimationSet(1, 0);//run
 		m_pSkinnedAnimationController2->SetTrackAnimationSet(2, 2);//slow_walk (절뚝거리기)
 		m_pSkinnedAnimationController2->SetTrackAnimationSet(3, 1);//button
 
-	}
 	// 3인칭 애니메이션 로드
-	{
-		CLoadedModelInfo* pEmployeeModel = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, g_pstrThirdCharactorRefernece[(int)m_nCharacterType], NULL, Layout::PLAYER);
-		SetChild(pEmployeeModel->m_pModelRootObject, true);
+		CLoadedModelInfo* pEmployeeModel3v = CGameObject::LoadGeometryAndAnimationFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, g_pstrThirdCharactorRefernece[(int)m_nCharacterType], NULL, Layout::PLAYER);
+		SetChild(pEmployeeModel3v->m_pModelRootObject, true);
 
-		m_pSkinnedAnimationController1 = new CAnimationController(pd3dDevice, pd3dCommandList, 7, pEmployeeModel);
+		m_pSkinnedAnimationController1 = new CAnimationController(pd3dDevice, pd3dCommandList, 7, pEmployeeModel3v);
 
 		//필요없는 애니메이션
 		m_pSkinnedAnimationController1->SetTrackAnimationSet(0, 2);//idle x
@@ -50,7 +46,7 @@ CEmployee::CEmployee(ID3D12Device5* pd3dDevice, ID3D12GraphicsCommandList4* pd3d
 		m_pSkinnedAnimationController1->SetTrackAnimationSet(5, 5);//stand (쓰러진 상태에서 일어나기) ㅇ
 		m_pSkinnedAnimationController1->SetTrackAnimationSet(6, 6);//button ㅇ
 		m_pSkinnedAnimationController1->SetTrackAnimationSet(7, 7);//만세 X
-	}
+	
 
 	if (m_pCamera->m_nMode == (DWORD)FIRST_PERSON_CAMERA)
 		//달리기, 버튼, 느리게 걷기, 대기
@@ -85,8 +81,10 @@ CEmployee::CEmployee(ID3D12Device5* pd3dDevice, ID3D12GraphicsCommandList4* pd3d
 		m_pSkinnedAnimationController1->SetTrackEnable(7, false);
 
 	}
-
 	CreateShaderVariables(pd3dDevice, pd3dCommandList);
+
+	if (pEmployeeModel1v)delete pEmployeeModel1v;
+	if (pEmployeeModel3v)delete pEmployeeModel3v;
 }
 
 CEmployee::~CEmployee()

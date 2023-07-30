@@ -89,6 +89,7 @@ CEmployee::CEmployee(ID3D12Device5* pd3dDevice, ID3D12GraphicsCommandList4* pd3d
 
 CEmployee::~CEmployee()
 {
+	delete[] m_pSwitches;
 }
 
 CCamera* CEmployee::ChangeCamera(DWORD nNewCameraMode, float fTimeElapsed)
@@ -891,7 +892,6 @@ void CEmployee::AnimTrackUpdate()
 
 CGenerator* CEmployee::GetAvailGen()
 {
-	
 	CGameScene* gs = static_cast<CGameScene*>(mainGame.m_SceneManager->GetSceneByIdx((int32)CGameFramework::SCENESTATE::INGAME));
 	for (int i = 0; i < 3; ++i)
 	{
@@ -950,9 +950,7 @@ CEmployee* CEmployee::GetAvailEMP()
 void CEmployee::PlayerAttacked()
 {
 	if (m_hp > 0)
-	{
-		
-	
+	{	
 		m_hp -= 1;
 		m_bIsInvincibility = true;
 
@@ -990,6 +988,8 @@ bool CEmployee::GenTasking()
 {
 	CGenerator* targetGen = GetAvailGen();
 	
+	if (!targetGen) return false;
+
 	if(targetGen)std::cout << targetGen->m_idx << "Available\n";
 	
 	//  F키를 눌렀고, 구하기 상호작용 중이 아닐 때
@@ -1023,14 +1023,7 @@ bool CEmployee::GenTasking()
 					std::cout << "Cancel\n";
 					SetGenInteraction(false);
 					SetBehavior(PLAYER_BEHAVIOR::IDLE);
-					if (targetGen) {
-						SoundManager::SoundStop(6);
-						targetGen->SetInteractionOn(false);
-						targetGen->SetbIsStartGenInter(false);
-						std::cout << "startGenInteraction : " << targetGen->GetbIsStartGenInter() << std::endl;
-	
-					}				
-					
+					if (targetGen) targetGen->SetInteractionOn(false);					
 					//========= 패킷 송신 처리 ==============
 					SC_EVENTPACKET packet;
 					packet.eventId = m_curInterGen + (int32)EVENT_TYPE::SWITCH_ONE_END_EVENT;

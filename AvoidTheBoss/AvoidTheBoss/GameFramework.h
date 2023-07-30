@@ -5,7 +5,6 @@
 
 #include "Camera.h"
 #include "DXSampleHelper.h"
-
 //#include "DXRHelpers/nv_helpers_dx12/TopLevelASGenerator.h"
 
 class CSound;
@@ -100,10 +99,7 @@ protected:
 	UINT64						m_nFenceValues[m_nSwapChainBuffers];
 	HANDLE						m_hFenceEvent;
 	//펜스 인터페이스 포인터, 펜스의 값, 이벤트 핸들이다.
-
-	//다음은 게임 프레임워크에서 사용할 타이머이다. 
 	
-
 	//다음은 프레임 레이트를 주 윈도우의 캡션에 출력하기 위한 문자열이다. 
 	WCHAR										m_pszFrameRate[500];
 public:
@@ -128,7 +124,7 @@ public:
 	void OnDestroy();
 
 	void CreateSwapChain();
-	void CreateDirect3DDevice();	//createDirect3DDisplay()
+	void CreateDirect3DDevice();	
 	void CreateCommandQueueAndList();
 	//스왑 체인, 디바이스, 서술자 힙, 명령 큐/할당자/리스트를 생성하는 함수이다. 
 	

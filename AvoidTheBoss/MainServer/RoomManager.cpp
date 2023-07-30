@@ -38,8 +38,9 @@ void Room::UserOut(int32 sid)
 			{
 				_gameLogic.ResetGame();
 				SC_EVENTPACKET packet;
-				packet.type = (uint8)EVENT_TYPE::EMP_WIN;
+				packet.type = (uint8)SC_GAME_PACKET_TYPE::GAMEEVENT;
 				packet.size = sizeof(SC_EVENTPACKET);
+				packet.eventId = (uint8)EVENT_TYPE::EMP_WIN;
 				BroadCastingExcept(&packet, sid);
 				
 

@@ -84,7 +84,7 @@ public:
 
 	void ResetState()
 	{
-		float m_curGuage = 0;
+		m_curGuage = 0;
 		m_bGenActive = false; // --> 발전기가 활성화 되었는가
 		m_bOnInteraction = false; // --> 발전기가 상호작용 중인가?
 		m_bAlreadyOn = false;

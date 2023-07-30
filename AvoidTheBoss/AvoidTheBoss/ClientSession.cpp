@@ -328,7 +328,7 @@ void CSession::ProcessPacket(char* packet)
 		if (gev->eventId == (uint8)EVENT_TYPE::BOSS_WIN || gev->eventId == (uint8)EVENT_TYPE::EMP_WIN)
 		{
 			std::cout << "Go to Result\n";
-			gs->ResetGame();
+			
 			if (gev->eventId == (uint8)EVENT_TYPE::BOSS_WIN) rrs->m_case = 1;
 			if (gev->eventId == (uint8)EVENT_TYPE::EMP_WIN) rrs->m_case = 0;
 
@@ -336,6 +336,8 @@ void CSession::ProcessPacket(char* packet)
 			mainGame.scLock.lock();
 			mainGame.ChangeScene(CGameFramework::SCENESTATE::RESULT);
 			mainGame.scLock.unlock();
+			mainGame.m_curFrame = 0;
+			gs->ResetGame();
 		}
 		else
 		{

@@ -1367,6 +1367,14 @@ void CFrontDoor::Animate(float fTimeElapsed)
 		}
 		CGameObject::Animate(fTimeElapsed);
 	}
+	else
+	{
+		
+			XMMATRIX xmmtxTranslate = DirectX::XMMatrixTranslation(0.0f, 0.0f, 0);
+			m_pRightDoorFrame->m_xmf4x4ToParent = Matrix4x4::Multiply(xmmtxTranslate, m_pRightDoorFrame->m_xmf4x4ToParent);
+			m_pLeftDoorFrame->m_xmf4x4ToParent = Matrix4x4::Multiply(xmmtxTranslate, m_pRightDoorFrame->m_xmf4x4ToParent);
+		
+	}
 }
 
 CEmergencyDoor::CEmergencyDoor()
@@ -1395,6 +1403,11 @@ void CEmergencyDoor::Animate(float fTimeElapsed)
 			m_AnimationDegree = 0.0f;
 		}
 		CGameObject::Animate(fTimeElapsed);
+	}
+	else
+	{
+		XMMATRIX xmmtxRotate = XMMatrixRotationY(XMConvertToRadians(XMConvertToRadians(0)));
+		m_xmf4x4ToParent = Matrix4x4::Multiply(xmmtxRotate, m_xmf4x4ToParent);
 	}
 }
 
@@ -1428,6 +1441,11 @@ void CShutterDoor::Animate(float fTimeElapsed)
 			}
 		}
 		CGameObject::Animate(fTimeElapsed);
+	}
+	else
+	{
+		XMMATRIX xmmtxTranslate = DirectX::XMMatrixTranslation(0.0f, 0.0f, 0);
+		m_pShutter->m_xmf4x4ToParent = Matrix4x4::Multiply(xmmtxTranslate, m_pShutter->m_xmf4x4ToParent);
 	}
 }
 

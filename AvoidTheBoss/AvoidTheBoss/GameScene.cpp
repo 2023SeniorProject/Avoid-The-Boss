@@ -558,6 +558,14 @@ void CGameScene::ResetGame()
 	m_ExitedPlayerCnt = 0;
 	m_remainPlayerCnt = 0;
 	
+	
+	
+	static_cast<CDoorObjectsShader*>(m_ppShaders[2])->m_ppObjects[0]->SetPosition(XMFLOAT3(0.0f, 0.0f, 0.0f));
+	static_cast<CDoorObjectsShader*>(m_ppShaders[2])->m_ppObjects[1]->SetPosition(XMFLOAT3(-25.60735f, 0.01800204f, -22.68291f));
+	static_cast<CDoorObjectsShader*>(m_ppShaders[2])->m_ppObjects[2]->SetPosition(XMFLOAT3(25.60001f, 0.01550287f, -21.44026f));
+	static_cast<CDoorObjectsShader*>(m_ppShaders[2])->m_ppObjects[3]->SetPosition(XMFLOAT3(-0.044f, -0.5005361f, 0.06f));
+	static_cast<CDoorObjectsShader*>(m_ppShaders[2])->m_ppObjects[4]->SetPosition(XMFLOAT3(50.43907f, -0.503039f, -0.1099938f));
+	
 	SoundManager::GetInstance().SoundStop(5);
 }
 

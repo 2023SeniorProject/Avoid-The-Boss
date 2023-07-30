@@ -155,6 +155,7 @@ void CGenerator::PipelineAnimate(float fTimeElapsed)
 
 					XMMATRIX xmmtxTranslate = DirectX::XMMatrixTranslation(0.0f, delta, 0.0f);
 					m_ppPipe[i]->m_xmf4x4ToParent = Matrix4x4::Multiply(xmmtxTranslate, m_ppPipe[i]->m_xmf4x4ToParent);
+
 				}
 				else if (m_nGenerPipeAnimationCount[i] <= 8 && m_nGenerPipeAnimationCount[i] > 0)
 				{

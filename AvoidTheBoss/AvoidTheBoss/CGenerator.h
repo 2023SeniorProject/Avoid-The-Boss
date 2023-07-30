@@ -14,7 +14,6 @@ public:
 	CGameObject** m_ppPipe = NULL;
 	CGameObject* m_pButton = NULL;
 	CGameObject* m_pBody = NULL;
-
 public: //06-03 추가
 	int m_idx = -1;
 	float m_maxGuage = 100;
@@ -88,6 +87,12 @@ public:
 		m_bGenActive = false; // --> 발전기가 활성화 되었는가
 		m_bOnInteraction = false; // --> 발전기가 상호작용 중인가?
 		m_bAlreadyOn = false;
+
+		m_ppPipe[0]->SetPosition(0.09313595f, 1.839607f,-0.1005933f);
+		m_ppPipe[1]->SetPosition(0.09313595f, 1.839607f,-0.4108887f);
+		m_ppPipe[2]->SetPosition(0.09313595f, 1.839607f,-0.7232422f);
+		m_pBody->SetPosition(0.0f, 0.0f, 0.0f);
+
 	};
 	bool m_bIsStartGenInter = false;
 	void SetbIsStartGenInter(bool value) { m_bIsStartGenInter = value; }

@@ -208,7 +208,8 @@ void CSession::ProcessPacket(char* packet)
 	{
 		
 		S2C_ROOM_LIST* rp = (S2C_ROOM_LIST*)packet;;
-		ls->UpdateRoomStatus(rp->rmNum, rp->member);	
+		ls->UpdateRoomStatus(rp->rmNum, rp->member);
+		std::cout << "RM" << (int32)rp->rmNum << " MEMBER:" << (int32)rp->member << "\n";
 	}
 		break;
 	
@@ -240,33 +241,33 @@ void CSession::ProcessPacket(char* packet)
 		rs->m_memLock.lock();
 		for (int i = 0; i < PLAYERNUM; ++i) rs->m_members[i].m_sid = rp->sids[i];
 		for (int i = 0; i < PLAYERNUM; ++i) rs->m_members[i].isReady = rp->rd[i];
+
 		rs->m_memLock.unlock();
 	}
 	break;
 	case (uint8)S_ROOM_PACKET_TYPE::GAME_START:
 	{
 		// ================= 플레이어 초기 위치 초기화 ==================
-		rs->m_memLock.lock();
-		for (int i = 0; i < PLAYERNUM; ++i)
-		{
-			rs->m_members[i].m_sid = -1;
-			rs->m_members->isReady = false;
-		}
-		rs->m_memLock.unlock();
+		
 
 		 gs->InitGame(packet, _sid);
-		 if(gs->m_playerIdx == 0)rrs->m_case = 0;
-		 else rrs->m_case = 1;
+		
+
 		// ================= 카메라 셋팅 ================================
-		std::wstring str = L"Client";
-		str.append(std::to_wstring(mainGame.m_curScene));
-		::SetConsoleTitle(str.c_str());
 		mainGame.m_UIRenderer->InitGameSceneUI(gs);
 
 		mainGame.scLock.lock();
 		mainGame.ChangeScene(CGameFramework::SCENESTATE::INGAME);
 		mainGame.scLock.unlock();
 		gs->InitScene();
+		rs->m_memLock.lock();
+
+		for (int i = 0; i < PLAYERNUM; ++i)
+		{
+			rs->m_members[i].m_sid = -1;
+			rs->m_members->isReady = false;
+		}
+		rs->m_memLock.unlock();
 	}
 	break;
 #pragma endregion

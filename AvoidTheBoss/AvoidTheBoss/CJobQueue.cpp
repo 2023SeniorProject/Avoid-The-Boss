@@ -32,7 +32,6 @@ void Scheduler::DoTasks()
 		queueEvent* jobElem = _TaskQueue.top(); // 가장 우선적으로 나와야할 이벤트에 대해서
 		if (_CurrentTick < jobElem->generateTime)
 		{
-			std::cout << _CurrentTick << " | " << jobElem->generateTime << " Not Yet\n";
 			// 팝하고 다시 집어넣는다.
 			_TaskQueue.pop();
 			_TaskQueue.push(jobElem);

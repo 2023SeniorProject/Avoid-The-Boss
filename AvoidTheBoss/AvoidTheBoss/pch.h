@@ -10,7 +10,7 @@
 
 #ifdef _DEBUG
 #pragma comment(lib, "Debug\\CoreEngine.lib")
-//#pragma comment(linker, "/entry:wWinMainCRTStartup /subsystem:console")
+#pragma comment(linker, "/entry:wWinMainCRTStartup /subsystem:console")
 #else
 #pragma comment(lib, "Release\\CoreEngine.lib")
 #endif

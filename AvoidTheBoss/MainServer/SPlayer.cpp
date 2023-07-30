@@ -84,7 +84,7 @@ void SPlayer::LateUpdate(float fTimeElapsed)
 
 void SPlayer::ResetState()
 {
-	m_hp = 5;
+	m_hp = 3;
 	m_behavior = (int32)PLAYER_BEHAVIOR::IDLE;
 	m_hide = false;
 	m_sid = -1;

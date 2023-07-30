@@ -544,6 +544,10 @@ void CGameScene::ExitReady()
 
 void CGameScene::ResetGame()
 {
+	{
+		std::unique_lock<std::shared_mutex> wl(m_jobQueueLock);
+		m_jobQueue->Clear();
+	}
 	// 플레이어 상태 초기화
 	for (auto& i : m_players) if(i) i->ResetState();
 	
@@ -555,6 +559,7 @@ void CGameScene::ResetGame()
 	m_curFrame = 0;
 	m_ExitedPlayerCnt = 0;
 	m_remainPlayerCnt = 0;
+	
 	
 }
 

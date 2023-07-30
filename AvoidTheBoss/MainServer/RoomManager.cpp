@@ -25,100 +25,121 @@ void Room::UserOut(int32 sid)
 {
 	int idx = 0;
 
-
-	if (_gameLogic._gState == GAMESTATE::IN_GAME)
-	{
-		_gameLogic.GetPlayerBySid(sid).SetVelocity(XMFLOAT3(0, 0, 0)); // 속도 0
-		idx = _gameLogic.GetPlayerBySid(sid).m_idx; /// 인덱스 가져오기
-		_gameLogic.GetPlayerBySid(sid).m_hide = true; // 업데이트 false로 
-		
-		if (idx == 0) // 사장 플레이어가 나간 경우
-		{
-			_gameLogic.ResetGame();
-			SC_EVENTPACKET packet;
-			packet.type = (uint8)EVENT_TYPE::EMP_WIN;
-			packet.size = sizeof(SC_EVENTPACKET);
-			BroadCastingExcept(&packet, sid);
-			std::cout << "GAME END\n";
-
-			{
-				// cList Lock 쓰기 호출	
-				std::unique_lock<std::shared_mutex> wll(_listLock);
-				_memCnt.fetch_sub(1);
-
-				for (int i = 0; i < PLAYERNUM; ++i)
-				{
-						_cArr[i].sid = -1;
-						_cArr[i].isReady = false;
-				}
-				SendRoomListPacket();
-			}
-		}
-		else 
-		{
-			_gameLogic.GetPlayerBySid(sid).SetBehavior(PLAYER_BEHAVIOR::CRAWL);
-		}
-	}
-
-
-	{
-		// cList Lock 쓰기 호출	
-		std::unique_lock<std::shared_mutex> wll(_listLock);
-		_memCnt.fetch_sub(1);
-		
-		for (int i = 0; i < PLAYERNUM; ++i)
-		{
-			if (sid == _cArr[i].sid)
-			{
-				_cArr[i].sid = -1;
-				_cArr[i].isReady = false;
-				break;
-			}
-		}
-		SendRoomListPacket();
-	}
-
-	
-
-	std::cout << "LEFT USER SID LIST [";
-	for (auto i : _cArr) if(-1 != i.sid) std::cout << (int32)i.sid << "|";
-	std::cout << " ]\n";
-	
 	if (_status == (uint8)ROOM_STATUS::INGAME)
 	{
-		SC_EVENTPACKET packet;
-		packet.size = sizeof(SC_EVENTPACKET);
-		packet.type = (uint8)SC_GAME_PACKET_TYPE::GAMEEVENT;
-		packet.eventId = (uint8)EVENT_TYPE::HIDE_PLAYER_ONE + idx;
-		BroadCasting(&packet);
-	}
-	else if (_status == (uint8)ROOM_STATUS::NOT_FULL || _status == (uint8)ROOM_STATUS::FULL) // 아직 게임중이 아닐 경우~
-	{
-		S2C_ROOM_READY rcpacket;
-		rcpacket.type = (uint8)S_ROOM_PACKET_TYPE::REP_READY_CANCEL;
-		rcpacket.size = sizeof(S2C_ROOM_READY);
-		rcpacket.sid = sid;
 
-		BroadCasting(&rcpacket);
-		SendRoomInfoPacket();
+		if (_gameLogic._gState == GAMESTATE::IN_GAME)
+		{
+			_gameLogic.GetPlayerBySid(sid).SetVelocity(XMFLOAT3(0, 0, 0)); // 속도 0
+			idx = _gameLogic.GetPlayerBySid(sid).m_idx; /// 인덱스 가져오기
+			_gameLogic.GetPlayerBySid(sid).m_hide = true; // 업데이트 false로 
+			_gameLogic.GetPlayerBySid(sid).SetBehavior(PLAYER_BEHAVIOR::CRAWL);
+			if (idx == 0) // 사장 플레이어가 나간 경우
+			{
+				_gameLogic.ResetGame();
+				SC_EVENTPACKET packet;
+				packet.type = (uint8)EVENT_TYPE::EMP_WIN;
+				packet.size = sizeof(SC_EVENTPACKET);
+				BroadCastingExcept(&packet, sid);
+				
+
+				{
+					// cList Lock 쓰기 호출	
+					std::unique_lock<std::shared_mutex> wll(_listLock);
+
+
+					for (int i = 0; i < PLAYERNUM; ++i)
+					{
+						_cArr[i].sid = -1;
+						_cArr[i].isReady = false;
+					}
+				}
+				_memCnt.store(0);
+				_status = (uint8)ROOM_STATUS::EMPTY;
+				std::cout << "STRANGE GAME END\n";
+				return;
+			}
+			else
+			{
+				if (_memCnt.load() - 1 < (PLAYERNUM - 1))
+				{
+					_gameLogic.ResetGame();
+					SC_EVENTPACKET packet;
+					packet.type = (uint8)EVENT_TYPE::BOSS_WIN;
+					packet.size = sizeof(SC_EVENTPACKET);
+					BroadCastingExcept(&packet, sid);
+					std::cout << "STRANGE GAME END\n";
+
+					{
+						// cList Lock 쓰기 호출	
+						std::unique_lock<std::shared_mutex> wll(_listLock);
+
+
+						for (int i = 0; i < PLAYERNUM; ++i)
+						{
+							_cArr[i].sid = -1;
+							_cArr[i].isReady = false;
+						}
+					}
+					_memCnt.store(0);
+					_status = (uint8)ROOM_STATUS::EMPTY;
+					return;
+				}
+			}
+
+			SC_EVENTPACKET packet;
+			packet.size = sizeof(SC_EVENTPACKET);
+			packet.type = (uint8)SC_GAME_PACKET_TYPE::GAMEEVENT;
+			packet.eventId = (uint8)EVENT_TYPE::HIDE_PLAYER_ONE + idx;
+			BroadCastingExcept(&packet, sid);
+			
+		}
+	}
+	else
+	{
+		{
+			// cList Lock 쓰기 호출	
+			std::unique_lock<std::shared_mutex> wll(_listLock);
+			for (int i = 0; i < PLAYERNUM; ++i)
+			{
+				if (sid == _cArr[i].sid)
+				{
+					_cArr[i].sid = -1;
+					_cArr[i].isReady = false;
+					_memCnt.fetch_sub(1);
+				}
+			}
+
+			if (_status == (uint8)ROOM_STATUS::FULL) _status = (uint8)ROOM_STATUS::NOT_FULL;
+
+			std::cout << "LEFT USER SID LIST [";
+			for (auto i : _cArr)  std::cout << (int32)i.sid << "|";
+			std::cout << " ]\n";
+
+			SendRoomListPacket();
+
+		}
+
+		// 방이 폭파되는 경우.. 게임을 리셋한다.
+		if (IsDestroyRoom())
+		{
+			_status = (uint8)ROOM_STATUS::EMPTY;
+			{
+				std::unique_lock<std::shared_mutex> wll(_listLock);
+				for (auto& i : _cArr) i.sid = -1;
+				for (auto& i : _cArr) i.isReady = false;
+			}
+			std::cout << "Destroy Room\n";
+		}
 	}
 	
-	// 방이 폭파되는 경우.. 게임을 리셋한다.
-	if (IsDestroyRoom()) 
-	{
-		_gameLogic.ResetGame();
-		_status = (uint8)ROOM_STATUS::EMPTY;
-		for (auto& i : _cArr) i.sid = false;
-		for (auto& i : _cArr) i.isReady = false;
-		std::cout << "Destroy Room\n";
-	}
-	SendRoomListPacket();
+	SendRoomInfoPacket();
 }
 
 void Room::UserIn(int32 sid)
 {
 
-	std::cout << sid << " Try Enter Room\n";
+	
 	S2C_ROOM_ENTER packet;
 	packet.size = sizeof(S2C_ROOM_ENTER);
 	packet.type = (uint8)S_ROOM_PACKET_TYPE::REP_ENTER_OK;
@@ -151,6 +172,10 @@ void Room::UserIn(int32 sid)
 					break;
 				}
 			}
+			std::cout << "LEFT USER SID LIST [";
+			for (auto i : _cArr)  std::cout << (int32)i.sid << "|";
+			std::cout << " ]\n";
+
 			SendRoomListPacket();
 
 		}
@@ -251,8 +276,6 @@ void Room::Update()
 	{
 		_status = (uint8)ROOM_STATUS::FULL;
 
-		
-
 		SC_EVENTPACKET packet;
 		packet.size = sizeof(SC_EVENTPACKET);
 		packet.type = (uint8)SC_GAME_PACKET_TYPE::GAMEEVENT;
@@ -260,7 +283,7 @@ void Room::Update()
 		else  packet.eventId = (uint8)EVENT_TYPE::EMP_WIN;
 
 		BroadCasting(&packet);
-		std::cout << "Game END\n";
+		std::cout << "Normal Game END\n";
 
 		for (auto& i : _cArr)
 		{
@@ -282,6 +305,7 @@ void Room::AddEvent(QueueEvent* qe)
 }
 void Room::SendRoomListPacket()
 {
+	
 	S2C_ROOM_LIST rmpacket; // 로비에서 리스트를 갱신하기 위한 패킷
 	rmpacket.size = sizeof(S2C_ROOM_LIST);
 	rmpacket.type = (int8)S_ROOM_PACKET_TYPE::UPDATE_LIST;
@@ -319,10 +343,13 @@ void Room::InitGame()
 		S2C_GAMESTART packet;
 		packet.size = sizeof(S2C_GAMESTART);
 		packet.type = (uint8)S_ROOM_PACKET_TYPE::GAME_START;
-		for (int i = 0; i < PLAYERNUM; ++i)
+
 		{
-			packet.sids[i] = _cArr[i].sid;
-			_gameLogic.SetPlayerSidAndIdx(_cArr[i].sid,i);
+			for (int i = 0; i < PLAYERNUM; ++i)
+			{
+				packet.sids[i] = _cArr[i].sid;
+				_gameLogic.SetPlayerSidAndIdx(_cArr[i].sid, i);
+			}
 		}
 		BroadCasting(&packet);
 		std::cout << "TOTAL USER SID LIST[";
@@ -330,8 +357,10 @@ void Room::InitGame()
 		for (int i = 0; i < 4; ++i) std::cout << _gameLogic._players[i].m_sid << " | ";
 		std::cout << "]\n";
 
-		for (auto& i : _cArr) i.isReady = false;
-		
+		{
+			shared_lock<std::shared_mutex> rl(_listLock);
+			for (auto& i : _cArr) i.isReady = false;
+		}
 		_gameLogic.InitGame();
 		_timer.Reset();
 		_status = (uint8)ROOM_STATUS::INGAME;
@@ -345,8 +374,12 @@ void Room::UpdateReady(int32 idx, bool val)
 bool Room::IsGameStartAvailable()
 {
 	 int cnt = 0;  
-	 for (int i = 0; i < 4; ++i) if (_cArr[i].isReady) ++cnt; 
-	 return (PLAYERNUM == cnt); 
+
+	 {
+		 shared_lock<std::shared_mutex> rl(_listLock);
+		 for (int i = 0; i < 4; ++i) if (_cArr[i].isReady) ++cnt;
+		 return (PLAYERNUM == cnt);
+	 }
 }
 
 // ======= RoomManager ========

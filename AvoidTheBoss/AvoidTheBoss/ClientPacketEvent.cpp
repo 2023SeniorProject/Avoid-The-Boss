@@ -64,6 +64,7 @@ void InteractionEvent::Task()
 	{
 		CBoss* boss = static_cast<CBoss*>(gc->m_players[0]);
 		if (boss == nullptr) break;
+		boss->SetOnAttack(true);
 		boss->SetAttackAnimOtherClient();
 
 	}

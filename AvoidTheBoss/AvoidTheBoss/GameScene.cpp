@@ -558,6 +558,6 @@ void CGameScene::ResetGame()
 	m_ExitedPlayerCnt = 0;
 	m_remainPlayerCnt = 0;
 	
-	
+	SoundManager::GetInstance().SoundStop(5);
 }
 

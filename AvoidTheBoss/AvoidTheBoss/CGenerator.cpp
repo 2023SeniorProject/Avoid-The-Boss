@@ -75,7 +75,7 @@ void CGenerator::Update(float fTimeElapsed)
 		if (!GetbIsStartGenInter())
 		{
 			SoundManager::GetInstance().PlayObjectSound(17, 6);
-			//SoundManager::GetInstance().PlayObjectSound(6, 6);
+			
 			SetbIsStartGenInter(true);
 			std::cout << "startGenInteractionTrue : " << GetbIsStartGenInter() << std::endl;
 		}
@@ -86,7 +86,7 @@ void CGenerator::Update(float fTimeElapsed)
 		{
 			SoundManager::GetInstance().SoundStop(6);
 			SetbIsStartGenInter(false);
-			std::cout << "startGenInteractionFalse : " << GetbIsStartGenInter() << std::endl;
+			
 		}
 	}
 	if (m_bGenActive)

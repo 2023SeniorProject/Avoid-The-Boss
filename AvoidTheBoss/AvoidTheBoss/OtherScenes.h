@@ -43,9 +43,13 @@ class CTitleScene : public CScene
 {
 	int32 focus = 0;
 	bool cap = false;
-	CPlayer* m_player = NULL;
+	
+	
+
 	Timer m_timer;
 public:
+	std::mutex loginLock;
+	bool m_login = false;
 	CTitleScene() {}
 	~CTitleScene() {}
 	virtual void BuildObjects(ID3D12Device5* pd3dDevice, ID3D12GraphicsCommandList4* pd3dCommandList);
@@ -117,7 +121,11 @@ public:
 	{
 		m_timer.Tick(0.0f);
 		if (m_showTime > 0) m_showTime -= m_timer.GetTimeElapsed();
-		if (m_showTime < 0) mainGame.ChangeScene(CGameFramework::SCENESTATE::LOBBY);
+		if (m_showTime < 0)
+		{	
+			m_showTime = 4.0f;
+			mainGame.ChangeScene(CGameFramework::SCENESTATE::LOBBY);
+		}
 	};
 	void ReleaseObjects() {}
 	virtual void Render(ID3D12GraphicsCommandList4* pd3dCommandList, CCamera* pCamera, bool bRaster) {};

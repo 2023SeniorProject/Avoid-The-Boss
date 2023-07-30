@@ -233,7 +233,11 @@ void CTitleScene::Update(HWND& hWnd)
 			{
 				mainGame.m_UIRenderer->m_LoginResult[i].animTime = 1.0f;
 				mainGame.m_UIRenderer->m_LoginResult[i].m_hide = true;
-				if (0 == i) mainGame.ChangeScene(CGameFramework::SCENESTATE::LOBBY);
+				if (m_login && 0 == i)
+				{
+					mainGame.ChangeScene(CGameFramework::SCENESTATE::LOBBY);
+					m_login = false;
+				}
 			}
 			
 			break;

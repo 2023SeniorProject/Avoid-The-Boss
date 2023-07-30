@@ -43,9 +43,13 @@ class CTitleScene : public CScene
 {
 	int32 focus = 0;
 	bool cap = false;
-	CPlayer* m_player = NULL;
+	
+	
+
 	Timer m_timer;
 public:
+	std::mutex loginLock;
+	bool m_login = false;
 	CTitleScene() {}
 	~CTitleScene() {}
 	virtual void BuildObjects(ID3D12Device5* pd3dDevice, ID3D12GraphicsCommandList4* pd3dCommandList);

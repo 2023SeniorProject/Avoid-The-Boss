@@ -132,7 +132,8 @@ bool CSession::DoRecv()
 void CSession::ProcessPacket(char* packet)
 {
 
-	
+	CTitleScene* ts =
+		static_cast<CTitleScene*>(mainGame.m_SceneManager->GetSceneByIdx((int32)CGameFramework::SCENESTATE::TITLE));
 	CGameScene* gs =
 		static_cast<CGameScene*>(mainGame.m_SceneManager->GetSceneByIdx((int32)CGameFramework::SCENESTATE::INGAME));
 	CLobbyScene* ls = static_cast<CLobbyScene*>(mainGame.m_SceneManager->GetSceneByIdx((int32)CGameFramework::SCENESTATE::LOBBY));
@@ -156,7 +157,9 @@ void CSession::ProcessPacket(char* packet)
 		std::cout << _sid << "\n";
 		CScene::m_sid = lo->sid;
 		CScene::m_cid = lo->cid;
-
+		ts->loginLock.lock();
+		ts->m_login = true;
+		ts->loginLock.unlock();
 		mainGame.m_UIRenderer->m_LoginResult[0].m_hide = false;
 		mainGame.m_UIRenderer->m_LoginResult[1].m_hide = true;
 		mainGame.m_UIRenderer->m_LoginResult[2].m_hide = true;

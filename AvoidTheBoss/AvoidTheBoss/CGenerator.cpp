@@ -66,33 +66,34 @@ void CGenerator::Update(float fTimeElapsed)
 		packet.size = sizeof(SC_EVENTPACKET);
 		packet.eventId = (uint8)EVENT_TYPE::SWITCH_ONE_ACTIVATE_EVENT + m_idx;
 		clientCore.DoSend(&packet);
-		std::cout << m_idx << ") Gen Active\n";
 		CGameScene* gs = static_cast<CGameScene*>(mainGame.m_SceneManager->GetSceneByIdx(3));
 		static_cast<CEmployee*>(gs->GetScenePlayerByIdx(gs->m_playerIdx))->m_activeCnt += 1;
 	}
 	if (m_bOnInteraction || m_bAlreadyOn)
 	{
+		SoundManager::GetInstance().PlayObjectSound(17, 11);
 		if (!GetbIsStartGenInter())
 		{
-			SoundManager::GetInstance().PlayObjectSound(17, 6);
+			
 			
 			SetbIsStartGenInter(true);
-			std::cout << "startGenInteractionTrue : " << GetbIsStartGenInter() << std::endl;
+			
 		}
 	}
 	else
 	{
+		SoundManager::GetInstance().SoundStop(11);
 		if (GetbIsStartGenInter())
 		{
-			SoundManager::GetInstance().SoundStop(6);
+		
 			SetbIsStartGenInter(false);
 			
 		}
 	}
 	if (m_bGenActive)
-		SoundManager::GetInstance().SetVolum(6, 0.1f);
+		SoundManager::GetInstance().SetVolum(11, 0.3f);
 	else
-		SoundManager::GetInstance().SetVolum(6, 0.5f);
+		SoundManager::GetInstance().SetVolum(11, 0.3f);
 }
 
 void CGenerator::OnPrepareAnimate()

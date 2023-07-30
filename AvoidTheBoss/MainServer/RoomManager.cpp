@@ -27,13 +27,14 @@ void Room::UserOut(int32 sid)
 
 	if (_status == (uint8)ROOM_STATUS::INGAME)
 	{
+		_gameLogic.GetPlayerBySid(sid).SetVelocity(XMFLOAT3(0, 0, 0)); // 속도 0
+		idx = _gameLogic.GetPlayerBySid(sid).m_idx; /// 인덱스 가져오기
+		_gameLogic.GetPlayerBySid(sid).m_hide = true; // 업데이트 false로 
+		_gameLogic.GetPlayerBySid(sid).SetBehavior(PLAYER_BEHAVIOR::CRAWL);
 		
 		if (_gameLogic._gState == GAMESTATE::IN_GAME)
 		{
-			_gameLogic.GetPlayerBySid(sid).SetVelocity(XMFLOAT3(0, 0, 0)); // 속도 0
-			idx = _gameLogic.GetPlayerBySid(sid).m_idx; /// 인덱스 가져오기
-			_gameLogic.GetPlayerBySid(sid).m_hide = true; // 업데이트 false로 
-			_gameLogic.GetPlayerBySid(sid).SetBehavior(PLAYER_BEHAVIOR::CRAWL);
+			
 			if (idx == 0) // 사장 플레이어가 나간 경우
 			{
 				_gameLogic.ResetGame();

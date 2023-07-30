@@ -93,6 +93,12 @@ public:
 		m_ppPipe[2]->SetPosition(0.09313595f, 1.839607f,-0.7232422f);
 		m_pBody->SetPosition(0.0f, 0.0f, 0.0f);
 
+		for (int i = 0; i < m_nPipe; i++)
+		{
+			m_nPipeStartAnimation[i] = false;
+			m_nGenerPipeAnimationCount[i] = 0;
+		}
+
 	};
 	bool m_bIsStartGenInter = false;
 	void SetbIsStartGenInter(bool value) { m_bIsStartGenInter = value; }

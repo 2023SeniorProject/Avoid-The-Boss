@@ -529,21 +529,23 @@ void CBoss::AnimTrackUpdate()
 			if (GetOnMoveSound())
 			{
 				SetOnMoveSound(false);
-				SoundManager::SoundStop(4);
+				SoundManager::GetInstance().SoundStop(4);
 			}
 			break;
 		case(int32)PLAYER_BEHAVIOR::RUN:
 			SetRunAnimTrack();
 			if (!GetOnMoveSound())
 			{
-				SoundManager::GetInstance().PlayObjectSound(10, 4);
 				SetOnMoveSound(true);
+				
 			}
 			break;
 		case (int32)PLAYER_BEHAVIOR::ATTACK:
+			SoundManager::GetInstance().SoundStop(4);
 			SetAttackAnimTrack();
 			break;
 		case (int32)PLAYER_BEHAVIOR::RUN_ATTACK:
+			SetRunAttackAnimTrack();
 			break;
 	}
 }
@@ -566,7 +568,7 @@ uint8 CBoss::ProcessInput()
 	if (InputManager::GetInstance().GetKeyBuffer(KEY_TYPE::SPACE) == (uint8)KEY_STATUS::KEY_PRESS && !GetOnAttack())
 	{
 		SetOnAttack(true);
-		SoundManager::GetInstance().PlayObjectSound(2, 3);
+		SoundManager::GetInstance().PlayObjectSound(2, 6);
 
 		C2S_ATTACK packet;
 		packet.type = (uint8)C_GAME_PACKET_TYPE::CATTACK;
@@ -582,7 +584,7 @@ uint8 CBoss::ProcessInput()
 
 		XMFLOAT3 bossPos = GetPosition();
 		XMFLOAT3 bossDir = GetLook();
-		float rayDist = 10.0f;
+		float rayDist = 5.0f;
 
 		CGameScene* gs = static_cast<CGameScene*>(mainGame.m_SceneManager->GetSceneByIdx((int32)CGameFramework::SCENESTATE::INGAME));
 
@@ -605,7 +607,7 @@ uint8 CBoss::ProcessInput()
 		}
 		m_pBullet->SetOnShoot(true);
 		m_pBullet->SetStartShoot(true);
-		SoundManager::GetInstance().PlayObjectSound(4, 3);
+		SoundManager::GetInstance().PlayObjectSound(4, 5);
 	}
 	if (InputManager::GetInstance().GetKeyBuffer(KEY_TYPE::G) == (uint8)KEY_STATUS::KEY_PRESS)
 	{

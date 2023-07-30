@@ -383,8 +383,7 @@ void CGameScene::Update(HWND& hWnd)
 	}
 	for (int k = 0; k < m_nGenerator; ++k) m_ppGenerator[k]->Update(m_timer.GetTimeElapsed()); // 발전기 업데이트 위치
 	
-	//m_pLights[SPOT_LIGHT].m_xmf3Position = m_players[m_playerIdx]->GetCamera()->GetPosition();
-	//m_pLights[SPOT_LIGHT].m_xmf3Direction = m_players[m_playerIdx]->GetLook();
+	
 
 	mainGame.m_UIRenderer->UpdateGameSceneUI(this);
 
@@ -497,15 +496,15 @@ void CGameScene::InitGame(void* packet, int32 sid)
 	std::cout << "]\n";
 
 	std::cout << "PLAYER_IDX: " << m_playerIdx << "\n";
+
 	m_players[0]->SetPosition(XMFLOAT3(0, 0, -18));
 	if(m_players[1] != nullptr)m_players[1]->SetPosition(XMFLOAT3(10, 0, -18));
 	if(m_players[2] != nullptr)m_players[2]->SetPosition(XMFLOAT3(15, 0, -18));
 	if(m_players[3] != nullptr)m_players[3]->SetPosition(XMFLOAT3(20, 0, -18));
 	m_pCamera = m_players[m_playerIdx]->GetCamera();
-	
 	m_pCamera->m_playerIdx = m_playerIdx;
 	m_pCamera->m_fogOn = true;
-
+	
 	m_players[m_playerIdx]->m_clientType = CLIENT_TYPE::OWNER;
 }
 
@@ -519,10 +518,10 @@ void CGameScene::ExitReady()
 {
 	if (m_bEmpExit) // 탈출 성공 시 , 해야할 일 처리
 	{
-		SoundManager::GetInstance().PlayObjectSound(16, 5);
-		SoundManager::GetInstance().PlayObjectSound(15, 7);
-		SoundManager::GetInstance().PlayObjectSound(18, 5);
-		SoundManager::GetInstance().PlayObjectSound(19, 5);
+		SoundManager::GetInstance().PlayObjectSound(16, 10);
+		SoundManager::GetInstance().PlayObjectSound(15, 10);
+		SoundManager::GetInstance().PlayObjectSound(18, 10);
+		SoundManager::GetInstance().PlayObjectSound(19, 10);
 
 		std::cout << "Exit Ready\n";
 		for (int j = 0; j < m_nShaders; j++)
@@ -543,10 +542,15 @@ void CGameScene::ExitReady()
 void CGameScene::ResetGame()
 {
 	// 사운드 오류 시 제거해야할 부분
-	for (int i = 0; i < 8; i++)
-	{
-		SoundManager::GetInstance().SoundStop(i);
-	}
+	SoundManager::GetInstance().SoundStop(4);
+	SoundManager::GetInstance().SoundStop(7);
+	SoundManager::GetInstance().SoundStop(5);
+	SoundManager::GetInstance().SoundStop(6);
+	SoundManager::GetInstance().SoundStop(8);
+	SoundManager::GetInstance().SoundStop(9);
+	SoundManager::GetInstance().SoundStop(10);
+	SoundManager::GetInstance().SoundStop(11);
+
 
 	{
 		std::unique_lock<std::shared_mutex> wl(m_jobQueueLock);
@@ -555,20 +559,22 @@ void CGameScene::ResetGame()
 	// 플레이어 상태 초기화
 	for (auto& i : m_players) if(i) i->ResetState();
 	
+	m_players[m_playerIdx]->ChangeCamera(FIRST_PERSON_CAMERA, 0);
+	m_players[m_playerIdx]->GetCamera()->CreateShaderVariables(mainGame.m_pd3dDevice, mainGame.m_pd3dCommandList);
+	m_players[m_playerIdx]->GetCamera()->m_playerIdx = -1;
 	// 발전기 상태 초기화
+	
 	for (int i = 0; i < m_nGenerator; ++i) m_ppGenerator[i]->ResetState();
-
+	m_players[m_playerIdx]->m_clientType = CLIENT_TYPE::OTHER_PLAYER;
 	m_playerIdx = -1;
 	m_bEmpExit = false;
 	m_curFrame = 0;
 	m_ExitedPlayerCnt = 0;
 	m_remainPlayerCnt = 0;
+	m_ActiveGeneratorCnt = 0;
 
 	// 모든 조형 객체 ResetState()호출
-	//for (int i = 2; i < 5; i++)
-	//{
-	//	m_ppShaders[i]->ResetState();
-	//}
+	
 
 }
 

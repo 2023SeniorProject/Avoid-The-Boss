@@ -28,6 +28,11 @@ void CGenerator::LogicUpdate()
 	{  
 		m_nPipeStartAnimation[0] = true;	
 		m_nGenerBodyAnimationCount++;
+
+		if (m_nGenerPipeAnimationCount[0] == 4)
+			m_nPipeStartAnimation[1] = true;
+		if (m_nGenerPipeAnimationCount[1] == 4)
+			m_nPipeStartAnimation[2] = true;
 	}
 	else if(!m_bOnInteraction && !m_bAlreadyOn)
 	{
@@ -36,11 +41,6 @@ void CGenerator::LogicUpdate()
 			m_nPipeStartAnimation[i] = false;
 		}	
 	}
-
-	if (m_nGenerPipeAnimationCount[0] == 4)
-		m_nPipeStartAnimation[1] = true;
-	if (m_nGenerPipeAnimationCount[1] == 4)
-		m_nPipeStartAnimation[2] = true; 
 
 	for (int i = 0; i < m_nPipe; i++)
 	{
@@ -80,7 +80,7 @@ void CGenerator::Update(float fTimeElapsed)
 			std::cout << "startGenInteractionTrue : " << GetbIsStartGenInter() << std::endl;
 		}
 	}
-	else if((!m_bOnInteraction && !m_bAlreadyOn) || m_bGenActive)
+	else
 	{
 		if (GetbIsStartGenInter())
 		{
@@ -89,6 +89,8 @@ void CGenerator::Update(float fTimeElapsed)
 			std::cout << "startGenInteractionFalse : " << GetbIsStartGenInter() << std::endl;
 		}
 	}
+	if (m_bGenActive)
+		SoundManager::GetInstance().SetVolum(6, 0.1f);
 }
 
 void CGenerator::OnPrepareAnimate()

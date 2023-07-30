@@ -556,7 +556,7 @@ public:
 		//m_pShutter->SetPosition(0.0f, -5.453176f, 26.3315f);
 		if (m_pShutter)
 		{
-			XMMATRIX xmmtxTranslate = DirectX::XMMatrixTranslation(0.0f, -1.5f,0.0f);
+			XMMATRIX xmmtxTranslate = DirectX::XMMatrixTranslation(0.0f, 0.0f,-1.5f);
 			m_pShutter->m_xmf4x4ToParent = Matrix4x4::Multiply(xmmtxTranslate, m_pShutter->m_xmf4x4ToParent);
 		}
 

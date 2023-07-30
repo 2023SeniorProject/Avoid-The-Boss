@@ -74,15 +74,13 @@ void CGenerator::Update(float fTimeElapsed)
 	{
 		if (!GetbIsStartGenInter())
 		{
-			SoundManager::GetInstance().SoundStop(6);
 			SoundManager::GetInstance().PlayObjectSound(17, 6);
 			//SoundManager::GetInstance().PlayObjectSound(6, 6);
 			SetbIsStartGenInter(true);
+			std::cout << "startGenInteractionTrue : " << GetbIsStartGenInter() << std::endl;
 		}
-		std::cout << "startGenInteractionTrue : " << GetbIsStartGenInter() << std::endl;
-
 	}
-	else
+	else if((!m_bOnInteraction && !m_bAlreadyOn) || m_bGenActive)
 	{
 		if (GetbIsStartGenInter())
 		{
@@ -168,8 +166,6 @@ void CGenerator::PipelineAnimate(float fTimeElapsed)
 
 void CGenerator::Animate(float fTimeElapsed)
 {
-	if (!m_bAlreadyOn && !m_bGenActive && !m_bOnInteraction) return;
-	
 	LogicUpdate();
 	PipelineAnimate(fTimeElapsed);
 	BodyAnimate(fTimeElapsed);

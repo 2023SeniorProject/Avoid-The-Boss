@@ -988,7 +988,6 @@ bool CEmployee::GenTasking()
 {
 	CGenerator* targetGen = GetAvailGen();
 	
-	if (!targetGen) return false;
 
 	if(targetGen)std::cout << targetGen->m_idx << "Available\n";
 	

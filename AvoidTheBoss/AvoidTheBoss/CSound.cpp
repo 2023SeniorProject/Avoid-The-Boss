@@ -40,7 +40,7 @@ void CSound::SoundSystem()
 	FMOD_System_CreateSound(pSystem, "Sound/Button_Press.mp3", FMOD_LOOP_OFF, nullptr, &pSound[6]);
 	FMOD_System_CreateSound(pSystem, "Sound/Dangerous_Alarm.mp3", FMOD_LOOP_OFF, nullptr, &pSound[15]);
 	FMOD_System_CreateSound(pSystem, "Sound/Emergency_Door_Open.mp3", FMOD_LOOP_OFF, nullptr, &pSound[16]);
-	FMOD_System_CreateSound(pSystem, "Sound/Generator.mp3", FMOD_LOOP_OFF, nullptr, &pSound[17]);
+	FMOD_System_CreateSound(pSystem, "Sound/Generator.mp3", FMOD_LOOP_NORMAL, nullptr, &pSound[17]);
 	FMOD_System_CreateSound(pSystem, "Sound/Hangar_Door_Open.mp3", FMOD_LOOP_OFF, nullptr, &pSound[18]);
 	FMOD_System_CreateSound(pSystem, "Sound/Shutter_Open.mp3", FMOD_LOOP_OFF, nullptr, &pSound[19]);
 	

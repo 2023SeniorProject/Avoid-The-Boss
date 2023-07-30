@@ -27,15 +27,16 @@ void CGenerator::LogicUpdate()
 	if (m_bOnInteraction || m_bAlreadyOn)
 	{  
 		m_nPipeStartAnimation[0] = true;	
+		m_nGenerBodyAnimationCount++;
 	}
 	else if(!m_bOnInteraction && !m_bAlreadyOn)
 	{
 		for (int i = 0; i < m_nPipe; i++)
 		{
 			m_nPipeStartAnimation[i] = false;
-		}
-		
+		}	
 	}
+
 	if (m_nGenerPipeAnimationCount[0] == 4)
 		m_nPipeStartAnimation[1] = true;
 	if (m_nGenerPipeAnimationCount[1] == 4)
@@ -45,34 +46,6 @@ void CGenerator::LogicUpdate()
 	{
 		if(m_nPipeStartAnimation[i])
 			m_nGenerPipeAnimationCount[i] += 1;
-	}
-	if(m_bOnInteraction || m_bAlreadyOn)
-		m_nGenerBodyAnimationCount++;
-
-	if (m_bOnInteraction)
-	{
-		if (!GetbIsStartGenInter())
-		{
-			if (m_bGenActive)
-			{
-				SoundManager::SoundStop(6);
-				return;
-			}
-			SoundManager::GetInstance().PlayObjectSound(17, 6);
-			SoundManager::GetInstance().PlayObjectSound(6, 6);
-			SetbIsStartGenInter(true);
-		}
-		std::cout << "startGenInteraction : " << GetbIsStartGenInter() << std::endl;
-
-	}
-	else
-	{
-		//if (GetbIsStartGenInter())
-		//{
-		//	SoundManager::SoundStop(6);
-		//	SetbIsStartGenInter(false);
-		//	std::cout << "startGenInteraction : " << GetbIsStartGenInter() << std::endl;
-		//}
 	}
 }
 
@@ -96,6 +69,27 @@ void CGenerator::Update(float fTimeElapsed)
 		std::cout << m_idx << ") Gen Active\n";
 		CGameScene* gs = static_cast<CGameScene*>(mainGame.m_SceneManager->GetSceneByIdx(3));
 		static_cast<CEmployee*>(gs->GetScenePlayerByIdx(gs->m_playerIdx))->m_activeCnt += 1;
+	}
+	if (m_bOnInteraction || m_bAlreadyOn)
+	{
+		if (!GetbIsStartGenInter())
+		{
+			SoundManager::GetInstance().SoundStop(6);
+			SoundManager::GetInstance().PlayObjectSound(17, 6);
+			//SoundManager::GetInstance().PlayObjectSound(6, 6);
+			SetbIsStartGenInter(true);
+		}
+		std::cout << "startGenInteractionTrue : " << GetbIsStartGenInter() << std::endl;
+
+	}
+	else
+	{
+		if (GetbIsStartGenInter())
+		{
+			SoundManager::GetInstance().SoundStop(6);
+			SetbIsStartGenInter(false);
+			std::cout << "startGenInteractionFalse : " << GetbIsStartGenInter() << std::endl;
+		}
 	}
 }
 

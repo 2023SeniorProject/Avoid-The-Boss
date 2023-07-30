@@ -153,8 +153,8 @@ void CBoss::ResetState()
 
 void CBoss::SetAttackAnimOtherClient()
 {
-	if (!GetOnAttack())
-	{
+	//if (!GetOnAttack())
+	//{
 		if (!Vector3::IsZero(m_xmf3Velocity))
 		{
 			SetBehavior(PLAYER_BEHAVIOR::RUN_ATTACK);
@@ -167,7 +167,7 @@ void CBoss::SetAttackAnimOtherClient()
 		}
 		SetOnAttack(true);
 		m_pBullet->SetStartShoot(true);
-	}
+	//}
 }
 
 void CBoss::Update(float fTimeElapsed, CLIENT_TYPE ptype)

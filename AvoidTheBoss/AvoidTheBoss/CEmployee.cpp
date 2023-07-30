@@ -1032,7 +1032,8 @@ bool CEmployee::GenTasking()
 					clientCore.DoSend(&packet);
 				}
 			}
-		
+			SetGenInteraction(false);
+			SetBehavior(PLAYER_BEHAVIOR::IDLE);
 	}
 	return false;
 }
@@ -1081,6 +1082,7 @@ bool CEmployee::RescueTasking()
 				}
 			}
 			SetRescueInteraction(false);
+			SetBehavior(PLAYER_BEHAVIOR::IDLE);
 		}
 	}
 	

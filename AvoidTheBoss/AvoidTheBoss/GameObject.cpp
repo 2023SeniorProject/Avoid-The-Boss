@@ -1311,7 +1311,6 @@ void CSiren::Animate(float fTimeElapsed)
 			}
 			if (m_ppSirenCap)
 			{
-				float radius = 0.000471f / 2.0f;
 				XMMATRIX xmmtxRotate = DirectX::XMMatrixRotationZ(XMConvertToRadians(delta * fTimeElapsed));
 				m_ppSirenCap->m_xmf4x4ToParent = Matrix4x4::Multiply(xmmtxRotate, m_ppSirenCap->m_xmf4x4ToParent);
 			}
@@ -1319,7 +1318,7 @@ void CSiren::Animate(float fTimeElapsed)
 		}
 		else
 		{
-			m_AnimationDegree = 180.f;
+			m_AnimationDegree = 0.0f;
 		}
 		CGameObject::Animate(fTimeElapsed);
 	}
@@ -1421,7 +1420,7 @@ void CShutterDoor::Animate(float fTimeElapsed)
 		{
 			if (m_pShutter)
 			{
-				XMMATRIX xmmtxTranslate = DirectX::XMMatrixTranslation(0.0f, 0.0f, delta * fTimeElapsed);
+				XMMATRIX xmmtxTranslate = DirectX::XMMatrixTranslation(0.0f, delta * fTimeElapsed,0.0f);
 				m_pShutter->m_xmf4x4ToParent = Matrix4x4::Multiply(xmmtxTranslate, m_pShutter->m_xmf4x4ToParent);
 				m_AnimationDistance -= delta * fTimeElapsed;
 	 			//std::cout <<"ShutterDoor : " << m_AnimationDistance << std::endl;

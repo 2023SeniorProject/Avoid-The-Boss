@@ -449,7 +449,7 @@ private:
 	CGameObject* m_ppSirenCap = NULL;
 	CGameObject* m_ppSirenBell = NULL;
 
-	float m_AnimationDegree = 360.0;
+	float m_AnimationDegree = 360.0f*3;
 public:
 	CSiren();
 	virtual ~CSiren();
@@ -459,7 +459,7 @@ public:
 	virtual void ResetState()
 	{
 		m_bEmpExit = false;
-		m_AnimationDegree = 360.0f*6;
+		m_AnimationDegree = 360.0f;
 
 		if (m_ppSirenBell)
 		{
@@ -471,6 +471,7 @@ public:
 			XMMATRIX xmmtxRotate = DirectX::XMMatrixRotationZ(XMConvertToRadians(-360.0f));
 			m_ppSirenCap->m_xmf4x4ToParent = Matrix4x4::Multiply(xmmtxRotate, m_ppSirenCap->m_xmf4x4ToParent);
 		}
+		UpdateTransform(NULL);
 	}
 };
 
@@ -500,7 +501,6 @@ public:
 		{
 			XMMATRIX xmmtxTranslate = DirectX::XMMatrixTranslation(-DOOR_ANIMATION_TIME, 0.0f, 0.0f);
 			m_pLeftDoorFrame->m_xmf4x4ToParent = Matrix4x4::Multiply(xmmtxTranslate, m_pLeftDoorFrame->m_xmf4x4ToParent);
-			//std::cout <<"FrontDoor : " << GetPosition().x << " " << GetPosition().y << " " << GetPosition().z << std::endl;
 		}
 		if (m_pRightDoorFrame)
 		{
@@ -514,7 +514,7 @@ public:
 class CEmergencyDoor : public CGameObject
 {
 private:
-	float m_AnimationDegree = 180.0f;
+	float m_AnimationDegree = 120.0f;
 public:
 	CEmergencyDoor();
 	virtual ~CEmergencyDoor();
@@ -524,13 +524,13 @@ public:
 	virtual void ResetState()
 	{
 		m_bEmpExit = false;
-		m_AnimationDegree = 180.0f;
+		m_AnimationDegree = 120.0f;
 		//if(GetPosition().x>0)
 		//	Rotate(0.0f, -90.0f, 0.0f);
 		//else
 		//	Rotate(0.0f, 90.0f, 0.0f);
 
-		XMMATRIX xmmtxRotate = XMMatrixRotationY(XMConvertToRadians(180.0f));
+		XMMATRIX xmmtxRotate = XMMatrixRotationY(XMConvertToRadians(-120.0f));
 		m_xmf4x4ToParent = Matrix4x4::Multiply(xmmtxRotate, m_xmf4x4ToParent);
 
 		UpdateTransform(NULL);
@@ -556,11 +556,11 @@ public:
 		//m_pShutter->SetPosition(0.0f, -5.453176f, 26.3315f);
 		if (m_pShutter)
 		{
-			XMMATRIX xmmtxTranslate = DirectX::XMMatrixTranslation(0.0f, 0.0f, -1.5f);
+			XMMATRIX xmmtxTranslate = DirectX::XMMatrixTranslation(0.0f, -1.5f,0.0f);
 			m_pShutter->m_xmf4x4ToParent = Matrix4x4::Multiply(xmmtxTranslate, m_pShutter->m_xmf4x4ToParent);
-
-			UpdateTransform(NULL);
 		}
+
+		UpdateTransform(NULL);
 	}
 };
 

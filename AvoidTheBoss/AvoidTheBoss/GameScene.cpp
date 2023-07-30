@@ -542,6 +542,11 @@ void CGameScene::ExitReady()
 
 void CGameScene::ResetGame()
 {
+	SoundManager::GetInstance().SoundStop(4);
+	SoundManager::GetInstance().SoundStop(5);
+	SoundManager::GetInstance().SoundStop(6);
+	SoundManager::GetInstance().SoundStop(7);
+
 	{
 		std::unique_lock<std::shared_mutex> wl(m_jobQueueLock);
 		m_jobQueue->Clear();
@@ -563,8 +568,6 @@ void CGameScene::ResetGame()
 	{
 		m_ppShaders[i]->ResetState();
 	}
-	SoundManager::GetInstance().SoundStop(4);
-	SoundManager::GetInstance().SoundStop(6);
-	SoundManager::GetInstance().SoundStop(7);
+
 }
 

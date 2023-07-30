@@ -1420,7 +1420,7 @@ void CShutterDoor::Animate(float fTimeElapsed)
 		{
 			if (m_pShutter)
 			{
-				XMMATRIX xmmtxTranslate = DirectX::XMMatrixTranslation(0.0f, delta * fTimeElapsed,0.0f);
+				XMMATRIX xmmtxTranslate = DirectX::XMMatrixTranslation(0.0f, 0.0f, delta * fTimeElapsed);
 				m_pShutter->m_xmf4x4ToParent = Matrix4x4::Multiply(xmmtxTranslate, m_pShutter->m_xmf4x4ToParent);
 				m_AnimationDistance -= delta * fTimeElapsed;
 	 			//std::cout <<"ShutterDoor : " << m_AnimationDistance << std::endl;

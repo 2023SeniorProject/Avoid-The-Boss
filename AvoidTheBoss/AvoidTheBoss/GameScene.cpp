@@ -542,10 +542,11 @@ void CGameScene::ExitReady()
 
 void CGameScene::ResetGame()
 {
-	SoundManager::GetInstance().SoundStop(4);
-	SoundManager::GetInstance().SoundStop(5);
-	SoundManager::GetInstance().SoundStop(6);
-	SoundManager::GetInstance().SoundStop(7);
+	// 사운드 오류 시 제거해야할 부분
+	for (int i = 0; i < 8; i++)
+	{
+		SoundManager::GetInstance().SoundStop(i);
+	}
 
 	{
 		std::unique_lock<std::shared_mutex> wl(m_jobQueueLock);
@@ -564,10 +565,10 @@ void CGameScene::ResetGame()
 	m_remainPlayerCnt = 0;
 
 	// 모든 조형 객체 ResetState()호출
-	for (int i = 2; i < 5; i++)
-	{
-		m_ppShaders[i]->ResetState();
-	}
+	//for (int i = 2; i < 5; i++)
+	//{
+	//	m_ppShaders[i]->ResetState();
+	//}
 
 }
 

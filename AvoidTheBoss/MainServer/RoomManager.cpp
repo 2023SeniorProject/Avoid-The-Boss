@@ -60,40 +60,15 @@ void Room::UserOut(int32 sid)
 				std::cout << "STRANGE GAME END\n";
 				return;
 			}
-			else
-			{
-				if (_memCnt.load() - 1 < (PLAYERNUM - 1))
-				{
-					_gameLogic.ResetGame();
-					SC_EVENTPACKET packet;
-					packet.type = (uint8)EVENT_TYPE::BOSS_WIN;
-					packet.size = sizeof(SC_EVENTPACKET);
-					BroadCastingExcept(&packet, sid);
-					std::cout << "STRANGE GAME END\n";
-
-					{
-						// cList Lock 쓰기 호출	
-						std::unique_lock<std::shared_mutex> wll(_listLock);
-
-
-						for (int i = 0; i < PLAYERNUM; ++i)
-						{
-							_cArr[i].sid = -1;
-							_cArr[i].isReady = false;
-						}
-					}
-					_memCnt.store(0);
-					_status = (uint8)ROOM_STATUS::EMPTY;
-					return;
-				}
-			}
-
+			
+		}
+		else
+		{
 			SC_EVENTPACKET packet;
 			packet.size = sizeof(SC_EVENTPACKET);
 			packet.type = (uint8)SC_GAME_PACKET_TYPE::GAMEEVENT;
 			packet.eventId = (uint8)EVENT_TYPE::HIDE_PLAYER_ONE + idx;
 			BroadCastingExcept(&packet, sid);
-			
 		}
 	}
 	else

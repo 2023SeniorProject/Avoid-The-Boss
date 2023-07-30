@@ -299,7 +299,6 @@ void CGameScene::BuildObjects(ID3D12Device5* pd3dDevice,ID3D12GraphicsCommandLis
 		m_ppGenerator[i]->m_idx = i;
 	}
 	
-
 	for (int i = 0; i < PLAYERNUM; ++i)
 	{
 		if (i == (int)(CHARACTER_TYPE::BOSS))
@@ -318,7 +317,6 @@ void CGameScene::BuildObjects(ID3D12Device5* pd3dDevice,ID3D12GraphicsCommandLis
 			((CEmployee*)m_players[i])->m_pSwitches[1].radius = 0.5f;
 			((CEmployee*)m_players[i])->m_pSwitches[2].position = XMFLOAT3(0.6774719, 1.083242, -23.05909);
 			((CEmployee*)m_players[i])->m_pSwitches[2].radius = 0.5f;
-			// 피격 이펙트 코드
 		}
 	}
 	CreateShaderVariables(pd3dDevice, pd3dCommandList);

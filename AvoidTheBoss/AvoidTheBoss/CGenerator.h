@@ -34,13 +34,41 @@ public:
 	float m_AnimationDegree = 0.0f;
 public:
 	CGenerator();
+	CGenerator(const CGenerator& other) : 
+		CGameObject(other),
+		radius(other.radius),
+		m_nPipe(other.m_nPipe),
+		xmf4NormalVector(other.xmf4NormalVector),
+		m_ppPipe(nullptr),
+		m_pButton(other.m_pButton),
+		m_pBody(other.m_pBody),
+		m_idx(other.m_idx),
+		m_maxGuage(other.m_maxGuage),
+		m_curGuage(other.m_curGuage),
+		m_guageSpeed(other.m_guageSpeed),
+		m_bGenActive(other.m_bGenActive),
+		m_bOnInteraction(other.m_bOnInteraction),
+		m_bAlreadyOn(other.m_bAlreadyOn),
+		m_bOnGenAnimation(other.m_bOnGenAnimation),
+		m_nButtonAnimationCount(other.m_nButtonAnimationCount),
+		m_nGenerBodyAnimationCount(other.m_nGenerBodyAnimationCount),
+		m_AnimationDegree(other.m_AnimationDegree),
+		m_bIsStartGenInter(other.m_bIsStartGenInter)
+	{
+		if (other.m_ppPipe != nullptr)
+		{
+			m_ppPipe = new CGameObject * [m_nPipe];
+			for (int i = 0; i < m_nPipe; i++)
+			{
+				m_ppPipe[i] = other.m_ppPipe[i];
+			}
+		}
+	}
 	virtual ~CGenerator() {};
 	float GetRadius() { return radius; }
 
 	virtual void SetNormalVector();
 	void LogicUpdate();
-	void SetOnGenAnimation(bool value) { m_bOnGenAnimation = value; }
-	bool GetOnGenAnimation() { return m_bOnGenAnimation; }
 	void SetInteractionOn(bool value) { m_bOnInteraction = value; };
 	bool GetInteractionOn() { return m_bOnInteraction; }
 	void SetAlreadyOn(bool value) { m_bAlreadyOn = value; }
@@ -60,7 +88,6 @@ public:
 		m_bGenActive = false; // --> 발전기가 활성화 되었는가
 		m_bOnInteraction = false; // --> 발전기가 상호작용 중인가?
 		m_bAlreadyOn = false;
-		m_bOnGenAnimation = false; // 발전기 애니메이션 활성화 여부
 	};
 	bool m_bIsStartGenInter = false;
 	void SetbIsStartGenInter(bool value) { m_bIsStartGenInter = value; }

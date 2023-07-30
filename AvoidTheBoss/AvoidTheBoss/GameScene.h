@@ -26,14 +26,10 @@ public:
 	virtual void OnProcessingMouseMessage(HWND hWnd, UINT nMessageID, WPARAM wParam, LPARAM	lParam);
 	virtual void OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPARAM wParam, LPARAM lParam);
 
-	
 	void BuildDefaultLightsAndMaterials();
 	virtual void BuildObjects(ID3D12Device5* pd3dDevice, ID3D12GraphicsCommandList4* pd3dCommandList);
 	
-
-	virtual void AnimateObjects();
-
-	
+	virtual void AnimateObjects();	
 public : // SceneInterface 상속 함수
 	virtual void ProcessInput(HWND& hWnd);
 	virtual void Update(HWND& hWnd);

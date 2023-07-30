@@ -263,6 +263,12 @@ void CGameScene::ReleaseObjects()
 		delete[] m_ppHierarchicalGameObjects;
 	}
 
+	//발전기 포인터 삭제 추가함수
+	if (m_ppGenerator)
+	{
+		for (int i = 0; i < m_nGenerator; i++) if (m_ppGenerator[i]) m_ppGenerator[i]->Release();
+		delete[] m_ppGenerator;
+	}
 	ReleaseShaderVariables();
 
 	if (m_pLights) delete[] m_pLights;

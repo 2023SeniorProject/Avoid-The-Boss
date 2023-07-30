@@ -758,51 +758,42 @@ void CGeneratorObjectsShader::BuildObjects(ID3D12Device5* pd3dDevice, ID3D12Grap
 	m_nObjects = 3;
 	m_ppObjects = new CGameObject * [m_nObjects];
 
-	CGameObject* pGenerator = CGameObject::LoadGeometryFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "Model/Map/Generator.bin", NULL, Layout::GENERATOR);
+	CGameObject* pGenerator1 = CGameObject::LoadGeometryFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "Model/Map/Generator.bin", NULL, Layout::GENERATOR);
+
+	CGameObject* pGenerator2 = CGameObject::LoadGeometryFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "Model/Map/Generator.bin", NULL, Layout::GENERATOR);
+
+	CGameObject* pGenerator3 = CGameObject::LoadGeometryFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "Model/Map/Generator.bin", NULL, Layout::GENERATOR);
 
 	m_ppObjects[0] = new CGenerator();
-	m_ppObjects[0]->SetChild(pGenerator);
-	m_ppObjects[0]->SetPosition(XMFLOAT3(0.0f, 0.0f, -22.82f));
-	m_ppObjects[0]->Rotate(0.0f, 0.0f, 0.0f);
+	m_ppObjects[0]->SetChild(pGenerator1);
+	m_ppObjects[0]->SetPosition(XMFLOAT3(-22.884f, 0.0f, 2.46665f));
+	m_ppObjects[0]->Rotate(0.0f, 90.0f, 0.0f); 
 	m_ppObjects[0]->OnPrepareAnimate();
 	m_ppObjects[0]->SetNormalVector();
 	m_ppObjects[0]->objLayer = Layout::GENERATOR;
-	pGenerator->AddRef();
+	pGenerator1->AddRef();
 
 	m_ppObjects[1] = new CGenerator();
-	m_ppObjects[1]->SetChild(pGenerator);
-	m_ppObjects[1]->SetPosition(XMFLOAT3(-22.884f, 0.0f, 2.46665f));
-	m_ppObjects[1]->Rotate(0.0f, 90.0f, 0.0f);
+	m_ppObjects[1]->SetChild(pGenerator2);
+	m_ppObjects[1]->SetPosition(XMFLOAT3(22.95006f, 0.0f, 2.506552f));
+	m_ppObjects[1]->Rotate(0.0f, -90.0f, 0.0f);
 	m_ppObjects[1]->OnPrepareAnimate();
 	m_ppObjects[1]->SetNormalVector();
 	m_ppObjects[1]->objLayer = Layout::GENERATOR;
-	pGenerator->AddRef();
+	pGenerator2->AddRef();
 
 	m_ppObjects[2] = new CGenerator();
-	m_ppObjects[2]->SetChild(pGenerator);
-	m_ppObjects[2]->SetPosition(XMFLOAT3(22.95006f, 0.0f, 2.506552f));
-	m_ppObjects[2]->Rotate(0.0f, -90.0f, 0.0f);
+	m_ppObjects[2]->SetChild(pGenerator3);
+	m_ppObjects[2]->SetPosition(XMFLOAT3(0.0f, 0.0f, -22.82f));
+	m_ppObjects[2]->Rotate(0.0f, 0.0f, 0.0f);
 	m_ppObjects[2]->OnPrepareAnimate();
 	m_ppObjects[2]->SetNormalVector();
 	m_ppObjects[2]->objLayer = Layout::GENERATOR;
-	pGenerator->AddRef();
+	pGenerator3->AddRef();
 
 	CreateShaderVariables(pd3dDevice, pd3dCommandList);
 }
 
-//void CGeneratorObjectsShader::Render(ID3D12GraphicsCommandList4* /pd3dCommandList, /CCamera* pCamera, bool bRaster)
-//{
-//	CStandardShader::Render(pd3dCommandList, pCamera, bRaster);
-//	for (int j = 0; j < m_nObjects; j++)
-//	{
-//			if (m_ppObjects[j])
-//			{
-//				static_cast<CGenerator*>(m_ppObjects[j])->Animate(m_fElapsedTime);
-//				static_cast<CGenerator*>(m_ppObjects[j])->UpdateTransform(NULL);
-//				static_cast<CGenerator*>(m_ppObjects[j])->Render/(pd3dCommandList, /pCamera, bRaster);
-//			}
-//	}
-//}
 
 
 CVirtualObjectsShader::CVirtualObjectsShader()

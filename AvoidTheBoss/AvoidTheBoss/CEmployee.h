@@ -92,7 +92,7 @@ public:
 
 	
 	    m_curGuage = 0;
-
+		m_hp = 3;
 		m_bIsRescuing = false;
 
 	}

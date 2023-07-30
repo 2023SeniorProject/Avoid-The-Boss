@@ -27,7 +27,7 @@ void Room::UserOut(int32 sid)
 
 	if (_status == (uint8)ROOM_STATUS::INGAME)
 	{
-
+		
 		if (_gameLogic._gState == GAMESTATE::IN_GAME)
 		{
 			_gameLogic.GetPlayerBySid(sid).SetVelocity(XMFLOAT3(0, 0, 0)); // ¼Óµµ 0
@@ -134,6 +134,11 @@ void Room::UserOut(int32 sid)
 	}
 	
 	SendRoomInfoPacket();
+
+	{
+		WRITE_SERVER_LOCK
+		ServerIocpCore._clients[sid]->_myRm = -1;
+	}
 }
 
 void Room::UserIn(int32 sid)

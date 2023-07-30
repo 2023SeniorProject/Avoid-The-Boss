@@ -45,6 +45,12 @@ public:
 		m_xmf3Look = look;
 		m_xmf3Right = Vector3::CrossProduct(m_xmf3Up, m_xmf3Look, true);
 	}
+
+	virtual void ResetState() {
+		m_bStartShoot = false;
+		m_OnShoot = false;
+		m_OnHit = false;
+	}
 };
 
 

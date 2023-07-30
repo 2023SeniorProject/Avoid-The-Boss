@@ -81,7 +81,7 @@ public:
 	void PipelineAnimate(float fTimeElapsed);
 	void BodyAnimate(float fTimeElapsed);
 
-	void ResetState()
+	virtual void ResetState()
 	{
 		float m_curGuage = 0;
 		m_bGenActive = false; // --> 발전기가 활성화 되었는가

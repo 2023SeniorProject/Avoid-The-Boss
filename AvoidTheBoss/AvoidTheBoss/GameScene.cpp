@@ -520,7 +520,7 @@ void CGameScene::ExitReady()
 	if (m_bEmpExit) // 탈출 성공 시 , 해야할 일 처리
 	{
 		SoundManager::GetInstance().PlayObjectSound(16, 5);
-		SoundManager::GetInstance().PlayObjectSound(15, 5);
+		SoundManager::GetInstance().PlayObjectSound(15, 7);
 		SoundManager::GetInstance().PlayObjectSound(18, 5);
 		SoundManager::GetInstance().PlayObjectSound(19, 5);
 
@@ -557,11 +557,14 @@ void CGameScene::ResetGame()
 	m_curFrame = 0;
 	m_ExitedPlayerCnt = 0;
 	m_remainPlayerCnt = 0;
-	
-	for (int i = 0; i < 6; i++)
-	{
-		SoundManager::GetInstance().SoundStop(i);
-	}
 
+	// 모든 조형 객체 ResetState()호출
+	for (int i = 2; i < 5; i++)
+	{
+		m_ppShaders[i]->ResetState();
+	}
+	SoundManager::GetInstance().SoundStop(4);
+	SoundManager::GetInstance().SoundStop(6);
+	SoundManager::GetInstance().SoundStop(7);
 }
 

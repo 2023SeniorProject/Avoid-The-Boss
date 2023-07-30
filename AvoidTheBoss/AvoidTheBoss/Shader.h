@@ -14,7 +14,8 @@ public:
 	virtual ~CShader();
 
 private:
-	int									m_nReferences = 0;
+	int								
+		m_nReferences = 0;
 
 public:
 	void AddRef() { m_nReferences++; }
@@ -50,6 +51,8 @@ public:
 	virtual void AnimateObjects(float fTimeElapsed) { }
 	virtual void ReleaseObjects() { }
 
+	virtual void ResetState() {}
+
 protected:
 	ID3DBlob							*m_pd3dVertexShaderBlob = NULL;
 	ID3DBlob							*m_pd3dPixelShaderBlob = NULL;
@@ -75,6 +78,8 @@ public:
 
 	virtual D3D12_SHADER_BYTECODE CreateVertexShader();
 	virtual D3D12_SHADER_BYTECODE CreatePixelShader();
+
+	virtual void ResetState() {}
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -89,6 +94,8 @@ public:
 
 	virtual D3D12_SHADER_BYTECODE CreateVertexShader();
 	virtual D3D12_SHADER_BYTECODE CreatePixelShader();
+
+	virtual void ResetState() {}
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -106,7 +113,7 @@ public:
 	virtual void ReleaseUploadBuffers();
 
 	virtual void Render(ID3D12GraphicsCommandList4  *pd3dCommandList, CCamera *pCamera,bool bRaster);
-
+	virtual void ResetState();
 	CGameObject						**m_ppObjects = 0;
 	int								m_nObjects = 0;
 };

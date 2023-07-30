@@ -91,6 +91,8 @@ void CGenerator::Update(float fTimeElapsed)
 	}
 	if (m_bGenActive)
 		SoundManager::GetInstance().SetVolum(6, 0.1f);
+	else
+		SoundManager::GetInstance().SetVolum(6, 0.5f);
 }
 
 void CGenerator::OnPrepareAnimate()

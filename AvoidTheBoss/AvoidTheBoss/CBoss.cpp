@@ -145,7 +145,7 @@ void CBoss::Move(const int16& dwDirection, float fDistance)
 
 void CBoss::ResetState()
 {
-		SetBehavior(PLAYER_BEHAVIOR::IDLE);
+	SetBehavior(PLAYER_BEHAVIOR::IDLE);
 	 m_runAttackAnimTime = 0;
 	 m_standAttackAnimTime = 0;
 	 m_IsOnAttack = false;

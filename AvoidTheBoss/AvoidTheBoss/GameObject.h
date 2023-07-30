@@ -426,6 +426,7 @@ public:
 	static CGameObject* LoadGeometryFromFile(ID3D12Device5* pd3dDevice, ID3D12GraphicsCommandList4 * pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, const char* pstrFileName, CShader* pShader, Layout objType);
 
 	static void PrintFrameInfo(CGameObject *pGameObject, CGameObject *pParent);
+	virtual void ResetState(){}
 };
 
 
@@ -455,6 +456,22 @@ public:
 
 	virtual void OnPrepareAnimate();
 	virtual void Animate(float fTimeElapsed);
+	virtual void ResetState()
+	{
+		m_bEmpExit = false;
+		m_AnimationDegree = 360.0f*6;
+
+		if (m_ppSirenBell)
+		{
+			XMMATRIX xmmtxRotate = DirectX::XMMatrixRotationZ(XMConvertToRadians(-360.0f));
+			m_ppSirenBell->m_xmf4x4ToParent = Matrix4x4::Multiply(xmmtxRotate, m_ppSirenBell->m_xmf4x4ToParent);
+		}
+		if (m_ppSirenCap)
+		{
+			XMMATRIX xmmtxRotate = DirectX::XMMatrixRotationZ(XMConvertToRadians(-360.0f));
+			m_ppSirenCap->m_xmf4x4ToParent = Matrix4x4::Multiply(xmmtxRotate, m_ppSirenCap->m_xmf4x4ToParent);
+		}
+	}
 };
 
 #define DOOR_ANIMATION_TIME 5.0f
@@ -471,6 +488,27 @@ public:
 
 	virtual void OnPrepareAnimate();
 	virtual void Animate(float fTimeElapsed);
+
+	virtual void ResetState()
+	{
+		m_bEmpExit = false;
+		m_AnimationDistance = DOOR_ANIMATION_TIME;
+		//m_pRightDoorFrame->SetPosition(1.52586f, -0.4999936f, -4.882812f);
+		//m_pLeftDoorFrame->SetPosition(1.83106f, -0.4999997f,0.0f);
+
+		if (m_pLeftDoorFrame)
+		{
+			XMMATRIX xmmtxTranslate = DirectX::XMMatrixTranslation(-DOOR_ANIMATION_TIME, 0.0f, 0.0f);
+			m_pLeftDoorFrame->m_xmf4x4ToParent = Matrix4x4::Multiply(xmmtxTranslate, m_pLeftDoorFrame->m_xmf4x4ToParent);
+			//std::cout <<"FrontDoor : " << GetPosition().x << " " << GetPosition().y << " " << GetPosition().z << std::endl;
+		}
+		if (m_pRightDoorFrame)
+		{
+			XMMATRIX xmmtxTranslate = DirectX::XMMatrixTranslation(DOOR_ANIMATION_TIME, 0.0f, 0.0f);
+			m_pRightDoorFrame->m_xmf4x4ToParent = Matrix4x4::Multiply(xmmtxTranslate, m_pRightDoorFrame->m_xmf4x4ToParent);
+		}
+		UpdateTransform(NULL);
+	}
 };
 
 class CEmergencyDoor : public CGameObject
@@ -482,6 +520,21 @@ public:
 	virtual ~CEmergencyDoor();
 
 	virtual void Animate(float fTimeElapsed);
+
+	virtual void ResetState()
+	{
+		m_bEmpExit = false;
+		m_AnimationDegree = 180.0f;
+		//if(GetPosition().x>0)
+		//	Rotate(0.0f, -90.0f, 0.0f);
+		//else
+		//	Rotate(0.0f, 90.0f, 0.0f);
+
+		XMMATRIX xmmtxRotate = XMMatrixRotationY(XMConvertToRadians(180.0f));
+		m_xmf4x4ToParent = Matrix4x4::Multiply(xmmtxRotate, m_xmf4x4ToParent);
+
+		UpdateTransform(NULL);
+	}
 };
 
 class CShutterDoor : public CGameObject
@@ -495,6 +548,20 @@ public:
 
 	virtual void OnPrepareAnimate();
 	virtual void Animate(float fTimeElapsed);
+
+	virtual void ResetState()
+	{
+		m_bEmpExit = false;
+		m_AnimationDistance = 1.5f;
+		//m_pShutter->SetPosition(0.0f, -5.453176f, 26.3315f);
+		if (m_pShutter)
+		{
+			XMMATRIX xmmtxTranslate = DirectX::XMMatrixTranslation(0.0f, 0.0f, -1.5f);
+			m_pShutter->m_xmf4x4ToParent = Matrix4x4::Multiply(xmmtxTranslate, m_pShutter->m_xmf4x4ToParent);
+
+			UpdateTransform(NULL);
+		}
+	}
 };
 
 #define HIT_EFFECT_SCALE_MAX 1.0f

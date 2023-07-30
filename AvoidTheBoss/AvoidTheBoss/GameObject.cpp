@@ -1465,7 +1465,6 @@ void CHitEffect::Update(float fTimeElapsed)
 		{
 			//XMMATRIX mtxScale = XMMatrixScaling(scaleFactor, scaleFactor, scaleFactor);
 			//m_pHit->m_xmf4x4ToParent = Matrix4x4::Multiply(mtxScale, m_pHit->m_xmf4x4ToParent);
-
 		}
 	}
 }

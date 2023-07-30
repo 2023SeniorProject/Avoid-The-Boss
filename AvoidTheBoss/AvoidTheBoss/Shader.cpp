@@ -392,6 +392,18 @@ void CStandardObjectsShader::Render(ID3D12GraphicsCommandList4*pd3dCommandList, 
 	}
 }
 
+void CStandardObjectsShader::ResetState()
+{
+	for (int j = 0; j < m_nObjects; j++)
+	{
+		if (m_ppObjects[j])
+		{
+			m_ppObjects[j]->m_bEmpExit = false;
+			m_ppObjects[j]->ResetState();
+		}
+	}
+}
+
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //

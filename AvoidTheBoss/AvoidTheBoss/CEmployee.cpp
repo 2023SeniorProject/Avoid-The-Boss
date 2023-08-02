@@ -89,6 +89,7 @@ CEmployee::CEmployee(ID3D12Device5* pd3dDevice, ID3D12GraphicsCommandList4* pd3d
 
 CEmployee::~CEmployee()
 {
+	
 	delete[] m_pSwitches;
 }
 

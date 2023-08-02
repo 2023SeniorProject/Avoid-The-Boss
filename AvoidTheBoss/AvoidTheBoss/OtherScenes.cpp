@@ -35,10 +35,7 @@ void CLobbyScene::Update(HWND& hWnd)
 void CLobbyScene::Render(ID3D12GraphicsCommandList4* pd3dCommandList, CCamera* pCamera, bool Raster)
 {
 }
-void CLobbyScene::BuildDefaultLightsAndMaterials()
-{
 
-}
 void CLobbyScene::MouseAction(const POINT& mp)
 {
 	SoundManager::GetInstance().SoundStop(21);
@@ -154,13 +151,10 @@ void CTitleScene::MouseAction(const POINT& mp)
 	}
 	else if (IntersectRectByPoint(mainGame.m_UIRenderer->GetButtonRect(0, 1), mp))
 	{
-		mainGame.OnDestroy();
+		::PostQuitMessage(0);
 	}
 }
-void CTitleScene::BuildDefaultLightsAndMaterials()
-{
-	
-}
+
 void CTitleScene::ProcessInput(HWND& hWnd)
 {
 	InputManager::GetInstance().InputStatusUpdate();
@@ -318,7 +312,5 @@ void CRoomScene::MouseAction(const POINT& mp)
 	m_memLock.unlock();
 }
 
-void CRoomScene::BuildDefaultLightsAndMaterials()
-{
-}
+
 #pragma endregion

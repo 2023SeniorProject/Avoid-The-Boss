@@ -154,7 +154,7 @@ void CSession::ProcessPacket(char* packet)
 		S2C_LOGIN_OK* lo = (S2C_LOGIN_OK*)packet;
 		_cid = lo->cid;
 		_sid = lo->sid;
-		std::cout << _sid << "\n";
+		
 		CScene::m_sid = lo->sid;
 		CScene::m_cid = lo->cid;
 		ts->loginLock.lock();

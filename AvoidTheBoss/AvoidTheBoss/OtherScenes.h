@@ -12,8 +12,8 @@ class CLobbyScene : public CScene
 		ROOM_STATUS status = ROOM_STATUS::EMPTY;
 	};
 public:
-	int32	 m_curPage;
-	int32	 m_lastPage;
+	int32	 m_curPage = 0;
+	int32	 m_lastPage = 0;
 	Room	 m_rooms[MAX_ROOM];
 	int32	 m_selected_rm = -1;
 	CPlayer* m_player = NULL;
@@ -24,8 +24,10 @@ public:
 	virtual void ProcessInput(HWND& hWnd);
 	virtual void Update(HWND& hWnd);
 	virtual void Render(ID3D12GraphicsCommandList4* pd3dCommandList, CCamera* pCamera, bool);
-	void		 BuildDefaultLightsAndMaterials();
-	void ReleaseObjects() {}
+
+
+	virtual void ReleaseUploadBuffers() {};
+	virtual void ReleaseObjects() {}
 	virtual void MouseAction(const POINT& mp) override;
 
 	void ChangePage(int32);
@@ -52,12 +54,15 @@ public:
 	bool m_login = false;
 	CTitleScene() {}
 	~CTitleScene() {}
+
+	virtual void ReleaseUploadBuffers() {};
+	virtual void ReleaseObjects() {}
 	virtual void BuildObjects(ID3D12Device5* pd3dDevice, ID3D12GraphicsCommandList4* pd3dCommandList);
 	virtual void ProcessInput(HWND& hWnd);
 	virtual void Update(HWND& hWnd);
 	virtual void Render(ID3D12GraphicsCommandList4* pd3dCommandList, CCamera* pCamera, bool);
 	virtual void MouseAction(const POINT& mp) override;
-	void		 BuildDefaultLightsAndMaterials();
+
 };
 
 class CRoomScene : public CScene
@@ -70,13 +75,14 @@ class CRoomScene : public CScene
 public:
 	Member m_members[4];
 	std::mutex m_memLock;
-	int32 m_rmnum;
+	int32 m_rmnum = 0;
 public:
 	CRoomScene() 
 	{
 		for (auto& i : m_members) i.isReady = false;
 	}
 	~CRoomScene() {}
+
 	virtual void BuildObjects(ID3D12Device5* pd3dDevice, ID3D12GraphicsCommandList4* pd3dCommandList);
 	virtual void ProcessInput(HWND& hWnd);
 	virtual void Update(HWND& hWnd);
@@ -87,9 +93,9 @@ public:
 			if(sid == i.m_sid) i.isReady = val;
 		}
 	}
-	void ReleaseObjects() {}
+	virtual void ReleaseUploadBuffers() {};
+	virtual void ReleaseObjects() {}
 	virtual void Render(ID3D12GraphicsCommandList4* pd3dCommandList, CCamera* pCamera,bool);
-	void		 BuildDefaultLightsAndMaterials();
 	virtual void MouseAction(const POINT& mp) override;
 };
 
@@ -127,7 +133,8 @@ public:
 			mainGame.ChangeScene(CGameFramework::SCENESTATE::LOBBY);
 		}
 	};
-	void ReleaseObjects() {}
+	virtual void ReleaseUploadBuffers() {};
+	virtual void ReleaseObjects() {}
 	virtual void Render(ID3D12GraphicsCommandList4* pd3dCommandList, CCamera* pCamera, bool bRaster) {};
 	
 	virtual void MouseAction(const POINT& mp) override {};

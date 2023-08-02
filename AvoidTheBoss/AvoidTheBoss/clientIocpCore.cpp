@@ -19,7 +19,7 @@ CCIocpCore::CCIocpCore()
 
 CCIocpCore::~CCIocpCore()
 {
-	if (_client != nullptr) delete _client;
+	
 }
 
 void CCIocpCore::InitConnect(const char* address)
@@ -42,6 +42,7 @@ void CCIocpCore::InitConnect(const char* address)
 void CCIocpCore::DoConnect(void* loginInfo)
 {
 	
+		_client->_sid = 0;
 		DWORD sendBytes(0);
 		DWORD sendLength = BUFSIZE / 2;
 		ConnectEvent* _connectEvent = new ConnectEvent();
@@ -54,15 +55,18 @@ void CCIocpCore::DoConnect(void* loginInfo)
 			const int32 errorCode = ::WSAGetLastError();
 			if (errorCode == WSAETIMEDOUT)
 			{
+			
+				delete _connectEvent;
 				std::cout << "Time Out\n";
 				DoConnect(nullptr);
 			}
-			if (errorCode != WSA_IO_PENDING)
+			else if (errorCode != WSA_IO_PENDING)
 			{
+				delete _connectEvent;
 				std::cout << errorCode << std::endl;
 				std::cout << "Connect Error" << std::endl;
-				delete _client;
-				SocketUtil::Clear();
+				
+				Disconnect(0);
 			}
 			
 		}
@@ -86,8 +90,9 @@ bool CCIocpCore::Processing(uint32_t timelimit)
 			{
 			case ERROR_CONNECTION_REFUSED:
 			case WSAECONNREFUSED:
-				if (_client)
+				if (_client != nullptr)
 				{
+					if (iocpEvent != nullptr) delete iocpEvent;
 					std::cout << "Check The Server On... Retry Connecting\n";
 					DoConnect(nullptr);
 					return true;
@@ -124,6 +129,9 @@ bool CCIocpCore::Processing(uint32_t timelimit)
 void CCIocpCore::Disconnect(int32 sid = 0)
 {
 	std::cout << "Disconnect Client" << std::endl;
-	delete _client;
-	_client = nullptr;
+	if (_client)
+	{
+		delete _client;
+		_client = nullptr;
+	}
 }

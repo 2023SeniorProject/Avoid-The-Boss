@@ -37,7 +37,7 @@ void SceneManager::ReleaseUpBuffers()
 }
 void SceneManager::ReleaseScene()
 {
-	for (int i = 0; i < 4; ++i)  m_pScenes[i]->ReleaseObjects();
+     m_pScenes[3]->ReleaseObjects();
 }
 void SceneManager::Animate(int32 idx)
 {

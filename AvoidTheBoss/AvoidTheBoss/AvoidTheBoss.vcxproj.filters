@@ -410,9 +410,6 @@
     <Filter Include="Mananger\SceneManager">
       <UniqueIdentifier>{4c3590f3-4370-4604-be4f-1178f0c9b3a2}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Scene\OtherScene">
-      <UniqueIdentifier>{98120687-c313-4fbf-985e-4dbdaabab215}</UniqueIdentifier>
-    </Filter>
     <Filter Include="PacketEvent">
       <UniqueIdentifier>{14fdf138-71b4-4f50-a9e8-eafec120a2c8}</UniqueIdentifier>
     </Filter>
@@ -421,6 +418,9 @@
     </Filter>
     <Filter Include="Mananger\SoundManager">
       <UniqueIdentifier>{f7f2deae-19c8-4886-b8f6-41029c2c779f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Scene\OtherScene">
+      <UniqueIdentifier>{98120687-c313-4fbf-985e-4dbdaabab215}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

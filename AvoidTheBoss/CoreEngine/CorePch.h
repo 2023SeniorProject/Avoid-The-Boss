@@ -50,13 +50,10 @@
 #include <d3d12.h>	//Direct3D 12 API ÇÔ¼ö
 #include <dxgi1_4.h>
 #include <D3Dcompiler.h>
-#include <DXGIDebug.h>
-#include <D3d12SDKLayers.h>
 
 #include "d3dx12.h"
 
 //DirectD2D 
-#include <d2d1.h>
 #include <d3d11.h>
 #include <dwrite.h>
 #include <d3d11on12.h>

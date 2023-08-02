@@ -107,7 +107,7 @@ public:
 	virtual void ReleaseShaderVariables();
 
 public:
-	void ReleaseUploadBuffers();
+	virtual void ReleaseUploadBuffers();
 	virtual void ReleaseObjects();
 public:
 	virtual void OnProcessingMouseMessage(HWND hWnd, UINT nMessageID, WPARAM wParam, LPARAM	lParam);

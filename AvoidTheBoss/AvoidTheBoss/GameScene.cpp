@@ -320,6 +320,8 @@ void CGameScene::BuildObjects(ID3D12Device5* pd3dDevice,ID3D12GraphicsCommandLis
 		}
 	}
 	CreateShaderVariables(pd3dDevice, pd3dCommandList);
+
+	m_ppGameObjects = nullptr;
 }
 
 void CGameScene::ProcessInput(HWND& hWnd)

@@ -6,6 +6,9 @@
 #include "SocketUtil.h"
 #include "ThreadManager.h"
 
+#define _CRTDBG_MAP_ALLOC
+#include <crtdbg.h>
+
 #define MAX_LOADSTRING 100
 
 // 전역 변수:
@@ -36,8 +39,8 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     UNREFERENCED_PARAMETER(lpCmdLine);
    SocketUtil::Init();
    GCThreadManager = new ThreadManager;
-  
-
+   _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
+   _CrtSetBreakAlloc(1252);
    CoInitializeEx(nullptr, COINIT_APARTMENTTHREADED);
    // 전역 문자열을 초기화합니다.
     ::LoadString(hInstance, IDS_APP_TITLE, szTitle, MAX_LOADSTRING);
@@ -74,22 +77,25 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
            if (msg.message == WM_QUIT)
            {
                clientCore.Disconnect(0);
+               mainGame.OnDestroy();
                break;
            }
-           if (!::TranslateAccelerator(msg.hwnd, hAccelTable, &msg))
+           else if (!::TranslateAccelerator(msg.hwnd, hAccelTable, &msg))
            {
                ::TranslateMessage(&msg);
                ::DispatchMessage(&msg);
-               
+
            }
+           mainGame.FrameAdvance(); // 처리할 윈도우 메세지가 큐에 없을 때 게임프로그램이 CPU사용
        }
-       mainGame.FrameAdvance(); // 처리할 윈도우 메세지가 큐에 없을 때 게임프로그램이 CPU사용
+    
    }
  
   
-    mainGame.OnDestroy();
+    
     delete GCThreadManager;
-   
+    _CrtDumpMemoryLeaks();
+
     std::cout << "Quit Client\n";
     SocketUtil::Clear();
     return (int)msg.wParam;
@@ -172,7 +178,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
     case WM_MOUSEMOVE:
     case WM_KEYDOWN:
     case WM_KEYUP:
-        //mainGame.OnKeyDown(static_cast<UINT8>(wParam));
         mainGame.OnProcessingWindowMessage(hWnd, message, wParam, lParam);
         break;
     case WM_COMMAND:

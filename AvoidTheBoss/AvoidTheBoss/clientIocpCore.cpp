@@ -129,7 +129,7 @@ bool CCIocpCore::Processing(uint32_t timelimit)
 void CCIocpCore::Disconnect(int32 sid = 0)
 {
 	std::cout << "Disconnect Client" << std::endl;
-	if (_client)
+	if (_client != nullptr)
 	{
 		delete _client;
 		_client = nullptr;

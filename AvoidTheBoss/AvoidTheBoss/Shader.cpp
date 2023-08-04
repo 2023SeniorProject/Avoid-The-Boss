@@ -471,19 +471,16 @@ void CMapObjectsShader::BuildObjects(ID3D12Device5 * pd3dDevice,ID3D12GraphicsCo
 	m_ppObjects[0] = new CGameObject();
 	m_ppObjects[0]->SetChild(pMap);
 	m_ppObjects[0]->SetPosition(XMFLOAT3(0.0f, 0.0f, 0.0f));
-	pMap->AddRef();
 
 	CGameObject* pTile = CGameObject::LoadGeometryFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "Model/Map/Industry_Field2(1).bin", NULL, Layout::MAP);
 	m_ppObjects[1] = new CGameObject();
 	m_ppObjects[1]->SetChild(pTile);
 	m_ppObjects[1]->SetPosition(XMFLOAT3(0.0f, 0.0f, 0.0f));
-	pTile->AddRef();
 
 	CGameObject* pCrane = CGameObject::LoadGeometryFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "Model/Map/Crane.bin", NULL, Layout::MAP);
 	m_ppObjects[2] = new CGameObject();
 	m_ppObjects[2]->SetChild(pCrane);
 	m_ppObjects[2]->SetPosition(XMFLOAT3(0.0f, 0.0f, 0.0f));
-	pCrane->AddRef();
 	CreateShaderVariables(pd3dDevice, pd3dCommandList);
 }
 
@@ -504,7 +501,6 @@ void CBoundsObjectsShader::BuildObjects(ID3D12Device5* pd3dDevice,ID3D12Graphics
 	pMap->m_type = 1;
 	m_ppObjects[0] = new CGameObject();
 	m_ppObjects[0]->SetChild(pMap);
-	pMap->AddRef();
 	m_ppObjects[0]->SetPosition(XMFLOAT3(0.0f, 0.0f, 0.0f));
 
 	CreateShaderVariables(pd3dDevice, pd3dCommandList);
@@ -528,7 +524,6 @@ void CBulletObjectsShader::BuildObjects(ID3D12Device5* pd3dDevice,ID3D12Graphics
 	{
 		m_ppObjects[i] = new CBullet();
 		m_ppObjects[i]->SetChild(pBullet);
-		pBullet->AddRef();
 		m_ppObjects[i]->SetPosition(XMFLOAT3(0.0f+i, 1.0f, 0.0f));
 	}
 
@@ -574,7 +569,6 @@ void CDoorObjectsShader::BuildObjects(ID3D12Device5* pd3dDevice, ID3D12GraphicsC
 	m_ppObjects[0]->SetPosition(XMFLOAT3(0.0f, 0.0f, 0.0f));
 	m_ppObjects[0]->OnPrepareAnimate();
 	m_ppObjects[0]->objLayer = Layout::DOOR;
-	pFrontDoor->AddRef();
 
 	m_ppObjects[1] = new CEmergencyDoor();
 	m_ppObjects[1]->SetChild(pEmergencyDoor);
@@ -582,7 +576,6 @@ void CDoorObjectsShader::BuildObjects(ID3D12Device5* pd3dDevice, ID3D12GraphicsC
 	m_ppObjects[1]->Rotate(0.0f, 90.0f, 0.0f);
 	m_ppObjects[1]->OnPrepareAnimate();
 	m_ppObjects[1]->objLayer = Layout::DOOR;
-	pEmergencyDoor->AddRef();
 
 	m_ppObjects[2] = new CEmergencyDoor();
 	m_ppObjects[2]->SetChild(pEmergencyDoor);
@@ -590,7 +583,6 @@ void CDoorObjectsShader::BuildObjects(ID3D12Device5* pd3dDevice, ID3D12GraphicsC
 	m_ppObjects[2]->Rotate(0.0f, -90.0f, 0.0f);
 	m_ppObjects[2]->OnPrepareAnimate();
 	m_ppObjects[2]->objLayer = Layout::DOOR;
-	pEmergencyDoor->AddRef();
 
 	m_ppObjects[3] = new CShutterDoor();
 	m_ppObjects[3]->SetChild(pShutterDoor);
@@ -598,7 +590,6 @@ void CDoorObjectsShader::BuildObjects(ID3D12Device5* pd3dDevice, ID3D12GraphicsC
 	m_ppObjects[3]->Rotate(-90.0f, 0.0f, 90.0f);
 	m_ppObjects[3]->OnPrepareAnimate();
 	m_ppObjects[3]->objLayer = Layout::DOOR;
-	pShutterDoor->AddRef();
 
 	m_ppObjects[4] = new CShutterDoor();
 	m_ppObjects[4]->SetChild(pShutterDoor);
@@ -606,7 +597,6 @@ void CDoorObjectsShader::BuildObjects(ID3D12Device5* pd3dDevice, ID3D12GraphicsC
 	m_ppObjects[4]->Rotate(-90.0f, 0.0f, 90.0f);
 	m_ppObjects[4]->OnPrepareAnimate();
 	m_ppObjects[4]->objLayer = Layout::DOOR;
-	pShutterDoor->AddRef();
 
 	CreateShaderVariables(pd3dDevice, pd3dCommandList);
 }
@@ -783,7 +773,6 @@ void CGeneratorObjectsShader::BuildObjects(ID3D12Device5* pd3dDevice, ID3D12Grap
 	m_ppObjects[0]->OnPrepareAnimate();
 	m_ppObjects[0]->SetNormalVector();
 	m_ppObjects[0]->objLayer = Layout::GENERATOR;
-	pGenerator1->AddRef();
 
 	m_ppObjects[1] = new CGenerator();
 	m_ppObjects[1]->SetChild(pGenerator2);
@@ -792,7 +781,6 @@ void CGeneratorObjectsShader::BuildObjects(ID3D12Device5* pd3dDevice, ID3D12Grap
 	m_ppObjects[1]->OnPrepareAnimate();
 	m_ppObjects[1]->SetNormalVector();
 	m_ppObjects[1]->objLayer = Layout::GENERATOR;
-	pGenerator2->AddRef();
 
 	m_ppObjects[2] = new CGenerator();
 	m_ppObjects[2]->SetChild(pGenerator3);
@@ -801,7 +789,6 @@ void CGeneratorObjectsShader::BuildObjects(ID3D12Device5* pd3dDevice, ID3D12Grap
 	m_ppObjects[2]->OnPrepareAnimate();
 	m_ppObjects[2]->SetNormalVector();
 	m_ppObjects[2]->objLayer = Layout::GENERATOR;
-	pGenerator3->AddRef();
 
 	CreateShaderVariables(pd3dDevice, pd3dCommandList);
 }
@@ -841,8 +828,6 @@ void CHitEffectObjectsShader::BuildObjects(ID3D12Device5* pd3dDevice, ID3D12Grap
 	m_ppObjects[0]->OnPrepareAnimate();
 	m_ppObjects[0]->SetPosition(XMFLOAT3(0.2f, 1.114f, 3.7f));
 	m_ppObjects[0]->SetScale(0.5f, 0.5f, 0.5f);
-	//m_ppObjects[0]->Rotate(0.0f, 0.0f, 58.449f);
-	pHit->AddRef();
 
 	CreateShaderVariables(pd3dDevice, pd3dCommandList);
 }

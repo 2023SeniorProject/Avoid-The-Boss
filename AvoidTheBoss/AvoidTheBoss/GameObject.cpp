@@ -400,7 +400,7 @@ void CAnimationSets::SetAnimationCallbackHandler(int nAnimationSet, CAnimationCa
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //
-CAnimationController::CAnimationController(ID3D12Device5 *pd3dDevice,ID3D12GraphicsCommandList4      *pd3dCommandList, int nAnimationTracks, CLoadedModelInfo *pModel)
+CAnimationController::CAnimationController(ID3D12Device5 *pd3dDevice,ID3D12GraphicsCommandList4*pd3dCommandList, int nAnimationTracks, CLoadedModelInfo *pModel)
 {
 	m_nAnimationTracks = nAnimationTracks;
     m_pAnimationTracks = new CAnimationTrack[nAnimationTracks];

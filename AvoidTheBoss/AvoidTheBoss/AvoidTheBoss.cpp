@@ -6,8 +6,6 @@
 #include "SocketUtil.h"
 #include "ThreadManager.h"
 
-#define _CRTDBG_MAP_ALLOC
-#include <crtdbg.h>
 
 #define MAX_LOADSTRING 100
 
@@ -39,8 +37,6 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     UNREFERENCED_PARAMETER(lpCmdLine);
    SocketUtil::Init();
    GCThreadManager = new ThreadManager;
-   _CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
-   _CrtSetBreakAlloc(1252);
    CoInitializeEx(nullptr, COINIT_APARTMENTTHREADED);
    // 전역 문자열을 초기화합니다.
     ::LoadString(hInstance, IDS_APP_TITLE, szTitle, MAX_LOADSTRING);
@@ -94,7 +90,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
   
     
     delete GCThreadManager;
-    _CrtDumpMemoryLeaks();
+  
 
     std::cout << "Quit Client\n";
     SocketUtil::Clear();
@@ -149,7 +145,7 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 
     //----프레임워크 객체 초기화
     mainGame.OnCreate(hInst, hMainWnd);
-    //clientCore.InitGameLoop(hInst, hMainWnd);
+   
 
     ShowWindow(hMainWnd, nCmdShow);
     UpdateWindow(hMainWnd);
@@ -202,9 +198,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
     }
     break;
     case WM_CREATE:
-        // 윈도우 스타일을 변경하여 상단바를 숨깁니다.
-        //SetWindowLong(hWnd, GWL_STYLE, GetWindowLong(hWnd, GWL_STYLE) & WS_CAPTION);
-        //SetWindowPos(hWnd, NULL, 0, 0, FRAME_BUFFER_WIDTH, FRAME_BUFFER_HEIGHT, SWP_FRAMECHANGED);
+     
         break;
     case WM_DESTROY:
         ::PostQuitMessage(0);

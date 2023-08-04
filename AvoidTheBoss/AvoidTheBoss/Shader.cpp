@@ -467,24 +467,27 @@ void CMapObjectsShader::BuildObjects(ID3D12Device5 * pd3dDevice,ID3D12GraphicsCo
 	m_nObjects = 3;
 	m_ppObjects = new CGameObject * [m_nObjects];
 
-	CGameObject* pMap = CGameObject::LoadGeometryFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "Model/Map/Industry_Map(6).bin", NULL,Layout::MAP);
+	CGameObject* pMap = CGameObject::LoadGeometryFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "Model/Map/Industry_Map(6).bin", this,Layout::MAP);
 	m_ppObjects[0] = new CGameObject();
-	m_ppObjects[0]->SetChild(pMap);
+	m_ppObjects[0]->SetChild(pMap ,true);
 	m_ppObjects[0]->SetPosition(XMFLOAT3(0.0f, 0.0f, 0.0f));
-	pMap->AddRef();
 
-	CGameObject* pTile = CGameObject::LoadGeometryFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "Model/Map/Industry_Field2(1).bin", NULL, Layout::MAP);
+	CGameObject* pTile = CGameObject::LoadGeometryFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "Model/Map/Industry_Field2(1).bin", this, Layout::MAP);
 	m_ppObjects[1] = new CGameObject();
-	m_ppObjects[1]->SetChild(pTile);
+	m_ppObjects[1]->SetChild(pTile ,true);
 	m_ppObjects[1]->SetPosition(XMFLOAT3(0.0f, 0.0f, 0.0f));
-	pTile->AddRef();
 
-	CGameObject* pCrane = CGameObject::LoadGeometryFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "Model/Map/Crane.bin", NULL, Layout::MAP);
+	CGameObject* pCrane = CGameObject::LoadGeometryFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "Model/Map/Crane.bin", this, Layout::MAP);
 	m_ppObjects[2] = new CGameObject();
-	m_ppObjects[2]->SetChild(pCrane);
+	m_ppObjects[2]->SetChild(pCrane ,true);
 	m_ppObjects[2]->SetPosition(XMFLOAT3(0.0f, 0.0f, 0.0f));
-	pCrane->AddRef();
+
 	CreateShaderVariables(pd3dDevice, pd3dCommandList);
+
+	/*if (pMap) delete pMap;
+	if (pTile) delete pTile;
+	if (pCrane) delete pCrane;*/
+
 }
 
 CBoundsObjectsShader::CBoundsObjectsShader()
@@ -500,14 +503,15 @@ void CBoundsObjectsShader::BuildObjects(ID3D12Device5* pd3dDevice,ID3D12Graphics
 	m_nObjects = 1;
 	m_ppObjects = new CGameObject * [m_nObjects];
 
-	CGameObject* pMap = CGameObject::LoadGeometryFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "Model/Map_Bounding_Box_(5).bin", NULL, Layout::BOUDS);
+	CGameObject* pMap = CGameObject::LoadGeometryFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "Model/Map_Bounding_Box_(5).bin", this, Layout::BOUDS);
 	pMap->m_type = 1;
 	m_ppObjects[0] = new CGameObject();
-	m_ppObjects[0]->SetChild(pMap);
-	pMap->AddRef();
+	m_ppObjects[0]->SetChild(pMap ,true);
 	m_ppObjects[0]->SetPosition(XMFLOAT3(0.0f, 0.0f, 0.0f));
 
 	CreateShaderVariables(pd3dDevice, pd3dCommandList);
+	//if (pMap) delete pMap;
+
 }
 
 CBulletObjectsShader::CBulletObjectsShader()
@@ -523,16 +527,15 @@ void CBulletObjectsShader::BuildObjects(ID3D12Device5* pd3dDevice,ID3D12Graphics
 	m_nObjects = BULLET_NUMBER;
 	m_ppObjects = new CGameObject * [m_nObjects];
 
-	CGameObject* pBullet = CGameObject::LoadGeometryFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "Model/ÃÑ¾Ë/Bullet.bin", NULL, Layout::BULLET);
+	CGameObject* pBullet = CGameObject::LoadGeometryFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "Model/ÃÑ¾Ë/Bullet.bin", this, Layout::BULLET);
 	for (int i = 0; i < m_nObjects; i++)
 	{
 		m_ppObjects[i] = new CBullet();
-		m_ppObjects[i]->SetChild(pBullet);
-		pBullet->AddRef();
+		m_ppObjects[i]->SetChild(pBullet ,true);
 		m_ppObjects[i]->SetPosition(XMFLOAT3(0.0f+i, 1.0f, 0.0f));
 	}
-
 	CreateShaderVariables(pd3dDevice, pd3dCommandList);
+	//if (pBullet) delete pBullet;
 }
 
 void CBulletObjectsShader::Render(ID3D12GraphicsCommandList4  * pd3dCommandList, CCamera* pCamera,bool bRaster)
@@ -565,50 +568,49 @@ void CDoorObjectsShader::BuildObjects(ID3D12Device5* pd3dDevice, ID3D12GraphicsC
 	m_nObjects = 5;
 	m_ppObjects = new CGameObject * [m_nObjects];
 
-	CGameObject* pFrontDoor = CGameObject::LoadGeometryFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "Model/Map/Front_Hanger_Door_Open.bin", NULL, Layout::DOOR);
-	CGameObject* pEmergencyDoor = CGameObject::LoadGeometryFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "Model/Map/Emergency_Door_Open.bin", NULL, Layout::DOOR);
-	CGameObject* pShutterDoor = CGameObject::LoadGeometryFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "Model/Map/Shutter_Door_Side.bin", NULL, Layout::DOOR);
+	CGameObject* pFrontDoor = CGameObject::LoadGeometryFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "Model/Map/Front_Hanger_Door_Open.bin", this, Layout::DOOR);
+	CGameObject* pEmergencyDoor = CGameObject::LoadGeometryFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "Model/Map/Emergency_Door_Open.bin", this, Layout::DOOR);
+	CGameObject* pShutterDoor = CGameObject::LoadGeometryFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "Model/Map/Shutter_Door_Side.bin", this, Layout::DOOR);
 
 	m_ppObjects[0] = new CFrontDoor();
-	m_ppObjects[0]->SetChild(pFrontDoor);
+	m_ppObjects[0]->SetChild(pFrontDoor ,true);
 	m_ppObjects[0]->SetPosition(XMFLOAT3(0.0f, 0.0f, 0.0f));
 	m_ppObjects[0]->OnPrepareAnimate();
 	m_ppObjects[0]->objLayer = Layout::DOOR;
-	pFrontDoor->AddRef();
 
 	m_ppObjects[1] = new CEmergencyDoor();
-	m_ppObjects[1]->SetChild(pEmergencyDoor);
+	m_ppObjects[1]->SetChild(pEmergencyDoor ,true);
 	m_ppObjects[1]->SetPosition(XMFLOAT3(-25.60735f, 0.01800204f, -22.68291f));
 	m_ppObjects[1]->Rotate(0.0f, 90.0f, 0.0f);
 	m_ppObjects[1]->OnPrepareAnimate();
 	m_ppObjects[1]->objLayer = Layout::DOOR;
-	pEmergencyDoor->AddRef();
 
 	m_ppObjects[2] = new CEmergencyDoor();
-	m_ppObjects[2]->SetChild(pEmergencyDoor);
+	m_ppObjects[2]->SetChild(pEmergencyDoor ,true);
 	m_ppObjects[2]->SetPosition(XMFLOAT3(25.60001f, 0.01550287f, -21.44026f));
 	m_ppObjects[2]->Rotate(0.0f, -90.0f, 0.0f);
 	m_ppObjects[2]->OnPrepareAnimate();
 	m_ppObjects[2]->objLayer = Layout::DOOR;
-	pEmergencyDoor->AddRef();
 
 	m_ppObjects[3] = new CShutterDoor();
-	m_ppObjects[3]->SetChild(pShutterDoor);
+	m_ppObjects[3]->SetChild(pShutterDoor ,true);
 	m_ppObjects[3]->SetPosition(XMFLOAT3(-0.044f, -0.5005361f, 0.06f));
 	m_ppObjects[3]->Rotate(-90.0f, 0.0f, 90.0f);
 	m_ppObjects[3]->OnPrepareAnimate();
 	m_ppObjects[3]->objLayer = Layout::DOOR;
-	pShutterDoor->AddRef();
 
 	m_ppObjects[4] = new CShutterDoor();
-	m_ppObjects[4]->SetChild(pShutterDoor);
+	m_ppObjects[4]->SetChild(pShutterDoor ,true);
 	m_ppObjects[4]->SetPosition(XMFLOAT3(50.43907f, -0.503039f, -0.1099938f));
 	m_ppObjects[4]->Rotate(-90.0f, 0.0f, 90.0f);
 	m_ppObjects[4]->OnPrepareAnimate();
 	m_ppObjects[4]->objLayer = Layout::DOOR;
-	pShutterDoor->AddRef();
 
 	CreateShaderVariables(pd3dDevice, pd3dCommandList);
+	/*if (pFrontDoor) delete pFrontDoor;
+	if (pEmergencyDoor) delete pEmergencyDoor;
+	if (pShutterDoor) delete pShutterDoor;*/
+
 }
 
 CSirenObjectsShader::CSirenObjectsShader()
@@ -624,137 +626,122 @@ void CSirenObjectsShader::BuildObjects(ID3D12Device5* pd3dDevice, ID3D12Graphics
 	m_nObjects = 16;
 	m_ppObjects = new CGameObject * [m_nObjects];
 
-	CGameObject* pSiren = CGameObject::LoadGeometryFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "Model/Map/Siren_Alarm_One.bin", NULL, Layout::SIREN);
+	CGameObject* pSiren = CGameObject::LoadGeometryFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "Model/Map/Siren_Alarm_One.bin", this, Layout::SIREN);
 
 	m_ppObjects[0] = new CSiren();
-	m_ppObjects[0]->SetChild(pSiren);
+	m_ppObjects[0]->SetChild(pSiren ,true);
 	m_ppObjects[0]->SetPosition(XMFLOAT3(23.60255f, 3.744244f, 19.36822f));
 	m_ppObjects[0]->Rotate(-0.0f, -0.0f, 90.0f);
 	m_ppObjects[0]->OnPrepareAnimate();
 	m_ppObjects[0]->objLayer = Layout::SIREN;
-	pSiren->AddRef();
 
 	m_ppObjects[1] = new CSiren();
-	m_ppObjects[1]->SetChild(pSiren);
+	m_ppObjects[1]->SetChild(pSiren , true);
 	m_ppObjects[1]->SetPosition(XMFLOAT3(23.60255f, 3.744244f, 4.83103f));
 	m_ppObjects[1]->Rotate(-0.0f, -0.0f, 90.0f);
 	m_ppObjects[1]->OnPrepareAnimate();
 	m_ppObjects[1]->objLayer = Layout::SIREN;
-	pSiren->AddRef();
 
 	m_ppObjects[2] = new CSiren();
-	m_ppObjects[2]->SetChild(pSiren);
+	m_ppObjects[2]->SetChild(pSiren , true);
 	m_ppObjects[2]->SetPosition(XMFLOAT3(23.60255f, 3.744244f,-0.008120117f));
 	m_ppObjects[2]->Rotate(-0.0f, -0.0f, 90.0f);
 	m_ppObjects[2]->OnPrepareAnimate();
 	m_ppObjects[2]->objLayer = Layout::SIREN;
-	pSiren->AddRef();
 
 	m_ppObjects[3] = new CSiren();
-	m_ppObjects[3]->SetChild(pSiren);
+	m_ppObjects[3]->SetChild(pSiren , true);;
 	m_ppObjects[3]->SetPosition(XMFLOAT3(23.60255f, 3.744244f, -14.57508f));
 	m_ppObjects[3]->Rotate(0.0f, -0.0f, 90.0f);
 	m_ppObjects[3]->OnPrepareAnimate();
 	m_ppObjects[3]->objLayer = Layout::SIREN;
-	pSiren->AddRef();
 
 	m_ppObjects[4] = new CSiren();
-	m_ppObjects[4]->SetChild(pSiren);
+	m_ppObjects[4]->SetChild(pSiren , true);
 	m_ppObjects[4]->SetPosition(XMFLOAT3(-23.6237f, 3.744244f, 19.47554f));
 	m_ppObjects[4]->Rotate(0.0f, 0.0f, -90.0f);
 	m_ppObjects[4]->OnPrepareAnimate();
 	m_ppObjects[1]->objLayer = Layout::SIREN;
-	pSiren->AddRef();
 
 	m_ppObjects[5] = new CSiren();
-	m_ppObjects[5]->SetChild(pSiren);
+	m_ppObjects[5]->SetChild(pSiren , true);
 	m_ppObjects[5]->SetPosition(XMFLOAT3(-23.6237f, 3.744244f, 4.938357f));
 	m_ppObjects[5]->Rotate(0.0f, 0.0f, -90.0f);;
 	m_ppObjects[5]->OnPrepareAnimate();
 	m_ppObjects[5]->objLayer = Layout::SIREN;
-	pSiren->AddRef();
 
 	m_ppObjects[6] = new CSiren();
-	m_ppObjects[6]->SetChild(pSiren);
+	m_ppObjects[6]->SetChild(pSiren , true);
 	m_ppObjects[6]->SetPosition(XMFLOAT3(-23.6237f, 3.744244f, 0.09920654f));
 	m_ppObjects[6]->Rotate(0.0f, 0.0f, -90.0f);
 	m_ppObjects[6]->OnPrepareAnimate();
 	m_ppObjects[6]->objLayer = Layout::SIREN;
-	pSiren->AddRef();
 
 	m_ppObjects[7] = new CSiren();
-	m_ppObjects[7]->SetChild(pSiren);
+	m_ppObjects[7]->SetChild(pSiren , true);
 	m_ppObjects[7]->SetPosition(XMFLOAT3(-23.6237f, 3.744244f, -14.46775f));
 	m_ppObjects[7]->Rotate(0.0f, 0.0f, -90.0f);
 	m_ppObjects[7]->OnPrepareAnimate();
 	m_ppObjects[7]->objLayer = Layout::SIREN;
-	pSiren->AddRef();
 
 	m_ppObjects[8] = new CSiren();
-	m_ppObjects[8]->SetChild(pSiren);
+	m_ppObjects[8]->SetChild(pSiren , true);
 	m_ppObjects[8]->SetPosition(XMFLOAT3(-19.46681f, 3.744244f, -23.56555f));
 	m_ppObjects[8]->Rotate(90.0f, 0.0f, 0.0f);
 	m_ppObjects[8]->OnPrepareAnimate();
 	m_ppObjects[8]->objLayer = Layout::SIREN;
-	pSiren->AddRef();
 
 	m_ppObjects[9] = new CSiren();
-	m_ppObjects[9]->SetChild(pSiren);
+	m_ppObjects[9]->SetChild(pSiren , true);
 	m_ppObjects[9]->SetPosition(XMFLOAT3(-4.909707f, 3.744244f, -23.56555f));
 	m_ppObjects[9]->Rotate(90.0f, 0.0f, 0.0f);
 	m_ppObjects[9]->OnPrepareAnimate();
 	m_ppObjects[9]->objLayer = Layout::SIREN;
-	pSiren->AddRef();
 
 	m_ppObjects[10] = new CSiren();
-	m_ppObjects[10]->SetChild(pSiren);
+	m_ppObjects[10]->SetChild(pSiren , true);
 	m_ppObjects[10]->SetPosition(XMFLOAT3(4.786877f, 3.744244f, -23.56555f));
 	m_ppObjects[10]->Rotate(90.0f, 0.0f, 0.0f);
 	m_ppObjects[10]->OnPrepareAnimate();
 	m_ppObjects[10]->objLayer = Layout::SIREN;
-	pSiren->AddRef();
 
 	m_ppObjects[11] = new CSiren();
-	m_ppObjects[11]->SetChild(pSiren);
+	m_ppObjects[11]->SetChild(pSiren , true);
 	m_ppObjects[11]->SetPosition(XMFLOAT3(19.33877f, 3.744244f, -23.56555f));
 	m_ppObjects[11]->Rotate(90.0f, 0.0f, 0.0f);
 	m_ppObjects[11]->OnPrepareAnimate();
 	m_ppObjects[11]->objLayer = Layout::SIREN;
-	pSiren->AddRef();
 
 	m_ppObjects[12] = new CSiren();
-	m_ppObjects[12]->SetChild(pSiren);
+	m_ppObjects[12]->SetChild(pSiren , true);
 	m_ppObjects[12]->SetPosition(XMFLOAT3(4.893795f, 3.744244f, 23.64812f));
 	m_ppObjects[12]->Rotate(-90.0f, 0.0f, 0.0f);
 	m_ppObjects[12]->OnPrepareAnimate();
 	m_ppObjects[12]->objLayer = Layout::SIREN;
-	pSiren->AddRef();
 
 	m_ppObjects[13] = new CSiren();
-	m_ppObjects[13]->SetChild(pSiren);
+	m_ppObjects[13]->SetChild(pSiren , true);
 	m_ppObjects[13]->SetPosition(XMFLOAT3(19.45037f, 3.744244f, 23.64812f));
 	m_ppObjects[13]->Rotate(-90.0f, -0.0f, 0.0f);
 	m_ppObjects[13]->OnPrepareAnimate();
 	m_ppObjects[13]->objLayer = Layout::SIREN;
-	pSiren->AddRef();
 
 	m_ppObjects[14] = new CSiren();
-	m_ppObjects[14]->SetChild(pSiren);
+	m_ppObjects[14]->SetChild(pSiren , true);
 	m_ppObjects[14]->SetPosition(XMFLOAT3(4.897f, 3.721f, 23.64812f));
 	m_ppObjects[14]->Rotate(-90.0f, 0.0f, 0.0f);
 	m_ppObjects[14]->OnPrepareAnimate();
 	m_ppObjects[14]->objLayer = Layout::SIREN;
-	pSiren->AddRef();
 
 	m_ppObjects[15] = new CSiren();
-	m_ppObjects[15]->SetChild(pSiren);
+	m_ppObjects[15]->SetChild(pSiren , true);
 	m_ppObjects[15]->SetPosition(XMFLOAT3(-19.35391f, 3.744244f, 23.64812f));
 	m_ppObjects[15]->Rotate(-90.0f, 0.0f, 0.0f);
 	m_ppObjects[15]->OnPrepareAnimate();
 	m_ppObjects[15]->objLayer = Layout::SIREN;
-	pSiren->AddRef();
 
 	CreateShaderVariables(pd3dDevice, pd3dCommandList);
+	//if (pSiren) delete pSiren;
 }
 
 CGeneratorObjectsShader::CGeneratorObjectsShader()
@@ -770,40 +757,41 @@ void CGeneratorObjectsShader::BuildObjects(ID3D12Device5* pd3dDevice, ID3D12Grap
 	m_nObjects = 3;
 	m_ppObjects = new CGameObject * [m_nObjects];
 
-	CGameObject* pGenerator1 = CGameObject::LoadGeometryFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "Model/Map/Generator.bin", NULL, Layout::GENERATOR);
+	CGameObject* pGenerator1 = CGameObject::LoadGeometryFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "Model/Map/Generator.bin", this, Layout::GENERATOR);
 
-	CGameObject* pGenerator2 = CGameObject::LoadGeometryFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "Model/Map/Generator.bin", NULL, Layout::GENERATOR);
+	CGameObject* pGenerator2 = CGameObject::LoadGeometryFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "Model/Map/Generator.bin", this, Layout::GENERATOR);
 
-	CGameObject* pGenerator3 = CGameObject::LoadGeometryFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "Model/Map/Generator.bin", NULL, Layout::GENERATOR);
+	CGameObject* pGenerator3 = CGameObject::LoadGeometryFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "Model/Map/Generator.bin", this, Layout::GENERATOR);
 
 	m_ppObjects[0] = new CGenerator();
-	m_ppObjects[0]->SetChild(pGenerator1);
+	m_ppObjects[0]->SetChild(pGenerator1 ,true);
 	m_ppObjects[0]->SetPosition(XMFLOAT3(-22.884f, 0.0f, 2.46665f));
 	m_ppObjects[0]->Rotate(0.0f, 90.0f, 0.0f); 
 	m_ppObjects[0]->OnPrepareAnimate();
 	m_ppObjects[0]->SetNormalVector();
 	m_ppObjects[0]->objLayer = Layout::GENERATOR;
-	pGenerator1->AddRef();
 
 	m_ppObjects[1] = new CGenerator();
-	m_ppObjects[1]->SetChild(pGenerator2);
+	m_ppObjects[1]->SetChild(pGenerator2 ,true);
 	m_ppObjects[1]->SetPosition(XMFLOAT3(22.95006f, 0.0f, 2.506552f));
 	m_ppObjects[1]->Rotate(0.0f, -90.0f, 0.0f);
 	m_ppObjects[1]->OnPrepareAnimate();
 	m_ppObjects[1]->SetNormalVector();
 	m_ppObjects[1]->objLayer = Layout::GENERATOR;
-	pGenerator2->AddRef();
 
 	m_ppObjects[2] = new CGenerator();
-	m_ppObjects[2]->SetChild(pGenerator3);
+	m_ppObjects[2]->SetChild(pGenerator3 ,true);
 	m_ppObjects[2]->SetPosition(XMFLOAT3(0.0f, 0.0f, -22.82f));
 	m_ppObjects[2]->Rotate(0.0f, 0.0f, 0.0f);
 	m_ppObjects[2]->OnPrepareAnimate();
 	m_ppObjects[2]->SetNormalVector();
 	m_ppObjects[2]->objLayer = Layout::GENERATOR;
-	pGenerator3->AddRef();
 
 	CreateShaderVariables(pd3dDevice, pd3dCommandList);
+
+	/*if (pGenerator1)delete pGenerator1;
+	if (pGenerator2)delete pGenerator2;
+	if (pGenerator3)delete pGenerator3;*/
 }
 
 
@@ -834,17 +822,17 @@ void CHitEffectObjectsShader::BuildObjects(ID3D12Device5* pd3dDevice, ID3D12Grap
 	m_nObjects = 1;
 	m_ppObjects = new CGameObject * [m_nObjects];
 	
-	CGameObject* pHit = CGameObject::LoadGeometryFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "Model/hit.bin", NULL, Layout::EFFECT);
+	CGameObject* pHit = CGameObject::LoadGeometryFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "Model/hit.bin", this, Layout::EFFECT);
 	pHit->m_type = 1;
 	m_ppObjects[0] = new CHitEffect();
-	m_ppObjects[0]->SetChild(pHit);
+	m_ppObjects[0]->SetChild(pHit ,true);
 	m_ppObjects[0]->OnPrepareAnimate();
 	m_ppObjects[0]->SetPosition(XMFLOAT3(0.2f, 1.114f, 3.7f));
 	m_ppObjects[0]->SetScale(0.5f, 0.5f, 0.5f);
-	//m_ppObjects[0]->Rotate(0.0f, 0.0f, 58.449f);
-	pHit->AddRef();
 
 	CreateShaderVariables(pd3dDevice, pd3dCommandList);
+	//if (pHit) delete pHit;
+
 }
 
 void CHitEffectObjectsShader::Render(ID3D12GraphicsCommandList4* pd3dCommandList, CCamera* pCamera, bool bRaster)

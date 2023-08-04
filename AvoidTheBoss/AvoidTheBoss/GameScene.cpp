@@ -230,8 +230,8 @@ void CGameScene::BuildObjects(ID3D12Device5* pd3dDevice,ID3D12GraphicsCommandLis
 {
 	m_pd3dGraphicsRootSignature = CreateGraphicsRootSignature(pd3dDevice);
 
-	CreateCbvSrvDescriptorHeaps(pd3dDevice, 0, 52 + 1 + 1 + 12 + 3 + 12 + 3 + 89 + 5 + 5 * 4 + 6 * 17 + 2 * 50 + 3 * 2 + 14 + 1 + 12);
-
+	CreateCbvSrvDescriptorHeaps(pd3dDevice, 0, 282);
+	// 맵 106+ 스카이박스 2 + 크래인 12 + 바닥 2 + 사이렌 6*16+ 발전기 16*3 + 셔터도어 4*2 + 비상구1*2 + 정문 4 + 캐릭터?? + 히트 1 + 총알 1
 	CMaterial::PrepareShaders(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature);
 	BuildDefaultLightsAndMaterials();
 
@@ -287,9 +287,9 @@ void CGameScene::BuildObjects(ID3D12Device5* pd3dDevice,ID3D12GraphicsCommandLis
 	pHitEffectObjectsShader->BuildObjects(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, NULL, NULL);
 	m_ppShaders[5] = pHitEffectObjectsShader;
 
-	CBoundsObjectsShader* pBoundsMapShader = new CBoundsObjectsShader();
-	pBoundsMapShader->CreateShader(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature);
-	pBoundsMapShader->BuildObjects(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, NULL, NULL);
+	//CBoundsObjectsShader* pBoundsMapShader = new CBoundsObjectsShader();
+	//pBoundsMapShader->CreateShader(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature);
+	//pBoundsMapShader->BuildObjects(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, NULL, NULL);
 
 	m_ppGenerator = new CGenerator * [m_nGenerator];
 	

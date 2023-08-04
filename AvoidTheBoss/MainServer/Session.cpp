@@ -210,8 +210,8 @@ void ServerSession::ProcessPacket(char* packet)
 			sqlExec.append(lp->name);
 			sqlExec.append(L", ");
 			sqlExec.append(lp->pw);
-			LoginProcess(this, sqlExec);
-			//DoSendLoginPacket(true);
+			//LoginProcess(this, sqlExec);
+			DoSendLoginPacket(true);
 		}
 		break;
 		case (uint8)C_TITLE_PACKET_TYPE::ACQ_REG:
@@ -221,7 +221,7 @@ void ServerSession::ProcessPacket(char* packet)
 			sqlExec.append(lp->name);
 			sqlExec.append(L", ");
 			sqlExec.append(lp->pw);
-			RegisterProcess(this, sqlExec);
+			//RegisterProcess(this, sqlExec);
 		}
 		break;
 

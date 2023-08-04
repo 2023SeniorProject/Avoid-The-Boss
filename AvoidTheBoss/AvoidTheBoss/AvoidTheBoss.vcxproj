@@ -73,7 +73,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <OutDir>$(SolutionDir)Binary\$(Configuration)\</OutDir>
     <LibraryPath>$(SolutionDir)AvoidTheBoss\FMOD\lib;$(SolutionDir)Library\;$(LibraryPath)</LibraryPath>
-    <IncludePath>$(SolutionDir)CoreEngine\;$(SolutionDir)AvoidTheBoss\FMOD\inc;C:\AvoidTheBoss\AvoidTheBoss\CoreEngine;$(IncludePath);$(SolutionDir)\</IncludePath>
+    <IncludePath>$(SolutionDir)CoreEngine\;$(SolutionDir)AvoidTheBoss\FMOD\inc;$(IncludePath);$(SolutionDir)\</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <OutDir>$(SolutionDir)Binary\$(Configuration)\</OutDir>

@@ -30,10 +30,18 @@ void SoundManager::PlayBackGroundSound(int32 Scene)
 	case 2:
 		m_pSound->SoundStop(0);
 		m_pSound->PlayBackGroundSound(0,0);
+		SoundManager::GetInstance().SetVolum(0, 0.5f);
 		break;
 	case 3:
 		m_pSound->SoundStop(0);
 		m_pSound->PlayBackGroundSound(1, 0);
+		SoundManager::GetInstance().SetVolum(1, 0.5f);
+		break;
+	case 4:
+		for (int i = 0; i < 7; i++)
+		{
+			m_pSound->SoundStop(8 + i);
+		}
 		break;
 	}
 }

@@ -529,19 +529,20 @@ void CBoss::AnimTrackUpdate()
 			if (GetOnMoveSound())
 			{
 				SetOnMoveSound(false);
-				SoundManager::GetInstance().SoundStop(4);
+				SoundManager::GetInstance().SoundStop(5);
 			}
 			break;
 		case(int32)PLAYER_BEHAVIOR::RUN:
 			SetRunAnimTrack();
 			if (!GetOnMoveSound())
 			{
+				//SoundManager::GetInstance().PlayObjectSound(10, 5);
 				SetOnMoveSound(true);
 				
 			}
 			break;
 		case (int32)PLAYER_BEHAVIOR::ATTACK:
-			SoundManager::GetInstance().SoundStop(4);
+			SoundManager::GetInstance().SoundStop(5);
 			SetAttackAnimTrack();
 			break;
 		case (int32)PLAYER_BEHAVIOR::RUN_ATTACK:
@@ -607,7 +608,7 @@ uint8 CBoss::ProcessInput()
 		}
 		m_pBullet->SetOnShoot(true);
 		m_pBullet->SetStartShoot(true);
-		SoundManager::GetInstance().PlayObjectSound(4, 5);
+		SoundManager::GetInstance().PlayObjectSound(4, 6);
 	}
 	if (InputManager::GetInstance().GetKeyBuffer(KEY_TYPE::G) == (uint8)KEY_STATUS::KEY_PRESS)
 	{

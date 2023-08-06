@@ -800,14 +800,14 @@ void CEmployee::AnimTrackUpdate()
 		if (GetOnMoveSound())
 		{
 			SetOnMoveSound(false);
-			SoundManager::GetInstance().SoundStop(7);
+			SoundManager::SoundStop(14);
 		}
 		break;
 	case (int32)PLAYER_BEHAVIOR::RUN:
 		SetRunAnimTrack();
 		if (!GetOnMoveSound())
 		{
-			SoundManager::GetInstance().PlayObjectSound(12, 7);
+			SoundManager::GetInstance().PlayObjectSound(12, 14);
 			SetOnMoveSound(true);
 		}
 		break;
@@ -820,7 +820,7 @@ void CEmployee::AnimTrackUpdate()
 		{
 			SetAttackedAnimTrack();
 			m_attackedAnimationCount--;
-			SoundManager::GetInstance().PlayObjectSound(13, 8);
+			SoundManager::GetInstance().PlayObjectSound(13, 15);
 		}
 		else 
 		{
@@ -844,7 +844,7 @@ void CEmployee::AnimTrackUpdate()
 			m_downAnimationCount--;
 			if (m_downAnimationCount <= 0)
 			{
-				SoundManager::GetInstance().PlayObjectSound(7, 9);
+				SoundManager::GetInstance().PlayObjectSound(7, 15);
 				SetBehavior(PLAYER_BEHAVIOR::CRAWL);
 			}
 		}

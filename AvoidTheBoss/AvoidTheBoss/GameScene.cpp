@@ -520,10 +520,10 @@ void CGameScene::ExitReady()
 {
 	if (m_bEmpExit) // 탈출 성공 시 , 해야할 일 처리
 	{
-		SoundManager::GetInstance().PlayObjectSound(16, 10);
-		SoundManager::GetInstance().PlayObjectSound(15, 10);
-		SoundManager::GetInstance().PlayObjectSound(18, 10);
-		SoundManager::GetInstance().PlayObjectSound(19, 10);
+		SoundManager::GetInstance().PlayObjectSound(15, 7);//Emergency_Door_Open
+		SoundManager::GetInstance().PlayObjectSound(16, 11);
+		SoundManager::GetInstance().PlayObjectSound(18, 12);//Hangar_Door_Open
+		SoundManager::GetInstance().PlayObjectSound(19, 13);//Shutter_Open
 
 		std::cout << "Exit Ready\n";
 		for (int j = 0; j < m_nShaders; j++)
@@ -543,16 +543,6 @@ void CGameScene::ExitReady()
 
 void CGameScene::ResetGame()
 {
-	// 사운드 오류 시 제거해야할 부분
-	SoundManager::GetInstance().SoundStop(4);
-	SoundManager::GetInstance().SoundStop(7);
-	SoundManager::GetInstance().SoundStop(5);
-	SoundManager::GetInstance().SoundStop(6);
-	SoundManager::GetInstance().SoundStop(8);
-	SoundManager::GetInstance().SoundStop(9);
-	SoundManager::GetInstance().SoundStop(10);
-	SoundManager::GetInstance().SoundStop(11);
-
 
 	{
 		std::unique_lock<std::shared_mutex> wl(m_jobQueueLock);

@@ -528,17 +528,16 @@ void CBoss::AnimTrackUpdate()
 			SetIdleAnimTrack();
 			if (GetOnMoveSound())
 			{
-				SetOnMoveSound(false);
 				SoundManager::GetInstance().SoundStop(5);
+				SetOnMoveSound(false);
 			}
 			break;
 		case(int32)PLAYER_BEHAVIOR::RUN:
 			SetRunAnimTrack();
 			if (!GetOnMoveSound())
 			{
-				//SoundManager::GetInstance().PlayObjectSound(10, 5);
-				SetOnMoveSound(true);
-				
+				SoundManager::GetInstance().PlayObjectSound(10, 5);
+				SetOnMoveSound(true);			
 			}
 			break;
 		case (int32)PLAYER_BEHAVIOR::ATTACK:

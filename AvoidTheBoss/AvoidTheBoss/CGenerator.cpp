@@ -71,7 +71,6 @@ void CGenerator::Update(float fTimeElapsed)
 	}
 	if (m_bOnInteraction || m_bAlreadyOn)
 	{
-		SoundManager::GetInstance().PlayObjectSound(17, 11);
 		if (!GetbIsStartGenInter())
 		{
 			for (int i = 0; i < 3; i++)

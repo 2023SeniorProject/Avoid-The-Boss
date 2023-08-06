@@ -519,8 +519,9 @@ void CGameScene::ExitReady()
 {
 	if (m_bEmpExit) // 탈출 성공 시 , 해야할 일 처리
 	{
-		SoundManager::GetInstance().PlayObjectSound(16, 5);
+		SoundManager::GetInstance().SoundStop(6);
 		SoundManager::GetInstance().PlayObjectSound(15, 7);
+		SoundManager::GetInstance().PlayObjectSound(16, 5);
 		SoundManager::GetInstance().PlayObjectSound(18, 5);
 		SoundManager::GetInstance().PlayObjectSound(19, 5);
 
@@ -542,11 +543,6 @@ void CGameScene::ExitReady()
 
 void CGameScene::ResetGame()
 {
-	// 사운드 오류 시 제거해야할 부분
-	for (int i = 0; i < 8; i++)
-	{
-		SoundManager::GetInstance().SoundStop(i);
-	}
 
 	{
 		std::unique_lock<std::shared_mutex> wl(m_jobQueueLock);

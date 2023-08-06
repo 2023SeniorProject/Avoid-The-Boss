@@ -74,25 +74,34 @@ void CGenerator::Update(float fTimeElapsed)
 	{
 		if (!GetbIsStartGenInter())
 		{
-			SoundManager::GetInstance().PlayObjectSound(17, 6);
-			//SoundManager::GetInstance().PlayObjectSound(6, 6);
+			for (int i = 0; i < 3; i++)
+			{
+				if (m_idx == i)
+					SoundManager::GetInstance().PlayObjectSound(17, 8+i);
+			}	
 			SetbIsStartGenInter(true);
-			std::cout << "startGenInteractionTrue : " << GetbIsStartGenInter() << std::endl;
 		}
 	}
 	else
 	{
 		if (GetbIsStartGenInter())
 		{
-			SoundManager::GetInstance().SoundStop(6);
+			for (int i = 0; i < 3; i++)
+			{
+				if (m_idx == i)
+					SoundManager::SoundStop(8+i);
+			}
 			SetbIsStartGenInter(false);
-			std::cout << "startGenInteractionFalse : " << GetbIsStartGenInter() << std::endl;
 		}
 	}
-	if (m_bGenActive)
-		SoundManager::GetInstance().SetVolum(6, 0.1f);
-	else
-		SoundManager::GetInstance().SetVolum(6, 0.5f);
+	for (int i = 0; i < 3; i++)
+	{
+		if (m_idx == i)
+		{
+			if (m_bGenActive)
+				SoundManager::GetInstance().SetVolum(8+i, 0.1f);
+		}
+	}
 }
 
 void CGenerator::OnPrepareAnimate()

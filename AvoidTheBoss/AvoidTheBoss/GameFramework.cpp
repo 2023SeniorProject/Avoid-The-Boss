@@ -551,8 +551,10 @@ void CGameFramework::MoveToNextFrame()
 void CGameFramework::ChangeScene(SCENESTATE ss)
 {
 	m_curScene.store((int32)ss);
-	SoundManager::GetInstance().PlayBackGroundSound(m_curScene); // 씬 전환 시, 사운드 재생 변경
-	SoundManager::GetInstance().SetVolum(m_curScene,0.5f);
+	if (m_curScene <= 4)
+	{
+		SoundManager::GetInstance().PlayBackGroundSound(m_curScene); // 씬 전환 시, 사운드 재생 변경
+	}
 }
 
 void CGameFramework::OnProcessingMouseMessage(HWND hWnd, UINT nMessageID, WPARAM wParam, LPARAM lParam)

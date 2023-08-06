@@ -529,14 +529,14 @@ void CBoss::AnimTrackUpdate()
 			if (GetOnMoveSound())
 			{
 				SetOnMoveSound(false);
-				SoundManager::SoundStop(4);
+				SoundManager::SoundStop(5);
 			}
 			break;
 		case(int32)PLAYER_BEHAVIOR::RUN:
 			SetRunAnimTrack();
 			if (!GetOnMoveSound())
 			{
-				SoundManager::GetInstance().PlayObjectSound(10, 4);
+				SoundManager::GetInstance().PlayObjectSound(10, 5);
 				SetOnMoveSound(true);
 			}
 			break;
@@ -566,7 +566,7 @@ uint8 CBoss::ProcessInput()
 	if (InputManager::GetInstance().GetKeyBuffer(KEY_TYPE::SPACE) == (uint8)KEY_STATUS::KEY_PRESS && !GetOnAttack())
 	{
 		SetOnAttack(true);
-		SoundManager::GetInstance().PlayObjectSound(2, 3);
+		SoundManager::GetInstance().PlayObjectSound(2, 6);
 
 		C2S_ATTACK packet;
 		packet.type = (uint8)C_GAME_PACKET_TYPE::CATTACK;
@@ -605,7 +605,7 @@ uint8 CBoss::ProcessInput()
 		}
 		m_pBullet->SetOnShoot(true);
 		m_pBullet->SetStartShoot(true);
-		SoundManager::GetInstance().PlayObjectSound(4, 3);
+		SoundManager::GetInstance().PlayObjectSound(4, 6);
 	}
 	if (InputManager::GetInstance().GetKeyBuffer(KEY_TYPE::G) == (uint8)KEY_STATUS::KEY_PRESS)
 	{

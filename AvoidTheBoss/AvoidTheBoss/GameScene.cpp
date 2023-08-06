@@ -519,11 +519,10 @@ void CGameScene::ExitReady()
 {
 	if (m_bEmpExit) // 탈출 성공 시 , 해야할 일 처리
 	{
-		SoundManager::GetInstance().SoundStop(6);
 		SoundManager::GetInstance().PlayObjectSound(15, 7);
-		SoundManager::GetInstance().PlayObjectSound(16, 5);
-		SoundManager::GetInstance().PlayObjectSound(18, 5);
-		SoundManager::GetInstance().PlayObjectSound(19, 5);
+		SoundManager::GetInstance().PlayObjectSound(16, 11);
+		SoundManager::GetInstance().PlayObjectSound(18, 12);
+		SoundManager::GetInstance().PlayObjectSound(19, 13);
 
 		std::cout << "Exit Ready\n";
 		for (int j = 0; j < m_nShaders; j++)

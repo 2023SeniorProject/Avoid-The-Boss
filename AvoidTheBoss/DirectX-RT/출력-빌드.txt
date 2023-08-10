@@ -1,0 +1,7 @@
+﻿다시 빌드 시작...
+1>------ 모두 다시 빌드 시작: 프로젝트: D3D12RaytracingRealTimeDenoisedAmbientOcclusion, 구성: Debug x64 ------
+1>C:\Users\aeiou\Desktop\DirectX-RT\D3D12RaytracingRealTimeDenoisedAmbientOcclusion\D3D12RaytracingRealTimeDenoisedAmbientOcclusion.vcxproj(652,5): error : This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is ..\..\..\..\..\Packages\WinPixEventRuntime.1.0.180612001\build\WinPixEventRuntime.targets.
+1>"D3D12RaytracingRealTimeDenoisedAmbientOcclusion.vcxproj" 프로젝트를 빌드했습니다. - 실패
+========== 모두 다시 빌드: 0 성공, 1 실패, 0 건너뛰기 ==========
+========== 다시 빌드이(가) 2:47 PM에 시작되었고 00.082 초이(가) 소요됨 ==========
+솔루션이 저장되지 않았습니다. NuGet 패키지를 관리하려면 솔루션을 저장하십시오.

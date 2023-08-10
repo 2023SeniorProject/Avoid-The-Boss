@@ -7,7 +7,9 @@ Film "image" "integer xresolution" [ 1280 ] "integer yresolution" [ 720 ] "strin
 Camera "perspective" "float fov" [ 20.114292 ] 
 WorldBegin
 	Transform [ 1 0 0 0 0 1 0 0 0 0 1 0 -20 -1.034 5.5 1]
-	MakeNamedMaterial "Ground" "string type" [ "AnalyticalCheckerboard" ] "rgb Kd" [ 0.70740 0.70740 0.70740 ]
+	Texture "Industry_Field_Tile" "spectrum" "imagemap" "string filename" [ "Industry_Field_Tile.png" ] "bool trilinear" [ "true" ] 
+	Texture "Industry_Field_Tile_Normal" "spectrum" "imagemap" "string filename" [ "Industry_Field_Tile_Normal.png" ] "bool trilinear" [ "true" ] 
+	MakeNamedMaterial "Ground" "string type" [ "matte" ] "texture Kd" [ "Industry_Field_Tile" ] "texture Normal" [ "Industry_Field_Tile_Normal" ]
 	NamedMaterial "Ground" 
 	Shape "trianglemesh" "integer indices" [ 0 1 2 0 2 3 ] "point P" [ 0 -0.12 800 -800 -0.12 0 0 -0.12 -800 800 -0.12 0 ] "normal N" [ 0 1 0 0 1 0 0 1 -0 0 1 0 ] "float uv" [ 0 0 1 0 1 1 0 1 ]
 WorldEnd

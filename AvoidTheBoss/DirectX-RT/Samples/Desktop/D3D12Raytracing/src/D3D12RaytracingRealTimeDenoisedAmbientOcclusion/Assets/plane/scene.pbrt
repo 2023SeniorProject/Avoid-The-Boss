@@ -1,0 +1,31 @@
+Integrator "path" "integer maxdepth" [ 65 ] 
+# Transform [ 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 ]
+LookAt -22.8679199 3.71045446 19.4894791 -22.2825279 3.68010211 18.6791267 0.0806002542 0.989834011 -0.117160015
+Sampler "sobol" "integer pixelsamples" [ 64 ] 
+PixelFilter "triangle" "float xwidth" [ 1.000000 ] "float ywidth" [ 1.000000 ] 
+Film "image" "integer xresolution" [ 1280 ] "integer yresolution" [ 720 ] "string filename" [ "plane.png" ] 
+Camera "perspective" "float fov" [ 20.114292 ]
+WorldBegin
+	Transform [ 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 ]
+	Texture "Industry_Field_Tile" "spectrum" "imagemap" "string filename" [ "Industry_Field_Tile.png" ] "bool trilinear" [ "true" ] 
+	Texture "Industry_Field_Tile_Normal" "spectrum" "imagemap" "string filename" [ "Industry_Field_Tile_Normal.png" ] "bool trilinear" [ "true" ] 
+	MakeNamedMaterial "plane" "string type" [ "matte" ] "texture Kd" [ "Industry_Field_Tile" ] "texture Normal" [ "Industry_Field_Tile_Normal" ]
+	NamedMaterial "plane" 
+	Shape "trianglemesh"  "integer indices" [ 
+	0 1 2
+	0 3 1
+	]
+  "point P" [ 
+	50.14983368 -98.33347321 64.21421814
+	-50.14983368 172.1308289 -64.21421814
+	-97.74643707 142.5012817 64.96096802
+	97.74643707 -68.70394135 -64.96096802
+]
+  "normal N" [ 
+	0.7821999788 0.4790999889 0.3980999887
+	0.7821999788 0.4790999889 0.3980999887
+	0.7821999788 0.4790999889 0.3980999887
+	0.7821999788 0.4790999889 0.3980999887
+]
+  "float uv" [ 0 0 1 0 1 1 0 1 ]
+WorldEnd

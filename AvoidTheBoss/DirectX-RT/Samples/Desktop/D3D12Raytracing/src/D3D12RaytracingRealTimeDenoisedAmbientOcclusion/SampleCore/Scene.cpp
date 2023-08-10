@@ -248,7 +248,8 @@ void Scene::LoadPBRTScene()
     PBRTScene pbrtSceneDefinitions[] = {
         {L"Spaceship", "Assets\\spaceship\\scene.pbrt"}, //Physically Based Rendering Toolkit
         {L"GroundPlane", "Assets\\groundplane\\scene.pbrt"},
-        {L"Plane", "Assets\\plane\\scene.pbrt"},
+        //{L"Plane", "Assets\\plane\\scene.pbrt"},
+        {L"Character1", "Assets\\Character1\\scene.pbrt"},
 #if !LOAD_ONLY_ONE_PBRT_MESH 
         {L"Car", "Assets\\car\\scene.pbrt"},
         {L"Dragon", "Assets\\dragon\\scene.pbrt"},
@@ -643,7 +644,8 @@ void Scene::InitializeAccelerationStructures()
     wstring bottomLevelASnames[] = {
         //L"Spaceship",
         L"GroundPlane",
-        L"Plane",
+        //L"Plane",
+        L"Character1",
 #if !LOAD_ONLY_ONE_PBRT_MESH
         //L"Dragon",
         //L"Car",

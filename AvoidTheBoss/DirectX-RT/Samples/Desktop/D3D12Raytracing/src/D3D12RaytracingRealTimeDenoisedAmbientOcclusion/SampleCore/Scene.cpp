@@ -253,7 +253,6 @@ void Scene::LoadPBRTScene()
         {L"Car", "Assets\\car\\scene.pbrt"},
         {L"Dragon", "Assets\\dragon\\scene.pbrt"},
         {L"House", "Assets\\house\\scene.pbrt"},
-
         {L"MirrorQuad", "Assets\\mirrorquad\\scene.pbrt"},
         {L"Quad", "Assets\\quad\\scene.pbrt"}
 #endif
@@ -604,6 +603,7 @@ void Scene::InitializeGeometry()
     m_materialBuffer.Create(device, static_cast<UINT>(m_materials.size()), 1, L"Structured buffer: materials");
     copy(m_materials.begin(), m_materials.end(), m_materialBuffer.begin());
 
+    // 바닥 텍스쳐 로드
     LoadDDSTexture(device, commandList, L"Assets\\Textures\\FlowerRoad\\flower_road_8khdri_1kcubemap.BC7.dds", m_cbvSrvUavHeap.get(), &m_environmentMap, D3D12_SRV_DIMENSION_TEXTURECUBE);
 
     m_materialBuffer.CopyStagingToGpu();

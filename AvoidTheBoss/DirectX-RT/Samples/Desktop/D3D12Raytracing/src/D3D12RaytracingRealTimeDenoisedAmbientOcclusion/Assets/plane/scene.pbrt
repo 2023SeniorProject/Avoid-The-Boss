@@ -9,7 +9,9 @@ WorldBegin
 	Transform [ 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 ]
 	Texture "Industry_Field_Tile" "spectrum" "imagemap" "string filename" [ "Industry_Field_Tile.png" ] "bool trilinear" [ "true" ] 
 	Texture "Industry_Field_Tile_Normal" "spectrum" "imagemap" "string filename" [ "Industry_Field_Tile_Normal.png" ] "bool trilinear" [ "true" ] 
-	MakeNamedMaterial "plane" "string type" [ "matte" ] "texture Kd" [ "Industry_Field_Tile" ] "texture Normal" [ "Industry_Field_Tile_Normal" ]
+	Texture "Industry_Field_Tile_Metalic" "spectrum" "imagemap" "string filename" [ "Industry_Field_Tile_Metalic.png" ] "bool trilinear" [ "true" ]
+	Texture "Industry_Field_Tile_Roughness" "spectrum" "imagemap" "string filename" [ "Industry_Field_Tile_Roughness.png" ] "bool trilinear" [ "true" ]
+	MakeNamedMaterial "plane" "string type" [ "matte" ] "texture Kd" [ "Industry_Field_Tile" ] "texture Normal" [ "Industry_Field_Tile_Normal" ] "texture Metalic" [ "Industry_Field_Tile_Metalic"] "texture Roughness" [ "Industry_Field_Tile_Roughness" ]
 	NamedMaterial "plane" 
 	Shape "trianglemesh"  "integer indices" [ 
 	0 1 2

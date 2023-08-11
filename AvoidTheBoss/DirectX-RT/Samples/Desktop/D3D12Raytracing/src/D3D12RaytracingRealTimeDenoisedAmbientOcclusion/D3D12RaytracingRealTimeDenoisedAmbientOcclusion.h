@@ -97,8 +97,8 @@ private:
     RTAO m_RTAO;
     Denoiser m_denoiser;
     Composition m_composition;
-    Scene m_scene;
-
+    Scene m_scene[4];
+    int m_nCurScene = 0;
     // Application state
     UINT m_raytracingWidth;
     UINT m_raytracingHeight;

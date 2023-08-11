@@ -59,7 +59,7 @@ private:
     void GenerateGrassGeometry();
     void CreateIndexAndVertexBuffers(const GeometryDescriptor& desc, D3DGeometry* geometry);
     void LoadPBRTScene();
-    void LoadSceneGeometry();
+    virtual void LoadSceneGeometry();
     void InitializeScene();
     void UpdateAccelerationStructure();
     void InitializeGrassGeometry();
@@ -126,4 +126,13 @@ private:
     friend class D3D12RaytracingRealTimeDenoisedAmbientOcclusion;
     friend class Pathtracer;
     friend class Composition;
+};
+
+class LoginScene : public Scene
+{
+private:
+    LoginScene(){}
+    ~LoginScene(){}
+public:
+    virtual void LoadSceneGeometry(){ }
 };

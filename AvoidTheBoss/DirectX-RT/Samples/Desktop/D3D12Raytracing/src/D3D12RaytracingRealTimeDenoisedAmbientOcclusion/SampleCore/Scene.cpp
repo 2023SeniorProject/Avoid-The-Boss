@@ -251,6 +251,7 @@ void Scene::LoadPBRTScene()
         {L"Character1", "Assets\\Character1\\scene.pbrt"},
 #if !LOAD_ONLY_ONE_PBRT_MESH 
         {L"IndustryMap", "Assets\\IndustryMap\\scene.pbrt"},
+        {L"Door", "Assets\\door\\scene.pbrt"},
         {L"Car", "Assets\\car\\scene.pbrt"},
         {L"Dragon", "Assets\\dragon\\scene.pbrt"},
         {L"House", "Assets\\house\\scene.pbrt"},
@@ -647,6 +648,7 @@ void Scene::InitializeAccelerationStructures()
         L"Character1",
 #if !LOAD_ONLY_ONE_PBRT_MESH
         L"IndustryMap",
+        L"Door",
         //L"Dragon",
         //L"Car",
         //L"House"

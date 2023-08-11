@@ -21,7 +21,7 @@
 //**********************************************************************************************
 
 //************************** Global Overrides **************************************************
-#define RENDER_GRASS_GEOMETRY 1
+#define RENDER_GRASS_GEOMETRY 0 // 지오메트리 0
 #define PRINT_OUT_CAMERA_CONFIG 0
 
 #ifdef _DEBUG

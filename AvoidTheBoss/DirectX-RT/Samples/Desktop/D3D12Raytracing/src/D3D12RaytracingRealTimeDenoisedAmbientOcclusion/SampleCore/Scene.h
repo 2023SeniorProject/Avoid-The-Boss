@@ -34,7 +34,7 @@ public:
     Scene();
 
     // Public methods.
-    void Setup(std::shared_ptr<DX::DeviceResources> deviceResources, std::shared_ptr<DX::DescriptorHeap> descriptorHeap);
+    virtual void Setup(std::shared_ptr<DX::DeviceResources> deviceResources, std::shared_ptr<DX::DescriptorHeap> descriptorHeap);
     virtual void InitializeAccelerationStructures(){}
     virtual void OnUpdate(){}
     virtual void OnRender(){}
@@ -124,13 +124,4 @@ public:
     friend class D3D12RaytracingRealTimeDenoisedAmbientOcclusion;
     friend class Pathtracer;
     friend class Composition;
-};
-
-class LoginScene : public Scene
-{
-private:
-    LoginScene(){}
-    ~LoginScene(){}
-public:
-    virtual void LoadSceneGeometry(){ }
 };

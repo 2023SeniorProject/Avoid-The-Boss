@@ -14,8 +14,6 @@
 class GameScene : public Scene
 {
 public:
-    void Setup(std::shared_ptr<DX::DeviceResources> deviceResources, std::shared_ptr<DX::DescriptorHeap> descriptorHeap) { 
-        Scene::Setup(deviceResources, descriptorHeap); }
     GameScene() {}
     ~GameScene() {}
 

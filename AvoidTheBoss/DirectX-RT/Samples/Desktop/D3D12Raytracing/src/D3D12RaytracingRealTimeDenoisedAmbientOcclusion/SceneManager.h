@@ -24,7 +24,6 @@ public:
 	void ReleaseUpBuffers();
 	void ReleaseScene();
 
-
 	void ResetScene();
 	CScene* ChangeScene(int32 idx);
 	CScene* GetSceneByIdx(int32 idx) { return m_pScenes[idx]; } // 현재 씬을 반환 받는다.

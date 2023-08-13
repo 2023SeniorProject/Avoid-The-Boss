@@ -99,7 +99,7 @@ private:
     Composition m_composition;
     Scene* m_scene;
     SceneManager* m_SceneManager = nullptr;
-    int m_nCurScene = 3;
+    int m_nCurScene = 0;
     // Application state
     UINT m_raytracingWidth;
     UINT m_raytracingHeight;

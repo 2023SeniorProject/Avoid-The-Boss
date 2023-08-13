@@ -56,18 +56,22 @@ public:
 
 public:
     void CreateDeviceDependentResources();
-    virtual void CreateAuxilaryDeviceResources(){}
+    virtual void CreateAuxilaryDeviceResources();
+
+    void GetGrassParameters(GenerateGrassStrawsConstantBuffer_AppParams* params, UINT LOD, float totalTime);
 
     void CreateIndexAndVertexBuffers(const GeometryDescriptor& desc, D3DGeometry* geometry);
     virtual void LoadPBRTScene(){}
     
     void InitializeScene();
     void UpdateAccelerationStructure();
+    void InitializeGeometry();
 
-    virtual void InitializeGeometry(){}
     // Build acceleration structure needed for raytracing.
+    void LoadSceneGeometry();
+    void InitializeGrassGeometry();
 
-    virtual void InitializeAllBottomLevelAccelerationStructures(){}
+    virtual void InitializeAllBottomLevelAccelerationStructures();
     std::shared_ptr<DX::DeviceResources> m_deviceResources;
     std::shared_ptr<DX::DescriptorHeap> m_cbvSrvUavHeap;
 

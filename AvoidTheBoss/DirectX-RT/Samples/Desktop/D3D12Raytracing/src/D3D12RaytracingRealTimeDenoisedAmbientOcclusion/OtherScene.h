@@ -17,25 +17,25 @@ class OtherScene : public Scene
 public:
     OtherScene() {}
     ~OtherScene() {}
+    virtual void InitializeAccelerationStructures();
+    virtual void LoadPBRTScene();
 
     virtual void OnUpdate();
-    virtual void OnRender();
+    virtual void OnRender() { Scene::OnRender(); }
     virtual void OnKeyDown(UINT8 key);
-
-    virtual void LoadPBRTScene();
-    virtual void LoadSceneGeometry();
-    virtual void InitializeGeometry();
-
-    //필요없는 함수
-    virtual void InitializeAccelerationStructures();
-    virtual void CreateAuxilaryDeviceResources();
-    virtual void InitializeAllBottomLevelAccelerationStructures();
 };
 class CTitleScene : public OtherScene
 {
 public:
     CTitleScene() {}
     ~CTitleScene() {}
+
+    virtual void InitializeAccelerationStructures();
+    virtual void LoadPBRTScene();
+
+    virtual void OnUpdate();
+    //virtual void OnRender();
+    virtual void OnKeyDown(UINT8 key);
 };
 
 class CLobbyScene : public OtherScene
@@ -44,7 +44,12 @@ public:
     CLobbyScene() {}
     ~CLobbyScene() {}
 
- 
+    virtual void InitializeAccelerationStructures();
+    virtual void LoadPBRTScene();
+
+    virtual void OnUpdate();
+    virtual void OnRender();
+    virtual void OnKeyDown(UINT8 key);
 };
 
 class CRoomScene : public OtherScene
@@ -53,7 +58,12 @@ public:
     CRoomScene() {}
     ~CRoomScene() {}
 
-  
+    virtual void InitializeAccelerationStructures();
+    virtual void LoadPBRTScene();
+
+    virtual void OnUpdate();
+    virtual void OnRender();
+    virtual void OnKeyDown(UINT8 key);
 };
 
 class CResultScene : public OtherScene
@@ -62,5 +72,10 @@ public:
     CResultScene() {}
     ~CResultScene() {}
 
-  
+    virtual void InitializeAccelerationStructures();
+    virtual void LoadPBRTScene();
+
+    virtual void OnUpdate();
+    virtual void OnRender();
+    virtual void OnKeyDown(UINT8 key);
 };

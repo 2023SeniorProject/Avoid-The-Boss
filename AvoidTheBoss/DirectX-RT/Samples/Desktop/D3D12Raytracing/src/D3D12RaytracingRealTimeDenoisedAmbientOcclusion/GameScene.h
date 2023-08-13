@@ -9,31 +9,21 @@
 #include "EngineTuning.h"
 #include "SceneParameters.h"
 #include "StepTimer.h"
-#include "OtherScene.h"
+#include "Scene.h"
 
-class GameScene : public OtherScene
+class GameScene : public Scene
 {
 public:
     GameScene() {}
     ~GameScene() {}
 
     virtual void InitializeAccelerationStructures();
+
+    void GenerateGrassGeometry();
+
     virtual void OnUpdate();
     virtual void OnRender();
     virtual void OnKeyDown(UINT8 key);
-
-
-private:
-    virtual void CreateAuxilaryDeviceResources();
-
-    void GetGrassParameters(GenerateGrassStrawsConstantBuffer_AppParams* params, UINT LOD, float totalTime);
-    void GenerateGrassGeometry();
-    void LoadSceneGeometry();
-
-    // Build geometry used in the sample.
-    virtual void InitializeGeometry();
-    void InitializeGrassGeometry();
-    virtual void InitializeAllBottomLevelAccelerationStructures();
 
     virtual void LoadPBRTScene();
 };

@@ -12,18 +12,18 @@ Scene* SceneManager::ChangeScene(int idx)
 
 void SceneManager::OnUpdate()
 {
-	GetSceneByIdx(3)->OnUpdate();
+	GetSceneByIdx(0)->OnUpdate();
 }
 
 void SceneManager::OnRender()
 {
-	GetSceneByIdx(3)->OnRender();
+	GetSceneByIdx(0)->OnRender();
 }
 
 void SceneManager::OnKeyDown(UINT8 key)
 {
 	//if (hWnd != ::GetActiveWindow()) return;
-	GetSceneByIdx(3)->OnKeyDown(key);
+	GetSceneByIdx(0)->OnKeyDown(key);
 }
 
 void SceneManager::LoadPBRTScene()

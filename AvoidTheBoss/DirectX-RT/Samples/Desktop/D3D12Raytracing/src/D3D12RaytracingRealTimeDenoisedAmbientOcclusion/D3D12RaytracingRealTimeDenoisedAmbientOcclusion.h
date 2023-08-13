@@ -25,7 +25,7 @@
 #include "Pathtracer.h"
 #include "Denoiser.h"
 #include "Composition.h"
-#include "Scene.h"
+#include "GameScene.h"
 #include "EngineTuning.h"
 
 
@@ -97,7 +97,7 @@ private:
     RTAO m_RTAO;
     Denoiser m_denoiser;
     Composition m_composition;
-    Scene m_scene[4];
+    GameScene m_scene[4];
     int m_nCurScene = 0;
     // Application state
     UINT m_raytracingWidth;

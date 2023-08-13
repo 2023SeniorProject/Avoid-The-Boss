@@ -178,6 +178,8 @@
     </FxCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="GameScene.h" />
+    <ClInclude Include="OtherScene.h" />
     <ClInclude Include="SampleCore\Composition.h" />
     <ClInclude Include="SampleCore\DirectXRaytracingHelper.h" />
     <ClInclude Include="SampleCore\GpuKernels.h" />
@@ -191,6 +193,9 @@
     <ClInclude Include="RTAO\Sampler.h" />
     <ClInclude Include="SampleCore\Scene.h" />
     <ClInclude Include="SampleCore\SceneParameters.h" />
+    <ClInclude Include="SceneManager.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </ClInclude>
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="SampleCore\util\Camera.h" />
     <ClInclude Include="SampleCore\util\CameraController.h" />
@@ -213,6 +218,8 @@
     <ClInclude Include="SampleCore\util\Win32Application.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="GameScene.cpp" />
+    <ClCompile Include="OtherScene.cpp" />
     <ClCompile Include="SampleCore\Composition.cpp" />
     <ClCompile Include="D3D12RaytracingRealTimeDenoisedAmbientOcclusion.cpp" />
     <ClCompile Include="Main.cpp" />
@@ -224,6 +231,9 @@
     <ClCompile Include="RTAO\RTAO.cpp" />
     <ClCompile Include="RTAO\Sampler.cpp" />
     <ClCompile Include="SampleCore\Scene.cpp" />
+    <ClCompile Include="SceneManager.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>

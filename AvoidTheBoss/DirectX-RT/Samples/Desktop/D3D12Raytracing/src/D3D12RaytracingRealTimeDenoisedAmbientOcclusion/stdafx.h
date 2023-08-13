@@ -50,6 +50,7 @@
 #include <iterator>
 #include <sal.h>
 #include <stack>
+#include <xstring>
 
 #include <stdint.h>
 #include <float.h>

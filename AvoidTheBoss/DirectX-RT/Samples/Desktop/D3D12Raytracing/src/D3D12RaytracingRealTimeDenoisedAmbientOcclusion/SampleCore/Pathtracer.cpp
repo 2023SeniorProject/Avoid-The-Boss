@@ -138,7 +138,7 @@ Pathtracer::Pathtracer()
     }
 }
 
-void Pathtracer::Setup(shared_ptr<DeviceResources> deviceResources, shared_ptr<DX::DescriptorHeap> descriptorHeap, Scene& scene)
+void Pathtracer::Setup(shared_ptr<DeviceResources> deviceResources, shared_ptr<DX::DescriptorHeap> descriptorHeap, GameScene& scene)
 {
     m_deviceResources = deviceResources;
     m_cbvSrvUavHeap = descriptorHeap;
@@ -147,7 +147,7 @@ void Pathtracer::Setup(shared_ptr<DeviceResources> deviceResources, shared_ptr<D
 }
 
 // Create resources that depend on the device.
-void Pathtracer::CreateDeviceDependentResources(Scene& scene)
+void Pathtracer::CreateDeviceDependentResources(GameScene& scene)
 {
     CreateAuxilaryDeviceResources();
 
@@ -373,7 +373,7 @@ void Pathtracer::CreateRaytracingPipelineStateObject()
 
 // Build shader tables.
 // This encapsulates all shader records - shaders and the arguments for their local root signatures.
-void Pathtracer::BuildShaderTables(Scene& scene)
+void Pathtracer::BuildShaderTables(GameScene& scene)
 {
     auto device = m_deviceResources->GetD3DDevice();
 
@@ -609,7 +609,7 @@ void Pathtracer::SetCamera(const GameCore::Camera& camera)
     m_CB->Zfar = camera.ZMax;
 }
 
-void Pathtracer::UpdateConstantBuffer(Scene& scene)
+void Pathtracer::UpdateConstantBuffer(GameScene& scene)
 {
     XMStoreFloat3(&m_CB->lightPosition, scene.m_lightPosition);
     m_CB->lightColor = scene.m_lightColor;
@@ -639,7 +639,7 @@ void Pathtracer::UpdateConstantBuffer(Scene& scene)
     m_CB->prevFrameProjToViewCameraAtOrigin = XMMatrixInverse(nullptr, viewProjCameraAtOrigin);
 }
 
-void Pathtracer::Run(Scene& scene)
+void Pathtracer::Run(GameScene& scene)
 {
     auto device = m_deviceResources->GetD3DDevice();
     auto commandList = m_deviceResources->GetCommandList();

@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "GameScene.h"
-#include "Scene.h"
+#include "OtherScene.h"
 #include "GameInput.h"
 #include "EngineTuning.h"
 #include "EngineProfiling.h"
@@ -40,6 +40,7 @@ namespace Scene_Args
 
 void GameScene::InitializeAccelerationStructures()
 {
+    OtherScene::InitializeAccelerationStructures();
     auto device = m_deviceResources->GetD3DDevice();
 
     // Initialize bottom-level AS.

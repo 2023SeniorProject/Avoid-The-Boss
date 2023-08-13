@@ -17,6 +17,7 @@
 #include "GpuTimeManager.h"
 #include "RaytracingSceneDefines.h"
 #include "D3D12RaytracingRealTimeDenoisedAmbientOcclusion.h"
+#include "SceneManager.h"
 
 using namespace std;
 using namespace DX;
@@ -47,7 +48,11 @@ void Scene::CreateDeviceDependentResources()
 
     CreateAuxilaryDeviceResources();
 
+    // 씬전환 추가함수
+    SceneManager();
+    //SceneManager::m_pScenes[0]->BuildScene();
     InitializeGeometry();
+
     m_prevFrameBottomLevelASInstanceTransforms.Create(device, MaxNumBottomLevelInstances, Sample::FrameCount, L"GPU buffer: Bottom Level AS Instance transforms for previous frame");
 }
 

@@ -128,16 +128,18 @@ void D3D12RaytracingRealTimeDenoisedAmbientOcclusion::CreateDeviceDependentResou
     CreateDescriptorHeaps();
     CreateAuxilaryDeviceResources();
     
-    m_scene[m_nCurScene].Setup(m_deviceResources, m_cbvSrvUavHeap);
-    m_pathtracer.Setup(m_deviceResources, m_cbvSrvUavHeap, m_scene[m_nCurScene]);
+    m_SceneManager = new SceneManager();
+    Scene& scene = *(m_SceneManager->GetSceneByIdx(m_nCurScene));
+    scene.Setup(m_deviceResources, m_cbvSrvUavHeap);
+    m_pathtracer.Setup(m_deviceResources, m_cbvSrvUavHeap, scene);
 
     // With BLAS and their instanceContributionToHitGroupIndex initialized during 
     // Pathracer setup's shader table build, initialize the AS.
     // Make sure to call this before RTAO build shader tables as it queries
     // max instanceContributionToHitGroupIndex from the scene's AS.
-    m_scene[m_nCurScene].InitializeAccelerationStructures();
+    scene.InitializeAccelerationStructures();
 
-    m_RTAO.Setup(m_deviceResources, m_cbvSrvUavHeap, m_scene[m_nCurScene]);
+    m_RTAO.Setup(m_deviceResources, m_cbvSrvUavHeap, scene);
 
 
     m_denoiser.Setup(m_deviceResources, m_cbvSrvUavHeap);
@@ -201,7 +203,7 @@ void D3D12RaytracingRealTimeDenoisedAmbientOcclusion::CreateDescriptorHeaps()
     
 void D3D12RaytracingRealTimeDenoisedAmbientOcclusion::OnKeyDown(UINT8 key)
 {
-    m_scene[m_nCurScene].OnKeyDown(key);
+    m_SceneManager->GetSceneByIdx(m_nCurScene)->OnKeyDown(key);
 
     float fValue;
     switch (key)
@@ -243,15 +245,16 @@ void D3D12RaytracingRealTimeDenoisedAmbientOcclusion::OnKeyDown(UINT8 key)
         {
             m_numRemainingFramesToProfile = 1000;
             float perFrameSeconds = Scene_Args::CameraRotationDuration / m_numRemainingFramesToProfile;
-             m_scene[m_nCurScene].m_timer.SetTargetElapsedSeconds(perFrameSeconds);
-             m_scene[m_nCurScene].m_timer.ResetElapsedTime();
-             m_scene[m_nCurScene].m_animateCamera = true;
+            m_SceneManager->GetSceneByIdx(m_nCurScene)
+            ->m_timer.SetTargetElapsedSeconds(perFrameSeconds);
+            m_SceneManager->GetSceneByIdx(m_nCurScene)->m_timer.ResetElapsedTime();
+            m_SceneManager->GetSceneByIdx(m_nCurScene)->m_animateCamera = true;
             EngineTuning::SetIsVisible(false);
             EngineProfiling::DrawProfiler.SetValue(true);
             EngineProfiling::DrawCpuTime.SetValue(false);
         }
         m_isProfiling = !m_isProfiling;
-         m_scene[m_nCurScene].m_timer.SetFixedTimeStep(m_isProfiling);
+        m_SceneManager->GetSceneByIdx(m_nCurScene)->m_timer.SetFixedTimeStep(m_isProfiling);
     case VK_F10:
         m_nCurScene++;
         break;
@@ -268,9 +271,9 @@ void D3D12RaytracingRealTimeDenoisedAmbientOcclusion::OnUpdate()
         if (m_numRemainingFramesToProfile == 0)
         {
             m_isProfiling = false;
-             m_scene[m_nCurScene].m_timer.SetFixedTimeStep(false);
+            m_SceneManager->GetSceneByIdx(m_nCurScene)->m_timer.SetFixedTimeStep(false);
             WriteProfilingResultsToFile();
-             m_scene[m_nCurScene].m_animateCamera = false;
+            m_SceneManager->GetSceneByIdx(m_nCurScene)->m_animateCamera = false;
         }
         else
         {
@@ -299,12 +302,12 @@ void D3D12RaytracingRealTimeDenoisedAmbientOcclusion::OnUpdate()
 
     CalculateFrameStats();
 
-    float elapsedTime = static_cast<float>( m_scene[m_nCurScene].Timer().GetElapsedSeconds());
+    float elapsedTime = static_cast<float>(m_SceneManager->GetSceneByIdx(m_nCurScene)->Timer().GetElapsedSeconds());
     GameInput::Update(elapsedTime);
     EngineTuning::Update(elapsedTime);
     EngineProfiling::Update();
 
-     m_scene[m_nCurScene].OnUpdate();
+    m_SceneManager->GetSceneByIdx(m_nCurScene)->OnUpdate();
 
     if (m_enableUI)
     {
@@ -477,6 +480,7 @@ void D3D12RaytracingRealTimeDenoisedAmbientOcclusion::RecreateD3D()
 // Render the scene.
 void D3D12RaytracingRealTimeDenoisedAmbientOcclusion::OnRender()
 {
+    Scene& scene = *(m_SceneManager->GetSceneByIdx(m_nCurScene));
     if (!m_deviceResources->IsWindowVisible())
     {
         return;
@@ -503,12 +507,12 @@ void D3D12RaytracingRealTimeDenoisedAmbientOcclusion::OnRender()
         ScopedTimer _prof(L"Render", commandList);
 
         // Acceleration structure update.
-         m_scene[m_nCurScene].OnRender();
+        m_SceneManager->GetSceneByIdx(m_nCurScene)->OnRender();
 
         // Pathracing
         {
             m_sampleGpuTimes[Sample_GPUTime::Pathtracing].Start(commandList);
-            m_pathtracer.Run( m_scene[m_nCurScene]);
+            m_pathtracer.Run(scene);
             m_sampleGpuTimes[Sample_GPUTime::Pathtracing].Stop(commandList);
         }
 
@@ -522,7 +526,7 @@ void D3D12RaytracingRealTimeDenoisedAmbientOcclusion::OnRender()
             {
                 m_sampleGpuTimes[Sample_GPUTime::AOraytracing].Start(commandList);
                 m_RTAO.Run(
-                     m_scene[m_nCurScene].AccelerationStructure()->GetTopLevelASResource()->GetGPUVirtualAddress(),
+                    m_SceneManager->GetSceneByIdx(m_nCurScene)->AccelerationStructure()->GetTopLevelASResource()->GetGPUVirtualAddress(),
                     GBufferResources[GBufferResource::HitPosition].gpuDescriptorReadAccess,
                     GBufferResources[GBufferResource::SurfaceNormalDepth].gpuDescriptorReadAccess,
                     GBufferResources[GBufferResource::AOSurfaceAlbedo].gpuDescriptorReadAccess);
@@ -538,7 +542,7 @@ void D3D12RaytracingRealTimeDenoisedAmbientOcclusion::OnRender()
         }
             
         // Composition
-        m_composition.Render(&m_raytracingOutput,  m_scene[m_nCurScene], m_pathtracer, m_RTAO, m_denoiser, m_width, m_height);
+        m_composition.Render(&m_raytracingOutput, scene, m_pathtracer, m_RTAO, m_denoiser, m_width, m_height);
 
         // UILayer will transition backbuffer to a present state.
         CopyRaytracingOutputToBackbuffer(m_enableUI ? D3D12_RESOURCE_STATE_RENDER_TARGET : D3D12_RESOURCE_STATE_PRESENT);
@@ -566,7 +570,7 @@ void D3D12RaytracingRealTimeDenoisedAmbientOcclusion::CalculateFrameStats()
 {
     static int frameCnt = 0;
     static double prevTime = 0.0f;
-    double totalTime =  m_scene[m_nCurScene].Timer().GetTotalSeconds();
+    double totalTime = m_SceneManager->GetSceneByIdx(m_nCurScene)->Timer().GetTotalSeconds();
 
     frameCnt++;
 

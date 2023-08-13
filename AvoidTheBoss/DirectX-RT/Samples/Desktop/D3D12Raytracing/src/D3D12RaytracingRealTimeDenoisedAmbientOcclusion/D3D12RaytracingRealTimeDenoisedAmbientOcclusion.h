@@ -27,7 +27,7 @@
 #include "Composition.h"
 #include "GameScene.h"
 #include "EngineTuning.h"
-
+#include "SceneManager.h"
 
 namespace Sample_Args
 {
@@ -97,8 +97,9 @@ private:
     RTAO m_RTAO;
     Denoiser m_denoiser;
     Composition m_composition;
-    GameScene m_scene[4];
-    int m_nCurScene = 0;
+    Scene* m_scene;
+    SceneManager* m_SceneManager = nullptr;
+    int m_nCurScene = 3;
     // Application state
     UINT m_raytracingWidth;
     UINT m_raytracingHeight;

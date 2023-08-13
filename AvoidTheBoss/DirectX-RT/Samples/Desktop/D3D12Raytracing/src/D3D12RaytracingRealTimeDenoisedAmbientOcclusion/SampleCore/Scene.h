@@ -51,6 +51,9 @@ public:
     StructuredBuffer<PrimitiveMaterialBuffer>& MaterialBuffer() { return m_materialBuffer; }
     StructuredBuffer<XMFLOAT3X4>& PrevFrameBottomLevelASInstanceTransforms() { return m_prevFrameBottomLevelASInstanceTransforms; }
     
+    // Getters & setters.
+    GpuResource(&GrassPatchVB())[UIParameters::NumGrassGeometryLODs][2]{ return m_grassPatchVB; }
+
 public:
     void CreateDeviceDependentResources();
     virtual void CreateAuxilaryDeviceResources(){}
@@ -81,22 +84,24 @@ public:
     UINT m_numTriangles;
     UINT m_numInstancedTriangles;
 
-    //// Grass geometry.
-    //static const UINT NumGrassPatchesX = 30;
-    //static const UINT NumGrassPatchesZ = 30;
-    //static const UINT MaxBLAS = 10 + NumGrassPatchesX * NumGrassPatchesZ;
+    // Grass geometry.
+    static const UINT NumGrassPatchesX = 30;
+    static const UINT NumGrassPatchesZ = 30;
+    static const UINT MaxBLAS = 10 + NumGrassPatchesX * NumGrassPatchesZ;
 
-    //GpuKernels::GenerateGrassPatch     m_grassGeometryGenerator;
-    //UINT                                m_animatedCarInstanceIndex = UINT_MAX;
-    //UINT                                m_carByTheHouseInstanceIndex = UINT_MAX;
-    //UINT                                m_spaceshipInstanceIndex = UINT_MAX;
-    //XMVECTOR                            m_carByTheHousePosition = XMVectorZero();
-    //XMVECTOR                            m_spaceshipPosition = XMVectorZero();
-    //float                               m_spaceshipRotationAngleY = 0;
-    //UINT                                m_grassInstanceIndices[NumGrassPatchesX * NumGrassPatchesZ];
-    //UINT                                m_currentGrassPatchVBIndex = 0;
-    //UINT                                m_grassInstanceShaderRecordOffsets[2];
-    //UINT                                m_prevFrameLODs[NumGrassPatchesX * NumGrassPatchesZ];
+    GpuKernels::GenerateGrassPatch     m_grassGeometryGenerator;
+    UINT                                m_animatedCarInstanceIndex = UINT_MAX;
+    UINT                                m_carByTheHouseInstanceIndex = UINT_MAX;
+    UINT                                m_spaceshipInstanceIndex = UINT_MAX;
+    XMVECTOR                            m_carByTheHousePosition = XMVectorZero();
+    XMVECTOR                            m_spaceshipPosition = XMVectorZero();
+    float                               m_spaceshipRotationAngleY = 0;
+    UINT                                m_grassInstanceIndices[NumGrassPatchesX *NumGrassPatchesZ];
+    UINT                                m_currentGrassPatchVBIndex = 0;
+    UINT                                m_grassInstanceShaderRecordOffsets[2];
+    UINT                                m_prevFrameLODs[NumGrassPatchesX * NumGrassPatchesZ];
+
+    GpuResource m_grassPatchVB[UIParameters::NumGrassGeometryLODs][2];      // Two VBs: current and previous frame.
 
     std::map<std::wstring, BottomLevelAccelerationStructureGeometry> m_bottomLevelASGeometries;
     std::unique_ptr<RaytracingAccelerationStructureManager> m_accelerationStructure;
@@ -124,4 +129,6 @@ public:
     friend class D3D12RaytracingRealTimeDenoisedAmbientOcclusion;
     friend class Pathtracer;
     friend class Composition;
+
+
 };

@@ -52,7 +52,8 @@ void Scene::CreateDeviceDependentResources()
 
     CreateAuxilaryDeviceResources();
 
-    InitializeGeometry();
+    //InitializeGeometry();
+    Sample::instance().GetSceneManager()->InitializeGeometry();
 
     m_prevFrameBottomLevelASInstanceTransforms.Create(device, MaxNumBottomLevelInstances, Sample::FrameCount, L"GPU buffer: Bottom Level AS Instance transforms for previous frame");
 }
@@ -297,8 +298,8 @@ void Scene::InitializeScene()
 
     // Setup lights.
     {
-        m_lightPosition = XMVectorSet(-20.0f, 60.0f, 20.0f, 0);
-        m_lightColor = XMFLOAT3(0.6f, 0.6f, 0.6f);
+        m_lightPosition = XMVectorSet(-0.0f, 60.0f, 20.0f, 0);
+        m_lightColor = XMFLOAT3(0.8f, 0.53f, 0.27f);
     }
 }
 

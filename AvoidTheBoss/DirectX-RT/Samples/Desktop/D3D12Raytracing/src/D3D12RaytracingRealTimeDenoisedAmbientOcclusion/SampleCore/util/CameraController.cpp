@@ -17,14 +17,14 @@ using namespace GameCore;
 
 CameraController::CameraController(Camera& camera) : m_camera(camera)
 {
-    m_HorizontalLookSensitivity = 2.0f;
-    m_VerticalLookSensitivity = 2.0f;
-	m_MoveSpeed = 5.0f;
-	m_StrafeSpeed = 5.0f;
-    m_MoveSpeed *= 20;
-	m_StrafeSpeed *= 50;
-	m_MouseSensitivityX = 1.0f;
-    m_MouseSensitivityY = -1.0f;
+    m_HorizontalLookSensitivity = 1.0f;
+    m_VerticalLookSensitivity = 1.0f;
+	m_MoveSpeed = 2.0f;
+	m_StrafeSpeed = 1.0f;
+    //m_MoveSpeed *= 20;
+	//m_StrafeSpeed *= 50;
+	m_MouseSensitivityX = 0.7f;
+    m_MouseSensitivityY = -0.7f;
 
     m_FineMovement = false;
     m_FineRotation = false;
@@ -64,46 +64,52 @@ bool CameraController::Update(float deltaTime)
 
     float yaw = GameInput::GetTimeCorrectedAnalogInput(GameInput::kAnalogRightStickX) * m_HorizontalLookSensitivity * panScale;
     float pitch = GameInput::GetTimeCorrectedAnalogInput(GameInput::kAnalogRightStickY) * m_VerticalLookSensitivity * panScale;
+
+    //앞뒤
     float forward = m_MoveSpeed * speedScale * (
         GameInput::GetTimeCorrectedAnalogInput(GameInput::kAnalogLeftStickY) +
         (GameInput::IsPressed(GameInput::kKey_w) ? 1.f : 0.0f) +
         (GameInput::IsPressed(GameInput::kKey_s) ? -1.f: 0.0f)
       );
+    
+    //좌우
     float strafe = m_StrafeSpeed * speedScale * (
         GameInput::GetTimeCorrectedAnalogInput(GameInput::kAnalogLeftStickX) +
         (GameInput::IsPressed(GameInput::kKey_d) ? 1.f: 0.0f) +
         (GameInput::IsPressed(GameInput::kKey_a) ? -1.f: 0.0f)
       );
+
+    //위아래
     float ascent = m_StrafeSpeed * speedScale * (
         GameInput::GetTimeCorrectedAnalogInput(GameInput::kAnalogRightTrigger) -
-        GameInput::GetTimeCorrectedAnalogInput(GameInput::kAnalogLeftTrigger) +
-        (GameInput::IsPressed(GameInput::kKey_e) ? 1.f: 0.0f) +
-        (GameInput::IsPressed(GameInput::kKey_q) ? -1.f: 0.0f)
+        GameInput::GetTimeCorrectedAnalogInput(GameInput::kAnalogLeftTrigger) //+
+        //(GameInput::IsPressed(GameInput::kKey_e) ? 1.f: 0.0f) +
+        //(GameInput::IsPressed(GameInput::kKey_q) ? -1.f: 0.0f)
       );
 
     if (m_Momentum)
     {
         ApplyMomentum(m_LastYaw, yaw, deltaTime);
-        ApplyMomentum(m_LastPitch, pitch, deltaTime);
-        ApplyMomentum(m_LastForward, forward, deltaTime);
-        ApplyMomentum(m_LastStrafe, strafe, deltaTime);
-        ApplyMomentum(m_LastAscent, ascent, deltaTime);
+        ApplyMomentum(m_LastPitch, pitch, deltaTime); 
+        ApplyMomentum(m_LastForward, forward, deltaTime); //앞뒤
+        ApplyMomentum(m_LastStrafe, strafe, deltaTime); //좌우
+        ApplyMomentum(m_LastAscent, ascent, deltaTime); //위아래
     }
 
     // Don't apply momentum to mouse inputs.
 	if (GameInput::IsPressed(GameInput::kMouse0))
 	{
 		yaw += GameInput::GetAnalogInput(GameInput::kAnalogMouseX) * m_MouseSensitivityX;
-		pitch += GameInput::GetAnalogInput(GameInput::kAnalogMouseY) * m_MouseSensitivityY;
+		//pitch += GameInput::GetAnalogInput(GameInput::kAnalogMouseY) * m_MouseSensitivityY;
 	}
  	else if (GameInput::IsPressed(GameInput::kMouse1))
 	{
 		yaw += -1 * GameInput::GetAnalogInput(GameInput::kAnalogMouseX) * m_MouseSensitivityX;
-    	pitch += -1 * GameInput::GetAnalogInput(GameInput::kAnalogMouseY) * m_MouseSensitivityY;
+    	//pitch += -1 * GameInput::GetAnalogInput(GameInput::kAnalogMouseY) * m_MouseSensitivityY;
 	}
 
 	m_camera.RotateAroundYAxis(yaw);
-	m_camera.RotatePitch(pitch);
+	//m_camera.RotatePitch(pitch);
 	m_camera.TranslateRightUpForward(strafe, ascent, forward);
 
 	// Confine camera within a boundary.

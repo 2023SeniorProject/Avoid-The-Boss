@@ -129,21 +129,23 @@ void D3D12RaytracingRealTimeDenoisedAmbientOcclusion::CreateDeviceDependentResou
     CreateAuxilaryDeviceResources();
     
     m_SceneManager = new SceneManager();
-    Scene& scene = *(m_SceneManager->GetSceneByIdx(m_nCurScene));
-    scene.Setup(m_deviceResources, m_cbvSrvUavHeap);
-    m_pathtracer.Setup(m_deviceResources, m_cbvSrvUavHeap, scene);
 
-    // With BLAS and their instanceContributionToHitGroupIndex initialized during 
-    // Pathracer setup's shader table build, initialize the AS.
-    // Make sure to call this before RTAO build shader tables as it queries
-    // max instanceContributionToHitGroupIndex from the scene's AS.
-    scene.InitializeAccelerationStructures();
+        Scene& scene = *(m_SceneManager->GetSceneByIdx(m_nCurScene));
+        scene.Setup(m_deviceResources, m_cbvSrvUavHeap);
 
-    m_RTAO.Setup(m_deviceResources, m_cbvSrvUavHeap, scene);
+        m_pathtracer.Setup(m_deviceResources, m_cbvSrvUavHeap, scene);
+
+        // With BLAS and their instanceContributionToHitGroupIndex initialized during 
+        // Pathracer setup's shader table build, initialize the AS.
+        // Make sure to call this before RTAO build shader tables as it queries
+        // max instanceContributionToHitGroupIndex from the scene's AS.
+        scene.InitializeAccelerationStructures();
+
+        m_RTAO.Setup(m_deviceResources, m_cbvSrvUavHeap, scene);
 
 
-    m_denoiser.Setup(m_deviceResources, m_cbvSrvUavHeap);
-    m_composition.Setup(m_deviceResources, m_cbvSrvUavHeap);
+        m_denoiser.Setup(m_deviceResources, m_cbvSrvUavHeap);
+        m_composition.Setup(m_deviceResources, m_cbvSrvUavHeap);
 }
 
 // Create a 2D output texture for raytracing.
@@ -203,7 +205,7 @@ void D3D12RaytracingRealTimeDenoisedAmbientOcclusion::CreateDescriptorHeaps()
     
 void D3D12RaytracingRealTimeDenoisedAmbientOcclusion::OnKeyDown(UINT8 key)
 {
-    m_SceneManager->GetSceneByIdx(m_nCurScene)->OnKeyDown(key);
+    m_SceneManager->OnKeyDown(key);
 
     float fValue;
     switch (key)
@@ -255,8 +257,6 @@ void D3D12RaytracingRealTimeDenoisedAmbientOcclusion::OnKeyDown(UINT8 key)
         }
         m_isProfiling = !m_isProfiling;
         m_SceneManager->GetSceneByIdx(m_nCurScene)->m_timer.SetFixedTimeStep(m_isProfiling);
-    case VK_F10:
-        m_nCurScene++;
         break;
     default:
         break;
@@ -307,7 +307,7 @@ void D3D12RaytracingRealTimeDenoisedAmbientOcclusion::OnUpdate()
     EngineTuning::Update(elapsedTime);
     EngineProfiling::Update();
 
-    m_SceneManager->GetSceneByIdx(m_nCurScene)->OnUpdate();
+    m_SceneManager->OnUpdate();
 
     if (m_enableUI)
     {
@@ -507,7 +507,7 @@ void D3D12RaytracingRealTimeDenoisedAmbientOcclusion::OnRender()
         ScopedTimer _prof(L"Render", commandList);
 
         // Acceleration structure update.
-        m_SceneManager->GetSceneByIdx(m_nCurScene)->OnRender();
+        m_SceneManager->OnRender();
 
         // Pathracing
         {

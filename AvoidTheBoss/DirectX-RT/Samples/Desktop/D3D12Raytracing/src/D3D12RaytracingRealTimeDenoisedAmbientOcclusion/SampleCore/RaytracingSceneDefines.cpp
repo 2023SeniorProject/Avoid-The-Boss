@@ -22,12 +22,13 @@ namespace SampleScene
 	Initialize initializeObject;
 	Initialize::Initialize()
 	{
-		// Camera Position
+		// Camera Position 카메라 위치
 		{
+			float height = 1.35f;
 			auto& camera = args[Type::Main].camera;
-            camera.position.eye = { -38.5863f, 13.9563f, -24.2481f, 1 };
-            camera.position.at = { -37.9042f, 13.5773f, -23.6219f, 1 };
-            camera.position.up = { 0.351221f, 0.877166f, 0.32744f, 0 };
+            camera.position.eye = { 0.0f, height+10.0f, 10.0f, 1 };
+            camera.position.at = { 0.0f, height, -1.0f, 1 };
+            camera.position.up = { 0.0f, height+2.0f, 0.0f, 0 };
 			camera.boundaries.min = XMVectorSetY(-XMVectorSplatInfinity(), 0);
 			camera.boundaries.max = XMVectorSplatInfinity();
 		}

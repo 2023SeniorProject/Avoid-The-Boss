@@ -179,7 +179,6 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="GameScene.h" />
-    <ClInclude Include="OtherScene.h" />
     <ClInclude Include="SampleCore\Composition.h" />
     <ClInclude Include="SampleCore\DirectXRaytracingHelper.h" />
     <ClInclude Include="SampleCore\GpuKernels.h" />
@@ -219,7 +218,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GameScene.cpp" />
-    <ClCompile Include="OtherScene.cpp" />
     <ClCompile Include="SampleCore\Composition.cpp" />
     <ClCompile Include="D3D12RaytracingRealTimeDenoisedAmbientOcclusion.cpp" />
     <ClCompile Include="Main.cpp" />

@@ -31,9 +31,10 @@
 #endif
 //**********************************************************************************************
 
-#define FOVY 45.f
-#define NEAR_PLANE 0.001f
-#define FAR_PLANE 1000.0f
+// 카메라 설정 각도, 깊이
+#define FOVY 60.f
+#define NEAR_PLANE 0.01f
+#define FAR_PLANE 5000.0f
 #define HitDistanceOnMiss 0
 #define SAMPLER_FILTER D3D12_FILTER_ANISOTROPIC
 

@@ -77,6 +77,8 @@ public:
     void RequestRecreateRaytracingResources() { m_isRecreateRaytracingResourcesRequested = true; }
     RTAO& RTAOComponent() { return m_RTAO; }
 
+    SceneManager* GetSceneManager() { return m_SceneManager; }
+    int m_nCurScene = 3;
 private:
     std::mt19937 m_generatorURNG;
                 
@@ -99,7 +101,7 @@ private:
     Composition m_composition;
     Scene* m_scene;
     SceneManager* m_SceneManager = nullptr;
-    int m_nCurScene = 0;
+
     // Application state
     UINT m_raytracingWidth;
     UINT m_raytracingHeight;

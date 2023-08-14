@@ -13,6 +13,16 @@
 
 class GameScene : public Scene
 {
+private:
+    float x = 0.0f;
+    float z = 0.0f;
+    float yaw = 0.0f;
+    float move = 1.3f;
+    bool m_bIsMoveForward = false;
+    bool m_bIsMoveStrafe = false;
+    bool m_bIsRotate = false;
+
+    POINT m_ptOldCursorPos;
 public:
     GameScene() {}
     ~GameScene() {}
@@ -26,5 +36,61 @@ public:
     virtual void OnKeyDown(UINT8 key);
 
     virtual void LoadPBRTScene();
+};
+
+class CTitleScene : public Scene
+{
+public:
+    CTitleScene() {}
+    ~CTitleScene() {}
+
+    virtual void InitializeAccelerationStructures();
+    virtual void LoadPBRTScene();
+
+    virtual void OnUpdate();
+    //virtual void OnRender();
+    virtual void OnKeyDown(UINT8 key);
+};
+
+class CLobbyScene : public Scene
+{
+public:
+    CLobbyScene() {}
+    ~CLobbyScene() {}
+
+    virtual void InitializeAccelerationStructures();
+    virtual void LoadPBRTScene();
+
+    virtual void OnUpdate();
+    virtual void OnRender();
+    virtual void OnKeyDown(UINT8 key);
+};
+
+class CRoomScene : public Scene
+{
+public:
+    CRoomScene() {}
+    ~CRoomScene() {}
+
+    virtual void InitializeAccelerationStructures();
+    virtual void LoadPBRTScene();
+
+    virtual void OnUpdate();
+    virtual void OnRender();
+    virtual void OnKeyDown(UINT8 key);
+};
+
+class CResultScene : public Scene
+{
+public:
+    CResultScene() {}
+    ~CResultScene() {}
+
+    virtual void InitializeAccelerationStructures();
+    virtual void LoadPBRTScene();
+
+    virtual void OnUpdate();
+    virtual void OnRender();
+    virtual void OnKeyDown(UINT8 key);
 };
 

@@ -613,10 +613,6 @@ void HandleDigitalButtonPress(GameInput::DigitalInput button, float timeDelta, f
 
 void EngineTuning::Update(float frameTime)
 {
-    //if (GameInput::IsFirstPressed(GameInput::kBackButton)
-    //    || GameInput::IsFirstPressed(GameInput::kKey_back))
-    //    sm_IsVisible = !sm_IsVisible;
-
     if (!sm_IsVisible)
         return;
 

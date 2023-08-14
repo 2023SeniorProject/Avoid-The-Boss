@@ -52,6 +52,11 @@ void GameScene::InitializeAccelerationStructures()
     {
         UINT instanceIndex = m_accelerationStructure->AddBottomLevelASInstance(bottomLevelASname);
 
+        if (bottomLevelASname.find(L"Character1") != wstring::npos)
+        {
+            m_Character1InstanceIndex = instanceIndex;
+        }
+
         if (bottomLevelASname.find(L"Car") != wstring::npos)
         {
             m_carByTheHouseInstanceIndex = instanceIndex;
@@ -66,7 +71,7 @@ void GameScene::InitializeAccelerationStructures()
     // Add one more instace of a Car BLAS for an animated car moving in circle.
     m_animatedCarInstanceIndex = m_accelerationStructure->AddBottomLevelASInstance(L"Car", UINT_MAX, XMMatrixIdentity());
 #endif
-
+    m_animatedCharacter1InstanceIndex = m_accelerationStructure->AddBottomLevelASInstance(L"Character1", UINT_MAX, XMMatrixIdentity());
 #if RENDER_GRASS_GEOMETRY
     // ` up grass patches.
     UINT grassInstanceIndex = 0;
@@ -265,7 +270,23 @@ void GameScene::OnUpdate()
             m_accelerationStructure->GetBottomLevelASInstance(m_animatedCarInstanceIndex).SetTransform(mTransform);
         }
 #endif
+        {
+            float radius = 0;
+            XMMATRIX mTranslationSceneCenter = XMMatrixTranslation(-7, 0, 7);
+            XMMATRIX mTranslation = XMMatrixTranslation(0, 0, radius);
+
+            float lapSeconds = 50;
+            float angleToRotateBy = 360.0f * (-t) / lapSeconds;
+            XMMATRIX mRotateSceneCenter = XMMatrixRotationY(XMConvertToRadians(-20));
+            XMMATRIX mRotate = XMMatrixRotationY(XMConvertToRadians(angleToRotateBy));
+            float scale = 1;
+            XMMATRIX mScale = XMMatrixScaling(scale, scale, scale);
+            XMMATRIX mTransform = mScale * mRotateSceneCenter * mTranslation * mRotate * mTranslationSceneCenter;
+
+            m_accelerationStructure->GetBottomLevelASInstance(m_animatedCharacter1InstanceIndex).SetTransform(mTransform);
+        }
     }
+
 
      //Rotate the camera around Y axis. 
     if (m_animateCamera)
@@ -511,6 +532,10 @@ void CTitleScene::InitializeAccelerationStructures()
     {
         UINT instanceIndex = m_accelerationStructure->AddBottomLevelASInstance(bottomLevelASname);
 
+        if (bottomLevelASname.find(L"Character1") != wstring::npos)
+        {
+            m_Character1InstanceIndex = instanceIndex;
+        }
         if (bottomLevelASname.find(L"Car") != wstring::npos)
         {
             m_carByTheHouseInstanceIndex = instanceIndex;
@@ -525,6 +550,7 @@ void CTitleScene::InitializeAccelerationStructures()
     // Add one more instace of a Car BLAS for an animated car moving in circle.
     m_animatedCarInstanceIndex = m_accelerationStructure->AddBottomLevelASInstance(L"Car", UINT_MAX, XMMatrixIdentity());
 #endif
+    m_animatedCharacter1InstanceIndex = m_accelerationStructure->AddBottomLevelASInstance(L"Character1", UINT_MAX, XMMatrixIdentity());
 
 #if RENDER_GRASS_GEOMETRY
     // Set up grass patches.

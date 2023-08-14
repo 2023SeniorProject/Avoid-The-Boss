@@ -21,8 +21,6 @@ CameraController::CameraController(Camera& camera) : m_camera(camera)
     m_VerticalLookSensitivity = 1.0f;
 	m_MoveSpeed = 2.0f;
 	m_StrafeSpeed = 1.0f;
-    //m_MoveSpeed *= 20;
-	//m_StrafeSpeed *= 50;
 	m_MouseSensitivityX = 0.7f;
     m_MouseSensitivityY = -0.7f;
 

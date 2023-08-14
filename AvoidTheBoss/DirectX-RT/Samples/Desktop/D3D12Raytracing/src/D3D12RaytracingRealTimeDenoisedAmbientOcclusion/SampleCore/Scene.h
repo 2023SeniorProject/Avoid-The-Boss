@@ -96,6 +96,10 @@ public:
     GpuKernels::GenerateGrassPatch     m_grassGeometryGenerator;
     UINT                                m_animatedCarInstanceIndex = UINT_MAX;
     UINT                                m_carByTheHouseInstanceIndex = UINT_MAX;
+
+    UINT                                m_animatedCharacter1InstanceIndex = UINT_MAX;
+    UINT                                m_Character1InstanceIndex = UINT_MAX;
+
     UINT                                m_spaceshipInstanceIndex = UINT_MAX;
     XMVECTOR                            m_carByTheHousePosition = XMVectorZero();
     XMVECTOR                            m_spaceshipPosition = XMVectorZero();

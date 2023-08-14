@@ -20,9 +20,9 @@ private:
     float move = 1.3f;
     bool m_bIsMoveForward = false;
     bool m_bIsMoveStrafe = false;
-
     bool m_bIsRotate = false;
 
+    POINT m_ptOldCursorPos;
 public:
     GameScene() {}
     ~GameScene() {}

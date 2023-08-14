@@ -291,17 +291,24 @@ void GameScene::OnUpdate()
                 m_bIsMoveStrafe = true;
             }
 
-           float mouseMoveX = 60.0f;
-           float rotationSpeed = 1.0f;
            if (GameInput::IsPressed(GameInput::kMouse0))
            {
-               yaw += mouseMoveX * rotationSpeed* elapsedTime;
+               POINT ptCursorPos;
+               float cxDelta = 0.0f, cyDelta = 0.0f;
+
                m_bIsRotate = true;
-           }
-           if (GameInput::IsPressed(GameInput::kMouse1))
-           {
-               yaw -= mouseMoveX * rotationSpeed* elapsedTime;
-               m_bIsRotate = true;
+               ::SetCursor(NULL);
+               ::GetCursorPos(&ptCursorPos);
+               cxDelta = (float)(ptCursorPos.x - m_ptOldCursorPos.x) / 3.0f;
+               cyDelta = (float)(ptCursorPos.y - m_ptOldCursorPos.y) / 3.0f;
+               ::SetCursorPos(m_ptOldCursorPos.x, m_ptOldCursorPos.y);
+ 
+               if (cxDelta != 0.0f)
+               {
+                   yaw += cxDelta;
+                   if (yaw > 360.0f) yaw -= 360.0f;
+                   if (yaw < 0.0f) yaw += 360.0f;
+               }
            }
             XMMATRIX mTranslation = XMMatrixIdentity();
             XMMATRIX mRotate = XMMatrixIdentity();

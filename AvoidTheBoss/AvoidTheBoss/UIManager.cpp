@@ -14,23 +14,6 @@
 #include <d2d1_1.h>
 #include <wincodec.h>
 
-const float MAX_RESCUE_GUAGE = FRAME_BUFFER_WIDTH / 4.0f;
-
-const float PROFILE_UI_OFFSET_X = FRAME_BUFFER_WIDTH * 0.01;
-const float PROFILE_UI_OFFSET_Y = FRAME_BUFFER_HEIGHT * 0.1;
-
-const float PROFILE_UI_WIDTH = FRAME_BUFFER_WIDTH * 0.1;
-const float PROFILE_UI_HEIGHT = FRAME_BUFFER_HEIGHT * 0.1;
-
-const float BIG_PROFILE_UI_OFFSET_Y = PROFILE_UI_OFFSET_Y * 7;
-const float BIG_PROFILE_UI_WIDTH = FRAME_BUFFER_WIDTH * 0.2;
-const float BIG_PROFILE_UI_HEIGHT = FRAME_BUFFER_HEIGHT * 0.2;
-
-const float STATUS_UI_WIDTH = PROFILE_UI_WIDTH * 0.8;
-const float STATUS_UI_HEIGHT = PROFILE_UI_HEIGHT * 0.8;
-
-const float GAMEROOM_BUTTON_X_OFFSET = FRAME_BUFFER_WIDTH / 1.8f;
-const float GAMEROOM_BUTTON_Y_OFFSET = FRAME_BUFFER_HEIGHT / 1.2f;
 
 
 #pragma comment(lib,"windowscodecs.lib")

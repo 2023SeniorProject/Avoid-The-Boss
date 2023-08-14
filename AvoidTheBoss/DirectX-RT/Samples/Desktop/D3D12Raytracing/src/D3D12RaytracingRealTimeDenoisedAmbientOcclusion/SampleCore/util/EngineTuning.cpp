@@ -613,9 +613,9 @@ void HandleDigitalButtonPress(GameInput::DigitalInput button, float timeDelta, f
 
 void EngineTuning::Update(float frameTime)
 {
-    if (GameInput::IsFirstPressed(GameInput::kBackButton)
-        || GameInput::IsFirstPressed(GameInput::kKey_back))
-        sm_IsVisible = !sm_IsVisible;
+    //if (GameInput::IsFirstPressed(GameInput::kBackButton)
+    //    || GameInput::IsFirstPressed(GameInput::kKey_back))
+    //    sm_IsVisible = !sm_IsVisible;
 
     if (!sm_IsVisible)
         return;
@@ -631,7 +631,7 @@ void EngineTuning::Update(float frameTime)
     HandleDigitalButtonPress(GameInput::kDPadLeft,	frameTime, []{ sm_SelectedVariable->Decrement(); });
     HandleDigitalButtonPress(GameInput::kDPadDown,	frameTime, []{ sm_SelectedVariable = sm_SelectedVariable->NextVar(); });
     HandleDigitalButtonPress(GameInput::kDPadUp,	frameTime, []{ sm_SelectedVariable = sm_SelectedVariable->PrevVar(); });
-
+    
     HandleDigitalButtonPress(GameInput::kKey_right, frameTime, []{ sm_SelectedVariable->Increment(); });
     HandleDigitalButtonPress(GameInput::kKey_left,	frameTime, []{ sm_SelectedVariable->Decrement(); });
     HandleDigitalButtonPress(GameInput::kKey_down,	frameTime, []{ sm_SelectedVariable = sm_SelectedVariable->NextVar(); });

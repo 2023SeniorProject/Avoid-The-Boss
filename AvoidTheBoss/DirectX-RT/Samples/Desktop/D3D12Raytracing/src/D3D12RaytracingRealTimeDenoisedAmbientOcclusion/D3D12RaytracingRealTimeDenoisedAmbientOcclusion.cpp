@@ -233,31 +233,31 @@ void D3D12RaytracingRealTimeDenoisedAmbientOcclusion::OnKeyDown(UINT8 key)
         fValue = IsInRange(static_cast<float>(RTAO_Args::MaxRayHitTime), 3.9f, 4.1f) ? 22.f : 4.f;
         m_RTAO.SetMaxRayHitTime(fValue);
         break;
-    case VK_SPACE:
-        m_renderOnce = !m_renderOnce;
-        m_framesToRender = m_renderOnce ? 1 : 0;
-        break;
-    case VK_RETURN:
-        Composition_Args::AOEnabled.Bang();
-        break;
-    case VK_F9:
-        if (m_isProfiling)
-            WriteProfilingResultsToFile();
-        else
-        {
-            m_numRemainingFramesToProfile = 1000;
-            float perFrameSeconds = Scene_Args::CameraRotationDuration / m_numRemainingFramesToProfile;
-            m_SceneManager->GetSceneByIdx(m_nCurScene)
-            ->m_timer.SetTargetElapsedSeconds(perFrameSeconds);
-            m_SceneManager->GetSceneByIdx(m_nCurScene)->m_timer.ResetElapsedTime();
-            m_SceneManager->GetSceneByIdx(m_nCurScene)->m_animateCamera = true;
-            EngineTuning::SetIsVisible(false);
-            EngineProfiling::DrawProfiler.SetValue(true);
-            EngineProfiling::DrawCpuTime.SetValue(false);
-        }
-        m_isProfiling = !m_isProfiling;
-        m_SceneManager->GetSceneByIdx(m_nCurScene)->m_timer.SetFixedTimeStep(m_isProfiling);
-        break;
+    //case VK_SPACE:
+    //    m_renderOnce = !m_renderOnce;
+    //    m_framesToRender = m_renderOnce ? 1 : 0;
+    //    break;
+    //case VK_RETURN:
+    //    Composition_Args::AOEnabled.Bang();
+    //    break;
+    //case VK_F9:
+    //    if (m_isProfiling)
+    //        WriteProfilingResultsToFile();
+    //    else
+    //    {
+    //        m_numRemainingFramesToProfile = 1000;
+    //        float perFrameSeconds = Scene_Args::CameraRotationDuration / m_numRemainingFramesToProfile;
+    //        m_SceneManager->GetSceneByIdx(m_nCurScene)
+    //        ->m_timer.SetTargetElapsedSeconds(perFrameSeconds);
+    //        m_SceneManager->GetSceneByIdx(m_nCurScene)->m_timer.ResetElapsedTime();
+    //        m_SceneManager->GetSceneByIdx(m_nCurScene)->m_animateCamera = true;
+    //        EngineTuning::SetIsVisible(false);
+    //        EngineProfiling::DrawProfiler.SetValue(true);
+    //        EngineProfiling::DrawCpuTime.SetValue(false);
+    //    }
+    //    m_isProfiling = !m_isProfiling;
+    //    m_SceneManager->GetSceneByIdx(m_nCurScene)->m_timer.SetFixedTimeStep(m_isProfiling);
+    //    break;
     default:
         break;
     }
@@ -314,6 +314,7 @@ void D3D12RaytracingRealTimeDenoisedAmbientOcclusion::OnUpdate()
         UpdateUI();
     }
 
+    Composition_Args::CompositionMode.SetValue(CompositionType::PBRShading);
 }
 
 // Copy the raytracing output to the backbuffer.

@@ -44,6 +44,7 @@ namespace Composition_Args
     NumVar Compose_VarianceScale(L"Render/Render composition/Variance/Variance scale", 1.0f, 0, 10, 0.1f);
 
     BoolVar AOEnabled(L"Render/AO/Enabled", true);
+
 }
 
 void Composition::Setup(shared_ptr<DeviceResources> deviceResources, shared_ptr<DX::DescriptorHeap> descriptorHeap)

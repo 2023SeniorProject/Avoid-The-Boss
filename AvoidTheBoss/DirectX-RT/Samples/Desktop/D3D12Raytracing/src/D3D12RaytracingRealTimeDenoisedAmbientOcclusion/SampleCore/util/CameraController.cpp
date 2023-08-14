@@ -82,9 +82,7 @@ bool CameraController::Update(float deltaTime)
     //À§¾Æ·¡
     float ascent = m_StrafeSpeed * speedScale * (
         GameInput::GetTimeCorrectedAnalogInput(GameInput::kAnalogRightTrigger) -
-        GameInput::GetTimeCorrectedAnalogInput(GameInput::kAnalogLeftTrigger) //+
-        //(GameInput::IsPressed(GameInput::kKey_e) ? 1.f: 0.0f) +
-        //(GameInput::IsPressed(GameInput::kKey_q) ? -1.f: 0.0f)
+        GameInput::GetTimeCorrectedAnalogInput(GameInput::kAnalogLeftTrigger) 
       );
 
     if (m_Momentum)

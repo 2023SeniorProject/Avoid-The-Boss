@@ -263,11 +263,11 @@ namespace EngineProfiling
 
     void Update(void)
     {
-        if (GameInput::IsFirstPressed(GameInput::kStartButton)
-            || GameInput::IsFirstPressed(GameInput::kKey_space))
-        {
-            Paused = !Paused;
-        }
+        //if (GameInput::IsFirstPressed(GameInput::kStartButton)
+        //    || GameInput::IsFirstPressed(GameInput::kKey_space))
+        //{
+        //    Paused = !Paused;
+        //}
     }
     
     void BeginFrame(ID3D12GraphicsCommandList4* CommandList)
@@ -389,26 +389,26 @@ void NestedTimingTree::Update(void)
             return;
     }
 
-    if (GameInput::IsFirstPressed(GameInput::kDPadLeft)
-        || GameInput::IsFirstPressed(GameInput::kKey_left))
-    {
-        sm_SelectedScope->m_IsExpanded = false;
-    }
-    else if (GameInput::IsFirstPressed(GameInput::kDPadRight)
-        || GameInput::IsFirstPressed(GameInput::kKey_right))
-    {
-        sm_SelectedScope->m_IsExpanded = true;
-    }
-    else if (GameInput::IsFirstPressed(GameInput::kDPadDown)
-        || GameInput::IsFirstPressed(GameInput::kKey_down))
-    {
-        sm_SelectedScope = sm_SelectedScope ? sm_SelectedScope->NextScope() : nullptr;
-    }
-    else if (GameInput::IsFirstPressed(GameInput::kDPadUp)
-        || GameInput::IsFirstPressed(GameInput::kKey_up))
-    {
-        sm_SelectedScope = sm_SelectedScope ? sm_SelectedScope->PrevScope() : nullptr;
-    }
+    //if (GameInput::IsFirstPressed(GameInput::kDPadLeft)
+    //    || GameInput::IsFirstPressed(GameInput::kKey_left))
+    //{
+    //    sm_SelectedScope->m_IsExpanded = false;
+    //}
+    //else if (GameInput::IsFirstPressed(GameInput::kDPadRight)
+    //    || GameInput::IsFirstPressed(GameInput::kKey_right))
+    //{
+    //    sm_SelectedScope->m_IsExpanded = true;
+    //}
+    //else if (GameInput::IsFirstPressed(GameInput::kDPadDown)
+    //    || GameInput::IsFirstPressed(GameInput::kKey_down))
+    //{
+    //    sm_SelectedScope = sm_SelectedScope ? sm_SelectedScope->NextScope() : nullptr;
+    //}
+    //else if (GameInput::IsFirstPressed(GameInput::kDPadUp)
+    //    || GameInput::IsFirstPressed(GameInput::kKey_up))
+    //{
+    //    sm_SelectedScope = sm_SelectedScope ? sm_SelectedScope->PrevScope() : nullptr;
+    //}
 }
 
 void NestedTimingTree::DisplayNode(wstringstream& Text, UINT indent, bool expandAllNodes)

@@ -233,16 +233,19 @@ void GameScene::OnUpdate()
 {
     m_timer.Tick();
     float elapsedTime = static_cast<float>(m_timer.GetElapsedSeconds());
-    if (GameInput::IsFirstPressed(GameInput::kKey_f))
-    {
-        m_isCameraFrozen = !m_isCameraFrozen;
-    }
-    m_prevFrameCamera = m_camera;
+    //if (GameInput::IsFirstPressed(GameInput::kKey_f))
+    //{
+    //    m_isCameraFrozen = !m_isCameraFrozen;
+    //}
+    //m_prevFrameCamera = m_camera;
 
+    // 카메라 Update
     if (!m_isCameraFrozen)
     {
         m_cameraController->Update(elapsedTime);
     }
+
+    // 씬 Update
     if (Scene_Args::AnimateScene)
     {
         float animationDuration = 180.0f;
@@ -252,7 +255,7 @@ void GameScene::OnUpdate()
         float rotAngle3 = XMConvertToRadians((t + 24) * 360.0f / animationDuration);
 
 #if !LOAD_ONLY_ONE_PBRT_MESH
-        // Animated car. 자동차애니메이션해서 BLAS에 넘겨준다
+     // 자동차 애니메이션
         {
             float radius = 64;
             XMMATRIX mTranslationSceneCenter = XMMatrixTranslation(-7, 0, 7);
@@ -271,14 +274,14 @@ void GameScene::OnUpdate()
 #endif
     }
 
-    // Rotate the camera around Y axis. 카메라 변환
+     //Rotate the camera around Y axis. 
     if (m_animateCamera)
     {
         float secondsToRotateAround = Scene_Args::CameraRotationDuration;
         float angleToRotateBy = 360.0f * (elapsedTime / secondsToRotateAround);
         XMMATRIX axisCenter = XMMatrixTranslation(5.87519f, 0, 8.52134f);
         XMMATRIX rotate = XMMatrixRotationY(XMConvertToRadians(angleToRotateBy));
-
+    
         XMVECTOR eye = m_camera.Eye();
         XMVECTOR at = m_camera.At();
         XMVECTOR up = m_camera.Up();
@@ -288,11 +291,12 @@ void GameScene::OnUpdate()
         m_camera.Set(eye, at, up);
     }
 
-    // Rotate the second light around Y axis. //조명 회전
+    // Rotate the second light around Y axis. 
+    // 조명 회전
     if (m_animateLight)
     {
         float secondsToRotateAround = 8.0f;
-        float angleToRotateBy = -360.0f * (elapsedTime / secondsToRotateAround);
+        float angleToRotateBy = -360.0f/10 * (elapsedTime / secondsToRotateAround);
         XMMATRIX rotate = XMMatrixRotationY(XMConvertToRadians(angleToRotateBy));
         XMVECTOR prevLightPosition = m_lightPosition;
 
@@ -312,33 +316,33 @@ void GameScene::OnKeyDown(UINT8 key)
 {
     switch (key)
     {
-    case 'U':
-        m_carByTheHousePosition += XMVectorSet(0.2f, 0, 0, 0);
-        break;
-    case 'Y':
-        m_carByTheHousePosition -= XMVectorSet(0.2f, 0, 0, 0);
-        break;
-    case 'J':
-        m_spaceshipPosition += XMVectorSet(0, 0.3f, 0, 0);
-        break;
-    case 'M':
-        m_spaceshipPosition -= XMVectorSet(0, 0.3f, 0, 0);
-        break;
-    case 'H':
-        m_spaceshipRotationAngleY += XMConvertToRadians(45);
-        break;
-    case 'K':
-        m_spaceshipRotationAngleY -= XMConvertToRadians(45);
-        break;
+    //case 'U':
+    //    m_carByTheHousePosition += XMVectorSet(0.2f, 0, 0, 0);
+    //    break;
+    //case 'Y':
+    //    m_carByTheHousePosition -= XMVectorSet(0.2f, 0, 0, 0);
+    //    break;
+    //case 'J':
+    //    m_spaceshipPosition += XMVectorSet(0, 0.3f, 0, 0);
+    //    break;
+    //case 'M':
+    //    m_spaceshipPosition -= XMVectorSet(0, 0.3f, 0, 0);
+    //    break;
+    //case 'H':
+    //    m_spaceshipRotationAngleY += XMConvertToRadians(45);
+    //    break;
+    //case 'K':
+    //    m_spaceshipRotationAngleY -= XMConvertToRadians(45);
+    //    break;
     case 'L':
         m_animateLight = !m_animateLight;
         break;
-    case 'C':
-        m_animateCamera = !m_animateCamera;
-        break;
-    case 'T':
-        Scene_Args::AnimateScene.Bang();
-        break;
+    //case 'C':
+    //    m_animateCamera = !m_animateCamera;
+    //    break;
+    //case 'T':
+    //    Scene_Args::AnimateScene.Bang();
+    //    break;
     default:
         break;
     }
@@ -350,14 +354,14 @@ void GameScene::OnKeyDown(UINT8 key)
         m_accelerationStructure->GetBottomLevelASInstance(m_carByTheHouseInstanceIndex).SetTransform(transform);
     }
 
-    if (m_spaceshipInstanceIndex != UINT_MAX)
-    {
-        m_spaceshipPosition = XMVectorClamp(m_spaceshipPosition, XMVectorZero(), XMVectorSet(0, 10, 0, 0));
-        XMMATRIX transform = XMMatrixTranslationFromVector(m_spaceshipPosition);
-        XMMATRIX mRotate = XMMatrixRotationY(XMConvertToRadians(m_spaceshipRotationAngleY));
-        transform *= mRotate;
-        m_accelerationStructure->GetBottomLevelASInstance(m_spaceshipInstanceIndex).SetTransform(transform);
-    }
+    //if (m_spaceshipInstanceIndex != UINT_MAX)
+    //{
+    //    m_spaceshipPosition = XMVectorClamp(m_spaceshipPosition, XMVectorZero(), XMVectorSet(0, 10, 0, 0));
+    //    XMMATRIX transform = XMMatrixTranslationFromVector(m_spaceshipPosition);
+    //    XMMATRIX mRotate = XMMatrixRotationY(XMConvertToRadians(m_spaceshipRotationAngleY));
+    //    transform *= mRotate;
+    //    m_accelerationStructure->GetBottomLevelASInstance(m_spaceshipInstanceIndex).SetTransform(transform);
+    //}
 }
 
 void GameScene::LoadPBRTScene()

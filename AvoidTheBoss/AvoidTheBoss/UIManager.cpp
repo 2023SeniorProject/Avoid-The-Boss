@@ -29,6 +29,10 @@ const float BIG_PROFILE_UI_HEIGHT = FRAME_BUFFER_HEIGHT * 0.2;
 const float STATUS_UI_WIDTH = PROFILE_UI_WIDTH * 0.8;
 const float STATUS_UI_HEIGHT = PROFILE_UI_HEIGHT * 0.8;
 
+const float GAMEROOM_BUTTON_X_OFFSET = FRAME_BUFFER_WIDTH / 1.8f;
+const float GAMEROOM_BUTTON_Y_OFFSET = FRAME_BUFFER_HEIGHT / 1.2f;
+
+
 #pragma comment(lib,"windowscodecs.lib")
 
 D2D1_RECT_F MakeLayoutRect(float cx, float cy , float width, float height)
@@ -652,8 +656,8 @@ void UIManager::InitializeDevice(ID3D12Device5* pd3dDevice, ID3D12CommandQueue* 
 
     m_RoomButtons[0].resource = LoadPngFromFile(L"UI/Ready_Game.png");
     m_RoomButtons[1].resource = LoadPngFromFile(L"UI/Quit_Game.png");
-    m_RoomButtons[0].d2dLayoutRect = MakeLayoutRectByCorner(0,                        LOBBYBUTTON_Y_OFFSET, FRAME_BUFFER_WIDTH / 3.0f, FRAME_BUFFER_HEIGHT / 4.0);
-    m_RoomButtons[1].d2dLayoutRect = MakeLayoutRectByCorner(LOBBYBUTTON_X_OFFSET * 2.0f, LOBBYBUTTON_Y_OFFSET, FRAME_BUFFER_WIDTH / 3.0f, FRAME_BUFFER_HEIGHT / 4.0);
+    m_RoomButtons[0].d2dLayoutRect = MakeLayoutRectByCorner(GAMEROOM_BUTTON_X_OFFSET,   GAMEROOM_BUTTON_Y_OFFSET, FRAME_BUFFER_WIDTH / 5.0f, FRAME_BUFFER_HEIGHT / 7.0);
+    m_RoomButtons[1].d2dLayoutRect = MakeLayoutRectByCorner(GAMEROOM_BUTTON_X_OFFSET + (FRAME_BUFFER_WIDTH / 5.0f), GAMEROOM_BUTTON_Y_OFFSET, FRAME_BUFFER_WIDTH / 5.0f, FRAME_BUFFER_HEIGHT / 7.0);
 
     m_ReadyBitmaps[0].resource = LoadPngFromFile(L"UI/Ready.png");
     m_ReadyBitmaps[1].resource = LoadPngFromFile(L"UI/Ready2.png");
@@ -668,22 +672,22 @@ void UIManager::InitializeDevice(ID3D12Device5* pd3dDevice, ID3D12CommandQueue* 
     m_ReadyBitmaps[0].d2dLayoutRect = MakeLayoutRectByCorner(LOBBYROOMLIST_X_OFFSET, 
         LOBBYROOMLIST_Y_OFFSET,
         (FRAME_BUFFER_WIDTH - (LOBBYROOMLIST_X_OFFSET * 2.0)) / 2.0,
-        FRAME_BUFFER_HEIGHT / 4.0);
+        FRAME_BUFFER_HEIGHT / 6.0);
     m_ReadyBitmaps[1].d2dLayoutRect = MakeLayoutRectByCorner( LOBBYROOMLIST_X_OFFSET + ((FRAME_BUFFER_WIDTH - (LOBBYROOMLIST_X_OFFSET * 2.0)) / 2.0),
         LOBBYROOMLIST_Y_OFFSET,
         (FRAME_BUFFER_WIDTH - (LOBBYROOMLIST_X_OFFSET * 2.0)) / 2.0,
-        FRAME_BUFFER_HEIGHT / 4.0);
+        FRAME_BUFFER_HEIGHT / 6.0);
     
     m_ReadyBitmaps[2].d2dLayoutRect = MakeLayoutRectByCorner(LOBBYROOMLIST_X_OFFSET,
-        LOBBYROOMLIST_Y_OFFSET + FRAME_BUFFER_HEIGHT / 4.0,
+        LOBBYROOMLIST_Y_OFFSET + FRAME_BUFFER_HEIGHT / 6.0,
         (FRAME_BUFFER_WIDTH - (LOBBYROOMLIST_X_OFFSET * 2.0)) / 2.0,
-        FRAME_BUFFER_HEIGHT / 4.0);
+        FRAME_BUFFER_HEIGHT / 6.0);
 
     m_ReadyBitmaps[3].d2dLayoutRect = MakeLayoutRectByCorner(
         LOBBYROOMLIST_X_OFFSET + (FRAME_BUFFER_WIDTH - (LOBBYROOMLIST_X_OFFSET * 2.0)) / 2.0,
-        LOBBYROOMLIST_Y_OFFSET + FRAME_BUFFER_HEIGHT / 4.0,
+        LOBBYROOMLIST_Y_OFFSET + FRAME_BUFFER_HEIGHT / 6.0,
         (FRAME_BUFFER_WIDTH - (LOBBYROOMLIST_X_OFFSET * 2.0)) / 2.0,
-        FRAME_BUFFER_HEIGHT / 4.0f);
+        FRAME_BUFFER_HEIGHT / 6.0f);
 
     for (int i = 0; i < 4; ++i)
     {

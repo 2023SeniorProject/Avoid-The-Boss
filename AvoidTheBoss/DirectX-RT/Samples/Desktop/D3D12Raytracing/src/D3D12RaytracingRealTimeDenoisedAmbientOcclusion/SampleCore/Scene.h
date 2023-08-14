@@ -34,23 +34,23 @@ public:
     Scene();
 
     // Public methods.
-    void Setup(std::shared_ptr<DX::DeviceResources> deviceResources, std::shared_ptr<DX::DescriptorHeap> descriptorHeap);
-    void InitializeAccelerationStructures(){}
-    virtual void OnUpdate(){}
-    virtual void OnRender(){}
-    virtual void OnKeyDown(UINT8 key){}
+    virtual void Setup(std::shared_ptr<DX::DeviceResources> deviceResources, std::shared_ptr<DX::DescriptorHeap> descriptorHeap);
+    virtual void InitializeAccelerationStructures() {}
+    virtual void OnUpdate() {}
+    virtual void OnRender() {}
+    virtual void OnKeyDown(UINT8 key) {}
 
     const GameCore::Camera& Camera() { return m_camera; }
     const GameCore::Camera& PrevFrameCamera() { return m_prevFrameCamera; }
     const StepTimer& Timer() { return m_timer; }
     const std::map<std::wstring, BottomLevelAccelerationStructureGeometry>& BottomLevelASGeometries() { return m_bottomLevelASGeometries; }
     const std::unique_ptr<RaytracingAccelerationStructureManager>& AccelerationStructure() { return m_accelerationStructure; }
- 
-    
+
+
     D3DTexture& EnvironmentMap() { return m_environmentMap; }
     StructuredBuffer<PrimitiveMaterialBuffer>& MaterialBuffer() { return m_materialBuffer; }
     StructuredBuffer<XMFLOAT3X4>& PrevFrameBottomLevelASInstanceTransforms() { return m_prevFrameBottomLevelASInstanceTransforms; }
-    
+
     // Getters & setters.
     GpuResource(&GrassPatchVB())[UIParameters::NumGrassGeometryLODs][2]{ return m_grassPatchVB; }
 
@@ -61,8 +61,8 @@ public:
     void GetGrassParameters(GenerateGrassStrawsConstantBuffer_AppParams* params, UINT LOD, float totalTime);
 
     void CreateIndexAndVertexBuffers(const GeometryDescriptor& desc, D3DGeometry* geometry);
-    virtual void LoadPBRTScene(){}
-    
+    virtual void LoadPBRTScene() {}
+
     void InitializeScene();
     void UpdateAccelerationStructure();
     void InitializeGeometry();
@@ -83,7 +83,7 @@ public:
     GameCore::Camera m_camera;
     GameCore::Camera m_prevFrameCamera;
     std::unique_ptr<GameCore::CameraController> m_cameraController;
-    
+
     // Geometry.
     UINT m_numTriangles;
     UINT m_numInstancedTriangles;
@@ -105,7 +105,7 @@ public:
     XMVECTOR                            m_spaceshipPosition = XMVectorZero();
     XMVECTOR                            m_Character1Position = XMVectorZero();
     float                               m_spaceshipRotationAngleY = 0;
-    UINT                                m_grassInstanceIndices[NumGrassPatchesX *NumGrassPatchesZ];
+    UINT                                m_grassInstanceIndices[NumGrassPatchesX * NumGrassPatchesZ];
     UINT                                m_currentGrassPatchVBIndex = 0;
     UINT                                m_grassInstanceShaderRecordOffsets[2];
     UINT                                m_prevFrameLODs[NumGrassPatchesX * NumGrassPatchesZ];
@@ -119,7 +119,7 @@ public:
 
     // Motion Vector resources.
     StructuredBuffer<XMFLOAT3X4> m_prevFrameBottomLevelASInstanceTransforms;        // Bottom-Level AS Instance transforms used for previous frame. Used for Temporal Reprojection.
-       
+
     struct PBRTScene
     {
         std::wstring name;

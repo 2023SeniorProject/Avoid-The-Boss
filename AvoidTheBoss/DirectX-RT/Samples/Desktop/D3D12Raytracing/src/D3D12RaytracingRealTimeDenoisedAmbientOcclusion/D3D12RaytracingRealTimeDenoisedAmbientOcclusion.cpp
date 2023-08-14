@@ -130,22 +130,15 @@ void D3D12RaytracingRealTimeDenoisedAmbientOcclusion::CreateDeviceDependentResou
     
     m_SceneManager = new SceneManager();
 
-        Scene& scene = *(m_SceneManager->GetSceneByIdx(m_nCurScene));
-        scene.Setup(m_deviceResources, m_cbvSrvUavHeap);
+    Scene& scene = *(m_SceneManager->GetSceneByIdx(3));
+    scene.Setup(m_deviceResources, m_cbvSrvUavHeap);
+    m_pathtracer.Setup(m_deviceResources, m_cbvSrvUavHeap, scene);
 
-        m_pathtracer.Setup(m_deviceResources, m_cbvSrvUavHeap, scene);
-
-        // With BLAS and their instanceContributionToHitGroupIndex initialized during 
-        // Pathracer setup's shader table build, initialize the AS.
-        // Make sure to call this before RTAO build shader tables as it queries
-        // max instanceContributionToHitGroupIndex from the scene's AS.
-        scene.InitializeAccelerationStructures();
-
-        m_RTAO.Setup(m_deviceResources, m_cbvSrvUavHeap, scene);
-
-
-        m_denoiser.Setup(m_deviceResources, m_cbvSrvUavHeap);
-        m_composition.Setup(m_deviceResources, m_cbvSrvUavHeap);
+        
+    scene.InitializeAccelerationStructures();
+    m_RTAO.Setup(m_deviceResources, m_cbvSrvUavHeap, scene);
+    m_denoiser.Setup(m_deviceResources, m_cbvSrvUavHeap);
+    m_composition.Setup(m_deviceResources, m_cbvSrvUavHeap);
 }
 
 // Create a 2D output texture for raytracing.

@@ -13,6 +13,9 @@
 #include "Win32Application.h"
 #include "DXSampleHelper.h"
 #include "GameInput.h"
+#include "clientIocpCore.h"
+#include "SocketUtil.h"
+#include "ThreadManager.h"
 
 HWND Win32Application::m_hwnd = nullptr;
 bool Win32Application::m_fullscreenMode = false;
@@ -22,6 +25,12 @@ using Microsoft::WRL::ComPtr;
 
 int Win32Application::Run(DXSample* pSample, HINSTANCE hInstance, int nCmdShow)
 {
+    ThreadManager* GCThreadManager = nullptr;
+    GCThreadManager = new ThreadManager;
+
+    clientCore.InitConnect("127.0.0.1");
+    clientCore.DoConnect(nullptr);
+
     try
     {
         // Parse the command line parameters
@@ -62,6 +71,16 @@ int Win32Application::Run(DXSample* pSample, HINSTANCE hInstance, int nCmdShow)
 
         ShowWindow(m_hwnd, nCmdShow);
 
+        GCThreadManager->Launch([=]()
+            {
+                while (true)
+                {
+                    if (!clientCore.Processing()) break;
+                }
+                std::cout << "end thread \n";
+            }
+        );
+
         // Main sample loop.
         MSG msg = {};
         while (msg.message != WM_QUIT)
@@ -75,7 +94,12 @@ int Win32Application::Run(DXSample* pSample, HINSTANCE hInstance, int nCmdShow)
         }
 
         pSample->OnDestroy();
+        
 
+
+        std::cout << "Quit Client\n";
+        SocketUtil::Clear();
+        delete GCThreadManager;
         // Return this part of the WM_QUIT message to Windows.
         return static_cast<char>(msg.wParam);
     }
@@ -93,6 +117,8 @@ int Win32Application::Run(DXSample* pSample, HINSTANCE hInstance, int nCmdShow)
         OutputDebugString(L"\nTerminating.\n");
 
         pSample->OnDestroy();
+        delete GCThreadManager;
+        SocketUtil::Clear;
         return EXIT_FAILURE;
     }
     catch (std::exception& e)
@@ -102,6 +128,8 @@ int Win32Application::Run(DXSample* pSample, HINSTANCE hInstance, int nCmdShow)
         OutputDebugString(L"\nTerminating.\n");
 
         pSample->OnDestroy();
+        delete GCThreadManager;
+        SocketUtil::Clear;
         return EXIT_FAILURE;
     }
 }

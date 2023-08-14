@@ -34,8 +34,8 @@ public:
     Scene();
 
     // Public methods.
-    virtual void Setup(std::shared_ptr<DX::DeviceResources> deviceResources, std::shared_ptr<DX::DescriptorHeap> descriptorHeap);
-    virtual void InitializeAccelerationStructures(){}
+    void Setup(std::shared_ptr<DX::DeviceResources> deviceResources, std::shared_ptr<DX::DescriptorHeap> descriptorHeap);
+    void InitializeAccelerationStructures(){}
     virtual void OnUpdate(){}
     virtual void OnRender(){}
     virtual void OnKeyDown(UINT8 key){}

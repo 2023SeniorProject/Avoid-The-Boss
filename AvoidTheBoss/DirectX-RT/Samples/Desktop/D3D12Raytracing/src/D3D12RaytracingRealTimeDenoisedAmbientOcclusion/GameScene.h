@@ -13,6 +13,16 @@
 
 class GameScene : public Scene
 {
+private:
+    float x = 0.0f;
+    float z = 0.0f;
+    float yaw = 0.0f;
+    float move = 1.3f;
+    bool m_bIsMoveForward = false;
+    bool m_bIsMoveStrafe = false;
+
+    bool m_bIsRotate = false;
+
 public:
     GameScene() {}
     ~GameScene() {}

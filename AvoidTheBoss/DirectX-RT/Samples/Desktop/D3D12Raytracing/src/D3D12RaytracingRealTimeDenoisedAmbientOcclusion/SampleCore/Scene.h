@@ -103,6 +103,7 @@ public:
     UINT                                m_spaceshipInstanceIndex = UINT_MAX;
     XMVECTOR                            m_carByTheHousePosition = XMVectorZero();
     XMVECTOR                            m_spaceshipPosition = XMVectorZero();
+    XMVECTOR                            m_Character1Position = XMVectorZero();
     float                               m_spaceshipRotationAngleY = 0;
     UINT                                m_grassInstanceIndices[NumGrassPatchesX *NumGrassPatchesZ];
     UINT                                m_currentGrassPatchVBIndex = 0;

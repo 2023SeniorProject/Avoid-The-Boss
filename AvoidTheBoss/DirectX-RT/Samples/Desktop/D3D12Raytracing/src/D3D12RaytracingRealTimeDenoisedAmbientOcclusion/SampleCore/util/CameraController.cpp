@@ -19,10 +19,10 @@ CameraController::CameraController(Camera& camera) : m_camera(camera)
 {
     m_HorizontalLookSensitivity = 1.0f;
     m_VerticalLookSensitivity = 1.0f;
-	m_MoveSpeed = 2.0f;
-	m_StrafeSpeed = 1.0f;
-	m_MouseSensitivityX = 0.7f;
-    m_MouseSensitivityY = -0.7f;
+	m_MoveSpeed = 1.3f;
+	m_StrafeSpeed = 1.3f;
+	m_MouseSensitivityX = 1.0f;
+    m_MouseSensitivityY = -1.0f;
 
     m_FineMovement = false;
     m_FineRotation = false;

@@ -231,10 +231,7 @@ void GameScene::OnUpdate()
 {
     m_timer.Tick();
     float elapsedTime = static_cast<float>(m_timer.GetElapsedSeconds());
-    //if (GameInput::IsFirstPressed(GameInput::kKey_f))
-    //{
-    //    m_isCameraFrozen = !m_isCameraFrozen;
-    //}
+
     m_prevFrameCamera = m_camera;
 
     // Ä«¸Þ¶ó Update
@@ -271,19 +268,64 @@ void GameScene::OnUpdate()
         }
 #endif
         {
-            float radius = 0;
-            XMMATRIX mTranslationSceneCenter = XMMatrixTranslation(-7, 0, 7);
-            XMMATRIX mTranslation = XMMatrixTranslation(0, 0, radius);
 
-            float lapSeconds = 50;
-            float angleToRotateBy = 360.0f * (-t) / lapSeconds;
-            XMMATRIX mRotateSceneCenter = XMMatrixRotationY(XMConvertToRadians(-20));
-            XMMATRIX mRotate = XMMatrixRotationY(XMConvertToRadians(angleToRotateBy));
+            if (GameInput::IsPressed(GameInput::kKey_w))
+            {
+                z += move * elapsedTime;
+                m_bIsMoveForward = true;
+            }
+            if (GameInput::IsPressed(GameInput::kKey_s))
+            {
+                z -= move * elapsedTime;
+                m_bIsMoveForward = true;
+            }
+            if (GameInput::IsPressed(GameInput::kKey_d))
+            {
+                x += move * elapsedTime;
+                m_bIsMoveStrafe = true;
+            }
+
+            if (GameInput::IsPressed(GameInput::kKey_a))
+            {
+                x -= move * elapsedTime;
+                m_bIsMoveStrafe = true;
+            }
+            //if (GameInput::IsPressed(GameInput::kMouse0))
+            //{
+            //    yaw += 1.0f;
+            //    m_bIsRotate = true;
+            //}
+            //if (GameInput::IsPressed(GameInput::kMouse1))
+            //{
+            //    yaw -= 1.0f;
+            //    m_bIsRotate = true;
+            //}
+            XMMATRIX mTranslationSceneCenter = XMMatrixIdentity();
+            XMMATRIX mTranslation = XMMatrixIdentity();
+            XMMATRIX mTranslationX = XMMatrixIdentity();
+            XMMATRIX mRotate = XMMatrixIdentity();
+
+           // if(m_bIsMoveForward)
+                mTranslation = XMMatrixTranslation(-x, 0, -z);
+            //if (m_bIsMoveStrafe)
+            //    mTranslationX = XMMatrixTranslation(x, 0, z);
+
+            mRotate = XMMatrixRotationY(XMConvertToRadians(yaw));
+
             float scale = 1;
             XMMATRIX mScale = XMMatrixScaling(scale, scale, scale);
-            XMMATRIX mTransform = mScale * mRotateSceneCenter * mTranslation * mRotate * mTranslationSceneCenter;
 
-            m_accelerationStructure->GetBottomLevelASInstance(m_animatedCharacter1InstanceIndex).SetTransform(mTransform);
+            if (m_bIsMoveForward || m_bIsMoveStrafe)
+            {
+                XMMATRIX mTransform = mScale * mTranslation * mRotate;
+
+                m_accelerationStructure->GetBottomLevelASInstance(m_animatedCharacter1InstanceIndex).SetTransform(mTransform);
+            }
+            else
+            {
+                m_bIsMoveForward = false;
+                m_bIsMoveStrafe = false;
+            }
         }
     }
 
@@ -342,6 +384,13 @@ void GameScene::OnKeyDown(UINT8 key)
         m_carByTheHousePosition = XMVectorClamp(m_carByTheHousePosition, XMVectorSet(-9, 0, 0, 0), XMVectorZero());
         XMMATRIX transform = XMMatrixTranslationFromVector(m_carByTheHousePosition);
         m_accelerationStructure->GetBottomLevelASInstance(m_carByTheHouseInstanceIndex).SetTransform(transform);
+    }
+
+    if (m_Character1InstanceIndex != UINT_MAX)
+    {
+        m_Character1Position = XMVectorClamp(m_Character1Position, XMVectorSet(0, 0, 0, 0), XMVectorZero());
+        XMMATRIX transform = XMMatrixTranslationFromVector(m_Character1Position);
+        m_accelerationStructure->GetBottomLevelASInstance(m_Character1InstanceIndex).SetTransform(transform);
     }
 }
 

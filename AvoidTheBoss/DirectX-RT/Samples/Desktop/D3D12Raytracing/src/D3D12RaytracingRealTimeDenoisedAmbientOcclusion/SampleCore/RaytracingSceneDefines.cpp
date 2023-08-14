@@ -26,8 +26,8 @@ namespace SampleScene
 		{
 			float height = 1.35f;
 			auto& camera = args[Type::Main].camera;
-            camera.position.eye = { 0.0f, height, 0.0f, 1 };
-            camera.position.at = { 0.0f, height, 1.0f, 1 };
+            camera.position.eye = { 0.0f, height+10.0f, 10.0f, 1 };
+            camera.position.at = { 0.0f, height, -1.0f, 1 };
             camera.position.up = { 0.0f, height+2.0f, 0.0f, 0 };
 			camera.boundaries.min = XMVectorSetY(-XMVectorSplatInfinity(), 0);
 			camera.boundaries.max = XMVectorSplatInfinity();

@@ -290,34 +290,33 @@ void GameScene::OnUpdate()
                 x -= move * elapsedTime;
                 m_bIsMoveStrafe = true;
             }
-            //if (GameInput::IsPressed(GameInput::kMouse0))
-            //{
-            //    yaw += 1.0f;
-            //    m_bIsRotate = true;
-            //}
-            //if (GameInput::IsPressed(GameInput::kMouse1))
-            //{
-            //    yaw -= 1.0f;
-            //    m_bIsRotate = true;
-            //}
-            XMMATRIX mTranslationSceneCenter = XMMatrixIdentity();
+
+           float mouseMoveX = 60.0f;
+           float rotationSpeed = 1.0f;
+           if (GameInput::IsPressed(GameInput::kMouse0))
+           {
+               yaw += mouseMoveX * rotationSpeed* elapsedTime;
+               m_bIsRotate = true;
+           }
+           if (GameInput::IsPressed(GameInput::kMouse1))
+           {
+               yaw -= mouseMoveX * rotationSpeed* elapsedTime;
+               m_bIsRotate = true;
+           }
             XMMATRIX mTranslation = XMMatrixIdentity();
-            XMMATRIX mTranslationX = XMMatrixIdentity();
             XMMATRIX mRotate = XMMatrixIdentity();
-
-           // if(m_bIsMoveForward)
-                mTranslation = XMMatrixTranslation(-x, 0, -z);
-            //if (m_bIsMoveStrafe)
-            //    mTranslationX = XMMatrixTranslation(x, 0, z);
-
-            mRotate = XMMatrixRotationY(XMConvertToRadians(yaw));
+     
+            mTranslation = XMMatrixTranslation(-x, 0, -z);
+          
+            if(m_bIsRotate)
+                mRotate = XMMatrixRotationY(XMConvertToRadians(yaw));
 
             float scale = 1;
             XMMATRIX mScale = XMMatrixScaling(scale, scale, scale);
 
-            if (m_bIsMoveForward || m_bIsMoveStrafe)
+            if (m_bIsMoveForward || m_bIsMoveStrafe || m_bIsRotate)
             {
-                XMMATRIX mTransform = mScale * mTranslation * mRotate;
+                XMMATRIX mTransform = mScale * mRotate * mTranslation;
 
                 m_accelerationStructure->GetBottomLevelASInstance(m_animatedCharacter1InstanceIndex).SetTransform(mTransform);
             }
@@ -325,6 +324,8 @@ void GameScene::OnUpdate()
             {
                 m_bIsMoveForward = false;
                 m_bIsMoveStrafe = false;
+                m_bIsRotate = false;
+                //yaw = 0;
             }
         }
     }

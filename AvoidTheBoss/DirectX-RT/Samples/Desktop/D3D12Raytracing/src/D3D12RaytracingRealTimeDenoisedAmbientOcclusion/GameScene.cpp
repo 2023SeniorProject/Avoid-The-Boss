@@ -231,15 +231,12 @@ void GameScene::OnUpdate()
 {
     m_timer.Tick();
     float elapsedTime = static_cast<float>(m_timer.GetElapsedSeconds());
-
-    m_prevFrameCamera = m_camera;
-
     // Ä«¸Þ¶ó Update
+    m_prevFrameCamera = m_camera;
     if (!m_isCameraFrozen)
     {
         m_cameraController->Update(elapsedTime);
     }
-
     // ¾À Update
     if (Scene_Args::AnimateScene)
     {
@@ -290,19 +287,17 @@ void GameScene::OnUpdate()
                 x -= move * elapsedTime;
                 m_bIsMoveStrafe = true;
             }
-
+            float cxDelta = 0.0f, cyDelta = 0.0f;
+            POINT ptCursorPos;
            if (GameInput::IsPressed(GameInput::kMouse0))
            {
-               POINT ptCursorPos;
-               float cxDelta = 0.0f, cyDelta = 0.0f;
-
                m_bIsRotate = true;
-               ::SetCursor(NULL);
-               ::GetCursorPos(&ptCursorPos);
+               SetCursor(NULL);
+               GetCursorPos(&ptCursorPos);
                cxDelta = (float)(ptCursorPos.x - m_ptOldCursorPos.x) / 3.0f;
                cyDelta = (float)(ptCursorPos.y - m_ptOldCursorPos.y) / 3.0f;
-               ::SetCursorPos(m_ptOldCursorPos.x, m_ptOldCursorPos.y);
- 
+               SetCursorPos(m_ptOldCursorPos.x, m_ptOldCursorPos.y);
+    
                if (cxDelta != 0.0f)
                {
                    yaw += cxDelta;
@@ -312,11 +307,14 @@ void GameScene::OnUpdate()
            }
             XMMATRIX mTranslation = XMMatrixIdentity();
             XMMATRIX mRotate = XMMatrixIdentity();
-     
-            mTranslation = XMMatrixTranslation(-x, 0, -z);
-          
-            if(m_bIsRotate)
+            //if (m_bIsMoveForward)
+            {
+                mTranslation = XMMatrixTranslation(-x, 0, -z);
+            }
+            if (m_bIsRotate)
+            {
                 mRotate = XMMatrixRotationY(XMConvertToRadians(yaw));
+            }
 
             float scale = 1;
             XMMATRIX mScale = XMMatrixScaling(scale, scale, scale);
@@ -332,7 +330,6 @@ void GameScene::OnUpdate()
                 m_bIsMoveForward = false;
                 m_bIsMoveStrafe = false;
                 m_bIsRotate = false;
-                //yaw = 0;
             }
         }
     }

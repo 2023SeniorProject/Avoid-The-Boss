@@ -69,10 +69,19 @@ int Win32Application::Run(DXSample* pSample, HINSTANCE hInstance, int nCmdShow)
             // Process any messages in the queue.
             if (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
             {
-                TranslateMessage(&msg);
-                DispatchMessage(&msg);
+                if (!TranslateAccelerator(msg.hwnd, NULL, &msg))
+                {
+                    TranslateMessage(&msg);
+                    DispatchMessage(&msg);
+                }
+            }
+            if (pSample)
+            {
+                pSample->OnUpdate();
+                pSample->OnRender();
             }
         }
+        
 
         pSample->OnDestroy();
 
@@ -203,7 +212,8 @@ void Win32Application::SetWindowZorderToTopMost(bool setToTopMost)
 LRESULT CALLBACK Win32Application::WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
     DXSample* pSample = reinterpret_cast<DXSample*>(GetWindowLongPtr(hWnd, GWLP_USERDATA));
-
+    PAINTSTRUCT ps;
+    HDC hdc;
     switch (message)
     {
     case WM_CREATE:
@@ -242,13 +252,9 @@ LRESULT CALLBACK Win32Application::WindowProc(HWND hWnd, UINT message, WPARAM wP
         break;
 
     case WM_PAINT:
-        if (pSample)
-        {
-            pSample->OnUpdate();
-            pSample->OnRender();
-        }
+        hdc = BeginPaint(hWnd, &ps);
+        EndPaint(hWnd, &ps);
         return 0;
-
     case WM_SIZE:
         if (pSample)
         {

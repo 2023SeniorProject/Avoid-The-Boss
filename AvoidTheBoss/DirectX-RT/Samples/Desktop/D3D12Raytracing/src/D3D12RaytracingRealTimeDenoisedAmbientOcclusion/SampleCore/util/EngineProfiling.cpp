@@ -388,27 +388,6 @@ void NestedTimingTree::Update(void)
         if (sm_SelectedScope == &sm_RootScope)
             return;
     }
-
-    //if (GameInput::IsFirstPressed(GameInput::kDPadLeft)
-    //    || GameInput::IsFirstPressed(GameInput::kKey_left))
-    //{
-    //    sm_SelectedScope->m_IsExpanded = false;
-    //}
-    //else if (GameInput::IsFirstPressed(GameInput::kDPadRight)
-    //    || GameInput::IsFirstPressed(GameInput::kKey_right))
-    //{
-    //    sm_SelectedScope->m_IsExpanded = true;
-    //}
-    //else if (GameInput::IsFirstPressed(GameInput::kDPadDown)
-    //    || GameInput::IsFirstPressed(GameInput::kKey_down))
-    //{
-    //    sm_SelectedScope = sm_SelectedScope ? sm_SelectedScope->NextScope() : nullptr;
-    //}
-    //else if (GameInput::IsFirstPressed(GameInput::kDPadUp)
-    //    || GameInput::IsFirstPressed(GameInput::kKey_up))
-    //{
-    //    sm_SelectedScope = sm_SelectedScope ? sm_SelectedScope->PrevScope() : nullptr;
-    //}
 }
 
 void NestedTimingTree::DisplayNode(wstringstream& Text, UINT indent, bool expandAllNodes)

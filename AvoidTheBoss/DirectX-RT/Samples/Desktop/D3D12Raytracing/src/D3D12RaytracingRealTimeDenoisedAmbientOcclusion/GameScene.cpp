@@ -42,16 +42,9 @@ void GameScene::InitializeAccelerationStructures()
 
     // Initialize bottom-level AS.
     wstring bottomLevelASnames[] = {
-        //L"Spaceship",
-        //L"GroundPlane",
         L"Character1",
         L"Door",
-#if !LOAD_ONLY_ONE_PBRT_MESH
-        //L"Dragon",
-        //L"Car",
-        //L"House"
-#endif
-         L"IndustryMap",
+        L"IndustryMap",
     };
 
     // Initialize the bottom-level AS instances, one for each BLAS.
@@ -237,7 +230,7 @@ void GameScene::OnUpdate()
     //{
     //    m_isCameraFrozen = !m_isCameraFrozen;
     //}
-    //m_prevFrameCamera = m_camera;
+    m_prevFrameCamera = m_camera;
 
     // Ä«¸Þ¶ó Update
     if (!m_isCameraFrozen)
@@ -316,33 +309,9 @@ void GameScene::OnKeyDown(UINT8 key)
 {
     switch (key)
     {
-    //case 'U':
-    //    m_carByTheHousePosition += XMVectorSet(0.2f, 0, 0, 0);
-    //    break;
-    //case 'Y':
-    //    m_carByTheHousePosition -= XMVectorSet(0.2f, 0, 0, 0);
-    //    break;
-    //case 'J':
-    //    m_spaceshipPosition += XMVectorSet(0, 0.3f, 0, 0);
-    //    break;
-    //case 'M':
-    //    m_spaceshipPosition -= XMVectorSet(0, 0.3f, 0, 0);
-    //    break;
-    //case 'H':
-    //    m_spaceshipRotationAngleY += XMConvertToRadians(45);
-    //    break;
-    //case 'K':
-    //    m_spaceshipRotationAngleY -= XMConvertToRadians(45);
-    //    break;
     case 'L':
         m_animateLight = !m_animateLight;
         break;
-    //case 'C':
-    //    m_animateCamera = !m_animateCamera;
-    //    break;
-    //case 'T':
-    //    Scene_Args::AnimateScene.Bang();
-    //    break;
     default:
         break;
     }
@@ -353,15 +322,6 @@ void GameScene::OnKeyDown(UINT8 key)
         XMMATRIX transform = XMMatrixTranslationFromVector(m_carByTheHousePosition);
         m_accelerationStructure->GetBottomLevelASInstance(m_carByTheHouseInstanceIndex).SetTransform(transform);
     }
-
-    //if (m_spaceshipInstanceIndex != UINT_MAX)
-    //{
-    //    m_spaceshipPosition = XMVectorClamp(m_spaceshipPosition, XMVectorZero(), XMVectorSet(0, 10, 0, 0));
-    //    XMMATRIX transform = XMMatrixTranslationFromVector(m_spaceshipPosition);
-    //    XMMATRIX mRotate = XMMatrixRotationY(XMConvertToRadians(m_spaceshipRotationAngleY));
-    //    transform *= mRotate;
-    //    m_accelerationStructure->GetBottomLevelASInstance(m_spaceshipInstanceIndex).SetTransform(transform);
-    //}
 }
 
 void GameScene::LoadPBRTScene()

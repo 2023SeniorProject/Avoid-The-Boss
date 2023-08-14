@@ -40,6 +40,18 @@
     <Filter Include="Shaders\RTAO\Denoising\Temporal">
       <UniqueIdentifier>{acb7aaa8-5a7d-4362-b42d-246b1bea7b4b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Session">
+      <UniqueIdentifier>{22e3c869-8efb-4285-9b71-fc04f5b0d4a3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Connection">
+      <UniqueIdentifier>{a0203e74-c087-4920-8e2b-ce2c5bb71eaa}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="PacketEvent">
+      <UniqueIdentifier>{57794d49-6b88-4af0-accc-a12bfde6f872}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Scheduler">
+      <UniqueIdentifier>{b98825aa-3618-470b-98f3-c4580d827add}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="RTAO\Denoiser.h">
@@ -147,6 +159,18 @@
     <ClInclude Include="GameScene.h">
       <Filter>Source Files\SampleCore</Filter>
     </ClInclude>
+    <ClInclude Include="CSession.h">
+      <Filter>Session</Filter>
+    </ClInclude>
+    <ClInclude Include="clientIocpCore.h">
+      <Filter>Connection</Filter>
+    </ClInclude>
+    <ClInclude Include="CPacketEvent.h">
+      <Filter>PacketEvent</Filter>
+    </ClInclude>
+    <ClInclude Include="CScheduler.h">
+      <Filter>Scheduler</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -235,6 +259,18 @@
     </ClCompile>
     <ClCompile Include="GameScene.cpp">
       <Filter>Source Files\SampleCore</Filter>
+    </ClCompile>
+    <ClCompile Include="CSession.cpp">
+      <Filter>Session</Filter>
+    </ClCompile>
+    <ClCompile Include="clientIocpCore.cpp">
+      <Filter>Connection</Filter>
+    </ClCompile>
+    <ClCompile Include="CPacketEvent.cpp">
+      <Filter>PacketEvent</Filter>
+    </ClCompile>
+    <ClCompile Include="CScheduler.cpp">
+      <Filter>Scheduler</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

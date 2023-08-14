@@ -48,11 +48,11 @@ namespace SceneParser
 		XMVECTOR ToXMVECTOR() { return XMLoadFloat2(&xmFloat2); }
 	};
 
-	struct Vector3
+	struct SPVector3
 	{
-        Vector3(float v) : x(v), y(v), z(v) {}
-		Vector3(float nX, float nY, float nZ) : x(nX), y(nY), z(nZ) {}
-		Vector3() : Vector3(0, 0, 0) {}
+        SPVector3(float v) : x(v), y(v), z(v) {}
+		SPVector3(float nX, float nY, float nZ) : x(nX), y(nY), z(nZ) {}
+		SPVector3() : SPVector3(0, 0, 0) {}
 
 		float &operator[](UINT i)
 		{
@@ -94,9 +94,9 @@ namespace SceneParser
 		float m_FieldOfView;
 		float m_NearPlane;
 		float m_FarPlane;
-		Vector3 m_Position;
-		Vector3 m_LookAt;
-		Vector3 m_Up;
+		SPVector3 m_Position;
+		SPVector3 m_LookAt;
+		SPVector3 m_Up;
 	};
 
     // PBR material
@@ -106,12 +106,12 @@ namespace SceneParser
 		std::string m_MaterialName;
         MaterialType::Type m_Type;
 
-        Vector3 m_Kd = 0;                 // The diffuse reflectivity of the surface.
-        Vector3 m_Ks = 0.04f;                 // The specular reflectivity of the surface.
-		Vector3 m_Kr = 0;                 // The reflectivity of the surface.
-		Vector3 m_Kt = 0;                 // The transmissivity of the surface.
-        Vector3 m_Opacity = 1;            // The opacity of the surface. If less than one, "uber" material transmits light without refracting it.
-        Vector3 m_Eta = 1;                // The index of refraction of the object. Exterior is assumed to be vacuum with IOR of 1. 
+        SPVector3 m_Kd = 0;                 // The diffuse reflectivity of the surface.
+        SPVector3 m_Ks = 0.04f;                 // The specular reflectivity of the surface.
+		SPVector3 m_Kr = 0;                 // The reflectivity of the surface.
+		SPVector3 m_Kt = 0;                 // The transmissivity of the surface.
+        SPVector3 m_Opacity = 1;            // The opacity of the surface. If less than one, "uber" material transmits light without refracting it.
+        SPVector3 m_Eta = 1;                // The index of refraction of the object. Exterior is assumed to be vacuum with IOR of 1. 
         float   m_Roughness = 0.2f;        // Microfacet roughness alpha [0, 1].
 		std::string m_DiffuseTextureFilename;
 		std::string m_SpecularTextureFilename;
@@ -178,10 +178,10 @@ namespace SceneParser
 
 	struct Vertex
 	{
-		Vector3 Normal;
-		Vector3 Position;
+		SPVector3 Normal;
+		SPVector3 Position;
         Vector2 UV;
-		Vector3 Tangent;
+		SPVector3 Tangent;
 	};
 
 	typedef UINT Index;
@@ -215,9 +215,9 @@ namespace SceneParser
                 XMFLOAT2& uv1 = m_VertexBuffer[index1].UV.xmFloat2;
                 XMFLOAT2& uv2 = m_VertexBuffer[index2].UV.xmFloat2;
 
-                Vector3& tangent1 = m_VertexBuffer[index0].Tangent;
-                Vector3& tangent2 = m_VertexBuffer[index1].Tangent;
-                Vector3& tangent3 = m_VertexBuffer[index2].Tangent;
+                SPVector3& tangent1 = m_VertexBuffer[index0].Tangent;
+                SPVector3& tangent2 = m_VertexBuffer[index1].Tangent;
+                SPVector3& tangent3 = m_VertexBuffer[index2].Tangent;
 
                 XMVECTOR tangent = XMLoadFloat3(&CalculateTangent(v0, v1, v2, uv0, uv1, uv2));
 
@@ -236,10 +236,10 @@ namespace SceneParser
 
     struct AreaLight
     {
-        AreaLight(Vector3 LightColor) : m_LightColor(LightColor) {}
+        AreaLight(SPVector3 LightColor) : m_LightColor(LightColor) {}
 
         Mesh m_Mesh;
-        Vector3 m_LightColor;
+        SPVector3 m_LightColor;
     };
 
     struct EnvironmentMap

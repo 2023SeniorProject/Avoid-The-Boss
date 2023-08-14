@@ -59,19 +59,22 @@
     <LinkIncremental>true</LinkIncremental>
     <OutDir>bin\$(Platform)\$(Configuration)\</OutDir>
     <IntDir>obj\$(Platform)\$(Configuration)\</IntDir>
-    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath)</IncludePath>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(SolutionDir)CoreEngine</IncludePath>
+    <LibraryPath>$(SolutionDir)Library\$(Configuration);$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
     <OutDir>bin\$(Platform)\$(Configuration)\</OutDir>
     <IntDir>obj\$(Platform)\$(Configuration)\</IntDir>
-    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath)</IncludePath>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(SolutionDir)CoreEngine</IncludePath>
+    <LibraryPath>$(SolutionDir)Library\;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">
     <LinkIncremental>false</LinkIncremental>
     <OutDir>bin\$(Platform)\$(Configuration)\</OutDir>
     <IntDir>obj\$(Platform)\$(Configuration)\</IntDir>
-    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath)</IncludePath>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(SolutionDir)CoreEngine</IncludePath>
+    <LibraryPath>$(SolutionDir)Library\$(Configuration);$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -178,6 +181,10 @@
     </FxCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="clientIocpCore.h" />
+    <ClInclude Include="CPacketEvent.h" />
+    <ClInclude Include="CScheduler.h" />
+    <ClInclude Include="CSession.h" />
     <ClInclude Include="GameScene.h" />
     <ClInclude Include="SampleCore\Composition.h" />
     <ClInclude Include="SampleCore\DirectXRaytracingHelper.h" />
@@ -217,6 +224,10 @@
     <ClInclude Include="SampleCore\util\Win32Application.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="clientIocpCore.cpp" />
+    <ClCompile Include="CPacketEvent.cpp" />
+    <ClCompile Include="CScheduler.cpp" />
+    <ClCompile Include="CSession.cpp" />
     <ClCompile Include="GameScene.cpp" />
     <ClCompile Include="SampleCore\Composition.cpp" />
     <ClCompile Include="D3D12RaytracingRealTimeDenoisedAmbientOcclusion.cpp" />

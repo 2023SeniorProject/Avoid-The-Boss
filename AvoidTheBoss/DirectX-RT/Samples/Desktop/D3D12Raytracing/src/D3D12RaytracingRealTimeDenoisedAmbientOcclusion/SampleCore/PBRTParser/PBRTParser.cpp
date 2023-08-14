@@ -388,7 +388,7 @@ namespace PBRTParser
     void PBRTParser::ParseMaterial(ifstream &fileStream, SceneParser::Scene &outputScene)
     {
         Material material;
-		material.m_Opacity = Vector3(1, 1, 1);
+		material.m_Opacity = SPVector3(1, 1, 1);
         string materialType;
 
         auto lineStream = GetLineStream();
@@ -396,7 +396,7 @@ namespace PBRTParser
         lineStream >> lastParsedWord;
         material.m_MaterialName = CorrectNameString(lastParsedWord);
         bool remapRoughness = true;     // Whether the roughness should be remapped to BRDF's alpha. If false, roughness is used directly for the alpha. 
-        auto pfnParseMaterialColor = [&](istream &inStream, Vector3 &color, string &textureFileName)
+        auto pfnParseMaterialColor = [&](istream &inStream, SPVector3 &color, string &textureFileName)
         {
             inStream >> lastParsedWord;
             ThrowIfTrue(lastParsedWord.compare("["));
@@ -480,7 +480,7 @@ namespace PBRTParser
 				}
                 else if (!lastParsedWord.compare("Normal\""))
                 {
-                    Vector3 dummy;
+                    SPVector3 dummy;
                     pfnParseMaterialColor(lineStream, dummy, material.m_NormalMapTextureFilename);
                     ThrowIfTrue(material.m_NormalMapTextureFilename.empty(), L"String was not followed by a texture name or texture was not found");
                 }
@@ -602,7 +602,7 @@ namespace PBRTParser
                 ParseExpectedWord(lineStream, "]");
             }
 
-            Vector3 col1;
+            SPVector3 col1;
             {
                 string expectedWords[] = { "\"rgb", "tex1\"", "[" };
                 ParseExpectedWords(lineStream, expectedWords, ARRAYSIZE(expectedWords));
@@ -612,7 +612,7 @@ namespace PBRTParser
                 ParseExpectedWord(lineStream, "]");
             }
 
-            Vector3 col2;
+            SPVector3 col2;
             {
                 string expectedWords[] = { "\"rgb", "tex2\"", "[" };
                 ParseExpectedWords(lineStream, expectedWords, ARRAYSIZE(expectedWords));
@@ -659,7 +659,7 @@ namespace PBRTParser
 		}
     }
 
-    string PBRTParser::GenerateCheckerboardTexture(string fileName, float uScaleFloat, float vScaleFloat, Vector3 color1, Vector3 color2)
+    string PBRTParser::GenerateCheckerboardTexture(string fileName, float uScaleFloat, float vScaleFloat, SPVector3 color1, SPVector3 color2)
     {
         UINT uScale = (UINT)uScaleFloat;
         UINT vScale = (UINT)vScaleFloat;
@@ -668,7 +668,7 @@ namespace PBRTParser
         UINT textureHeight = vScale * 2;
         UINT CheckerBlockSize = 2;
         
-        vector<Vector3> imageData;
+        vector<SPVector3> imageData;
         imageData.resize(textureHeight * textureWidth);
         for (UINT y = 0; y < textureHeight; y++)
         {
@@ -685,7 +685,7 @@ namespace PBRTParser
         return filenameWithExtension;
     }
 
-    void PBRTParser::GenerateBMPFile(string fileName, _In_reads_(width * height)Vector3 *pImageData, UINT width, UINT height)
+    void PBRTParser::GenerateBMPFile(string fileName, _In_reads_(width * height)SPVector3 *pImageData, UINT width, UINT height)
     {
         ofstream bmpFile(fileName, ofstream::out | ofstream::binary | ofstream::app);
         ThrowIfTrue(!bmpFile.is_open() || bmpFile.fail());
@@ -979,12 +979,12 @@ namespace PBRTParser
 
     void PBRTParser::InitializeCameraDefaults(Camera &camera)
     {
-		camera.m_LookAt = Vector3(0.0f, 0.0f, 1.0f);
-		camera.m_Position = Vector3(0.0f, 0.0f, 0.0f);
-		camera.m_Up = Vector3(0.0f, 1.0f, 0.0f);
+		camera.m_LookAt = SPVector3(0.0f, 0.0f, 1.0f);
+		camera.m_Position = SPVector3(0.0f, 0.0f, 0.0f);
+		camera.m_Up = SPVector3(0.0f, 1.0f, 0.0f);
 
         camera.m_FieldOfView = 45;
-        camera.m_Up = Vector3(0.0f, 1.0f, 0.0f);
+        camera.m_Up = SPVector3(0.0f, 1.0f, 0.0f);
         camera.m_NearPlane = 0.001f;
         camera.m_FarPlane = 999999.0f;
     }

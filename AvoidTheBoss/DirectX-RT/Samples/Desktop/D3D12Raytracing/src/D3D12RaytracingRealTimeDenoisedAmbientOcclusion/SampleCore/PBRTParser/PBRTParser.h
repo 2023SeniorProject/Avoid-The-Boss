@@ -24,7 +24,7 @@ namespace PBRTParser
 {
 struct AreaLightAttribute
 {
-    SceneParser::Vector3 m_lightColor;
+    SceneParser::SPVector3 m_lightColor;
 };
 
 class Attributes
@@ -134,11 +134,11 @@ class PBRTParser : public SceneParser::SceneParserClass
         }
 
 
-        static SceneParser::Vector3 ConvertToVector3(const XMVECTOR &_vec)
+        static SceneParser::SPVector3 ConvertToVector3(const XMVECTOR &_vec)
         {
 			XMFLOAT3 vec;
 			XMStoreFloat3(&vec, _vec);
-            return SceneParser::Vector3(vec.x, vec.y, vec.z);
+            return SceneParser::SPVector3(vec.x, vec.y, vec.z);
         }
 
         Attributes &GetCurrentAttributes()
@@ -157,8 +157,8 @@ class PBRTParser : public SceneParser::SceneParserClass
         void ParseExpectedWords(std::istream &inStream, _In_reads_(numWords) std::string *pWords, UINT numWords);
         void ParseExpectedWord(std::istream &inStream, const std::string &word);
 
-        std::string GenerateCheckerboardTexture(std::string fileName, float uScale, float vScale, SceneParser::Vector3 color1, SceneParser::Vector3 color2);
-        void GenerateBMPFile(std::string fileName, _In_reads_(width * height)SceneParser::Vector3 *pDmageData, UINT width, UINT height);
+        std::string GenerateCheckerboardTexture(std::string fileName, float uScale, float vScale, SceneParser::SPVector3 color1, SceneParser::SPVector3 color2);
+        void GenerateBMPFile(std::string fileName, _In_reads_(width * height)SceneParser::SPVector3 *pDmageData, UINT width, UINT height);
 
         std::ifstream m_fileStream;
         std::string m_CurrentMaterial;

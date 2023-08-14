@@ -25,7 +25,6 @@
 
 #include <windows.h>
 
-#include "CorePch.h"
 
 // C RunTime Header Files
 #include <stdlib.h>
@@ -46,8 +45,8 @@
 #include <float.h>
 
 
-#include <dxgi1_6.h>
-#include <d3d12.h>
+
+
 #include <atlbase.h>
 #include "d3dx12.h"	
 #include <pix3.h>
@@ -57,19 +56,20 @@
 #include <DDSTextureLoader.h>
 #include "ResourceUploadBatch.h"
 
-// UI 
-#include <d2d1_3.h>
-#include <dwrite.h>
-#include <d3d11on12.h>
+
+
 
 
 #ifdef _DEBUG
 #pragma comment(lib, "Debug\\CoreEngine.lib")
 #include <dxgidebug.h>
 #else
-#pragma commen
+#pragma comment(lib, "Release\\CoreEngine.lib")
 #endif
 
+
+
+#include "CorePch.h"
 #include "RaytracingHlslCompat.h"
 #include "RaytracingSceneDefines.h"
 #include "DXSampleHelper.h"

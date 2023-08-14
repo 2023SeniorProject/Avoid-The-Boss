@@ -75,10 +75,13 @@ int Win32Application::Run(DXSample* pSample, HINSTANCE hInstance, int nCmdShow)
                     DispatchMessage(&msg);
                 }
             }
-            if (pSample)
+            else 
             {
-                pSample->OnUpdate();
-                pSample->OnRender();
+                if (pSample)
+                {
+                    pSample->OnUpdate();
+                    pSample->OnRender();
+                }
             }
         }
         

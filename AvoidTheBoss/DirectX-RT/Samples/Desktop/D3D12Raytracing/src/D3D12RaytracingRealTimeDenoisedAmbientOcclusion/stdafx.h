@@ -25,25 +25,15 @@
 
 #include <windows.h>
 
+#include "CorePch.h"
+
 // C RunTime Header Files
 #include <stdlib.h>
 #include <sstream>
 #include <iomanip>
-#include <iostream>
-#include <fstream>
-
-#include <list>
-#include <string>
-#include <wrl.h>
 #include <shellapi.h>
-#include <memory>
-#include <unordered_map>
-#include <vector>
-#include <algorithm>
 #include <atlbase.h>
 #include <assert.h>
-#include <array>
-#include <unordered_map>
 #include <functional>
 #include <random>
 #include <numeric>
@@ -54,8 +44,7 @@
 
 #include <stdint.h>
 #include <float.h>
-#include <map>
-#include <set>
+
 
 #include <dxgi1_6.h>
 #include <d3d12.h>
@@ -73,8 +62,12 @@
 #include <dwrite.h>
 #include <d3d11on12.h>
 
+
 #ifdef _DEBUG
+#pragma comment(lib, "Debug\\CoreEngine.lib")
 #include <dxgidebug.h>
+#else
+#pragma commen
 #endif
 
 #include "RaytracingHlslCompat.h"

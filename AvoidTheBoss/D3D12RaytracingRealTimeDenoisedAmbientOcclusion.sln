@@ -5,19 +5,42 @@ VisualStudioVersion = 17.5.33424.131
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "D3D12RaytracingRealTimeDenoisedAmbientOcclusion", "DirectX-RT\Samples\Desktop\D3D12Raytracing\src\D3D12RaytracingRealTimeDenoisedAmbientOcclusion\D3D12RaytracingRealTimeDenoisedAmbientOcclusion.vcxproj", "{19585C81-FB12-4A4B-B700-CCE253BDBA02}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CoreEngine", "CoreEngine\ServerCoreEngine.vcxproj", "{F11D5BD7-5E0D-445E-A930-DC0A0A7280B7}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
+		Debug|x86 = Debug|x86
 		Profile|x64 = Profile|x64
+		Profile|x86 = Profile|x86
 		Release|x64 = Release|x64
+		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{19585C81-FB12-4A4B-B700-CCE253BDBA02}.Debug|x64.ActiveCfg = Debug|x64
 		{19585C81-FB12-4A4B-B700-CCE253BDBA02}.Debug|x64.Build.0 = Debug|x64
+		{19585C81-FB12-4A4B-B700-CCE253BDBA02}.Debug|x86.ActiveCfg = Debug|x64
+		{19585C81-FB12-4A4B-B700-CCE253BDBA02}.Debug|x86.Build.0 = Debug|x64
 		{19585C81-FB12-4A4B-B700-CCE253BDBA02}.Profile|x64.ActiveCfg = Profile|x64
 		{19585C81-FB12-4A4B-B700-CCE253BDBA02}.Profile|x64.Build.0 = Profile|x64
+		{19585C81-FB12-4A4B-B700-CCE253BDBA02}.Profile|x86.ActiveCfg = Profile|x64
+		{19585C81-FB12-4A4B-B700-CCE253BDBA02}.Profile|x86.Build.0 = Profile|x64
 		{19585C81-FB12-4A4B-B700-CCE253BDBA02}.Release|x64.ActiveCfg = Release|x64
 		{19585C81-FB12-4A4B-B700-CCE253BDBA02}.Release|x64.Build.0 = Release|x64
+		{19585C81-FB12-4A4B-B700-CCE253BDBA02}.Release|x86.ActiveCfg = Release|x64
+		{19585C81-FB12-4A4B-B700-CCE253BDBA02}.Release|x86.Build.0 = Release|x64
+		{F11D5BD7-5E0D-445E-A930-DC0A0A7280B7}.Debug|x64.ActiveCfg = Debug|x64
+		{F11D5BD7-5E0D-445E-A930-DC0A0A7280B7}.Debug|x64.Build.0 = Debug|x64
+		{F11D5BD7-5E0D-445E-A930-DC0A0A7280B7}.Debug|x86.ActiveCfg = Debug|Win32
+		{F11D5BD7-5E0D-445E-A930-DC0A0A7280B7}.Debug|x86.Build.0 = Debug|Win32
+		{F11D5BD7-5E0D-445E-A930-DC0A0A7280B7}.Profile|x64.ActiveCfg = Debug|x64
+		{F11D5BD7-5E0D-445E-A930-DC0A0A7280B7}.Profile|x64.Build.0 = Debug|x64
+		{F11D5BD7-5E0D-445E-A930-DC0A0A7280B7}.Profile|x86.ActiveCfg = Debug|Win32
+		{F11D5BD7-5E0D-445E-A930-DC0A0A7280B7}.Profile|x86.Build.0 = Debug|Win32
+		{F11D5BD7-5E0D-445E-A930-DC0A0A7280B7}.Release|x64.ActiveCfg = Release|x64
+		{F11D5BD7-5E0D-445E-A930-DC0A0A7280B7}.Release|x64.Build.0 = Release|x64
+		{F11D5BD7-5E0D-445E-A930-DC0A0A7280B7}.Release|x86.ActiveCfg = Release|Win32
+		{F11D5BD7-5E0D-445E-A930-DC0A0A7280B7}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

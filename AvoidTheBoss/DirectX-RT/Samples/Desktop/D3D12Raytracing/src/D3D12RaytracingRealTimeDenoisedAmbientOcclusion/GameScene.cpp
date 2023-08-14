@@ -402,6 +402,19 @@ void GameScene::OnKeyDown(UINT8 key)
     }
 }
 
+void GameScene::OnLeftButtonDown(UINT x, UINT y)
+{
+    m_ptOldCursorPos.x = x;
+    m_ptOldCursorPos.y = y;
+    ::GetCursorPos(&m_ptOldCursorPos);
+}
+
+void GameScene::OnLeftButtonUp(UINT x, UINT y)
+{
+    //마우스 캡쳐를 해제한다. 
+    ::ReleaseCapture();
+}
+
 void GameScene::LoadPBRTScene()
 {
     auto device = m_deviceResources->GetD3DDevice();

@@ -238,6 +238,21 @@ void D3D12RaytracingRealTimeDenoisedAmbientOcclusion::OnKeyDown(UINT8 key)
     }
 }
 
+void D3D12RaytracingRealTimeDenoisedAmbientOcclusion::OnLeftButtonDown(UINT x, UINT y)
+{
+    m_SceneManager->GetSceneByIdx(m_nCurScene)->OnLeftButtonDown(x, y);
+
+}
+
+void D3D12RaytracingRealTimeDenoisedAmbientOcclusion::OnLeftButtonUp(UINT x, UINT y)
+{
+    m_SceneManager->GetSceneByIdx(m_nCurScene)->OnLeftButtonUp(x, y);
+}
+
+void D3D12RaytracingRealTimeDenoisedAmbientOcclusion::OnDisplayChanged()
+{
+}
+
 // Update frame-based values.
 void D3D12RaytracingRealTimeDenoisedAmbientOcclusion::OnUpdate()
 {

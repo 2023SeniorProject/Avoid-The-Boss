@@ -34,6 +34,8 @@ public:
     virtual void OnUpdate();
     virtual void OnRender();
     virtual void OnKeyDown(UINT8 key);
+    virtual void OnLeftButtonDown(UINT x, UINT y);
+    virtual void OnLeftButtonUp(UINT x, UINT y);
 
     virtual void LoadPBRTScene();
 };

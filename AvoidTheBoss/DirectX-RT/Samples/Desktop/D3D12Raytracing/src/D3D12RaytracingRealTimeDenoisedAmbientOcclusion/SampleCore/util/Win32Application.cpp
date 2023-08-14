@@ -295,6 +295,9 @@ LRESULT CALLBACK Win32Application::WindowProc(HWND hWnd, UINT message, WPARAM wP
     {
         UINT x = LOWORD(lParam);
         UINT y = HIWORD(lParam);
+
+        //마우스 캡쳐를 하고 현재 마우스 위치를 가져온다. 
+        SetCapture(hWnd);
         pSample->OnLeftButtonDown(x, y);
     }
     return 0;
@@ -303,6 +306,7 @@ LRESULT CALLBACK Win32Application::WindowProc(HWND hWnd, UINT message, WPARAM wP
     {
         UINT x = LOWORD(lParam);
         UINT y = HIWORD(lParam);
+
         pSample->OnLeftButtonUp(x, y);
     }
     return 0;

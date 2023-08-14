@@ -39,6 +39,10 @@ public:
     virtual void OnUpdate(){}
     virtual void OnRender(){}
     virtual void OnKeyDown(UINT8 key){}
+    virtual void OnLeftButtonDown(UINT x, UINT y);
+    virtual void OnLeftButtonUp(UINT x, UINT y);
+    virtual void OnDisplayChanged();
+    virtual void OnSizeChanged(UINT width, UINT height, bool minimized);
 
     const GameCore::Camera& Camera() { return m_camera; }
     const GameCore::Camera& PrevFrameCamera() { return m_prevFrameCamera; }

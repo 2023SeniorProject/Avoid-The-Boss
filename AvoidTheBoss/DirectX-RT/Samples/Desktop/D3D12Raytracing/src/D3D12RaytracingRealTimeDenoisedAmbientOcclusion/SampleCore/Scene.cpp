@@ -46,6 +46,24 @@ void Scene::Setup(shared_ptr<DeviceResources> deviceResources, shared_ptr<DX::De
     CreateDeviceDependentResources();
 }
 
+void Scene::OnLeftButtonDown(UINT x, UINT y)
+{
+
+}
+
+void Scene::OnLeftButtonUp(UINT x, UINT y)
+{
+
+}
+
+void Scene::OnDisplayChanged()
+{
+}
+
+void Scene::OnSizeChanged(UINT width, UINT height, bool minimized)
+{
+}
+
 void Scene::CreateDeviceDependentResources()
 {
     auto device = m_deviceResources->GetD3DDevice();

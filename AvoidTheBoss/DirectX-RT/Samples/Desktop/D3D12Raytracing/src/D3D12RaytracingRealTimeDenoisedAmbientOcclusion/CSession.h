@@ -4,6 +4,8 @@
 class IocpEvent;
 class Scheduler;
 
+class DXSample;
+
 class CSession : public ASession
 {
 
@@ -20,10 +22,12 @@ public:
 	bool DoSend(void* packet);
 	bool DoRecv();
 	void ProcessPacket(char*);
+	void SetGame(DXSample*);
 public:
 	int16 _myRm = -1;
 	int32 _prev_remain = 0;
 	int16  _loginOk = -3;
+	DXSample* _sample;
 private:
 	Scheduler* _DelayjobQueue;
 	std::shared_mutex _DelayQueueLock;

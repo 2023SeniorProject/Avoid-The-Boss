@@ -2,6 +2,7 @@
 #include "clientIocpCore.h"
 #include "SocketUtil.h"
 #include "IocpEvent.h"
+#include "DXSample.h"
 
 
 CCIocpCore clientCore;
@@ -36,10 +37,11 @@ void CCIocpCore::InitConnect(const char* address)
 
 }
 
-void CCIocpCore::DoConnect(void* loginInfo)
+void CCIocpCore::DoConnect(void* loginInfo, DXSample* sample)
 {
 
 	_client->_sid = 0;
+	if (!_client->_sample && sample) _client->_sample = sample;
 	DWORD sendBytes(0);
 	DWORD sendLength = BUFSIZE / 2;
 	ConnectEvent* _connectEvent = new ConnectEvent();
@@ -55,7 +57,7 @@ void CCIocpCore::DoConnect(void* loginInfo)
 
 			delete _connectEvent;
 			std::cout << "Time Out\n";
-			DoConnect(nullptr);
+			DoConnect(nullptr,nullptr);
 		}
 		else if (errorCode != WSA_IO_PENDING)
 		{
@@ -91,7 +93,7 @@ bool CCIocpCore::Processing(uint32_t timelimit)
 			{
 				if (iocpEvent != nullptr) delete iocpEvent;
 				std::cout << "Check The Server On... Retry Connecting\n";
-				DoConnect(nullptr);
+				DoConnect(nullptr,nullptr);
 				return true;
 			}
 			else return false;

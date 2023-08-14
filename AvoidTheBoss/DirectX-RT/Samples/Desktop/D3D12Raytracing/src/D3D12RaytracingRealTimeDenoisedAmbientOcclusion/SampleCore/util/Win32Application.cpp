@@ -29,7 +29,7 @@ int Win32Application::Run(DXSample* pSample, HINSTANCE hInstance, int nCmdShow)
     GCThreadManager = new ThreadManager;
 
     clientCore.InitConnect("127.0.0.1");
-    clientCore.DoConnect(nullptr);
+  
 
     try
     {
@@ -70,7 +70,7 @@ int Win32Application::Run(DXSample* pSample, HINSTANCE hInstance, int nCmdShow)
         pSample->OnInit();
 
         ShowWindow(m_hwnd, nCmdShow);
-
+        clientCore.DoConnect(nullptr, pSample);
         GCThreadManager->Launch([=]()
             {
                 while (true)

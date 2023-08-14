@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "CSession.h"
 #include "SocketUtil.h"
+#include "DXSample.h"
 #include "CScheduler.h"
 
 CSession::CSession()
@@ -315,4 +316,9 @@ void CSession::ProcessPacket(char* packet)
 #pragma endregion
 	}
 
+}
+
+void CSession::SetGame(DXSample* sample)
+{
+	_sample = sample;
 }

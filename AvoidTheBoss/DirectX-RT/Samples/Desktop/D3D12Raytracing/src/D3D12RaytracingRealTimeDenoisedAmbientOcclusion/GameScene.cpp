@@ -46,7 +46,14 @@ void GameScene::InitializeAccelerationStructures()
         L"Character1",
         L"Character2",
         L"Character3",
-        L"Door",
+        L"EmergencyL",
+        L"EmergencyR",
+        L"HangerL",
+        L"HangerR",
+        L"SutterR",
+        L"SutterSideR",
+        L"SutterL",
+        L"SutterSideL",
         L"IndustryMap",
     };
 
@@ -239,7 +246,14 @@ void GameScene::LoadPBRTScene()
         {L"Character1", "Assets\\character1\\Character1.pbrt"},
         {L"Character2", "Assets\\character2\\Character2.pbrt"},
         {L"Character3", "Assets\\character3\\Character3.pbrt"},
-        {L"Door", "Assets\\door\\scene.pbrt"},
+        {L"EmergencyL", "Assets\\door\\Emergency_Door_L_low.pbrt"},
+        {L"EmergencyR", "Assets\\door\\Emergency_Door_R_low.pbrt"},
+        {L"HangerL", "Assets\\door\\Hanger_Door_Left.pbrt"},
+        {L"HangerR", "Assets\\door\\Hanger_Door_Right.pbrt"},
+        {L"SutterR", "Assets\\door\\Shutter_Door_Right_low.pbrt"},
+        {L"SutterSideR", "Assets\\door\\Shutter_Door_Right_Side.pbrt"},
+        {L"SutterL", "Assets\\door\\Shutter_Door_Left_low.pbrt"},
+        {L"SutterSideL", "Assets\\door\\Shutter_Door_Left_Side.pbrt"},
         {L"IndustryMap", "Assets\\IndustryMap\\scene.pbrt"},
     };
 

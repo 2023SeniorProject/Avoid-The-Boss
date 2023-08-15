@@ -142,8 +142,6 @@ void D3D12RaytracingRealTimeDenoisedAmbientOcclusion::CreateDeviceDependentResou
         scene.InitializeAccelerationStructures();
 
         m_RTAO.Setup(m_deviceResources, m_cbvSrvUavHeap, scene);
-
-
         m_denoiser.Setup(m_deviceResources, m_cbvSrvUavHeap);
         m_composition.Setup(m_deviceResources, m_cbvSrvUavHeap);
 }

@@ -19,7 +19,6 @@
 #define WIN32_LEAN_AND_MEAN             // Exclude rarely-used stuff from Windows headers.
 #endif
 
-
 // Use the C++ standard templated min/max
 #define NOMINMAX
 
@@ -82,3 +81,4 @@
 #include "DXSampleHelper.h"
 #include "DeviceResources.h"
 
+#define DEFAULT_SCENE_INDEX 0

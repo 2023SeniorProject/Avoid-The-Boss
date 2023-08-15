@@ -588,17 +588,11 @@ void CTitleScene::InitializeAccelerationStructures()
 
     // Initialize bottom-level AS.
     wstring bottomLevelASnames[] = {
-        L"Spaceship",
-        L"GroundPlane",
-#if !LOAD_ONLY_ONE_PBRT_MESH
-        L"Dragon",
-        L"Car",
-        L"House"
-#endif
+        L"GroundPlane"
     };
 
     // Initialize the bottom-level AS instances, one for each BLAS.
-    for (auto& bottomLevelASname : bottomLevelASnames)
+  /*  for (auto& bottomLevelASname : bottomLevelASnames)
     {
         UINT instanceIndex = m_accelerationStructure->AddBottomLevelASInstance(bottomLevelASname);
 
@@ -613,33 +607,33 @@ void CTitleScene::InitializeAccelerationStructures()
         else if (bottomLevelASname.find(L"Spaceship") != wstring::npos)
         {
             m_spaceshipInstanceIndex = instanceIndex;
-        }
-    }
+        }*/
+    //}
     // 局聪皋捞记 贸府
-#if !LOAD_ONLY_ONE_PBRT_MESH
-    // Add one more instace of a Car BLAS for an animated car moving in circle.
-    m_animatedCarInstanceIndex = m_accelerationStructure->AddBottomLevelASInstance(L"Car", UINT_MAX, XMMatrixIdentity());
-#endif
-    m_animatedCharacter1InstanceIndex = m_accelerationStructure->AddBottomLevelASInstance(L"Character1", UINT_MAX, XMMatrixIdentity());
+//#if !LOAD_ONLY_ONE_PBRT_MESH
+//    // Add one more instace of a Car BLAS for an animated car moving in circle.
+//    m_animatedCarInstanceIndex = m_accelerationStructure->AddBottomLevelASInstance(L"Car", UINT_MAX, XMMatrixIdentity());
+//#endif
+//    m_animatedCharacter1InstanceIndex = m_accelerationStructure->AddBottomLevelASInstance(L"Character1", UINT_MAX, XMMatrixIdentity());
 
-#if RENDER_GRASS_GEOMETRY
-    // Set up grass patches.
-    UINT grassInstanceIndex = 0;
-    for (int i = 0; i < NumGrassPatchesZ; i++)
-        for (int j = 0; j < NumGrassPatchesX; j++)
-        {
-            int z = i - 15;
-            int x = j - 15;
-
-            if ((x < -1 || x > 2 || z < -2 || z > 1) &&
-                (IsInRange(x, -2, 3) && IsInRange(z, -3, 2)))
-
-            {
-                m_grassInstanceIndices[grassInstanceIndex] = m_accelerationStructure->AddBottomLevelASInstance(L"Grass Patch LOD 0", UINT_MAX, XMMatrixIdentity());
-                grassInstanceIndex++;
-            }
-        }
-#endif
+//#if RENDER_GRASS_GEOMETRY
+//    // Set up grass patches.
+//    UINT grassInstanceIndex = 0;
+//    for (int i = 0; i < NumGrassPatchesZ; i++)
+//        for (int j = 0; j < NumGrassPatchesX; j++)
+//        {
+//            int z = i - 15;
+//            int x = j - 15;
+//
+//            if ((x < -1 || x > 2 || z < -2 || z > 1) &&
+//                (IsInRange(x, -2, 3) && IsInRange(z, -3, 2)))
+//
+//            {
+//                m_grassInstanceIndices[grassInstanceIndex] = m_accelerationStructure->AddBottomLevelASInstance(L"Grass Patch LOD 0", UINT_MAX, XMMatrixIdentity());
+//                grassInstanceIndex++;
+//            }
+//        }
+//#endif
     // Initialize the top-level AS.
     D3D12_RAYTRACING_ACCELERATION_STRUCTURE_BUILD_FLAGS buildFlags = D3D12_RAYTRACING_ACCELERATION_STRUCTURE_BUILD_FLAG_PREFER_FAST_TRACE;
     bool allowUpdate = false;
@@ -651,7 +645,6 @@ void CTitleScene::InitializeAccelerationStructures()
 
 void CTitleScene::LoadPBRTScene()
 {
-
     auto device = m_deviceResources->GetD3DDevice();
     auto commandList = m_deviceResources->GetCommandList();
     auto commandQueue = m_deviceResources->GetCommandQueue();
@@ -659,15 +652,6 @@ void CTitleScene::LoadPBRTScene()
 
     PBRTScene pbrtSceneDefinitions[] = {
         {L"Spaceship", "Assets\\spaceship\\scene.pbrt"}, //Physically Based Rendering Toolkit
-        {L"GroundPlane", "Assets\\groundplane\\scene.pbrt"},
-#if !LOAD_ONLY_ONE_PBRT_MESH 
-
-        {L"Car", "Assets\\car\\scene.pbrt"},
-        {L"Dragon", "Assets\\dragon\\scene.pbrt"},
-        {L"House", "Assets\\house\\scene.pbrt"},
-        {L"MirrorQuad", "Assets\\mirrorquad\\scene.pbrt"},
-        {L"Quad", "Assets\\quad\\scene.pbrt"},
-#endif
     };
 
     ResourceUploadBatch resourceUpload(device);
@@ -811,6 +795,10 @@ void CTitleScene::LoadPBRTScene()
 }
 
 void CTitleScene::OnUpdate()
+{
+}
+
+void CTitleScene::OnRender()
 {
 }
 

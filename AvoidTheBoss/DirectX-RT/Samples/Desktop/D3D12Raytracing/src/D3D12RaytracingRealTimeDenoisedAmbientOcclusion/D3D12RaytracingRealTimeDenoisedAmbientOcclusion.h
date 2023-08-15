@@ -81,7 +81,7 @@ public:
     RTAO& RTAOComponent() { return m_RTAO; }
 
     SceneManager* GetSceneManager() { return m_SceneManager; }
-    int m_nCurScene = 3;
+    int m_nCurScene = DEFAULT_SCENE_INDEX;
 private:
     std::mt19937 m_generatorURNG;
                 

@@ -50,7 +50,7 @@ public:
     virtual void LoadPBRTScene();
 
     virtual void OnUpdate();
-    //virtual void OnRender();
+    virtual void OnRender();
     virtual void OnKeyDown(UINT8 key);
 };
 

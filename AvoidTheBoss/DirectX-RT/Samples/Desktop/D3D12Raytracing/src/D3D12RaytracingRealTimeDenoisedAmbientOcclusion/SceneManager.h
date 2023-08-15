@@ -6,7 +6,7 @@ public:
 	enum class SCENESTATE { TITLE = 0, LOBBY = 1, ROOM = 2, INGAME = 3, RESULT = 4 };
 protected:
 	Scene* m_pScenes[5];
-	int m_nCurSceneIdx = 3;
+	int m_nCurSceneIdx = DEFAULT_SCENE_INDEX;
 public:
 	SceneManager();
 	~SceneManager() { }

@@ -42,7 +42,10 @@ void GameScene::InitializeAccelerationStructures()
 
     // Initialize bottom-level AS.
     wstring bottomLevelASnames[] = {
+        L"Boss",
         L"Character1",
+        L"Character2",
+        L"Character3",
         L"Door",
         L"IndustryMap",
     };
@@ -422,7 +425,10 @@ void GameScene::LoadPBRTScene()
     PBRTScene pbrtSceneDefinitions[] = {
         {L"Spaceship", "Assets\\spaceship\\scene.pbrt"}, //Physically Based Rendering Toolkit
         {L"GroundPlane", "Assets\\groundplane\\scene.pbrt"},
-        {L"Character1", "Assets\\Character1\\scene.pbrt"},
+        {L"Boss", "Assets\\boss\\Boss.pbrt"},
+        {L"Character1", "Assets\\character1\\Character1.pbrt"},
+        {L"Character2", "Assets\\character2\\Character2.pbrt"},
+        {L"Character3", "Assets\\character3\\Character3.pbrt"},
         {L"Door", "Assets\\door\\scene.pbrt"},
 #if !LOAD_ONLY_ONE_PBRT_MESH 
         {L"Car", "Assets\\car\\scene.pbrt"},
@@ -584,14 +590,11 @@ void CTitleScene::InitializeAccelerationStructures()
     wstring bottomLevelASnames[] = {
         L"Spaceship",
         L"GroundPlane",
-        L"Character1",
-        L"Door",
 #if !LOAD_ONLY_ONE_PBRT_MESH
         L"Dragon",
         L"Car",
         L"House"
 #endif
-         L"IndustryMap",
     };
 
     // Initialize the bottom-level AS instances, one for each BLAS.
@@ -657,9 +660,6 @@ void CTitleScene::LoadPBRTScene()
     PBRTScene pbrtSceneDefinitions[] = {
         {L"Spaceship", "Assets\\spaceship\\scene.pbrt"}, //Physically Based Rendering Toolkit
         {L"GroundPlane", "Assets\\groundplane\\scene.pbrt"},
-        {L"Character1", "Assets\\Character1\\scene.pbrt"},
-        {L"Door", "Assets\\door\\scene.pbrt"},
-
 #if !LOAD_ONLY_ONE_PBRT_MESH 
 
         {L"Car", "Assets\\car\\scene.pbrt"},
@@ -668,7 +668,6 @@ void CTitleScene::LoadPBRTScene()
         {L"MirrorQuad", "Assets\\mirrorquad\\scene.pbrt"},
         {L"Quad", "Assets\\quad\\scene.pbrt"},
 #endif
-         {L"IndustryMap", "Assets\\IndustryMap\\scene.pbrt"},
     };
 
     ResourceUploadBatch resourceUpload(device);

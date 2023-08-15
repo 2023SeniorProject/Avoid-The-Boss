@@ -50,22 +50,12 @@ public:
     const std::map<std::wstring, BottomLevelAccelerationStructureGeometry>& BottomLevelASGeometries() { return m_bottomLevelASGeometries; }
     const std::unique_ptr<RaytracingAccelerationStructureManager>& AccelerationStructure() { return m_accelerationStructure; }
  
-    
-    D3DTexture& EnvironmentMap() { return m_environmentMap; }
     StructuredBuffer<PrimitiveMaterialBuffer>& MaterialBuffer() { return m_materialBuffer; }
     StructuredBuffer<XMFLOAT3X4>& PrevFrameBottomLevelASInstanceTransforms() { return m_prevFrameBottomLevelASInstanceTransforms; }
-    
-    // Getters & setters.
-    GpuResource(&GrassPatchVB())[UIParameters::NumGrassGeometryLODs][2]{ return m_grassPatchVB; }
-
 public:
     void CreateDeviceDependentResources();
-    virtual void CreateAuxilaryDeviceResources();
-
-    void GetGrassParameters(GenerateGrassStrawsConstantBuffer_AppParams* params, UINT LOD, float totalTime);
 
     void CreateIndexAndVertexBuffers(const GeometryDescriptor& desc, D3DGeometry* geometry);
-    virtual void LoadPBRTScene(){}
     
     void InitializeScene();
     void UpdateAccelerationStructure();
@@ -73,7 +63,7 @@ public:
 
     // Build acceleration structure needed for raytracing.
     void LoadSceneGeometry();
-    void InitializeGrassGeometry();
+    virtual void LoadPBRTScene(){}
 
     virtual void InitializeAllBottomLevelAccelerationStructures();
     std::shared_ptr<DX::DeviceResources> m_deviceResources;
@@ -81,9 +71,8 @@ public:
 
     // Application state.
     StepTimer m_timer;
-    bool m_animateCamera = false;
     bool m_animateLight = false;
-    bool m_isCameraFrozen = false;
+
     GameCore::Camera m_camera;
     GameCore::Camera m_prevFrameCamera;
     std::unique_ptr<GameCore::CameraController> m_cameraController;
@@ -91,30 +80,6 @@ public:
     // Geometry.
     UINT m_numTriangles;
     UINT m_numInstancedTriangles;
-
-    // Grass geometry.
-    static const UINT NumGrassPatchesX = 30;
-    static const UINT NumGrassPatchesZ = 30;
-    static const UINT MaxBLAS = 10 + NumGrassPatchesX * NumGrassPatchesZ;
-
-    GpuKernels::GenerateGrassPatch     m_grassGeometryGenerator;
-    UINT                                m_animatedCarInstanceIndex = UINT_MAX;
-    UINT                                m_carByTheHouseInstanceIndex = UINT_MAX;
-
-    UINT                                m_animatedCharacter1InstanceIndex = UINT_MAX;
-    UINT                                m_Character1InstanceIndex = UINT_MAX;
-
-    UINT                                m_spaceshipInstanceIndex = UINT_MAX;
-    XMVECTOR                            m_carByTheHousePosition = XMVectorZero();
-    XMVECTOR                            m_spaceshipPosition = XMVectorZero();
-    XMVECTOR                            m_Character1Position = XMVectorZero();
-    float                               m_spaceshipRotationAngleY = 0;
-    UINT                                m_grassInstanceIndices[NumGrassPatchesX *NumGrassPatchesZ];
-    UINT                                m_currentGrassPatchVBIndex = 0;
-    UINT                                m_grassInstanceShaderRecordOffsets[2];
-    UINT                                m_prevFrameLODs[NumGrassPatchesX * NumGrassPatchesZ];
-
-    GpuResource m_grassPatchVB[UIParameters::NumGrassGeometryLODs][2];      // Two VBs: current and previous frame.
 
     std::map<std::wstring, BottomLevelAccelerationStructureGeometry> m_bottomLevelASGeometries;
     std::unique_ptr<RaytracingAccelerationStructureManager> m_accelerationStructure;
@@ -131,6 +96,7 @@ public:
     };
 
     // Materials & textures.
+    D3DTexture& EnvironmentMap() { return m_environmentMap; }
     std::vector<PrimitiveMaterialBuffer> m_materials;
     StructuredBuffer<PrimitiveMaterialBuffer> m_materialBuffer;
     D3DTexture m_environmentMap;
@@ -142,6 +108,4 @@ public:
     friend class D3D12RaytracingRealTimeDenoisedAmbientOcclusion;
     friend class Pathtracer;
     friend class Composition;
-
-
 };

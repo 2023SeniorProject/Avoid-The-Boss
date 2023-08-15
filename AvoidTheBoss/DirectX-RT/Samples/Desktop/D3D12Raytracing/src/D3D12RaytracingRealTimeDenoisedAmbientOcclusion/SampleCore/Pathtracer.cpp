@@ -445,7 +445,6 @@ void Pathtracer::BuildShaderTables(Scene& scene)
     {
         auto& bottomLevelASGeometries = scene.BottomLevelASGeometries();
         auto& accelerationStructure = *scene.AccelerationStructure();
-        auto& grassPatchVB = scene.GrassPatchVB();
 
         UINT numShaderRecords = 0;
         for (auto& bottomLevelASGeometryPair : bottomLevelASGeometries)
@@ -453,8 +452,6 @@ void Pathtracer::BuildShaderTables(Scene& scene)
             auto& bottomLevelASGeometry = bottomLevelASGeometryPair.second;
             numShaderRecords += static_cast<UINT>(bottomLevelASGeometry.m_geometryInstances.size()) * PathtracerRayType::Count;
         }
-        UINT numGrassGeometryShaderRecords = 2 * UIParameters::NumGrassGeometryLODs * 3 * PathtracerRayType::Count;
-        numShaderRecords += numGrassGeometryShaderRecords;
 
         UINT shaderRecordSize = shaderIDSize + sizeof(LocalRootSignature::RootArguments);
         ShaderTable hitGroupShaderTable(device, numShaderRecords, shaderRecordSize, L"HitGroupShaderTable");
@@ -468,81 +465,8 @@ void Pathtracer::BuildShaderTables(Scene& scene)
             UINT shaderRecordOffset = hitGroupShaderTable.GeNumShaderRecords();
             accelerationStructure.GetBottomLevelAS(bottomLevelASGeometryPair.first).SetInstanceContributionToHitGroupIndex(shaderRecordOffset);
 
-            // Grass Patch LOD shader recods
-            if (name.find(L"Grass Patch LOD") != wstring::npos)
-            {
-                UINT LOD = stoi(name.data() + wcsnlen_s(L"Grass Patch LOD", 15));
 
-                ThrowIfFalse(bottomLevelASGeometry.m_geometryInstances.size() == 1, L"The implementation assumes a single geometry instance per BLAS for dynamic/grass geometry");
-                auto& geometryInstance = bottomLevelASGeometry.m_geometryInstances[0];
-
-                LocalRootSignature::RootArguments rootArgs;
-                rootArgs.cb.materialID = geometryInstance.materialID;
-                rootArgs.cb.isVertexAnimated = geometryInstance.isVertexAnimated;
-
-                memcpy(&rootArgs.indexBufferGPUHandle, &geometryInstance.ib.gpuDescriptorHandle, sizeof(geometryInstance.ib.gpuDescriptorHandle));
-                memcpy(&rootArgs.diffuseTextureGPUHandle, &geometryInstance.diffuseTexture, sizeof(geometryInstance.diffuseTexture));
-                memcpy(&rootArgs.normalTextureGPUHandle, &geometryInstance.normalTexture, sizeof(geometryInstance.normalTexture));
-
-                // Dynamic geometry with multiple LODs is handled by creating shader records
-                // for all cases. Then, on geometry/instance updates, a BLAS instance updates
-                // its InstanceContributionToHitGroupIndex to point to the corresponding 
-                // shader records for that LOD. 
-                // 
-                // The LOD selection can change from a frame to frame depending on distance
-                // to the camera. For simplicity, we assume the LOD index difference from frame to frame 
-                // is no greater than 1. This can be false if camera moves fast, but in that case 
-                // temporal reprojection would fail for the most part anyway yielding 
-                // diminishing returns supporting that scenario.
-                // Reprojection consistency checks will prevent blending in from non-similar geometry.
-                //
-                // Given multiple LODs and LOD delta being 1 at most, we create the records as follows:
-                // 2 * 3 Shader Records per LOD
-                //  2 - ping-pong frame to frame
-                //  3 - transition types
-                //      Transition from lower LOD in previous frame
-                //      Same LOD as previous frame
-                //      Transition from higher LOD in previous frame
-
-                struct VertexBufferHandles {
-                    D3D12_GPU_DESCRIPTOR_HANDLE prevFrameVertexBuffer;
-                    D3D12_GPU_DESCRIPTOR_HANDLE vertexBuffer;
-                };
-
-                VertexBufferHandles vbHandles[2][3];
-                for (UINT frameID = 0; frameID < 2; frameID++)
-                {
-                    UINT prevFrameID = (frameID + 1) % 2;
-                   
-
-                    // Transitioning from lower LOD.
-                    vbHandles[frameID][0].vertexBuffer = grassPatchVB[LOD][frameID].gpuDescriptorReadAccess;
-                    vbHandles[frameID][0].prevFrameVertexBuffer = LOD > 0 ? grassPatchVB[LOD - 1][prevFrameID].gpuDescriptorReadAccess
-                        : grassPatchVB[LOD][prevFrameID].gpuDescriptorReadAccess;
-
-                    // Same LOD as previous frame.
-                    vbHandles[frameID][1].vertexBuffer = grassPatchVB[LOD][frameID].gpuDescriptorReadAccess;
-                    vbHandles[frameID][1].prevFrameVertexBuffer = grassPatchVB[LOD][prevFrameID].gpuDescriptorReadAccess;
-
-                    // Transitioning from higher LOD.
-                    vbHandles[frameID][2].vertexBuffer = grassPatchVB[LOD][frameID].gpuDescriptorReadAccess;
-                    vbHandles[frameID][2].prevFrameVertexBuffer = LOD < UIParameters::NumGrassGeometryLODs - 1 ? grassPatchVB[LOD + 1][prevFrameID].gpuDescriptorReadAccess
-                        : grassPatchVB[LOD][prevFrameID].gpuDescriptorReadAccess;
-                }
-
-                for (UINT frameID = 0; frameID < 2; frameID++)
-                    for (UINT transitionType = 0; transitionType < 3; transitionType++)
-                    {
-                        memcpy(&rootArgs.vertexBufferGPUHandle, &vbHandles[frameID][transitionType].vertexBuffer, sizeof(vbHandles[frameID][transitionType].vertexBuffer));
-                        memcpy(&rootArgs.previousFrameVertexBufferGPUHandle, &vbHandles[frameID][transitionType].prevFrameVertexBuffer, sizeof(vbHandles[frameID][transitionType].prevFrameVertexBuffer));
-
-                        for (auto& hitGroupShaderID : hitGroupShaderIDs_TriangleGeometry)
-                        {
-                            hitGroupShaderTable.push_back(ShaderRecord(hitGroupShaderID, shaderIDSize, &rootArgs, sizeof(rootArgs)));
-                        }
-                    }
-            }
-            else // Non-vertex buffer animated geometry with 1 shader record per ray-type per bottom-level AS
+             // Non-vertex buffer animated geometry with 1 shader record per ray-type per bottom-level AS
             {
                 for (auto& geometryInstance : bottomLevelASGeometry.m_geometryInstances)
                 {

@@ -23,13 +23,13 @@ private:
     bool m_bIsRotate = false;
 
     POINT m_ptOldCursorPos;
+
 public:
     GameScene() {}
     ~GameScene() {}
 
     virtual void InitializeAccelerationStructures();
-
-    void GenerateGrassGeometry();
+    virtual void LoadPBRTScene();
 
     virtual void OnUpdate();
     virtual void OnRender();
@@ -37,7 +37,10 @@ public:
     virtual void OnLeftButtonDown(UINT x, UINT y);
     virtual void OnLeftButtonUp(UINT x, UINT y);
 
-    virtual void LoadPBRTScene();
+    UINT                                m_animatedCharacter1InstanceIndex = UINT_MAX;
+    UINT                                m_Character1InstanceIndex = UINT_MAX;
+    XMVECTOR                            m_Character1Position = XMVectorZero();
+
 };
 
 class CTitleScene : public Scene
@@ -48,9 +51,8 @@ public:
 
     virtual void InitializeAccelerationStructures();
     virtual void LoadPBRTScene();
-
     virtual void OnUpdate();
-    virtual void OnRender();
+    //virtual void OnRender();
     virtual void OnKeyDown(UINT8 key);
 };
 
@@ -61,10 +63,9 @@ public:
     ~CLobbyScene() {}
 
     virtual void InitializeAccelerationStructures();
-    virtual void LoadPBRTScene();
 
     virtual void OnUpdate();
-    virtual void OnRender();
+    //virtual void OnRender();
     virtual void OnKeyDown(UINT8 key);
 };
 
@@ -75,10 +76,9 @@ public:
     ~CRoomScene() {}
 
     virtual void InitializeAccelerationStructures();
-    virtual void LoadPBRTScene();
 
     virtual void OnUpdate();
-    virtual void OnRender();
+    //virtual void OnRender();
     virtual void OnKeyDown(UINT8 key);
 };
 
@@ -89,10 +89,9 @@ public:
     ~CResultScene() {}
 
     virtual void InitializeAccelerationStructures();
-    virtual void LoadPBRTScene();
 
     virtual void OnUpdate();
-    virtual void OnRender();
+    //virtual void OnRender();
     virtual void OnKeyDown(UINT8 key);
 };
 

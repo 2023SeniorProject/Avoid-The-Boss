@@ -256,21 +256,6 @@ void D3D12RaytracingRealTimeDenoisedAmbientOcclusion::OnDisplayChanged()
 // Update frame-based values.
 void D3D12RaytracingRealTimeDenoisedAmbientOcclusion::OnUpdate()
 {
-    if (m_isProfiling)
-    {
-        if (m_numRemainingFramesToProfile == 0)
-        {
-            m_isProfiling = false;
-            m_SceneManager->GetSceneByIdx(m_nCurScene)->m_timer.SetFixedTimeStep(false);
-            WriteProfilingResultsToFile();
-            m_SceneManager->GetSceneByIdx(m_nCurScene)->m_animateCamera = false;
-        }
-        else
-        {
-            m_numRemainingFramesToProfile--;
-        }
-    }
-
     auto frameIndex = m_deviceResources->GetCurrentFrameIndex();
     auto prevFrameIndex = m_deviceResources->GetPreviousFrameIndex();
 

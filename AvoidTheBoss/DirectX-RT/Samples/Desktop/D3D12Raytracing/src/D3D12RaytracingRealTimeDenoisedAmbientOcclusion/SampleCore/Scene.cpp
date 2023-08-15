@@ -43,7 +43,7 @@ void Scene::Setup(shared_ptr<DeviceResources> deviceResources, shared_ptr<DX::De
     m_deviceResources = deviceResources;
     m_cbvSrvUavHeap = descriptorHeap;
 
-    //CreateDeviceDependentResources();
+    CreateDeviceDependentResources();
 }
 
 void Scene::OnLeftButtonDown(UINT x, UINT y)
@@ -71,12 +71,6 @@ void Scene::CreateDeviceDependentResources()
     Sample::instance().GetSceneManager()->InitializeGeometry();
 
     m_prevFrameBottomLevelASInstanceTransforms.Create(device, MaxNumBottomLevelInstances, Sample::FrameCount, L"GPU buffer: Bottom Level AS Instance transforms for previous frame");
-}
-
-
-void Scene::LoadSceneGeometry()
-{
-    LoadPBRTScene();
 }
 
 void Scene::InitializeAllBottomLevelAccelerationStructures()
@@ -159,41 +153,3 @@ void Scene::UpdateAccelerationStructure()
     }
 }
 
-void Scene::InitializeGeometry()
-{
-    auto device = m_deviceResources->GetD3DDevice();
-    auto commandList = m_deviceResources->GetCommandList();
-
-    // Create a null SRV for geometries with no diffuse texture.
-    // Null descriptors are needed in order to achieve the effect of an "unbound" resource.
-    {
-        D3D12_SHADER_RESOURCE_VIEW_DESC nullSrvDesc = {};
-        nullSrvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
-        nullSrvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
-        nullSrvDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-        nullSrvDesc.Texture2D.MipLevels = 1;
-        nullSrvDesc.Texture2D.MostDetailedMip = 0;
-        nullSrvDesc.Texture2D.ResourceMinLODClamp = 0.0f;
-
-        m_nullTexture.heapIndex = m_cbvSrvUavHeap->AllocateDescriptor(&m_nullTexture.cpuDescriptorHandle, m_nullTexture.heapIndex);
-        device->CreateShaderResourceView(nullptr, &nullSrvDesc, m_nullTexture.cpuDescriptorHandle);
-        m_nullTexture.gpuDescriptorHandle = CD3DX12_GPU_DESCRIPTOR_HANDLE(m_cbvSrvUavHeap->GetHeap()->GetGPUDescriptorHandleForHeapStart(),
-            m_nullTexture.heapIndex, m_cbvSrvUavHeap->DescriptorSize());
-    }
-
-
-    // Begin frame.
-    m_deviceResources->ResetCommandAllocatorAndCommandlist();
-
-    LoadSceneGeometry();
-    InitializeAllBottomLevelAccelerationStructures();
-
-    m_materialBuffer.Create(device, static_cast<UINT>(m_materials.size()), 1, L"Structured buffer: materials");
-    copy(m_materials.begin(), m_materials.end(), m_materialBuffer.begin());
-
-    // È¯°æ¸Ê ·Îµå
-    LoadDDSTexture(device, commandList, L"Assets\\Textures\\FlowerRoad\\flower_road_8khdri_1kcubemap.BC7.dds", m_cbvSrvUavHeap.get(), &m_environmentMap, D3D12_SRV_DIMENSION_TEXTURECUBE);
-
-    m_materialBuffer.CopyStagingToGpu();
-    m_deviceResources->ExecuteCommandList();
-}

@@ -485,12 +485,12 @@ void D3D12RaytracingRealTimeDenoisedAmbientOcclusion::OnRender()
         // Acceleration structure update.
         m_SceneManager->OnRender();
 
-        // Pathracing
-        {
-            m_sampleGpuTimes[Sample_GPUTime::Pathtracing].Start(commandList);
-            m_pathtracer.Run(scene);
-            m_sampleGpuTimes[Sample_GPUTime::Pathtracing].Stop(commandList);
-        }
+        //// Pathracing
+        //{
+        //    m_sampleGpuTimes[Sample_GPUTime::Pathtracing].Start//(commandList);
+        //    m_pathtracer.Run(scene);
+        //    m_sampleGpuTimes[Sample_GPUTime::Pathtracing].Stop//(commandList);
+        //}
 
         // RTAO
         {

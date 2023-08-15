@@ -77,39 +77,11 @@ void GameScene::OnUpdate()
     float elapsedTime = static_cast<float>(m_timer.GetElapsedSeconds());
     // 카메라 Update
     m_prevFrameCamera = m_camera;
-    //if (!m_isCameraFrozen)
-    {
-        m_cameraController->Update(elapsedTime);
-    }
+    m_cameraController->Update(elapsedTime);
     // 씬 Update
     if (Scene_Args::AnimateScene)
     {
-        //float animationDuration = 180.0f;
-        //float t = static_cast<float>(m_timer.GetTotalSeconds());
-        //float rotAngle1 = XMConvertToRadians(t * 360.0f / animationDuration);
-        //float rotAngle2 = XMConvertToRadians((t + 12) * 360.0f / animationDuration);
-        //float rotAngle3 = XMConvertToRadians((t + 24) * 360.0f / animationDuration);
-
-//#if !LOAD_ONLY_ONE_PBRT_MESH
-//     // 자동차 애니메이션
-//        {
-//            float radius = 64;
-//            XMMATRIX mTranslationSceneCenter = XMMatrixTranslation(-7, 0, 7);
-//            XMMATRIX mTranslation = XMMatrixTranslation(0, 0, radius);
-//
-//            float lapSeconds = 50;
-//            float angleToRotateBy = 360.0f * (-t) / lapSeconds;
-//            XMMATRIX mRotateSceneCenter = XMMatrixRotationY(XMConvertToRadians(-20));
-//            XMMATRIX mRotate = XMMatrixRotationY(XMConvertToRadians(angleToRotateBy));
-//            float scale = 1;
-//            XMMATRIX mScale = XMMatrixScaling(scale, scale, scale);
-//            XMMATRIX mTransform = mScale * mRotateSceneCenter * mTranslation * mRotate * mTranslationSceneCenter;
-//
-//            m_accelerationStructure->GetBottomLevelASInstance(m_animatedCarInstanceIndex).SetTransform(mTransform);
-//        }
-//#endif
         {
-
             if (GameInput::IsPressed(GameInput::kKey_w))
             {
                 z += move * elapsedTime;
@@ -177,36 +149,6 @@ void GameScene::OnUpdate()
             }
         }
     }
-
-
-    // //Rotate the camera around Y axis. 
-    //if (m_animateCamera)
-    //{
-    //    float secondsToRotateAround = Scene_Args::CameraRotationDuration;
-    //    float angleToRotateBy = 360.0f * (elapsedTime / secondsToRotateAround);
-    //    XMMATRIX axisCenter = XMMatrixTranslation(5.87519f, 0, 8.52134f);
-    //    XMMATRIX rotate = XMMatrixRotationY(XMConvertToRadians(angleToRotateBy));
-    //
-    //    XMVECTOR eye = m_camera.Eye();
-    //    XMVECTOR at = m_camera.At();
-    //    XMVECTOR up = m_camera.Up();
-    //    at = XMVector3TransformCoord(at, rotate);
-    //    eye = XMVector3TransformCoord(eye, rotate);
-    //    up = XMVector3TransformNormal(up, rotate);
-    //    m_camera.Set(eye, at, up);
-    //}
-
-    //// Rotate the second light around Y axis. 
-    //// 조명 회전
-    //if (m_animateLight)
-    //{
-    //    float secondsToRotateAround = 8.0f;
-    //    float angleToRotateBy = -360.0f/10 * (elapsedTime / secondsToRotateAround);
-    //    XMMATRIX rotate = XMMatrixRotationY(XMConvertToRadians(angleToRotateBy));
-    //    XMVECTOR prevLightPosition = m_lightPosition;
-
-    //    m_lightPosition = XMVector3Transform(m_lightPosition, rotate);
-    //}
 }
 
 void GameScene::OnRender()
@@ -245,6 +187,45 @@ void GameScene::OnLeftButtonUp(UINT x, UINT y)
     //마우스 캡쳐를 해제한다. 
     ::ReleaseCapture();
 }
+void GameScene::InitializeGeometry()
+{
+    auto device = m_deviceResources->GetD3DDevice();
+    auto commandList = m_deviceResources->GetCommandList();
+
+    // Create a null SRV for geometries with no diffuse texture.
+    // Null descriptors are needed in order to achieve the effect of an "unbound" resource.
+    {
+        D3D12_SHADER_RESOURCE_VIEW_DESC nullSrvDesc = {};
+        nullSrvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
+        nullSrvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+        nullSrvDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+        nullSrvDesc.Texture2D.MipLevels = 1;
+        nullSrvDesc.Texture2D.MostDetailedMip = 0;
+        nullSrvDesc.Texture2D.ResourceMinLODClamp = 0.0f;
+
+        m_nullTexture.heapIndex = m_cbvSrvUavHeap->AllocateDescriptor(&m_nullTexture.cpuDescriptorHandle, m_nullTexture.heapIndex);
+        device->CreateShaderResourceView(nullptr, &nullSrvDesc, m_nullTexture.cpuDescriptorHandle);
+        m_nullTexture.gpuDescriptorHandle = CD3DX12_GPU_DESCRIPTOR_HANDLE(m_cbvSrvUavHeap->GetHeap()->GetGPUDescriptorHandleForHeapStart(),
+            m_nullTexture.heapIndex, m_cbvSrvUavHeap->DescriptorSize());
+    }
+
+
+    // Begin frame.
+    m_deviceResources->ResetCommandAllocatorAndCommandlist();
+
+    Sample::instance().GetSceneManager()->LoadPBRTScene();
+    InitializeAllBottomLevelAccelerationStructures();
+
+    m_materialBuffer.Create(device, static_cast<UINT>(m_materials.size()), 1, L"Structured buffer: materials");
+    copy(m_materials.begin(), m_materials.end(), m_materialBuffer.begin());
+
+    // 환경맵 로드
+    LoadDDSTexture(device, commandList, L"Assets\\Textures\\FlowerRoad\\flower_road_8khdri_1kcubemap.BC7.dds", m_cbvSrvUavHeap.get(), &m_environmentMap, D3D12_SRV_DIMENSION_TEXTURECUBE);
+
+    m_materialBuffer.CopyStagingToGpu();
+    m_deviceResources->ExecuteCommandList();
+}
+
 
 void GameScene::LoadPBRTScene()
 {
@@ -411,6 +392,56 @@ void CTitleScene::InitializeAccelerationStructures()
     wstring bottomLevelASnames[] = {
         L"GroundPlane"
     };
+
+     for (auto& bottomLevelASname : bottomLevelASnames)
+     {
+         UINT instanceIndex = m_accelerationStructure->AddBottomLevelASInstance(bottomLevelASname);
+     }
+
+    // Initialize the top-level AS.
+    D3D12_RAYTRACING_ACCELERATION_STRUCTURE_BUILD_FLAGS buildFlags = D3D12_RAYTRACING_ACCELERATION_STRUCTURE_BUILD_FLAG_PREFER_FAST_TRACE;
+    bool allowUpdate = false;
+    bool performUpdateOnBuild = false;
+    m_accelerationStructure->InitializeTopLevelAS(device, buildFlags, allowUpdate, performUpdateOnBuild, L"Top-Level Acceleration Structure");
+}
+
+void CTitleScene::InitializeGeometry()
+{
+    auto device = m_deviceResources->GetD3DDevice();
+    auto commandList = m_deviceResources->GetCommandList();
+
+    // Create a null SRV for geometries with no diffuse texture.
+    // Null descriptors are needed in order to achieve the effect of an "unbound" resource.
+    {
+        D3D12_SHADER_RESOURCE_VIEW_DESC nullSrvDesc = {};
+        nullSrvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
+        nullSrvDesc.Shader4ComponentMapping = D3D12_DEFAULT_SHADER_4_COMPONENT_MAPPING;
+        nullSrvDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+        nullSrvDesc.Texture2D.MipLevels = 1;
+        nullSrvDesc.Texture2D.MostDetailedMip = 0;
+        nullSrvDesc.Texture2D.ResourceMinLODClamp = 0.0f;
+
+        m_nullTexture.heapIndex = m_cbvSrvUavHeap->AllocateDescriptor(&m_nullTexture.cpuDescriptorHandle, m_nullTexture.heapIndex);
+        device->CreateShaderResourceView(nullptr, &nullSrvDesc, m_nullTexture.cpuDescriptorHandle);
+        m_nullTexture.gpuDescriptorHandle = CD3DX12_GPU_DESCRIPTOR_HANDLE(m_cbvSrvUavHeap->GetHeap()->GetGPUDescriptorHandleForHeapStart(),
+            m_nullTexture.heapIndex, m_cbvSrvUavHeap->DescriptorSize());
+    }
+
+
+    // Begin frame.
+    m_deviceResources->ResetCommandAllocatorAndCommandlist();
+
+    Sample::instance().GetSceneManager()->LoadPBRTScene();
+    InitializeAllBottomLevelAccelerationStructures();
+
+    m_materialBuffer.Create(device, static_cast<UINT>(m_materials.size()), 1, L"Structured buffer: materials");
+    copy(m_materials.begin(), m_materials.end(), m_materialBuffer.begin());
+
+    // 환경맵 로드
+    //LoadDDSTexture(device, commandList, L"Assets\\Textures\\FlowerRoad\\flower_road_8khdri_1kcubemap.BC7.dds", m_cbvSrvUavHeap.get(), &m_environmentMap, D3D12_SRV_DIMENSION_TEXTURECUBE);
+
+    m_materialBuffer.CopyStagingToGpu();
+    m_deviceResources->ExecuteCommandList();
 }
 
 void CTitleScene::LoadPBRTScene()
@@ -421,7 +452,7 @@ void CTitleScene::LoadPBRTScene()
     auto commandAllocator = m_deviceResources->GetCommandAllocator();
 
     PBRTScene pbrtSceneDefinitions[] = {
-        {L"Spaceship", "Assets\\spaceship\\scene.pbrt"}, //Physically Based Rendering Toolkit
+        {L"GroundPlane", "Assets\\groundPlane\\scene.pbrt"}, //Physically Based Rendering Toolkit
     };
 
     ResourceUploadBatch resourceUpload(device);
@@ -551,7 +582,7 @@ void CTitleScene::LoadPBRTScene()
                 geometryFlags = D3D12_RAYTRACING_GEOMETRY_FLAG_NONE;
             }
 
-            bottomLevelASGeometry.m_geometryInstances.push_back(GeometryInstance(geometry, materialID, diffuseTextureHandle, normalTextureHandle, geometryFlags, isVertexAnimated));
+                            bottomLevelASGeometry.m_geometryInstances.push_back(GeometryInstance(geometry, materialID, diffuseTextureHandle, normalTextureHandle, geometryFlags, isVertexAnimated));
             numTriangles += desc.ib.count / 3;
         }
     }
@@ -566,6 +597,16 @@ void CTitleScene::LoadPBRTScene()
 
 void CTitleScene::OnUpdate()
 {
+    m_timer.Tick();
+    float elapsedTime = static_cast<float>(m_timer.GetElapsedSeconds());
+    // 카메라 Update
+    m_prevFrameCamera = m_camera;
+    m_cameraController->Update(elapsedTime);
+}
+
+void CTitleScene::OnRender()
+{
+    UpdateAccelerationStructure();
 }
 
 void CTitleScene::OnKeyDown(UINT8 key)

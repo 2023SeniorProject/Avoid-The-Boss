@@ -81,4 +81,4 @@
 #include "DXSampleHelper.h"
 #include "DeviceResources.h"
 
-#define DEFAULT_SCENE_INDEX 3
+#define DEFAULT_SCENE_INDEX 0

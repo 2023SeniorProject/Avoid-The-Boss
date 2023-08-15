@@ -31,6 +31,8 @@ public:
     virtual void InitializeAccelerationStructures();
     virtual void LoadPBRTScene();
 
+    virtual void InitializeGeometry();
+
     virtual void OnUpdate();
     virtual void OnRender();
     virtual void OnKeyDown(UINT8 key);
@@ -49,10 +51,11 @@ public:
     CTitleScene() {}
     ~CTitleScene() {}
 
-    virtual void InitializeAccelerationStructures();
+    virtual void InitializeGeometry();
     virtual void LoadPBRTScene();
+    virtual void InitializeAccelerationStructures();
     virtual void OnUpdate();
-    //virtual void OnRender();
+    virtual void OnRender();
     virtual void OnKeyDown(UINT8 key);
 };
 
@@ -63,9 +66,8 @@ public:
     ~CLobbyScene() {}
 
     virtual void InitializeAccelerationStructures();
-
     virtual void OnUpdate();
-    //virtual void OnRender();
+   
     virtual void OnKeyDown(UINT8 key);
 };
 
@@ -76,7 +78,6 @@ public:
     ~CRoomScene() {}
 
     virtual void InitializeAccelerationStructures();
-
     virtual void OnUpdate();
     //virtual void OnRender();
     virtual void OnKeyDown(UINT8 key);

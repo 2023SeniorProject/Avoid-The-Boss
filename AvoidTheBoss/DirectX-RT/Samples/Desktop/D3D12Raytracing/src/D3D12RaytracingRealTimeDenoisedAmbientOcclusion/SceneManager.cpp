@@ -38,6 +38,7 @@ void SceneManager::OnKeyDown(UINT8 key)
 
 void SceneManager::LoadPBRTScene()
 {
+	GetSceneByIdx(m_nCurSceneIdx)->LoadPBRTScene();
 }
 
 void SceneManager::InitializeGeometry()

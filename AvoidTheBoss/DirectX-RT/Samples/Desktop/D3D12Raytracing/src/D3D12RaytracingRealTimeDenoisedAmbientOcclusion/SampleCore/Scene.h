@@ -54,15 +54,11 @@ public:
     StructuredBuffer<XMFLOAT3X4>& PrevFrameBottomLevelASInstanceTransforms() { return m_prevFrameBottomLevelASInstanceTransforms; }
 public:
     void CreateDeviceDependentResources();
-
-    void CreateIndexAndVertexBuffers(const GeometryDescriptor& desc, D3DGeometry* geometry);
-    
+    void CreateIndexAndVertexBuffers(const GeometryDescriptor& desc, D3DGeometry* geometry);   
     void InitializeScene();
     void UpdateAccelerationStructure();
-    void InitializeGeometry();
 
-    // Build acceleration structure needed for raytracing.
-    void LoadSceneGeometry();
+    virtual void InitializeGeometry(){}
     virtual void LoadPBRTScene(){}
 
     virtual void InitializeAllBottomLevelAccelerationStructures();

@@ -596,7 +596,7 @@ void CTitleScene::LoadPBRTScene()
                 geometryFlags = D3D12_RAYTRACING_GEOMETRY_FLAG_NONE;
             }
 
-                            bottomLevelASGeometry.m_geometryInstances.push_back(GeometryInstance(geometry, materialID, diffuseTextureHandle, normalTextureHandle, geometryFlags, isVertexAnimated));
+                                                                          bottomLevelASGeometry.m_geometryInstances.push_back (GeometryInstance(geometry, materialID, diffuseTextureHandle, normalTextureHandle, geometryFlags,   isVertexAnimated));
             numTriangles += desc.ib.count / 3;
         }
     }

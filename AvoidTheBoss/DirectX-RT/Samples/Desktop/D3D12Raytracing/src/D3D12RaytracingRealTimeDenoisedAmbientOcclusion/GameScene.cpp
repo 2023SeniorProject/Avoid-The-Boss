@@ -477,7 +477,7 @@ void GameScene::LoadPBRTScene()
         {L"SutterSideR", "Assets\\door\\Shutter_Door_Right_Side.pbrt"},
         {L"SutterL", "Assets\\door\\Shutter_Door_Left_low.pbrt"},
         {L"SutterSideL", "Assets\\door\\Shutter_Door_Left_Side.pbrt"},
-        {L"IndustryMap", "Assets\\IndustryMap\\scene.pbrt"},
+        {L"IndustryMap", "Assets\\IndustryMap\\scene(7).pbrt"},
     };
 
     ResourceUploadBatch resourceUpload(device);

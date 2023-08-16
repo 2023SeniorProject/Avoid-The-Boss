@@ -186,85 +186,89 @@ void GameScene::OnUpdate()
                 m_bIsRotate = false;
             }
         }
-        //if(GameInput::IsPressed(GameInput::kKey_1))
+        if (GameInput::IsFirstPressed(GameInput::kKey_1))
+            startDoorAnimate = true;
+        if(startDoorAnimate)
         {
-            if (PlusDirection)
             {
-                HangerX += HANGER_MOVE;
-                if (HangerX >= HANGER_ANIM_LENGTH)
-                    PlusDirection = false;
+                if (PlusDirection)
+                {
+                    HangerX += HANGER_MOVE;
+                    if (HangerX >= HANGER_ANIM_LENGTH)
+                        PlusDirection = false;
+                }
+                else
+                {
+                    HangerX -= HANGER_MOVE;
+                    if (HangerX <= 0)
+                        PlusDirection = true;
+                }
+                XMMATRIX mTranslation = XMMatrixIdentity();
+                XMMATRIX mRotate = XMMatrixIdentity();
+
+                mTranslation = XMMatrixTranslation(HangerX, HangerY, HangerZ);
+                //mRotate = XMMatrixRotationY(XMConvertToRadians(yaw));
+
+                XMMATRIX mTransform = mRotate * mTranslation;
+                m_accelerationStructure->GetBottomLevelASInstance(m_LHangerInstanceIndex).SetTransform(mTransform);
+
+                mTranslation = XMMatrixTranslation(-HangerX, HangerY, HangerZ);
+                mTransform = mRotate * mTranslation;
+                m_accelerationStructure->GetBottomLevelASInstance(m_RHangerInstanceIndex).SetTransform(mTransform);
             }
-            else
             {
-                 HangerX -= HANGER_MOVE;
-                 if (HangerX <= 0)
-                     PlusDirection = true;
+                if (PlusDirection2)
+                {
+                    ShutterY += SHUTTER_MOVE;
+                    if (ShutterY >= HANGER_ANIM_LENGTH)
+                        PlusDirection2 = false;
+                }
+                else
+                {
+                    ShutterY -= SHUTTER_MOVE;
+                    if (ShutterY <= 0)
+                        PlusDirection2 = true;
+                }
+                XMMATRIX mTranslation = XMMatrixIdentity();
+                XMMATRIX mRotate = XMMatrixIdentity();
+
+                mTranslation = XMMatrixTranslation(ShutterX, ShutterY, ShutterZ);
+
+                XMMATRIX mTransform = mRotate * mTranslation;
+                m_accelerationStructure->GetBottomLevelASInstance(m_LShutterInstanceIndex).SetTransform(mTransform);
+                m_accelerationStructure->GetBottomLevelASInstance(m_RShutterInstanceIndex).SetTransform(mTransform);
             }
-            XMMATRIX mTranslation = XMMatrixIdentity();
-            XMMATRIX mRotate = XMMatrixIdentity();    
-
-            mTranslation = XMMatrixTranslation(HangerX, HangerY, HangerZ);
-            //mRotate = XMMatrixRotationY(XMConvertToRadians(yaw));
-
-            XMMATRIX mTransform = mRotate * mTranslation;
-            m_accelerationStructure->GetBottomLevelASInstance(m_LHangerInstanceIndex).SetTransform(mTransform);
-
-            mTranslation = XMMatrixTranslation(-HangerX, HangerY, HangerZ);
-            mTransform = mRotate * mTranslation;
-            m_accelerationStructure->GetBottomLevelASInstance(m_RHangerInstanceIndex).SetTransform(mTransform);
-        }
-        {
-            if (PlusDirection2)
             {
-                ShutterY += SHUTTER_MOVE;
-                if (ShutterY >= HANGER_ANIM_LENGTH)
-                    PlusDirection2 = false;
+                if (PlusDirection3)
+                {
+                    EmergencyYaw += EMERGENCY_MOVE_ANGLE;
+                    if (EmergencyYaw >= EMERGENCY_ANIM_LENGTH)
+                        PlusDirection3 = false;
+                }
+                else
+                {
+                    EmergencyYaw -= EMERGENCY_MOVE_ANGLE;
+                    if (EmergencyYaw <= 0)
+                        PlusDirection3 = true;
+                }
+                XMMATRIX mTranslationCenter = XMMatrixIdentity();
+                XMMATRIX mTranslation = XMMatrixIdentity();
+                XMMATRIX mRotate = XMMatrixIdentity();
+
+                mRotate = XMMatrixRotationY(XMConvertToRadians(-EmergencyYaw));
+                mTranslationCenter = XMMatrixTranslation(EmergencyX + 0.02588548f, -EmergencyY, -EmergencyZ - 0.6920313f);
+                mTranslation = XMMatrixTranslation(-EmergencyX - 0.02588548f, EmergencyY, EmergencyZ + 0.6920313f);
+                XMMATRIX mTransform = mTranslationCenter * mRotate * mTranslation;
+
+                m_accelerationStructure->GetBottomLevelASInstance(m_LEmergencyInstanceIndex).SetTransform(mTransform);
+
+                mRotate = XMMatrixRotationY(XMConvertToRadians(EmergencyYaw));
+                mTranslationCenter = XMMatrixTranslation(-EmergencyX + 0.02588548f, -EmergencyY, -EmergencyZ - 0.6920313f);
+                mTranslation = XMMatrixTranslation(EmergencyX - 0.02588548f, EmergencyY, EmergencyZ + 0.6920313f);
+                mTransform = mTranslationCenter * mRotate * mTranslation;
+
+                m_accelerationStructure->GetBottomLevelASInstance(m_REmergencyInstanceIndex).SetTransform(mTransform);
             }
-            else
-            {
-                ShutterY -= SHUTTER_MOVE;
-                if (ShutterY <= 0)
-                    PlusDirection2 = true;
-            }
-            XMMATRIX mTranslation = XMMatrixIdentity();
-            XMMATRIX mRotate = XMMatrixIdentity();
-
-            mTranslation = XMMatrixTranslation(ShutterX, ShutterY, ShutterZ);
-
-            XMMATRIX mTransform = mRotate * mTranslation;
-            m_accelerationStructure->GetBottomLevelASInstance(m_LShutterInstanceIndex).SetTransform(mTransform);
-            m_accelerationStructure->GetBottomLevelASInstance(m_RShutterInstanceIndex).SetTransform(mTransform);
-        }
-        {
-            if (PlusDirection3)
-            {
-                EmergencyYaw += EMERGENCY_MOVE_ANGLE;
-                if (EmergencyYaw >= EMERGENCY_ANIM_LENGTH)
-                    PlusDirection3 = false;
-            }
-            else
-            {
-                EmergencyYaw -= EMERGENCY_MOVE_ANGLE;
-                if (EmergencyYaw <= 0)
-                    PlusDirection3 = true;
-            }
-            XMMATRIX mTranslationCenter = XMMatrixIdentity();
-            XMMATRIX mTranslation = XMMatrixIdentity();
-            XMMATRIX mRotate = XMMatrixIdentity();
-
-            mRotate = XMMatrixRotationY(XMConvertToRadians(-EmergencyYaw));        
-            mTranslationCenter = XMMatrixTranslation(EmergencyX+ 0.02588548f,-EmergencyY,-EmergencyZ-0.6920313f);
-            mTranslation = XMMatrixTranslation(-EmergencyX- 0.02588548f, EmergencyY, EmergencyZ+ 0.6920313f);
-            XMMATRIX mTransform = mTranslationCenter*mRotate * mTranslation;
-
-            m_accelerationStructure->GetBottomLevelASInstance(m_LEmergencyInstanceIndex).SetTransform(mTransform);
-
-            mRotate = XMMatrixRotationY(XMConvertToRadians(EmergencyYaw));
-            mTranslationCenter = XMMatrixTranslation(-EmergencyX+ 0.02588548f, -EmergencyY, -EmergencyZ - 0.6920313f);
-            mTranslation = XMMatrixTranslation(EmergencyX- 0.02588548f, EmergencyY, EmergencyZ+ 0.6920313f);
-            mTransform = mTranslationCenter * mRotate * mTranslation;
-
-            m_accelerationStructure->GetBottomLevelASInstance(m_REmergencyInstanceIndex).SetTransform(mTransform);
         }
     }
 }

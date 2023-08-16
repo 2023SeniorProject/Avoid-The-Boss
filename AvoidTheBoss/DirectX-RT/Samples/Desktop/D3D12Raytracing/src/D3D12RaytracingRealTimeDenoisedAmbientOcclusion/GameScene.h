@@ -23,7 +23,7 @@ class GameScene : public Scene
 {
 private:
     POINT m_ptOldCursorPos;
-
+    bool startDoorAnimate = false;
     float x = 0.0f;
     float z = 0.0f;
     float yaw = 0.0f;

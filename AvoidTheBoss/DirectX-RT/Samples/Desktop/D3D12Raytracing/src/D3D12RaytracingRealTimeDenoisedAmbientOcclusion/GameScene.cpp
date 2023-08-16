@@ -252,16 +252,16 @@ void GameScene::OnUpdate()
             XMMATRIX mTranslation = XMMatrixIdentity();
             XMMATRIX mRotate = XMMatrixIdentity();
 
-            mRotate = XMMatrixRotationY(XMConvertToRadians(-EmergencyYaw));
-            
-            mTranslationCenter = XMMatrixTranslation(EmergencyX,-EmergencyY,-EmergencyZ);
-            mTranslation = XMMatrixTranslation(-EmergencyX, EmergencyY, EmergencyZ);
+            mRotate = XMMatrixRotationY(XMConvertToRadians(-EmergencyYaw));        
+            mTranslationCenter = XMMatrixTranslation(EmergencyX+ 0.02588548f,-EmergencyY,-EmergencyZ-0.6920313f);
+            mTranslation = XMMatrixTranslation(-EmergencyX- 0.02588548f, EmergencyY, EmergencyZ+ 0.6920313f);
             XMMATRIX mTransform = mTranslationCenter*mRotate * mTranslation;
 
             m_accelerationStructure->GetBottomLevelASInstance(m_LEmergencyInstanceIndex).SetTransform(mTransform);
 
-            mTranslationCenter = XMMatrixTranslation(-EmergencyX, -EmergencyY, -EmergencyZ);
-            mTranslation = XMMatrixTranslation(EmergencyX, EmergencyY, EmergencyZ);
+            mRotate = XMMatrixRotationY(XMConvertToRadians(EmergencyYaw));
+            mTranslationCenter = XMMatrixTranslation(-EmergencyX+ 0.02588548f, -EmergencyY, -EmergencyZ - 0.6920313f);
+            mTranslation = XMMatrixTranslation(EmergencyX- 0.02588548f, EmergencyY, EmergencyZ+ 0.6920313f);
             mTransform = mTranslationCenter * mRotate * mTranslation;
 
             m_accelerationStructure->GetBottomLevelASInstance(m_REmergencyInstanceIndex).SetTransform(mTransform);

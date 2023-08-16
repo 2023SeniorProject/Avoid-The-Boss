@@ -89,30 +89,30 @@ void GameScene::OnUpdate()
     if (Scene_Args::AnimateScene)
     {
         {
-            if (GameInput::IsPressed(GameInput::kKey_w))
+            if (GameInput::IsPressed(GameInput::kKey_up))
             {
                 z += move * elapsedTime;
                 m_bIsMoveForward = true;
             }
-            if (GameInput::IsPressed(GameInput::kKey_s))
+            if (GameInput::IsPressed(GameInput::kKey_down))
             {
                 z -= move * elapsedTime;
                 m_bIsMoveForward = true;
             }
-            if (GameInput::IsPressed(GameInput::kKey_d))
+            if (GameInput::IsPressed(GameInput::kKey_left))
             {
                 x += move * elapsedTime;
                 m_bIsMoveStrafe = true;
             }
 
-            if (GameInput::IsPressed(GameInput::kKey_a))
+            if (GameInput::IsPressed(GameInput::kKey_right))
             {
                 x -= move * elapsedTime;
                 m_bIsMoveStrafe = true;
             }
             float cxDelta = 0.0f, cyDelta = 0.0f;
             POINT ptCursorPos;
-           if (GameInput::IsPressed(GameInput::kMouse0))
+           if (GameInput::IsPressed(GameInput::kMouse1))
            {
                m_bIsRotate = true;
                ::SetCursor(NULL);

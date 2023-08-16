@@ -5,7 +5,7 @@ PixelFilter "triangle" "float xwidth" [ 1.000000 ] "float ywidth" [ 1.000000 ]
 Film "image" "integer xresolution" [ 1280 ] "integer yresolution" [ 720 ] "string filename" [ "temp.png" ]
 Camera "perspective" "float fov" [ 20.114292 ]
 WorldBegin
-	Transform [ 1 0 0 0 0 -1.192093E-07 1 0 0 -1 -1.192093E-07 0 0 0 0 1 ]
+	Transform [ 1 0 0 0 0 -1.192093E-07 1 0 0 -1 -1.192093E-07 0 0.11 0 -17.6 1 ]
 	Texture "Character_Mask" "spectrum" "imagemap" "string filename" [ "Character_Mask.png" ] "bool trilinear" [ "true" ]
 	MakeNamedMaterial "material0" "string type" [ "matte" ] "texture Kd" [ "Character_Mask" ]
 	NamedMaterial "material0"

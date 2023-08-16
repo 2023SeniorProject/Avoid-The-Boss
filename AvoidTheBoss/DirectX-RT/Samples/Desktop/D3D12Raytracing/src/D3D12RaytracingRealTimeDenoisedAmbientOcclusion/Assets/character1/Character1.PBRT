@@ -5,7 +5,7 @@ PixelFilter "triangle" "float xwidth" [ 1.000000 ] "float ywidth" [ 1.000000 ]
 Film "image" "integer xresolution" [ 1280 ] "integer yresolution" [ 720 ] "string filename" [ "temp.png" ]
 Camera "perspective" "float fov" [ 20.114292 ]
 WorldBegin
-	Transform [ 1 0 0 0 0 -1.192093E-07 1 0 0 -1 -1.192093E-07 0 0 0 0 1 ]
+	Transform [ 1 0 0 0 0 -1.192093E-07 1 0 0 -1 -1.192093E-07 0 -11.93 0 5.43 1 ]
 	Texture "Character_Helmet" "spectrum" "imagemap" "string filename" [ "Character_Helmet.png" ] "bool trilinear" [ "true" ]
 	MakeNamedMaterial "material0" "string type" [ "matte" ] "texture Kd" [ "Character_Helmet" ]
 	NamedMaterial "material0"

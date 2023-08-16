@@ -558,13 +558,6 @@ void D3D12RaytracingRealTimeDenoisedAmbientOcclusion::CalculateFrameStats()
         frameCnt = 0;
         prevTime = totalTime;
 
-        // Display partial UI on the window title bar if UI is disabled.
- 
-       //wstringstream windowText;
-       //windowText << setprecision(2) << fixed
-       //    << L"    fps: " << m_fps 
-       //    << L"    GPU[" << m_deviceResources->GetAdapterID() << L"]: " << m_deviceResources-//>GetAdapterDescription();
-       //SetCustomWindowText(windowText.str().c_str());
     }
 }
 

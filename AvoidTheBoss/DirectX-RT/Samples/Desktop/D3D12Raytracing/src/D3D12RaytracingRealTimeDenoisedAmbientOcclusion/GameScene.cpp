@@ -7,7 +7,7 @@
 #include "GpuTimeManager.h"
 #include "RaytracingSceneDefines.h"
 #include "D3D12RaytracingRealTimeDenoisedAmbientOcclusion.h"
-
+#include <DirectXMath.h>
 using namespace std;
 using namespace DX;
 using namespace DirectX;
@@ -120,72 +120,144 @@ void GameScene::OnUpdate()
     if (Scene_Args::AnimateScene)
     {
         {
-            if (GameInput::IsPressed(GameInput::kKey_up))
-            {
-                z += move * elapsedTime;
-                m_bIsMoveForward = true;
-            }
-            if (GameInput::IsPressed(GameInput::kKey_down))
-            {
-                z -= move * elapsedTime;
-                m_bIsMoveForward = true;
-            }
-            if (GameInput::IsPressed(GameInput::kKey_left))
-            {
-                x += move * elapsedTime;
-                m_bIsMoveStrafe = true;
-            }
+            //if (GameInput::IsPressed(GameInput::kKey_up))
+            //{
+            //    z += move * elapsedTime;
+            //    m_bIsMoveForward = true;
+            //}
+            //if (GameInput::IsPressed(GameInput::kKey_down))
+            //{
+            //    z -= move * elapsedTime;
+            //    m_bIsMoveForward = true;
+            //}
+            //if (GameInput::IsPressed(GameInput::kKey_left))
+            //{
+            //    x += move * elapsedTime;
+            //    m_bIsMoveStrafe = true;
+            //}
 
-            if (GameInput::IsPressed(GameInput::kKey_right))
-            {
-                x -= move * elapsedTime;
-                m_bIsMoveStrafe = true;
-            }
+            //if (GameInput::IsPressed(GameInput::kKey_right))
+            //{
+            //    x -= move * elapsedTime;
+            //    m_bIsMoveStrafe = true;
+            //}
             float cxDelta = 0.0f, cyDelta = 0.0f;
             POINT ptCursorPos;
-           if (GameInput::IsPressed(GameInput::kMouse1))
-           {
-               m_bIsRotate = true;
-               ::SetCursor(NULL);
-               ::GetCursorPos(&ptCursorPos);
-               cxDelta = (float)(ptCursorPos.x - m_ptOldCursorPos.x) / 3.0f;
-               cyDelta = (float)(ptCursorPos.y - m_ptOldCursorPos.y) / 3.0f;
-               ::SetCursorPos(m_ptOldCursorPos.x, m_ptOldCursorPos.y);
-    
-               if (cxDelta != 0.0f)
-               {
-                   yaw += cxDelta;
-                   if (yaw > 360.0f) yaw -= 360.0f;
-                   if (yaw < 0.0f) yaw += 360.0f;
-               }
-           }
-            XMMATRIX mTranslation = XMMatrixIdentity();
             XMMATRIX mRotate = XMMatrixIdentity();
+            XMMATRIX xmmtxRotate = XMMatrixIdentity();
+            XMMATRIX mTranslation = XMMatrixIdentity();
+            XMMATRIX mTranslationCenter = XMMatrixIdentity();
+            m_xmf3Velocity = XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f);
+
+            if (GameInput::IsPressed(GameInput::kMouse1))
+            {
+                m_bIsRotate = true;
+                ::SetCursor(NULL);
+                ::GetCursorPos(&ptCursorPos);
+                cxDelta = (float)(ptCursorPos.x - m_ptOldCursorPos.x) / 3.0f;
+                cyDelta = (float)(ptCursorPos.y - m_ptOldCursorPos.y) / 3.0f;
+                ::SetCursorPos(m_ptOldCursorPos.x, m_ptOldCursorPos.y);
+                if (cxDelta != 0.0f)
+                {
+                    m_fPitch += cxDelta;
+                    if (m_fPitch > +89.0f) { cxDelta -= (m_fPitch - 89.0f); m_fPitch = +89.0f; }
+                    if (m_fPitch < -89.0f) { cxDelta -= (m_fPitch + 89.0f); m_fPitch = -89.0f; }
+                }
+                if (cyDelta != 0.0f)
+                {
+
+                    m_fYaw += cyDelta;
+                    if (m_fYaw > 360.0f) m_fYaw -= 360.0f;
+                    if (m_fYaw < 0.0f) m_fYaw += 360.0f;
+                }
+
+                if (cyDelta != 0.0f)
+                {
+                    xmmtxRotate = XMMatrixRotationAxis((m_xmf3Up),
+                        XMConvertToRadians(cyDelta));
+                    m_xmf3Look = XMVector3TransformNormal(m_xmf3Look, xmmtxRotate);
+                    m_xmf3Right = XMVector3TransformNormal(m_xmf3Right, xmmtxRotate);
+                }
+                m_xmf3Look = XMVector3Normalize(m_xmf3Look);
+                m_xmf3Right = XMVector3Cross(m_xmf3Up, m_xmf3Look);
+                m_xmf3Up = XMVector3Cross(m_xmf3Look, m_xmf3Right);
+                mRotate = XMMatrixRotationY(XMConvertToRadians(m_fYaw));
+            }
+
             //if (m_bIsMoveForward)
+            //{
+            //    mTranslation = XMMatrixTranslation(-x, 0, -z);
+            //}
+            ////if (m_bIsRotate)
+            //{
+            //}
+           //float scale = 1;
+           //XMMATRIX mScale = XMMatrixScaling(scale, scale, scale);
+           //
+           //if (m_bIsMoveForward || m_bIsMoveStrafe || m_bIsRotate)
+           //{
+           //    XMMATRIX mTransform = mScale * mRotate * mTranslation;
+           //
+           //    m_accelerationStructure->GetBottomLevelASInstance//(m_Character1InstanceIndex).SetTransform(mTransform);
+           //}
+           //else
+           //{
+           //    m_bIsMoveForward = false;
+           //    m_bIsMoveStrafe = false;
+           //    m_bIsRotate = false;
+           //}
+        
+            UINT dwDirection = 0;
+            XMVECTOR xmf3Shift = XMVectorSet(0, 0, 0,0);
+            float fDistance = 2.f;
+
+            if (GameInput::IsPressed(GameInput::kKey_down))
+                dwDirection |= KEY_FORWARD;
+            if (GameInput::IsPressed(GameInput::kKey_up))
+                dwDirection |= KEY_BACKWARD;
+            if (GameInput::IsPressed(GameInput::kKey_right))
+                dwDirection |= KEY_LEFT;
+            if (GameInput::IsPressed(GameInput::kKey_left))
+                dwDirection |= KEY_RIGHT;
+
+            if (LOBYTE(dwDirection))
             {
-                mTranslation = XMMatrixTranslation(-x, 0, -z);
+                //화살표 키 ‘↑’를 누르면 로컬 z-축 방향으로 이동(전진)다. ‘↓’를 누르면 반대 방향으로 이동한다.
+                m_bIsMoveForward = true;
+                if (LOBYTE(dwDirection) & KEY_FORWARD) xmf3Shift = XMVectorAdd(xmf3Shift, m_xmf3Look * fDistance);
+                if (LOBYTE(dwDirection) & KEY_BACKWARD) xmf3Shift = XMVectorAdd(xmf3Shift, m_xmf3Look * -fDistance);
+                if (LOBYTE(dwDirection) & KEY_RIGHT) xmf3Shift = XMVectorAdd(xmf3Shift, m_xmf3Right * fDistance);
+                if (LOBYTE(dwDirection) & KEY_LEFT) xmf3Shift = XMVectorAdd(xmf3Shift, m_xmf3Right * -fDistance);
+                //플레이어를 현재 위치 벡터에서 xmf3Shift 벡터만큼 이동다
+                m_xmf3Velocity = XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f);
+                SetVelocity(xmf3Shift);
             }
-            if (m_bIsRotate)
+            else SetVelocity(xmf3Shift);
+
+            if (m_bIsMoveForward)
             {
-                mRotate = XMMatrixRotationY(XMConvertToRadians(yaw));
+                XMVECTOR vel = m_xmf3Velocity * elapsedTime;
+                m_xmf3Position = XMVectorAdd(m_xmf3Position, vel);
+
+                XMFLOAT3 pos;
+                XMStoreFloat3(&pos, m_xmf3Position);
+                mTranslation = XMMatrixTranslation(pos.x, pos.y, pos.z);
+                mTranslationCenter = XMMatrixTranslation(-pos.x, -pos.y, -pos.z);   
             }
 
-            float scale = 1;
-            XMMATRIX mScale = XMMatrixScaling(scale, scale, scale);
-
-            if (m_bIsMoveForward || m_bIsMoveStrafe || m_bIsRotate)
+            if (m_bIsMoveForward || m_bIsRotate)
             {
-                XMMATRIX mTransform = mScale * mRotate * mTranslation;
-
+                XMMATRIX mTransform = mRotate * mTranslation;
                 m_accelerationStructure->GetBottomLevelASInstance(m_Character1InstanceIndex).SetTransform(mTransform);
             }
-            else
+            else 
             {
                 m_bIsMoveForward = false;
-                m_bIsMoveStrafe = false;
                 m_bIsRotate = false;
             }
+
         }
+
         if (GameInput::IsFirstPressed(GameInput::kKey_1))
             startDoorAnimate = true;
         if(startDoorAnimate)

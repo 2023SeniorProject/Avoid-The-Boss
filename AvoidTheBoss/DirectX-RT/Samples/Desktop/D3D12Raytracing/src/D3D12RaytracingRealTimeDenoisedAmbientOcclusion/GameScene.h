@@ -19,11 +19,36 @@
 
 #define EMERGENCY_MOVE_ANGLE 1.0f
 #define EMERGENCY_ANIM_LENGTH 120.0f
+
+#define KEY_FORWARD	 0x01 // w
+#define KEY_BACKWARD 0x02 // a
+#define KEY_LEFT	 0x04 // s
+#define KEY_RIGHT	 0x08 // d	
+
 class GameScene : public Scene
 {
 private:
+    XMVECTOR 					m_xmf3Position = XMVectorSet(0.0f, 0.0f, 0.0f,0);
+    XMVECTOR 					m_xmf3Right = XMVectorSet(1.0f, 0.0f, 0.0f,0);
+    XMVECTOR 					m_xmf3Up = XMVectorSet(0.0f, 1.0f, 0.0f,0);
+    XMVECTOR 					m_xmf3Look = XMVectorSet(0.0f, 0.0f, 1.0f,0);
+    XMVECTOR 					m_xmf3Scale = XMVectorSet(1.0f, 1.0f, 1.0f,0);
+    float m_fPitch=0.0f;
+    float m_fYaw= 0.0f;
+    float m_fRoll= 0.0f;
+
+    XMVECTOR m_xmf3Velocity = XMVectorSet(0, 0, 0, 0);; // 플레이어 속도
+public:
+    XMVECTOR GetLookVector() { return(m_xmf3Look); }
+    XMVECTOR GetUpVector() { return(m_xmf3Up); }
+    XMVECTOR GetRightVector() { return(m_xmf3Right); }
+
+    void SetVelocity(const XMVECTOR& xmf3Velocity) { m_xmf3Velocity = xmf3Velocity; }
+
+private:
     POINT m_ptOldCursorPos;
     bool startDoorAnimate = false;
+
     float x = 0.0f;
     float z = 0.0f;
     float yaw = 0.0f;

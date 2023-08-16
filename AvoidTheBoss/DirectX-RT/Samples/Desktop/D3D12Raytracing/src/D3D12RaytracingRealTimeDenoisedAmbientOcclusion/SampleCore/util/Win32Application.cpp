@@ -300,7 +300,7 @@ LRESULT CALLBACK Win32Application::WindowProc(HWND hWnd, UINT message, WPARAM wP
         }
         return 0;
 
-    case WM_LBUTTONDOWN:
+    case WM_RBUTTONDOWN:
     {
         UINT x = LOWORD(lParam);
         UINT y = HIWORD(lParam);
@@ -311,7 +311,7 @@ LRESULT CALLBACK Win32Application::WindowProc(HWND hWnd, UINT message, WPARAM wP
     }
     return 0;
 
-    case WM_LBUTTONUP:
+    case WM_RBUTTONUP:
     {
         UINT x = LOWORD(lParam);
         UINT y = HIWORD(lParam);

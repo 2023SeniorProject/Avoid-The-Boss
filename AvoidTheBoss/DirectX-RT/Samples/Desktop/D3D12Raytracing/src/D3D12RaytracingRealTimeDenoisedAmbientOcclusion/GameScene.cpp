@@ -66,9 +66,40 @@ void GameScene::InitializeAccelerationStructures()
         {
             m_Character1InstanceIndex = instanceIndex;
         }
+        if (bottomLevelASname.find(L"EmergencyL") != wstring::npos)
+        {
+            m_LEmergencyInstanceIndex = instanceIndex;
+        }
+
+        if (bottomLevelASname.find(L"EmergencyR") != wstring::npos)
+        {
+            m_REmergencyInstanceIndex = instanceIndex;
+        }
+        if (bottomLevelASname.find(L"HangerL") != wstring::npos)
+        {
+            m_LHangerInstanceIndex = instanceIndex;
+        }
+        if (bottomLevelASname.find(L"HangerR") != wstring::npos)
+        {
+            m_RHangerInstanceIndex = instanceIndex;
+        }
+        if (bottomLevelASname.find(L"SutterR") != wstring::npos)
+        {
+            m_RShutterInstanceIndex = instanceIndex;
+        }
+        if (bottomLevelASname.find(L"SutterL") != wstring::npos)
+        {
+            m_LShutterInstanceIndex = instanceIndex;
+        }
     }
     // 局聪皋捞记 贸府
-    m_animatedCharacter1InstanceIndex = m_accelerationStructure->AddBottomLevelASInstance(L"Character1", UINT_MAX, XMMatrixIdentity());
+    //m_animatedCharacter1InstanceIndex = m_accelerationStructure->AddBottomLevelASInstance(L"Character1", UINT_MAX, XMMatrixIdentity());
+   /* m_animatedLEmergencyInstanceIndex = m_accelerationStructure->AddBottomLevelASInstance(L"EmergencyL", UINT_MAX, XMMatrixIdentity());
+    m_animatedREmergencyInstanceIndex = m_accelerationStructure->AddBottomLevelASInstance(L"EmergencyR", UINT_MAX, XMMatrixIdentity());
+    m_animatedLHangerInstanceIndex = m_accelerationStructure->AddBottomLevelASInstance(L"HangerL", UINT_MAX, XMMatrixIdentity());
+    m_animatedRHangerInstanceIndex = m_accelerationStructure->AddBottomLevelASInstance(L"HangerR", UINT_MAX, XMMatrixIdentity());
+    m_animatedLShutterInstanceIndex = m_accelerationStructure->AddBottomLevelASInstance(L"SutterR", UINT_MAX, XMMatrixIdentity());
+    m_animatedRShutterInstanceIndex = m_accelerationStructure->AddBottomLevelASInstance(L"SutterL", UINT_MAX, XMMatrixIdentity());*/
 
     // Initialize the top-level AS.
     D3D12_RAYTRACING_ACCELERATION_STRUCTURE_BUILD_FLAGS buildFlags = D3D12_RAYTRACING_ACCELERATION_STRUCTURE_BUILD_FLAG_PREFER_FAST_TRACE;
@@ -146,7 +177,7 @@ void GameScene::OnUpdate()
             {
                 XMMATRIX mTransform = mScale * mRotate * mTranslation;
 
-                m_accelerationStructure->GetBottomLevelASInstance(m_animatedCharacter1InstanceIndex).SetTransform(mTransform);
+                m_accelerationStructure->GetBottomLevelASInstance(m_Character1InstanceIndex).SetTransform(mTransform);
             }
             else
             {
@@ -154,6 +185,86 @@ void GameScene::OnUpdate()
                 m_bIsMoveStrafe = false;
                 m_bIsRotate = false;
             }
+        }
+        //if(GameInput::IsPressed(GameInput::kKey_1))
+        {
+            if (PlusDirection)
+            {
+                HangerX += HANGER_MOVE;
+                if (HangerX >= HANGER_ANIM_LENGTH)
+                    PlusDirection = false;
+            }
+            else
+            {
+                 HangerX -= HANGER_MOVE;
+                 if (HangerX <= 0)
+                     PlusDirection = true;
+            }
+            XMMATRIX mTranslation = XMMatrixIdentity();
+            XMMATRIX mRotate = XMMatrixIdentity();    
+
+            mTranslation = XMMatrixTranslation(HangerX, HangerY, HangerZ);
+            //mRotate = XMMatrixRotationY(XMConvertToRadians(yaw));
+
+            XMMATRIX mTransform = mRotate * mTranslation;
+            m_accelerationStructure->GetBottomLevelASInstance(m_LHangerInstanceIndex).SetTransform(mTransform);
+
+            mTranslation = XMMatrixTranslation(-HangerX, HangerY, HangerZ);
+            mTransform = mRotate * mTranslation;
+            m_accelerationStructure->GetBottomLevelASInstance(m_RHangerInstanceIndex).SetTransform(mTransform);
+        }
+        {
+            if (PlusDirection2)
+            {
+                ShutterY += SHUTTER_MOVE;
+                if (ShutterY >= HANGER_ANIM_LENGTH)
+                    PlusDirection2 = false;
+            }
+            else
+            {
+                ShutterY -= SHUTTER_MOVE;
+                if (ShutterY <= 0)
+                    PlusDirection2 = true;
+            }
+            XMMATRIX mTranslation = XMMatrixIdentity();
+            XMMATRIX mRotate = XMMatrixIdentity();
+
+            mTranslation = XMMatrixTranslation(ShutterX, ShutterY, ShutterZ);
+
+            XMMATRIX mTransform = mRotate * mTranslation;
+            m_accelerationStructure->GetBottomLevelASInstance(m_LShutterInstanceIndex).SetTransform(mTransform);
+            m_accelerationStructure->GetBottomLevelASInstance(m_RShutterInstanceIndex).SetTransform(mTransform);
+        }
+        {
+            if (PlusDirection3)
+            {
+                EmergencyYaw += EMERGENCY_MOVE_ANGLE;
+                if (EmergencyYaw >= EMERGENCY_ANIM_LENGTH)
+                    PlusDirection3 = false;
+            }
+            else
+            {
+                EmergencyYaw -= EMERGENCY_MOVE_ANGLE;
+                if (EmergencyYaw <= 0)
+                    PlusDirection3 = true;
+            }
+            XMMATRIX mTranslationCenter = XMMatrixIdentity();
+            XMMATRIX mTranslation = XMMatrixIdentity();
+            XMMATRIX mRotate = XMMatrixIdentity();
+
+            mRotate = XMMatrixRotationY(XMConvertToRadians(-EmergencyYaw));
+            
+            mTranslationCenter = XMMatrixTranslation(EmergencyX,-EmergencyY,-EmergencyZ);
+            mTranslation = XMMatrixTranslation(-EmergencyX, EmergencyY, EmergencyZ);
+            XMMATRIX mTransform = mTranslationCenter*mRotate * mTranslation;
+
+            m_accelerationStructure->GetBottomLevelASInstance(m_LEmergencyInstanceIndex).SetTransform(mTransform);
+
+            mTranslationCenter = XMMatrixTranslation(-EmergencyX, -EmergencyY, -EmergencyZ);
+            mTranslation = XMMatrixTranslation(EmergencyX, EmergencyY, EmergencyZ);
+            mTransform = mTranslationCenter * mRotate * mTranslation;
+
+            m_accelerationStructure->GetBottomLevelASInstance(m_REmergencyInstanceIndex).SetTransform(mTransform);
         }
     }
 }
@@ -174,12 +285,48 @@ void GameScene::OnKeyDown(UINT8 key)
         break;
     }
 
-    if (m_Character1InstanceIndex != UINT_MAX)
+    //if (m_Character1InstanceIndex != UINT_MAX)
+    //{
+    //    m_Character1Position = XMVectorClamp(m_Character1Position, XMVectorSet(0, 0, 0, 0), XMVectorZero());
+    //    XMMATRIX transform = XMMatrixTranslationFromVector(m_Character1Position);
+    //    m_accelerationStructure->GetBottomLevelASInstance(m_Character1InstanceIndex).SetTransform(transform);
+    //}
+   /* if (m_LHangerInstanceIndex != UINT_MAX)
     {
-        m_Character1Position = XMVectorClamp(m_Character1Position, XMVectorSet(0, 0, 0, 0), XMVectorZero());
-        XMMATRIX transform = XMMatrixTranslationFromVector(m_Character1Position);
-        m_accelerationStructure->GetBottomLevelASInstance(m_Character1InstanceIndex).SetTransform(transform);
+        m_LHangerPosition = XMVectorClamp(m_LHangerPosition, XMVectorSet(0, 0, 0, 0), XMVectorZero());
+        XMMATRIX transform = XMMatrixTranslationFromVector(m_LHangerPosition);
+        m_accelerationStructure->GetBottomLevelASInstance(m_LHangerInstanceIndex).SetTransform(transform);
     }
+    if (m_RHangerInstanceIndex != UINT_MAX)
+    {
+        m_RHangerPosition = XMVectorClamp(m_RHangerPosition, XMVectorSet(0, 0, 0, 0), XMVectorZero());
+        XMMATRIX transform = XMMatrixTranslationFromVector(m_RHangerPosition);
+        m_accelerationStructure->GetBottomLevelASInstance(m_RHangerInstanceIndex).SetTransform(transform);
+    }
+    if (m_LEmergencyInstanceIndex != UINT_MAX)
+    {
+        m_LEmergencyPosition = XMVectorClamp(m_LEmergencyPosition, XMVectorSet(0, 0, 0, 0), XMVectorZero());
+        XMMATRIX transform = XMMatrixTranslationFromVector(m_LEmergencyPosition);
+        m_accelerationStructure->GetBottomLevelASInstance(m_LEmergencyInstanceIndex).SetTransform(transform);
+    }
+    if (m_REmergencyInstanceIndex != UINT_MAX)
+    {
+        m_REmergencyPosition = XMVectorClamp(m_REmergencyPosition, XMVectorSet(0, 0, 0, 0), XMVectorZero());
+        XMMATRIX transform = XMMatrixTranslationFromVector(m_REmergencyPosition);
+        m_accelerationStructure->GetBottomLevelASInstance(m_REmergencyInstanceIndex).SetTransform(transform);
+    }
+    if (m_LShutterInstanceIndex != UINT_MAX)
+    {
+        m_LShutterPosition = XMVectorClamp(m_LShutterPosition, XMVectorSet(0, 0, 0, 0), XMVectorZero());
+        XMMATRIX transform = XMMatrixTranslationFromVector(m_LShutterPosition);
+        m_accelerationStructure->GetBottomLevelASInstance(m_LShutterInstanceIndex).SetTransform(transform);
+    }
+    if (m_RShutterInstanceIndex != UINT_MAX)
+    {
+        m_RShutterPosition = XMVectorClamp(m_RShutterPosition, XMVectorSet(0, 0, 0, 0), XMVectorZero());
+        XMMATRIX transform = XMMatrixTranslationFromVector(m_RShutterPosition);
+        m_accelerationStructure->GetBottomLevelASInstance(m_RShutterInstanceIndex).SetTransform(transform);
+    }*/
 }
 
 void GameScene::OnLeftButtonDown(UINT x, UINT y)

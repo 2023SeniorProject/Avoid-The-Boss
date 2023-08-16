@@ -37,7 +37,7 @@ int Win32Application::Run(DXSample* pSample, HINSTANCE hInstance, int nCmdShow)
         windowClass.lpfnWndProc = WindowProc;
         windowClass.hInstance = hInstance;
         windowClass.hCursor = LoadCursor(NULL, IDC_ARROW);
-        windowClass.lpszClassName = L"DXSampleClass";
+        windowClass.lpszClassName = L"AboidTheBoss";
         RegisterClassEx(&windowClass);
 
         RECT windowRect = { 0, 0, static_cast<LONG>(pSample->GetWidth()), static_cast<LONG>(pSample->GetHeight()) };

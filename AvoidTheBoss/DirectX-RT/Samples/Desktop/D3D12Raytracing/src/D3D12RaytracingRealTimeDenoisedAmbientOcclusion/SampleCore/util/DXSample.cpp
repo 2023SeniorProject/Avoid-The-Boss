@@ -21,7 +21,7 @@ DXSample::DXSample(UINT width, UINT height, std::wstring name) :
     m_windowBounds{ 0,0,0,0 },
     m_title(name),
     m_aspectRatio(0.0f),
-    m_enableUI(true),
+    m_enableUI(false),
     m_adapterIDoverride(UINT_MAX)
 {
     WCHAR assetsPath[512];

@@ -19,7 +19,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR, int nCmdShow)
     // Initialization For WICTextureLoader.
     ThrowIfFailed(CoInitializeEx(nullptr, COINITBASE_MULTITHREADED), L"Failed to initialize WIC component");
 
-    D3D12RaytracingRealTimeDenoisedAmbientOcclusion sample(1920, 1080, L"D3D12 Raytracing - Real-Time Denoised Raytraced Ambient Occlusion");
+    D3D12RaytracingRealTimeDenoisedAmbientOcclusion sample(1920, 1080, L"AvoidTheBoss");
 
     return Win32Application::Run(&sample, hInstance, nCmdShow);
 }

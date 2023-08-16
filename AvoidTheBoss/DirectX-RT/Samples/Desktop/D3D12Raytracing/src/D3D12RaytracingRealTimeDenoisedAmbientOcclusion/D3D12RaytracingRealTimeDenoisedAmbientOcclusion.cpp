@@ -312,74 +312,74 @@ void D3D12RaytracingRealTimeDenoisedAmbientOcclusion::CopyRaytracingOutputToBack
 
 void D3D12RaytracingRealTimeDenoisedAmbientOcclusion::UpdateUI()
 {
-    vector<wstring> labels;
+    //vector<wstring> labels;
 
-    // Header information
-    {
-        // Prints <component name>[<resolution X>x<resolution Y>]: <GPU time>
-        wstringstream wLabel;
-        auto PrintComponentInfo = [&](const wstring& componentName, UINT width, UINT height, float gpuTime)
-        {
-            wLabel << componentName << L"[" << width << L"x" << height << "]: " << setprecision(2) << fixed << gpuTime << "ms" << L"\n";
-        };
-        PrintComponentInfo(L"Pathtracing", m_pathtracer.Width(), m_pathtracer.Height(), m_sampleGpuTimes[Sample_GPUTime::Pathtracing].GetAverageMS());
-        PrintComponentInfo(L"AO raytracing", m_RTAO.RaytracingWidth(), m_RTAO.RaytracingHeight(), m_sampleGpuTimes[Sample_GPUTime::AOraytracing].GetAverageMS());
-        PrintComponentInfo(L"AO denoising", m_denoiser.DenoisingWidth(), m_denoiser.DenoisingHeight(), m_sampleGpuTimes[Sample_GPUTime::AOdenoising].GetAverageMS());
-        labels.push_back(wLabel.str());
-    }
-    // Engine tuning.
-    {     
-        wstringstream wLabel;
-        EngineTuning::Display(&wLabel, m_isProfiling);
-        labels.push_back(wLabel.str());
+    //// Header information
+    //{
+    //    // Prints <component name>[<resolution X>x<resolution Y>]: <GPU time>
+    //    wstringstream wLabel;
+    //    auto PrintComponentInfo = [&](const wstring& componentName, UINT width, UINT height, float gpuTime)
+    //    {
+    //        wLabel << componentName << L"[" << width << L"x" << height << "]: " << setprecision(2) << fixed << gpuTime << "ms" << L"\n";
+    //    };
+    //    PrintComponentInfo(L"Pathtracing", m_pathtracer.Width(), m_pathtracer.Height(), m_sampleGpuTimes[Sample_GPUTime::Pathtracing].GetAverageMS());
+    //    PrintComponentInfo(L"AO raytracing", m_RTAO.RaytracingWidth(), m_RTAO.RaytracingHeight(), m_sampleGpuTimes[Sample_GPUTime::AOraytracing].GetAverageMS());
+    //    PrintComponentInfo(L"AO denoising", m_denoiser.DenoisingWidth(), m_denoiser.DenoisingHeight(), m_sampleGpuTimes[Sample_GPUTime::AOdenoising].GetAverageMS());
+    //    labels.push_back(wLabel.str());
+    //}
+    //// Engine tuning.
+    //{     
+    //    wstringstream wLabel;
+    //    EngineTuning::Display(&wLabel, m_isProfiling);
+    //    labels.push_back(wLabel.str());
 
-        if (m_isProfiling)
-        {
-            set<wstring> profileMarkers = {
-                    L"Pathtracing",
-                        L"CalculatePartialDerivatives",
-                        L"DownsampleGBuffer",
-                    L"RTAO",
-                        L"CalculateAmbientOcclusion",
-                            L"Sort Rays",
-                            L"AO Ray Generator",
-                            L"AO DispatchRays",
-                        L"Denoise",
-                            L"Temporal Supersampling p1 (Reverse Reprojection)",
-                            L"Temporal Supersampling p2 (BlendWithCurrentFrame)",
-                            L"AtrousWaveletTransformFilter",
-                            L"Disocclusions blur",
-                    L"CompositionCS",
-                        L"Upsample AO",
-            };
+    //    if (m_isProfiling)
+    //    {
+    //        set<wstring> profileMarkers = {
+    //                L"Pathtracing",
+    //                    L"CalculatePartialDerivatives",
+    //                    L"DownsampleGBuffer",
+    //                L"RTAO",
+    //                    L"CalculateAmbientOcclusion",
+    //                        L"Sort Rays",
+    //                        L"AO Ray Generator",
+    //                        L"AO DispatchRays",
+    //                    L"Denoise",
+    //                        L"Temporal Supersampling p1 (Reverse Reprojection)",
+    //                        L"Temporal Supersampling p2 (BlendWithCurrentFrame)",
+    //                        L"AtrousWaveletTransformFilter",
+    //                        L"Disocclusions blur",
+    //                L"CompositionCS",
+    //                    L"Upsample AO",
+    //        };
 
-            wstring line;
-            while (getline(wLabel, line))
-            {
-                std::wstringstream ss(line);
-                wstring name;
-                wstring time;
-                getline(ss, name, L':');
-                getline(ss, time);
-                for (auto& profileMarker : profileMarkers)
-                {
-                    if (name.find(profileMarker) != wstring::npos)
-                    {
-                        m_profilingResults[profileMarker].push_back(time);
-                        break;
-                    }
-                }
-            }
-        }
-    }
+    //        wstring line;
+    //        while (getline(wLabel, line))
+    //        {
+    //            std::wstringstream ss(line);
+    //            wstring name;
+    //            wstring time;
+    //            getline(ss, name, L':');
+    //            getline(ss, time);
+    //            for (auto& profileMarker : profileMarkers)
+    //            {
+    //                if (name.find(profileMarker) != wstring::npos)
+    //                {
+    //                    m_profilingResults[profileMarker].push_back(time);
+    //                    break;
+    //                }
+    //            }
+    //        }
+    //    }
+    //}
 
-    wstring uiText = L"";
-    for (auto s : labels)
-    {
-        uiText += s;
-    }
+    //wstring uiText = L"";
+    //for (auto s : labels)
+    //{
+    //    uiText += s;
+    //}
 
-    m_uiLayer->UpdateLabels(uiText);
+    //m_uiLayer->UpdateLabels(uiText);
 }
 
 // Create resources that are dependent on the size of the main window.
@@ -560,11 +560,11 @@ void D3D12RaytracingRealTimeDenoisedAmbientOcclusion::CalculateFrameStats()
 
         // Display partial UI on the window title bar if UI is disabled.
  
-        wstringstream windowText;
-        windowText << setprecision(2) << fixed
-            << L"    fps: " << m_fps 
-            << L"    GPU[" << m_deviceResources->GetAdapterID() << L"]: " << m_deviceResources->GetAdapterDescription();
-        SetCustomWindowText(windowText.str().c_str());
+       //wstringstream windowText;
+       //windowText << setprecision(2) << fixed
+       //    << L"    fps: " << m_fps 
+       //    << L"    GPU[" << m_deviceResources->GetAdapterID() << L"]: " << m_deviceResources-//>GetAdapterDescription();
+       //SetCustomWindowText(windowText.str().c_str());
     }
 }
 

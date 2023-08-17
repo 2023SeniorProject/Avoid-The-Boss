@@ -55,6 +55,7 @@ void GameScene::InitializeAccelerationStructures()
         L"SutterL",
         L"SutterSideL",
         L"IndustryMap",
+        L"IndustryBox"
     };
 
     // Initialize the bottom-level AS instances, one for each BLAS.
@@ -477,7 +478,8 @@ void GameScene::LoadPBRTScene()
         {L"SutterSideR", "Assets\\door\\Shutter_Door_Right_Side.pbrt"},
         {L"SutterL", "Assets\\door\\Shutter_Door_Left_low.pbrt"},
         {L"SutterSideL", "Assets\\door\\Shutter_Door_Left_Side.pbrt"},
-        {L"IndustryMap", "Assets\\IndustryMap\\scene(7).pbrt"},
+        {L"IndustryMap", "Assets\\IndustryMap\\scene_new.pbrt"},
+        {L"IndustryBox", "Assets\\IndustryMap\\Industry_Box.pbrt"},
     };
 
     ResourceUploadBatch resourceUpload(device);

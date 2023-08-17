@@ -143,9 +143,11 @@ uint8 CEmployee::ProcessInput()
 		if (InputManager::GetInstance().GetKeyBuffer(KEY_TYPE::S) > 0)  dir |= KEY_BACKWARD;
 		if (InputManager::GetInstance().GetKeyBuffer(KEY_TYPE::D) > 0)  dir |= KEY_RIGHT;
 
-		if (dir) SetBehavior(PLAYER_BEHAVIOR::RUN);
-		else	 SetBehavior(PLAYER_BEHAVIOR::IDLE);
-
+		if (GetBehavior() != (int32)PLAYER_BEHAVIOR::ATTACKED)
+		{
+			if (dir) SetBehavior(PLAYER_BEHAVIOR::RUN);
+			else	 SetBehavior(PLAYER_BEHAVIOR::IDLE);
+		}
 		// 구조 작업이나 발전기 상호작용을 수행하고 있다면 
 		
 		
@@ -219,6 +221,7 @@ void CEmployee::LateUpdate(float fTimeElapsed, CLIENT_TYPE ptype)
 	if (m_bIsInvincibility)
 	{
 		m_UICoolTime -= fTimeElapsed;
+		if (m_UICoolTime <= 0) m_UICoolTime = 0.f;
 	}
 	else 
 	{
@@ -825,11 +828,13 @@ void CEmployee::AnimTrackUpdate()
 		else 
 		{
 			m_attackedAnimationCount--;
-			m_behavior = (int32)PLAYER_BEHAVIOR::ATTACKED;
+			std::cout << m_attackedAnimationCount << "\n";
+			SetBehavior(PLAYER_BEHAVIOR::ATTACKED);
 			if (m_attackedAnimationCount <= 0)
 			{
 				SetBehavior(PLAYER_BEHAVIOR::IDLE);
 				m_bIsInvincibility = false;
+				m_UICoolTime = 1.0f;
 			}
 		}
 		break;
@@ -876,6 +881,7 @@ void CEmployee::AnimTrackUpdate()
 					ChangeCamera(FIRST_PERSON_CAMERA, 0);
 					
 					mainGame.m_SceneManager->GetSceneByIdx(3)->m_pCamera = m_pCamera;
+					m_pCamera->ReleaseShaderVariables();
 					mainGame.m_SceneManager->GetSceneByIdx(3)->m_pCamera->CreateShaderVariables(mainGame.m_pd3dDevice, mainGame.m_pd3dCommandList);
 					mainGame.m_SceneManager->GetSceneByIdx(3)->m_pCamera->m_playerIdx = m_idx;
 					if (m_pCamera)
@@ -962,7 +968,7 @@ void CEmployee::PlayerAttacked()
 		}
 		else
 		{
-			m_behavior = (int32)PLAYER_BEHAVIOR::ATTACKED;
+			SetBehavior(PLAYER_BEHAVIOR::ATTACKED);
 			m_attackedAnimationCount = EMPLOYEE_ATTACKED_TIME;
 		}
 	}
@@ -975,10 +981,8 @@ void CEmployee::PlayerDown()
 		ChangeCamera(THIRD_PERSON_CAMERA, 0);
 		m_pCamera->ReleaseShaderVariables();
 		m_pCamera->CreateShaderVariables(mainGame.m_pd3dDevice, mainGame.m_pd3dCommandList);
-
 		mainGame.m_SceneManager->GetSceneByIdx(3)->m_pCamera = m_pCamera;
-		//mainGame.m_SceneManager->GetSceneByIdx(3)->m_pCamera->CreateShaderVariables(mainGame.m_pd3dDevice, mainGame.m_pd3dCommandList);
-		m_deadCnt += 1;
+		mainGame.m_SceneManager->GetSceneByIdx(3)->m_pCamera->m_playerIdx = m_idx;
 	}
 
 	SetBehavior(PLAYER_BEHAVIOR::DOWN);
@@ -995,7 +999,7 @@ bool CEmployee::GenTasking()
 	//  F키를 눌렀고, 구하기 상호작용 중이 아닐 때
 	if (InputManager::GetInstance().GetKeyBuffer(KEY_TYPE::F) > 0 && !GetIsPlayerOnRescueInter())
 	{
-		SetBehavior(PLAYER_BEHAVIOR::IDLE);
+		
 		if (targetGen)
 		{
 			SetGenInteraction(true); // 캐릭터 상호작용 애니메이션 재생을 활성화 한다.

@@ -323,6 +323,7 @@ void CScene::ReleaseUploadBuffers()
 
 void CScene::ReleaseObjects()
 {
+	
 	if (m_pd3dGraphicsRootSignature) m_pd3dGraphicsRootSignature->Release();
 	if (m_pd3dCbvSrvDescriptorHeap) m_pd3dCbvSrvDescriptorHeap->Release();
 

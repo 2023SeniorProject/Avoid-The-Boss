@@ -287,7 +287,7 @@ void D3D12RaytracingRealTimeDenoisedAmbientOcclusion::OnUpdate()
         UpdateUI();
     }
 
-    Composition_Args::CompositionMode.SetValue(CompositionType::PBRShading);
+    //Composition_Args::CompositionMode.SetValue(CompositionType::PBRShading);
 }
 
 // Copy the raytracing output to the backbuffer.

@@ -110,9 +110,10 @@ void Scene::InitializeScene()
     // Setup materials.
     {
         // Albedos
-        XMFLOAT4 green = XMFLOAT4(0.1f, 1.0f, 0.5f, 1.0f);
-        XMFLOAT4 red = XMFLOAT4(1.0f, 0.5f, 0.5f, 1.0f);
-        XMFLOAT4 yellow = XMFLOAT4(1.0f, 1.0f, 0.5f, 1.0f);
+        float ambient = 0.3f;
+        XMFLOAT4 green = XMFLOAT4(0.1f, 1.0f, ambient, 1.0f);
+        XMFLOAT4 red = XMFLOAT4(1.0f, ambient, ambient, 1.0f);
+        XMFLOAT4 yellow = XMFLOAT4(1.0f, 1.0f, ambient, 1.0f);
     }
 
     // Setup camera.

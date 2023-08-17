@@ -145,8 +145,6 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 
     //----프레임워크 객체 초기화
     mainGame.OnCreate(hInst, hMainWnd);
-   
-
     ShowWindow(hMainWnd, nCmdShow);
     UpdateWindow(hMainWnd);
 

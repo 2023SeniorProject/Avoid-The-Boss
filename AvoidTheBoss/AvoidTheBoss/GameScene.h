@@ -79,5 +79,7 @@ public:
 	XMFLOAT3					m_xmf3ClearPoint[3]; // 클리어 좌표
 public:
 	int32						m_curFrame;
+public:
+	bool						m_exitSoundOn = false;
 };
 

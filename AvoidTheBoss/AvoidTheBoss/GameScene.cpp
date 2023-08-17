@@ -287,9 +287,7 @@ void CGameScene::BuildObjects(ID3D12Device5* pd3dDevice,ID3D12GraphicsCommandLis
 	pHitEffectObjectsShader->BuildObjects(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, NULL, NULL);
 	m_ppShaders[5] = pHitEffectObjectsShader;
 
-	//CBoundsObjectsShader* pBoundsMapShader = new CBoundsObjectsShader();
-	//pBoundsMapShader->CreateShader(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature);
-	//pBoundsMapShader->BuildObjects(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, NULL, NULL);
+	
 
 	m_ppGenerator = new CGenerator * [m_nGenerator];
 	
@@ -520,12 +518,14 @@ void CGameScene::ExitReady()
 {
 	if (m_bEmpExit) // 탈출 성공 시 , 해야할 일 처리
 	{
-		SoundManager::GetInstance().PlayObjectSound(15, 7);//Emergency_Door_Open
-		SoundManager::GetInstance().PlayObjectSound(16, 11);
-		SoundManager::GetInstance().PlayObjectSound(18, 12);//Hangar_Door_Open
-		SoundManager::GetInstance().PlayObjectSound(19, 13);//Shutter_Open
-
-		std::cout << "Exit Ready\n";
+		if (!m_exitSoundOn)
+		{
+			SoundManager::GetInstance().PlayObjectSound(15, 7);//Emergency_Door_Open
+			SoundManager::GetInstance().PlayObjectSound(16, 11);
+			SoundManager::GetInstance().PlayObjectSound(18, 12);//Hangar_Door_Open
+			SoundManager::GetInstance().PlayObjectSound(19, 13);//Shutter_Open
+			m_exitSoundOn = true;
+		}
 		for (int j = 0; j < m_nShaders; j++)
 		{
 			CStandardObjectsShader* pShaderObjects = (CStandardObjectsShader*)m_ppShaders[j];

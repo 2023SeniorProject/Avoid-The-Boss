@@ -13,21 +13,21 @@
 
 #include <d2d1_1.h>
 #include <wincodec.h>
-
-const float MAX_RESCUE_GUAGE = FRAME_BUFFER_WIDTH / 4.0f;
-
-const float PROFILE_UI_OFFSET_X = FRAME_BUFFER_WIDTH * 0.01;
-const float PROFILE_UI_OFFSET_Y = FRAME_BUFFER_HEIGHT * 0.1;
-
-const float PROFILE_UI_WIDTH = FRAME_BUFFER_WIDTH * 0.1;
-const float PROFILE_UI_HEIGHT = FRAME_BUFFER_HEIGHT * 0.1;
-
-const float BIG_PROFILE_UI_OFFSET_Y = PROFILE_UI_OFFSET_Y * 7;
-const float BIG_PROFILE_UI_WIDTH = FRAME_BUFFER_WIDTH * 0.2;
-const float BIG_PROFILE_UI_HEIGHT = FRAME_BUFFER_HEIGHT * 0.2;
-
-const float STATUS_UI_WIDTH = PROFILE_UI_WIDTH * 0.8;
-const float STATUS_UI_HEIGHT = PROFILE_UI_HEIGHT * 0.8;
+//
+//const float MAX_RESCUE_GUAGE = FRAME_BUFFER_WIDTH / 4.0f;
+//
+//const float PROFILE_UI_OFFSET_X = FRAME_BUFFER_WIDTH * 0.01;
+//const float PROFILE_UI_OFFSET_Y = FRAME_BUFFER_HEIGHT * 0.1;
+//
+//const float PROFILE_UI_WIDTH = FRAME_BUFFER_WIDTH * 0.1;
+//const float PROFILE_UI_HEIGHT = FRAME_BUFFER_HEIGHT * 0.1;
+//
+//const float BIG_PROFILE_UI_OFFSET_Y = PROFILE_UI_OFFSET_Y * 7;
+//const float BIG_PROFILE_UI_WIDTH = FRAME_BUFFER_WIDTH * 0.2;
+//const float BIG_PROFILE_UI_HEIGHT = FRAME_BUFFER_HEIGHT * 0.2;
+//
+//const float STATUS_UI_WIDTH = PROFILE_UI_WIDTH * 0.8;
+//const float STATUS_UI_HEIGHT = PROFILE_UI_HEIGHT * 0.8;
 
 #pragma comment(lib,"windowscodecs.lib")
 
@@ -652,8 +652,8 @@ void UIManager::InitializeDevice(ID3D12Device5* pd3dDevice, ID3D12CommandQueue* 
 
     m_RoomButtons[0].resource = LoadPngFromFile(L"UI/Ready_Game.png");
     m_RoomButtons[1].resource = LoadPngFromFile(L"UI/Quit_Game.png");
-    m_RoomButtons[0].d2dLayoutRect = MakeLayoutRectByCorner(0,                        LOBBYBUTTON_Y_OFFSET, FRAME_BUFFER_WIDTH / 3.0f, FRAME_BUFFER_HEIGHT / 4.0);
-    m_RoomButtons[1].d2dLayoutRect = MakeLayoutRectByCorner(LOBBYBUTTON_X_OFFSET * 2.0f, LOBBYBUTTON_Y_OFFSET, FRAME_BUFFER_WIDTH / 3.0f, FRAME_BUFFER_HEIGHT / 4.0);
+    m_RoomButtons[0].d2dLayoutRect = MakeLayoutRectByCorner(GAMEROOM_BUTTON_X_OFFSET, GAMEROOM_BUTTON_Y_OFFSET, FRAME_BUFFER_WIDTH / 5.0f, FRAME_BUFFER_HEIGHT / 7.0);
+    m_RoomButtons[1].d2dLayoutRect = MakeLayoutRectByCorner(GAMEROOM_BUTTON_X_OFFSET + (FRAME_BUFFER_WIDTH / 5.0f), GAMEROOM_BUTTON_Y_OFFSET, FRAME_BUFFER_WIDTH / 5.0f, FRAME_BUFFER_HEIGHT / 7.0);
 
     m_ReadyBitmaps[0].resource = LoadPngFromFile(L"UI/Ready.png");
     m_ReadyBitmaps[1].resource = LoadPngFromFile(L"UI/Ready2.png");
@@ -665,25 +665,25 @@ void UIManager::InitializeDevice(ID3D12Device5* pd3dDevice, ID3D12CommandQueue* 
     m_ReadyCard[2].resource = LoadPngFromFile(L"UI/READY_CARD3.png");
     m_ReadyCard[3].resource = LoadPngFromFile(L"UI/READY_CARD4.png");
 
-    m_ReadyBitmaps[0].d2dLayoutRect = MakeLayoutRectByCorner(LOBBYROOMLIST_X_OFFSET, 
+    m_ReadyBitmaps[0].d2dLayoutRect = MakeLayoutRectByCorner(LOBBYROOMLIST_X_OFFSET,
         LOBBYROOMLIST_Y_OFFSET,
         (FRAME_BUFFER_WIDTH - (LOBBYROOMLIST_X_OFFSET * 2.0)) / 2.0,
-        FRAME_BUFFER_HEIGHT / 4.0);
-    m_ReadyBitmaps[1].d2dLayoutRect = MakeLayoutRectByCorner( LOBBYROOMLIST_X_OFFSET + ((FRAME_BUFFER_WIDTH - (LOBBYROOMLIST_X_OFFSET * 2.0)) / 2.0),
+        FRAME_BUFFER_HEIGHT / 6.0);
+    m_ReadyBitmaps[1].d2dLayoutRect = MakeLayoutRectByCorner(LOBBYROOMLIST_X_OFFSET + ((FRAME_BUFFER_WIDTH - (LOBBYROOMLIST_X_OFFSET * 2.0)) / 2.0),
         LOBBYROOMLIST_Y_OFFSET,
         (FRAME_BUFFER_WIDTH - (LOBBYROOMLIST_X_OFFSET * 2.0)) / 2.0,
-        FRAME_BUFFER_HEIGHT / 4.0);
-    
+        FRAME_BUFFER_HEIGHT / 6.0);
+
     m_ReadyBitmaps[2].d2dLayoutRect = MakeLayoutRectByCorner(LOBBYROOMLIST_X_OFFSET,
-        LOBBYROOMLIST_Y_OFFSET + FRAME_BUFFER_HEIGHT / 4.0,
+        LOBBYROOMLIST_Y_OFFSET + FRAME_BUFFER_HEIGHT / 6.0,
         (FRAME_BUFFER_WIDTH - (LOBBYROOMLIST_X_OFFSET * 2.0)) / 2.0,
-        FRAME_BUFFER_HEIGHT / 4.0);
+        FRAME_BUFFER_HEIGHT / 6.0);
 
     m_ReadyBitmaps[3].d2dLayoutRect = MakeLayoutRectByCorner(
         LOBBYROOMLIST_X_OFFSET + (FRAME_BUFFER_WIDTH - (LOBBYROOMLIST_X_OFFSET * 2.0)) / 2.0,
-        LOBBYROOMLIST_Y_OFFSET + FRAME_BUFFER_HEIGHT / 4.0,
+        LOBBYROOMLIST_Y_OFFSET + FRAME_BUFFER_HEIGHT / 6.0,
         (FRAME_BUFFER_WIDTH - (LOBBYROOMLIST_X_OFFSET * 2.0)) / 2.0,
-        FRAME_BUFFER_HEIGHT / 4.0f);
+        FRAME_BUFFER_HEIGHT / 6.0f);
 
     for (int i = 0; i < 4; ++i)
     {

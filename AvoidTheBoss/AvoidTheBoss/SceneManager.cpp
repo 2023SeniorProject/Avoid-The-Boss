@@ -17,7 +17,7 @@ void SceneManager::Update(HWND& hWnd,int32 idx)
 
 void SceneManager::ProcessInput(HWND& hWnd, int32 idx)
 {
-	if (hWnd != ::GetActiveWindow()) return;
+	
 	m_pScenes[idx]->ProcessInput(hWnd);
 }
 

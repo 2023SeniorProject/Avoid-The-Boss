@@ -181,7 +181,7 @@ void CBoss::Update(float fTimeElapsed, CLIENT_TYPE ptype)
 
 	CPlayer::Update(fTimeElapsed, ptype);
 
-	if (m_pBullet)
+	if (m_pBullet && m_clientType == CLIENT_TYPE::OWNER)
 	{
 		if(m_pBullet->GetStartShoot())
 		{

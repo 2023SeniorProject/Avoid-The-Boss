@@ -828,7 +828,6 @@ void CEmployee::AnimTrackUpdate()
 		else 
 		{
 			m_attackedAnimationCount--;
-			std::cout << m_attackedAnimationCount << "\n";
 			SetBehavior(PLAYER_BEHAVIOR::ATTACKED);
 			if (m_attackedAnimationCount <= 0)
 			{
@@ -1046,13 +1045,14 @@ bool CEmployee::RescueTasking()
 {
 
 	// 구조 중인 플레이어가 아닌 쓰러진 플레이어의 인덱스를 가져온다.
-	CEmployee* targetPlayer = GetAvailEMP();
+	
 	// 1. 현재 켜져 있지 않고, 다른 플레이어에 의해 상호작용 중이지 않은 발전기를 가져온다.
-
+	CEmployee* targetPlayer = GetAvailEMP();
 	
 		// 구하는 이벤트에 관한 패킷을 전송하도록 한다.
 	if (InputManager::GetKeyBuffer(KEY_TYPE::E) == (int8)KEY_STATUS::KEY_PRESS && !GetIsPlayerOnRescueInter())
 	{
+		
 		if (targetPlayer)
 		{
 			SetBehavior(PLAYER_BEHAVIOR::RESCUE);
@@ -1063,6 +1063,7 @@ bool CEmployee::RescueTasking()
 			packet.size = sizeof(SC_EVENTPACKET);
 			packet.type = (uint8)SC_GAME_PACKET_TYPE::GAMEEVENT;
 			clientCore.DoSend(&packet);
+			m_curRescuingEmpIdx = targetPlayer->m_idx;
 		}
 		return true;
 	}
@@ -1072,17 +1073,24 @@ bool CEmployee::RescueTasking()
 		{
 			if (GetIsPlayerOnRescueInter())
 			{
-				SetBehavior(PLAYER_BEHAVIOR::IDLE);
+
+				CEmployee* rescuedPlayer = static_cast<CEmployee*>(static_cast<CGameScene*>(mainGame.m_SceneManager->GetSceneByIdx(3))->GetScenePlayerByIdx(m_curRescuingEmpIdx));
+				
 				SetRescueInteraction(false);
 				
-				if (targetPlayer)
+				if (rescuedPlayer)
 				{
-					if (targetPlayer->m_bIsRescuing) targetPlayer->m_bIsRescuing = false;
+					if (rescuedPlayer->m_bIsRescuing)
+					{
+						rescuedPlayer->m_bIsRescuing = false;
+						rescuedPlayer->m_curGuage = 0;
+					}
 					SC_EVENTPACKET packet;
-					packet.eventId = targetPlayer->m_idx + (int32)EVENT_TYPE::RESCUE_CANCEL_PLAYER_ONE;
+					packet.eventId = rescuedPlayer->m_idx + (int32)EVENT_TYPE::RESCUE_CANCEL_PLAYER_ONE;
 					packet.size = sizeof(SC_EVENTPACKET);
 					packet.type = (uint8)SC_GAME_PACKET_TYPE::GAMEEVENT;
 					clientCore.DoSend(&packet);
+					m_curRescuingEmpIdx = -1;
 				}
 			}
 			SetRescueInteraction(false);

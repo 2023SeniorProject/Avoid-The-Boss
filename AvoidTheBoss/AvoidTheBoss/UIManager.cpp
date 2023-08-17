@@ -491,23 +491,41 @@ void UIManager::UpdateGameSceneUI(CGameScene* gc)
 
             if (myPlayer->GetIsPlayerOnRescueInter())
             {
-              
-                CEmployee* targetEmp = myPlayer->GetAvailEMP();
+
+                CEmployee* targetEmp = static_cast<CEmployee*>(gc->GetScenePlayerByIdx(myPlayer->m_curRescuingEmpIdx));
                 if (targetEmp)
                 {
-                    if (targetEmp->m_curGuage <= 200)
+                    if (targetEmp->m_curGuage <= 100)
                     {
                         m_RescueGuage.m_hide = false;
-                        m_RescueGuage.d2dLayoutRect[1].right = m_RescueGuage.d2dLayoutRect[1].left + targetEmp->m_curGuage;
+                        m_RescueGuage.d2dLayoutRect[1] = MakeLayoutRect(CENTER_X, CENTER_Y, (targetEmp->m_curGuage * 3), 50);
 
                     }
-                    else if (targetEmp->m_curGuage >= 200)
+                    else if (targetEmp->m_curGuage >= 100)
                     {
                         m_RescueGuage.m_hide = true;
                         m_RescueGuage.d2dLayoutRect[1] = m_RescueGuage.d2dLayoutRect[0];
                     }
                 }
             }
+            else if (myPlayer->m_bIsRescuing)
+            {
+               
+                if (myPlayer->m_curGuage <= 100)
+                {
+                    m_RescueGuage.m_hide = false;
+                    m_RescueGuage.d2dLayoutRect[1] = MakeLayoutRect(CENTER_X,CENTER_Y, (myPlayer->m_curGuage * 3) ,50);
+                    std::cout << myPlayer->m_curGuage << "\n";
+
+                }
+                else if (myPlayer->m_curGuage >= 100)
+                {
+                    m_RescueGuage.d2dLayoutRect[1] = m_RescueGuage.d2dLayoutRect[0];
+                    m_RescueGuage.m_hide = true;
+
+                }
+            }
+            else if (!myPlayer->m_bIsRescuing || !myPlayer->GetIsPlayerOnRescueInter()) m_RescueGuage.m_hide = true;
         }
     }
     // ±¸ÇÏ±â

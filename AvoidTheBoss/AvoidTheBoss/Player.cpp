@@ -30,7 +30,11 @@ CPlayer::~CPlayer()
 {
 	ReleaseShaderVariables();
 
-	if (m_pCamera) delete m_pCamera;
+	if (m_pCamera)
+	{
+		delete m_pCamera;
+		m_pCamera = nullptr;
+	}
 }
 
 /*플레이어의 위치를 변경하는 함수이다. 플레이어의 위치는 기본적으로 사용자가 플레이어를 이동하기 위한 키보드를
@@ -129,7 +133,10 @@ void CPlayer::CreateShaderVariables(ID3D12Device5* pd3dDevice, ID3D12GraphicsCom
 
 void CPlayer::ReleaseShaderVariables()
 {
-	if (m_pCamera) m_pCamera->ReleaseShaderVariables();
+	if (m_pCamera)
+	{
+		m_pCamera->ReleaseShaderVariables();
+	}
 }
 
 void CPlayer::UpdateShaderVariables(

@@ -474,6 +474,7 @@ CPlayer* CGameScene::GetScenePlayerBySid(const int32 sid)
 
 CPlayer* CGameScene::GetScenePlayerByIdx(const int32 idx)
 {
+	if (idx < 0 || idx > 3) return nullptr;
 	return m_players[idx];
 }
 

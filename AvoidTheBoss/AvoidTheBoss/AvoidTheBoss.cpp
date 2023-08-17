@@ -82,9 +82,9 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
                ::DispatchMessage(&msg);
 
            }
-           mainGame.FrameAdvance(); // 처리할 윈도우 메세지가 큐에 없을 때 게임프로그램이 CPU사용
+       
        }
-    
+       mainGame.FrameAdvance(); // 처리할 윈도우 메세지가 큐에 없을 때 게임프로그램이 CPU사용
    }
  
   
@@ -195,7 +195,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
     }
     break;
     case WM_CREATE:
-        SetWindowLong(hWnd, GWL_STYLE, GetWindowLong(hWnd, GWL_STYLE) &~WS_CAPTION);
         SetWindowPos(hWnd, NULL, 0, 0, FRAME_BUFFER_WIDTH, FRAME_BUFFER_HEIGHT, SWP_FRAMECHANGED);
         break;
     case WM_DESTROY:

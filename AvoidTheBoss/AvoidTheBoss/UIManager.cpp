@@ -614,7 +614,7 @@ void UIManager::InitializeDevice(ID3D12Device5* pd3dDevice, ID3D12CommandQueue* 
     m_TitleButtons[2].resource      = LoadPngFromFile(L"UI/Title_Register.png");
 
     m_TitleButtons[0].d2dLayoutRect = MakeLayoutRect(CENTER_X + TITLEBUTTON_X_OFFSET, CENTER_Y + TITLEBUTTON_Y_OFFSET, 200, 50);
-    m_TitleButtons[1].d2dLayoutRect = MakeLayoutRect(CENTER_X , CENTER_Y + TITLEBUTTON_Y_OFFSET * 4.5, 200, 50);
+    m_TitleButtons[1].d2dLayoutRect = MakeLayoutRect(CENTER_X , CENTER_Y + TITLEBUTTON_Y_OFFSET * 3.5, 200, 50);
     m_TitleButtons[2].d2dLayoutRect = MakeLayoutRect(CENTER_X - TITLEBUTTON_X_OFFSET, CENTER_Y + TITLEBUTTON_Y_OFFSET, 200, 50);
     // ID / PW ÀÔ·Â Ã¢
     m_IDPWTextBlocks[0].m_pd2dTextBrush = CreateBrush(D2D1::ColorF::White);

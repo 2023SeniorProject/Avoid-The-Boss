@@ -324,7 +324,7 @@ void CGameScene::BuildObjects(ID3D12Device5* pd3dDevice,ID3D12GraphicsCommandLis
 
 void CGameScene::ProcessInput(HWND& hWnd)
 {
-	if (::GetActiveWindow() != hWnd) return;
+	
 	
 	uint8 keyInput = 0;
 	InputManager::GetInstance().InputStatusUpdate();

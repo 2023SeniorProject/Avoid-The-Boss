@@ -8,7 +8,7 @@ WorldBegin
 	Transform [ 1 1.058791E-22 -1.748456E-07 0 -2.085012E-15 1 -1.192488E-08 0 1.748456E-07 1.192488E-08 1 0 25.23249 3.641167 -9.929571 1 ]
 	Texture "Shutter_Door" "spectrum" "imagemap" "string filename" [ "Shutter_Door.png" ] "bool trilinear" [ "true" ]
 	Texture "Shutter_Door_Normal" "spectrum" "imagemap" "string filename" [ "Shutter_Door_Normal.png" ] "bool trilinear" [ "true" ]
-	MakeNamedMaterial "material0" "string type" [ "matte" ] "texture Kd" [ "Shutter_Door" ] "texture Normal" [ "Shutter_Door_Normal" ]
+	MakeNamedMaterial "material0" "string type" [ "metal" ] "texture Kd" [ "Shutter_Door" ] "texture Normal" [ "Shutter_Door_Normal" ]
 	NamedMaterial "material0"
 	Shape "trianglemesh" "integer indices" [ 0 1 2 2 3 0 4 5 6 5 7 6 8 9 10 10 11 8 12 13 14 14 15 12 16 17 18 17 19 18 20 21 22 21 23 22 ]
 	"point P" [ 0.095956 -3.772999 3.264206 -0.09595647 -3.772999 3.264206 -0.09595732 -3.772999 -3.264206 0.09595516 -3.772999 -3.264206 0.09595762 3.772999 -3.264206 -0.09595484 3.772999 -3.264206 0.09595845 3.772999 3.264206 -0.09595402 3.772999 3.264206 -0.09595484 3.772999 -3.264206 0.09595762 3.772999 -3.264206 0.09595516 -3.772999 -3.264206 -0.09595732 -3.772999 -3.264206 -0.09595647 -3.772999 3.264206 -0.09595402 3.772999 3.264206 -0.09595484 3.772999 -3.264206 -0.09595732 -3.772999 -3.264206 0.09595845 3.772999 3.264206 -0.09595402 3.772999 3.264206 0.095956 -3.772999 3.264206 -0.09595647 -3.772999 3.264206 0.09595762 3.772999 -3.264206 0.09595845 3.772999 3.264206 0.09595516 -3.772999 -3.264206 0.095956 -3.772999 3.264206 ]

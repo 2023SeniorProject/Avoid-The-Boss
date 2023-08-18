@@ -58,7 +58,7 @@ public:
     D3D12RaytracingRealTimeDenoisedAmbientOcclusion(UINT width, UINT height, std::wstring name);
     ~D3D12RaytracingRealTimeDenoisedAmbientOcclusion();
 
-
+    bool startFirstRender = true;
     // IDeviceNotify
     virtual void OnReleaseWindowSizeDependentResources() override { ReleaseWindowSizeDependentResources(); };
     virtual void OnCreateWindowSizeDependentResources() override { CreateWindowSizeDependentResources(); };

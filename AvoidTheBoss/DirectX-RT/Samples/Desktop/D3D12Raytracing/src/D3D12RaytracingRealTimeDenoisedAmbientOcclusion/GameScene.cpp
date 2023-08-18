@@ -55,6 +55,14 @@ void GameScene::InitializeAccelerationStructures()
         L"SutterL",
         L"SutterSideL",
         L"IndustryMap",
+        L"IndustryBox",
+        L"Genrator_Main_low",
+        L"Genrator_Panel",
+        L"Genrator_Pipe"
+        //L"Generator",
+        //L"Generator1",
+        //L"Generator2"
+
     };
 
     // Initialize the bottom-level AS instances, one for each BLAS.
@@ -258,7 +266,7 @@ void GameScene::OnUpdate()
 
         }
 
-        if (GameInput::IsFirstPressed(GameInput::kKey_1))
+        if (GameInput::IsFirstPressed(GameInput::kKey_1)|| GameInput::IsFirstPressed(GameInput::kKey_numpad1))
             startDoorAnimate = true;
         if(startDoorAnimate)
         {
@@ -340,6 +348,22 @@ void GameScene::OnUpdate()
                 mTransform = mTranslationCenter * mRotate * mTranslation;
 
                 m_accelerationStructure->GetBottomLevelASInstance(m_REmergencyInstanceIndex).SetTransform(mTransform);
+            }
+        }
+        // Rotate the second light around Y axis.
+        if (m_animateLight)
+        {
+            float secondsToRotateAround = 8.0f;
+             float angleToRotateBy = -360.0f * (elapsedTime / secondsToRotateAround);
+            XMMATRIX rotate = XMMatrixRotationY(XMConvertToRadians(angleToRotateBy));
+            XMVECTOR prevLightPosition = m_lightPosition;
+
+            m_lightPosition = XMVector3Transform(m_lightPosition, rotate);
+            lightAnimCount += angleToRotateBy;
+            if (lightAnimCount >= 360.0f)
+            {
+                m_animateLight = false;
+                lightAnimCount = 0.0f;
             }
         }
     }
@@ -477,7 +501,13 @@ void GameScene::LoadPBRTScene()
         {L"SutterSideR", "Assets\\door\\Shutter_Door_Right_Side.pbrt"},
         {L"SutterL", "Assets\\door\\Shutter_Door_Left_low.pbrt"},
         {L"SutterSideL", "Assets\\door\\Shutter_Door_Left_Side.pbrt"},
-        {L"IndustryMap", "Assets\\IndustryMap\\scene.pbrt"},
+        {L"IndustryMap", "Assets\\IndustryMap\\Industry_Map.pbrt"},
+        {L"IndustryBox", "Assets\\IndustryMap\\Industry_Box.pbrt"},
+        {L"Genrator_Main_low", "Assets\\IndustryMap\\Genrator_Main_low.pbrt"},
+        {L"Genrator_Panel", "Assets\\IndustryMap\\Genrator_Panel.pbrt"},
+         {L"Genrator_Pipe", "Assets\\IndustryMap\\pipe.pbrt"},
+         //{L"Generator1", "Assets\\IndustryMap\\Generator(1).pbrt"},
+         //{L"Generator2", "Assets\\IndustryMap\\Generator(2).pbrt"},
     };
 
     ResourceUploadBatch resourceUpload(device);

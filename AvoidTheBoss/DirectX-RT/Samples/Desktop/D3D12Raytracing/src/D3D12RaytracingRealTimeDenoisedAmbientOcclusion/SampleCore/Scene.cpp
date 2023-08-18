@@ -110,9 +110,10 @@ void Scene::InitializeScene()
     // Setup materials.
     {
         // Albedos
-        XMFLOAT4 green = XMFLOAT4(0.1f, 1.0f, 0.5f, 1.0f);
-        XMFLOAT4 red = XMFLOAT4(1.0f, 0.5f, 0.5f, 1.0f);
-        XMFLOAT4 yellow = XMFLOAT4(1.0f, 1.0f, 0.5f, 1.0f);
+        float ambient = 0.3f;
+        XMFLOAT4 green = XMFLOAT4(0.1f, 1.0f, ambient, 1.0f);
+        XMFLOAT4 red = XMFLOAT4(1.0f, ambient, ambient, 1.0f);
+        XMFLOAT4 yellow = XMFLOAT4(1.0f, 1.0f, ambient, 1.0f);
     }
 
     // Setup camera.
@@ -127,8 +128,9 @@ void Scene::InitializeScene()
 
     // Setup lights.
     {
-        m_lightPosition = XMVectorSet(0.0f, 70.0f, -70.0f, 0);
-        m_lightColor = XMFLOAT3(0.8f, 0.53f, 0.27f);
+        float scaleAmbient = 0.8f;
+        m_lightPosition = XMVectorSet(0.0f, 60.0f, -30.0f, 0);
+        m_lightColor = XMFLOAT3(0.8f* scaleAmbient, 0.53f* scaleAmbient, 0.27f* scaleAmbient);
     }
 }
 

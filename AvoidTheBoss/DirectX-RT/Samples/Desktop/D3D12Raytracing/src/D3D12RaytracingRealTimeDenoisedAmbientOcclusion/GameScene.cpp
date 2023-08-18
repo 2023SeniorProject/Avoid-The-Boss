@@ -266,7 +266,7 @@ void GameScene::OnUpdate()
 
         }
 
-        if (GameInput::IsFirstPressed(GameInput::kKey_1))
+        if (GameInput::IsFirstPressed(GameInput::kKey_1)|| GameInput::IsFirstPressed(GameInput::kKey_numpad1))
             startDoorAnimate = true;
         if(startDoorAnimate)
         {
@@ -348,6 +348,22 @@ void GameScene::OnUpdate()
                 mTransform = mTranslationCenter * mRotate * mTranslation;
 
                 m_accelerationStructure->GetBottomLevelASInstance(m_REmergencyInstanceIndex).SetTransform(mTransform);
+            }
+        }
+        // Rotate the second light around Y axis.
+        if (m_animateLight)
+        {
+            float secondsToRotateAround = 8.0f;
+             float angleToRotateBy = -360.0f * (elapsedTime / secondsToRotateAround);
+            XMMATRIX rotate = XMMatrixRotationY(XMConvertToRadians(angleToRotateBy));
+            XMVECTOR prevLightPosition = m_lightPosition;
+
+            m_lightPosition = XMVector3Transform(m_lightPosition, rotate);
+            lightAnimCount += angleToRotateBy;
+            if (lightAnimCount >= 360.0f)
+            {
+                m_animateLight = false;
+                lightAnimCount = 0.0f;
             }
         }
     }

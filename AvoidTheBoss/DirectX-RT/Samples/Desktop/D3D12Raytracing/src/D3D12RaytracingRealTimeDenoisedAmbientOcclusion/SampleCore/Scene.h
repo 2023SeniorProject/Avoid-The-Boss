@@ -68,7 +68,7 @@ public:
     // Application state.
     StepTimer m_timer;
     bool m_animateLight = false;
-
+    float lightAnimCount = 0.0f;
     GameCore::Camera m_camera;
     GameCore::Camera m_prevFrameCamera;
     std::unique_ptr<GameCore::CameraController> m_cameraController;

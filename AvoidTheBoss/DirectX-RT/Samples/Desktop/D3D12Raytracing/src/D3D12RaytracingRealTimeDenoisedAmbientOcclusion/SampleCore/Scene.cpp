@@ -128,8 +128,9 @@ void Scene::InitializeScene()
 
     // Setup lights.
     {
-        m_lightPosition = XMVectorSet(0.0f, 70.0f, -70.0f, 0);
-        m_lightColor = XMFLOAT3(0.8f, 0.53f, 0.27f);
+        float scaleAmbient = 0.8f;
+        m_lightPosition = XMVectorSet(0.0f, 60.0f, -30.0f, 0);
+        m_lightColor = XMFLOAT3(0.8f* scaleAmbient, 0.53f* scaleAmbient, 0.27f* scaleAmbient);
     }
 }
 

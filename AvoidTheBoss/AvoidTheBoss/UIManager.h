@@ -168,5 +168,6 @@ public:
     ID2D1SolidColorBrush* grayBrush; // 회색
     ID2D1SolidColorBrush* blackBrush; // 회색
     ID2D1SolidColorBrush* whiteBrush;
+    ID2D1SolidColorBrush* greenBrush;
 };
 

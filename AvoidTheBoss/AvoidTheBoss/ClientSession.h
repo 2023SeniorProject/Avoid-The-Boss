@@ -24,8 +24,4 @@ public:
 	int16 _myRm = -1;
 	int32 _prev_remain = 0;
 	int16  _loginOk = -3;
-private:
-	Scheduler* _DelayjobQueue;
-	std::shared_mutex _DelayQueueLock;
-
 };

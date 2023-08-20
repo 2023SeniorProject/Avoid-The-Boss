@@ -42,6 +42,7 @@ void CCIocpCore::InitConnect(const char* address)
 void CCIocpCore::DoConnect(void* loginInfo)
 {
 	
+	if (!_client) return;
 		_client->_sid = 0;
 		DWORD sendBytes(0);
 		DWORD sendLength = BUFSIZE / 2;

@@ -25,8 +25,6 @@ CSession::CSession()
 {
 
 	_sock = SocketUtil::CreateSocket();
-	_DelayjobQueue = new Scheduler();
-
 }
 
 CSession::~CSession()

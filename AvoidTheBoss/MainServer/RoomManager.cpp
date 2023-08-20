@@ -25,6 +25,20 @@ void Room::UserOut(int32 sid)
 {
 	int idx = 0;
 
+	{
+		// cList Lock 쓰기 호출	
+		std::unique_lock<std::shared_mutex> wll(_listLock);
+		for (int i = 0; i < PLAYERNUM; ++i)
+		{
+			if (sid == _cArr[i].sid)
+			{
+				_cArr[i].sid = -1;
+				_cArr[i].isReady = false;
+				if (_memCnt) _memCnt.fetch_sub(1);
+			}
+		}
+	}
+
 	if (_status == (uint8)ROOM_STATUS::INGAME)
 	{
 		_gameLogic.GetPlayerBySid(sid).SetVelocity(XMFLOAT3(0, 0, 0)); // 속도 0
@@ -61,40 +75,25 @@ void Room::UserOut(int32 sid)
 				std::cout << "STRANGE GAME END\n";
 				return;
 			}
-			
-		}
-		else
-		{
-			SC_EVENTPACKET packet;
-			packet.size = sizeof(SC_EVENTPACKET);
-			packet.type = (uint8)SC_GAME_PACKET_TYPE::GAMEEVENT;
-			packet.eventId = (uint8)EVENT_TYPE::HIDE_PLAYER_ONE + idx;
-			BroadCastingExcept(&packet, sid);
+			else
+			{
+				SC_EVENTPACKET packet;
+				packet.size = sizeof(SC_EVENTPACKET);
+				packet.type = (uint8)SC_GAME_PACKET_TYPE::GAMEEVENT;
+				packet.eventId = (uint8)EVENT_TYPE::HIDE_PLAYER_ONE + idx;
+				BroadCastingExcept(&packet, sid);
+				std::cout << idx << "HIDE\n";
+			}
 		}
 	}
 	else
 	{
+		if (_status == (uint8)ROOM_STATUS::FULL) 
 		{
-			// cList Lock 쓰기 호출	
-			std::unique_lock<std::shared_mutex> wll(_listLock);
-			for (int i = 0; i < PLAYERNUM; ++i)
-			{
-				if (sid == _cArr[i].sid)
-				{
-					_cArr[i].sid = -1;
-					_cArr[i].isReady = false;
-					_memCnt.fetch_sub(1);
-				}
-			}
-
-			if (_status == (uint8)ROOM_STATUS::FULL) _status = (uint8)ROOM_STATUS::NOT_FULL;
-
+			_status = (uint8)ROOM_STATUS::NOT_FULL;
 			std::cout << "LEFT USER SID LIST [";
 			for (auto i : _cArr)  std::cout << (int32)i.sid << "|";
 			std::cout << " ]\n";
-
-			SendRoomListPacket();
-
 		}
 
 		// 방이 폭파되는 경우.. 게임을 리셋한다.

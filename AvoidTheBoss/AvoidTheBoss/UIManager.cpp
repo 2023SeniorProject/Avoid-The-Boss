@@ -171,7 +171,7 @@ void UIManager::UpdateRoomTextBlocks(UINT nIndex,const WCHAR* pstrUIText, const 
 {
     m_RoomListTextBlock[nIndex].m_pstrText.erase();
     m_RoomListTextBlock[nIndex].m_pstrText.append(pstrUIText);
-    //m_RoomListTextBlock[nIndex].m_d2dLayoutRect = pd2dLayoutRect;
+   
     m_RoomListTextBlock[nIndex].m_hide = hide;
 }
 
@@ -283,10 +283,8 @@ void UIManager::DrawOtherSceneUI(int32 Scene,int32 idx)
     else if (Scene == 2) // ∞‘¿” ∑Î æ¿
     {
         CRoomScene* rs = static_cast<CRoomScene*>(mainGame.m_SceneManager->GetSceneByIdx((int32)CGameFramework::SCENESTATE::ROOM));
-        m_pd2dDeviceContext->DrawRectangle(m_RoomButtons[0].d2dLayoutRect, redBrush);
+       
         m_pd2dDeviceContext->DrawBitmap(m_RoomButtons[0].resource, m_RoomButtons[0].d2dLayoutRect);
-        
-        m_pd2dDeviceContext->DrawRectangle(m_RoomButtons[1].d2dLayoutRect, redBrush);
         m_pd2dDeviceContext->DrawBitmap(m_RoomButtons[1].resource, m_RoomButtons[1].d2dLayoutRect);
       
         for (int i = 0; i < 4; ++i)
@@ -559,7 +557,7 @@ void UIManager::DrawGameSceneUI(int32 Scene)
         if (!m_RescueGuage.m_hide)
         {
             m_pd2dDeviceContext->DrawRectangle(m_RescueGuage.d2dLayoutRect[0],blackBrush, 5.0f);
-            m_pd2dDeviceContext->FillRectangle(m_RescueGuage.d2dLayoutRect[1], redBrush);
+            m_pd2dDeviceContext->FillRectangle(m_RescueGuage.d2dLayoutRect[1], greenBrush);
         }
     }
 
@@ -615,6 +613,7 @@ void UIManager::InitializeDevice(ID3D12Device5* pd3dDevice, ID3D12CommandQueue* 
     redBrush = CreateBrush(D2D1::ColorF::Red);
     grayBrush = CreateBrush(D2D1::ColorF::Gray);
     blackBrush = CreateBrush(D2D1::ColorF::Black);
+    greenBrush = CreateBrush(D2D1::ColorF::Green);
     // ∆˘∆Æ
     m_TitleTextFormat = CreateTextFormat(L"∏º¿∫ ∞ÌµÒ", 40);
     m_LobbyTextFormat = CreateTextFormat(L"∏º¿∫ ∞ÌµÒ", 40);
@@ -714,7 +713,7 @@ void UIManager::InitializeDevice(ID3D12Device5* pd3dDevice, ID3D12CommandQueue* 
     {
         m_RoomListLayout[i] = MakeLayoutRectByCorner(LOBBYROOMLIST_X_OFFSET
             , LOBBYROOMLIST_Y_OFFSET + (FRAME_BUFFER_HEIGHT / 2.0f * ((float)i / m_nRoomListPerPage)),
-            FRAME_BUFFER_WIDTH - (LOBBYROOMLIST_X_OFFSET * 2.0), FRAME_BUFFER_HEIGHT / 2.0f * (1.0 / m_nRoomListPerPage));
+            FRAME_BUFFER_WIDTH - (LOBBYROOMLIST_X_OFFSET + LOBBYROOMLIST_X_OFFSET2), FRAME_BUFFER_HEIGHT / 2.0f * (1.0 / m_nRoomListPerPage));
         m_RoomListTextBlock[i].m_d2dLayoutRect = m_RoomListLayout[i];
         m_RoomListTextBlock[i].m_pdwFormat = m_LobbyTextFormat;
         m_RoomListTextBlock[i].m_pstrText =  L"ROOMNUM:   MEMBER:   0/4";

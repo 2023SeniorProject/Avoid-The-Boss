@@ -53,7 +53,7 @@ void InteractionEvent::Task()
 	case EVENT_TYPE::HIDE_PLAYER_THREE:
 	case EVENT_TYPE::HIDE_PLAYER_FOUR:
 	{
-		std::cout << "PLAYER_HIDE\n";
+		std::cout << (int32)eventId - (uint8)EVENT_TYPE::HIDE_PLAYER_ONE << "PLAYER_HIDE\n";
 		CPlayer* player = gc->m_players[eventId - (uint8)EVENT_TYPE::HIDE_PLAYER_ONE];
 		if (player == nullptr) break;
 		player->m_hp = 0;

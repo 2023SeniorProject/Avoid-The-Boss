@@ -107,8 +107,10 @@ void Room::UserOut(int32 sid)
 			}
 			std::cout << "Destroy Room\n";
 		}
+		SendRoomListPacket();
 	}
-	
+
+
 	SendRoomInfoPacket();
 
 	{

@@ -862,6 +862,11 @@ void CEmployee::AnimTrackUpdate()
 		break;
 
 	case (int32)PLAYER_BEHAVIOR::EXIT:
+		if (GetOnMoveSound())
+		{
+			SetOnMoveSound(false);
+			SoundManager::SoundStop(14);
+		}
 		SetExitMotionAnimTrack();
 		break;
 	case (int32)PLAYER_BEHAVIOR::STAND:

@@ -391,10 +391,8 @@ void CGameScene::Update(HWND& hWnd)
 	// 평균 프레임 레이트 출력
 	std::wstring str = L"[";
 	str.append(std::to_wstring(m_sid));
-	str.append(L"] (");
-	str.append(std::to_wstring(m_players[m_playerIdx]->GetPosition().x));
-	str.append(std::to_wstring(m_players[m_playerIdx]->GetPosition().z));
-	str.append(L")- WorldFrame: ");
+	str.append(L"] ");
+	str.append(L"- WorldFrame: ");
 	str.append(std::to_wstring(m_curFrame));
 
 	::SetWindowText(hWnd, str.c_str());

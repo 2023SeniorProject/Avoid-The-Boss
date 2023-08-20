@@ -125,7 +125,7 @@ namespace SceneParser
                 m_Type = MaterialType::Matte;
                 m_Kd = 1;
                 m_Ks = 0;
-                m_Roughness = 0.2f;
+                m_Roughness = 0.5f;
             }
             else if (type == "glass")
             {
@@ -134,7 +134,7 @@ namespace SceneParser
                 m_Kd = 0;
                 m_Kr = 1;
                 m_Kt = 1;
-                m_Opacity = 0;
+                m_Opacity = 0.5f;
             }
             else if (type == "substrate")
             {
@@ -160,7 +160,7 @@ namespace SceneParser
             else if (type == "mirror")
             {
                 m_Type = MaterialType::Mirror;
-                m_Kr = 0.9f;
+                m_Kr = 0.08f;
             }
             else if (type == "AnalyticalCheckerboard")
             {

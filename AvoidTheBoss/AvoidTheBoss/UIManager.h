@@ -141,7 +141,7 @@ public:
 
     // 인 게임 전용
     int32                      m_playerIdx = -1;
-    UIButton                   m_GenerateUIButtons[21];
+    UIButton                   m_GenerateUIButtons[23];
     UIButton                   m_CharProfile[4]; // 다른 캐릭터 초상화 표시
     
     ID2D1Bitmap*               m_CharStatusBitmaps[3]; // 비트맵 리소스를 가져와서 공유한다.

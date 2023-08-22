@@ -470,21 +470,20 @@ void UIManager::UpdateGameSceneUI(CGameScene* gc)
            
             if (myPlayer->GetIsInGenArea())
             {
-                m_GenerateUIButtons[20].m_hide = false;
+                m_GenerateUIButtons[21].m_hide = false;
             }
-            else  m_GenerateUIButtons[20].m_hide = true;
+            else  m_GenerateUIButtons[21].m_hide = true;
 
             // 발전기
             if (myPlayer->GetIsPlayerOnGenInter())
-            {
-                
+            {             
                 CGenerator* targetGen = myPlayer->GetAvailGen();
-                if(targetGen && (int32)((((int32)targetGen->m_curGuage) % 100) / 5) <= 19) 
-                    m_GenerateUIButtons[(int32)((((int32)targetGen->m_curGuage ) % 100) / 5)].m_hide = false;
+                if(targetGen && (int32)((((int32)targetGen->m_curGuage) % 100) / 5 ) <= 19) 
+                    m_GenerateUIButtons[(int32)((((int32)targetGen->m_curGuage ) % 100) / 5)+1].m_hide = false;
             }
             else
             {
-                for (int i = 0; i < 20; ++i)  m_GenerateUIButtons[i].m_hide = true;
+                for (int i = 0; i < 21; ++i)  m_GenerateUIButtons[i].m_hide = true;
             }
 
             if (myPlayer->GetIsPlayerOnRescueInter())
@@ -753,7 +752,7 @@ void UIManager::InitializeDevice(ID3D12Device5* pd3dDevice, ID3D12CommandQueue* 
 
   
     // 발전기 게이지
-    for (int i = 0; i < 20; ++i)
+    for (int i = 0; i < 21; ++i)
     {
         std::wstring filename;
         filename = L"UI/Generator_Gauge_";
@@ -766,13 +765,13 @@ void UIManager::InitializeDevice(ID3D12Device5* pd3dDevice, ID3D12CommandQueue* 
         m_GenerateUIButtons[i].d2dLayoutRect = MakeLayoutRect(FRAME_BUFFER_WIDTH / 2.0, FRAME_BUFFER_HEIGHT * 0.8, FRAME_BUFFER_WIDTH / 2, FRAME_BUFFER_HEIGHT / 4.f);
         m_GenerateUIButtons[i].m_hide = true;
     }
-    m_GenerateUIButtons[20].resource = LoadPngFromFile(L"UI/F.png");
-    m_GenerateUIButtons[20].d2dLayoutRect = MakeLayoutRect(FRAME_BUFFER_WIDTH / 2.0, FRAME_BUFFER_HEIGHT * 0.9, FRAME_BUFFER_WIDTH * 0.1f, FRAME_BUFFER_HEIGHT * 0.1f);
-    m_GenerateUIButtons[20].m_hide = true;
+    m_GenerateUIButtons[21].resource = LoadPngFromFile(L"UI/F.png");
+    m_GenerateUIButtons[21].d2dLayoutRect = MakeLayoutRect(FRAME_BUFFER_WIDTH / 2.0, FRAME_BUFFER_HEIGHT * 0.9, FRAME_BUFFER_WIDTH * 0.1f, FRAME_BUFFER_HEIGHT * 0.1f);
+    m_GenerateUIButtons[21].m_hide = true;
 
     // 살리기 아이콘
     m_RescueIcon.resource = LoadPngFromFile(L"UI/Rescue.png");
-    m_RescueIcon.d2dLayoutRect = m_GenerateUIButtons[20].d2dLayoutRect;
+    m_RescueIcon.d2dLayoutRect = m_GenerateUIButtons[22].d2dLayoutRect;
     m_RescueIcon.m_hide = true;
 
     m_RescueGuage.m_hide = true;

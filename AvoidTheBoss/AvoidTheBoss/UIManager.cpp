@@ -445,12 +445,23 @@ void UIManager::UpdateGameSceneUI(CGameScene* gc)
         else if (i == m_playerIdx) // HP , 피격 이펙트
         {
             CEmployee* mp = static_cast<CEmployee*>(gc->GetScenePlayerByIdx(i));
-            if (mp->m_bIsInvincibility)
+
+            for (int i = 0; i < m_nAttackedUI; i++)
             {
-                m_AttackedEffect.m_hide = false;
-                if (mp->m_UICoolTime >= 0.0f) m_AttackedOpacity = mp->m_UICoolTime;
+                if (mp->m_bIsInvincibility)
+                {
+                    m_AttackedEffect[i].m_hide = false;
+                    if (mp->m_UICoolTime >= 0.0f) m_AttackedOpacity[i] = mp->m_UICoolTime * 0.5f;
+                    if (i == 0)
+                        m_AttackedOpacity[i] *= 0.5f;
+                    else if (i == 1)
+                        m_AttackedOpacity[i] *= 0.7f;
+                    else if(i>=3)
+                        m_AttackedOpacity[i] *= 2.0f;
+
+                }
+                else m_AttackedEffect[i].m_hide = true;
             }
-            else m_AttackedEffect.m_hide = true;
 
             for (auto& i : m_HPUi) i.m_hide = true;
             for (int k = 0; k < gc->GetScenePlayerByIdx(i)->m_hp; ++k)
@@ -546,23 +557,27 @@ void UIManager::DrawGameSceneUI(int32 Scene)
     // 다른 캐릭터 초상화 , 내 캐릭터 초상화
     for (auto i : m_CharProfile)
     {
-        if(!i.m_hide) m_pd2dDeviceContext->DrawBitmap(i.resource, i.d2dLayoutRect);
+        if(!i.m_hide) m_pd2dDeviceContext->DrawBitmap(i.resource, i.d2dLayoutRect, FULL_UI_OPACITY_VALUE);
     }
 
     for (auto i : m_GenerateUIButtons)
-        if(!i.m_hide) m_pd2dDeviceContext->DrawBitmap(i.resource, i.d2dLayoutRect);
+        if(!i.m_hide) m_pd2dDeviceContext->DrawBitmap(i.resource, i.d2dLayoutRect, FULL_UI_OPACITY_VALUE);
 
     for(auto i : m_CharStatus)
-        if(!i.m_hide) m_pd2dDeviceContext->DrawBitmap(i.resource, i.d2dLayoutRect);
+        if(!i.m_hide) m_pd2dDeviceContext->DrawBitmap(i.resource, i.d2dLayoutRect, FULL_UI_OPACITY_VALUE);
     
     // 큰 초상화 그리기
-    m_pd2dDeviceContext->DrawBitmap(m_CharProfile[m_playerIdx].resource, m_myProfileLayout);
+    m_pd2dDeviceContext->DrawBitmap(m_CharProfile[m_playerIdx].resource, m_myProfileLayout, FULL_UI_OPACITY_VALUE);
     // HP 그리기
     if (m_playerIdx != 0)
     {
-        for(auto i : m_HPUi)  if (!i.m_hide) m_pd2dDeviceContext->DrawBitmap(i.resource, i.d2dLayoutRect);
-        if (!m_AttackedEffect.m_hide) m_pd2dDeviceContext->DrawBitmap(m_AttackedEffect.resource, m_AttackedEffect.d2dLayoutRect, m_AttackedOpacity);
-        if (!m_RescueIcon.m_hide) m_pd2dDeviceContext->DrawBitmap(m_RescueIcon.resource, m_RescueIcon.d2dLayoutRect);
+        for(auto i : m_HPUi)  if (!i.m_hide) m_pd2dDeviceContext->DrawBitmap(i.resource, i.d2dLayoutRect, FULL_UI_OPACITY_VALUE);
+        for (int i = 0; i < m_nAttackedUI; i++)
+        {
+            if (!m_AttackedEffect[i].m_hide) m_pd2dDeviceContext->DrawBitmap(m_AttackedEffect[i].resource, m_AttackedEffect[i].d2dLayoutRect, m_AttackedOpacity[i]* FULL_UI_OPACITY_VALUE);
+
+        }
+        if (!m_RescueIcon.m_hide) m_pd2dDeviceContext->DrawBitmap(m_RescueIcon.resource, m_RescueIcon.d2dLayoutRect, FULL_UI_OPACITY_VALUE);
 
         if (!m_RescueGuage.m_hide)
         {
@@ -571,7 +586,7 @@ void UIManager::DrawGameSceneUI(int32 Scene)
         }
     }
 
-    if (m_playerIdx == 0) m_pd2dDeviceContext->DrawBitmap(m_CharCrossHead.resource, m_CharCrossHead.d2dLayoutRect);
+    if (m_playerIdx == 0) m_pd2dDeviceContext->DrawBitmap(m_CharCrossHead.resource, m_CharCrossHead.d2dLayoutRect,m_CrossHeadOpacity* FULL_UI_OPACITY_VALUE);
   
 }
 
@@ -757,9 +772,31 @@ void UIManager::InitializeDevice(ID3D12Device5* pd3dDevice, ID3D12CommandQueue* 
     m_CharCrossHead.m_hide = false;
 
     // 피격 이펙트
-    m_AttackedEffect.resource = LoadPngFromFile(L"UI/Attacked.png");
-    m_AttackedEffect.d2dLayoutRect = MakeLayoutRectByCorner(0, 0, FRAME_BUFFER_WIDTH, FRAME_BUFFER_HEIGHT);
-    m_AttackedEffect.m_hide = false;
+    for (int i = 0; i < m_nAttackedUI; i++)
+    {
+        m_AttackedOpacity[i] = 0.5f;
+    }
+    m_AttackedEffect[0].resource = LoadPngFromFile(L"UI/blood_base.png");
+    m_AttackedEffect[0].d2dLayoutRect = MakeLayoutRectByCorner(0, 0, FRAME_BUFFER_WIDTH, FRAME_BUFFER_HEIGHT);
+    m_AttackedEffect[0].m_hide = false;
+
+    m_AttackedEffect[1].resource = LoadPngFromFile(L"UI/Attacked.png");
+    m_AttackedEffect[1].d2dLayoutRect = MakeLayoutRectByCorner(0, 0, FRAME_BUFFER_WIDTH, FRAME_BUFFER_HEIGHT);
+    m_AttackedEffect[1].m_hide = false;
+
+    m_AttackedEffect[2].resource = LoadPngFromFile(L"UI/blood_frame.png");
+    m_AttackedEffect[2].d2dLayoutRect = MakeLayoutRectByCorner(0, 0, FRAME_BUFFER_WIDTH, FRAME_BUFFER_HEIGHT);
+    m_AttackedEffect[2].m_hide = false;
+
+    m_AttackedEffect[3].resource = LoadPngFromFile(L"UI/bullet_hole_glass.png");
+    m_AttackedEffect[3].d2dLayoutRect = MakeLayoutRect(3*FRAME_BUFFER_WIDTH / 4, 3*FRAME_BUFFER_HEIGHT / 4,FRAME_BUFFER_WIDTH/2, FRAME_BUFFER_HEIGHT/2);
+    m_AttackedEffect[3].m_hide = false;
+
+    m_AttackedEffect[4].resource = LoadPngFromFile(L"UI/bullet_hole_glass.png");
+    m_AttackedEffect[4].d2dLayoutRect = MakeLayoutRect( FRAME_BUFFER_WIDTH / 4, FRAME_BUFFER_HEIGHT / 4, FRAME_BUFFER_WIDTH / 3, FRAME_BUFFER_HEIGHT / 3);
+    m_AttackedEffect[4].m_hide = false;
+
+
 
   
     // 발전기 게이지

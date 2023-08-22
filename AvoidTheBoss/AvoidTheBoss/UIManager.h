@@ -49,6 +49,7 @@ struct InGameUI
 };
 
 class CGameScene;
+#define FULL_UI_OPACITY_VALUE 0.8f
 class UIManager
 {
     enum class ButtonType { MAKE_ROOM, ENTER_ROOM, EXIT_GAME, };
@@ -135,9 +136,11 @@ public:
 
     InGameUI m_CharCrossHead;
     InGameUI m_RescueIcon;
-    InGameUI m_AttackedEffect;
+    int m_nAttackedUI = 5;
+    InGameUI m_AttackedEffect[5];
    
-    float m_AttackedOpacity = 1.0;
+    float m_AttackedOpacity[5];
+    float m_CrossHeadOpacity = 0.8f;
 
     // 인 게임 전용
     int32                      m_playerIdx = -1;

@@ -482,9 +482,6 @@ void UIManager::UpdateGameSceneUI(CGameScene* gc)
             CGenerator* targetGen = myPlayer->GetAvailGen();
             if (myPlayer->GetIsPlayerOnGenInter())
             {        
-                for (int i = 0; i < 21; ++i)
-                    m_GenerateUIButtons[i].m_hide = true;
-
                 if (targetGen && ((int32)targetGen->m_curGuage) < 0.5f)
                     m_GenerateUIButtons[0].m_hide = false;
                 else if (targetGen && (int32)((((int32)targetGen->m_curGuage) % 100) / 5) <= 19)
@@ -501,13 +498,13 @@ void UIManager::UpdateGameSceneUI(CGameScene* gc)
                 CEmployee* targetEmp = static_cast<CEmployee*>(gc->GetScenePlayerByIdx(myPlayer->m_curRescuingEmpIdx));
                 if (targetEmp)
                 {
-                    if (targetEmp->m_curGuage <= 100)
+                    if (targetEmp->m_curGuage < 100)
                     {
+                        float dx = ((targetEmp->m_curGuage * 5.8f) / MAX_RESCUE_GUAGE) * 100;
                         m_RescueGuage.m_hide = false;
-                        m_RescueGuage.d2dLayoutRect[1] = MakeLayoutRect(CENTER_X, CENTER_Y, (targetEmp->m_curGuage * 3), 50);
-
+                        m_RescueGuage.d2dLayoutRect[1] = MakeLayoutRect(CENTER_X+(-MAX_RESCUE_GUAGE + dx)/2, CENTER_Y, dx, 50);
                     }
-                    else if (targetEmp->m_curGuage >= 100)
+                    else if (targetEmp->m_curGuage > 100)
                     {
                         m_RescueGuage.m_hide = true;
                         m_RescueGuage.d2dLayoutRect[1] = m_RescueGuage.d2dLayoutRect[0];
@@ -564,8 +561,8 @@ void UIManager::DrawGameSceneUI(int32 Scene)
 
         if (!m_RescueGuage.m_hide)
         {
-            m_pd2dDeviceContext->DrawRectangle(m_RescueGuage.d2dLayoutRect[0],blackBrush, 5.0f);
             m_pd2dDeviceContext->FillRectangle(m_RescueGuage.d2dLayoutRect[1], greenBrush);
+            m_pd2dDeviceContext->DrawRectangle(m_RescueGuage.d2dLayoutRect[0],blackBrush, 5.0f);
         }
     }
 

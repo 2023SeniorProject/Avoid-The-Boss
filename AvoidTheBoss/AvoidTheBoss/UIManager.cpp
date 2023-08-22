@@ -510,6 +510,11 @@ void UIManager::UpdateGameSceneUI(CGameScene* gc)
                         m_RescueGuage.d2dLayoutRect[1] = m_RescueGuage.d2dLayoutRect[0];
                     }
                 }
+                else
+                {
+                    m_RescueGuage.m_hide = true;
+                    m_RescueGuage.d2dLayoutRect[1] = m_RescueGuage.d2dLayoutRect[0];
+                }
             }
             else if (myPlayer->m_bIsRescuing)
             {
@@ -777,7 +782,7 @@ void UIManager::InitializeDevice(ID3D12Device5* pd3dDevice, ID3D12CommandQueue* 
 
     // 살리기 아이콘
     m_RescueIcon.resource = LoadPngFromFile(L"UI/Rescue.png");
-    m_RescueIcon.d2dLayoutRect = m_GenerateUIButtons[22].d2dLayoutRect;
+    m_RescueIcon.d2dLayoutRect = m_GenerateUIButtons[21].d2dLayoutRect;
     m_RescueIcon.m_hide = true;
 
     m_RescueGuage.m_hide = true;

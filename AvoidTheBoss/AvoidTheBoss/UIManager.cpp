@@ -472,14 +472,23 @@ void UIManager::UpdateGameSceneUI(CGameScene* gc)
             {
                 m_GenerateUIButtons[21].m_hide = false;
             }
-            else  m_GenerateUIButtons[21].m_hide = true;
+            else
+            {
+                m_GenerateUIButtons[21].m_hide = true;
+                for (int i = 0; i < 21; ++i)  m_GenerateUIButtons[i].m_hide = true;
+            }
 
             // 발전기
+            CGenerator* targetGen = myPlayer->GetAvailGen();
             if (myPlayer->GetIsPlayerOnGenInter())
-            {             
-                CGenerator* targetGen = myPlayer->GetAvailGen();
-                if(targetGen && (int32)((((int32)targetGen->m_curGuage) % 100) / 5 ) <= 19) 
-                    m_GenerateUIButtons[(int32)((((int32)targetGen->m_curGuage ) % 100) / 5)+1].m_hide = false;
+            {        
+                for (int i = 0; i < 21; ++i)
+                    m_GenerateUIButtons[i].m_hide = true;
+
+                if (targetGen && ((int32)targetGen->m_curGuage) < 0.5f)
+                    m_GenerateUIButtons[0].m_hide = false;
+                else if (targetGen && (int32)((((int32)targetGen->m_curGuage) % 100) / 5) <= 19)
+                    m_GenerateUIButtons[(int32)((((int32)targetGen->m_curGuage) % 100) / 5) + 1].m_hide = false;  
             }
             else
             {
@@ -668,8 +677,8 @@ void UIManager::InitializeDevice(ID3D12Device5* pd3dDevice, ID3D12CommandQueue* 
 
     m_RoomButtons[0].resource = LoadPngFromFile(L"UI/Ready_Game.png");
     m_RoomButtons[1].resource = LoadPngFromFile(L"UI/Quit_Game.png");
-    m_RoomButtons[0].d2dLayoutRect = MakeLayoutRectByCorner(GAMEROOM_BUTTON_X_OFFSET, GAMEROOM_BUTTON_Y_OFFSET, FRAME_BUFFER_WIDTH / 5.0f, FRAME_BUFFER_HEIGHT / 7.0);
-    m_RoomButtons[1].d2dLayoutRect = MakeLayoutRectByCorner(GAMEROOM_BUTTON_X_OFFSET + (FRAME_BUFFER_WIDTH / 5.0f), GAMEROOM_BUTTON_Y_OFFSET, FRAME_BUFFER_WIDTH / 5.0f, FRAME_BUFFER_HEIGHT / 7.0);
+    m_RoomButtons[0].d2dLayoutRect = MakeLayoutRectByCorner(GAMEROOM_BUTTON_X_OFFSET, GAMEROOM_BUTTON_Y_OFFSET, FRAME_BUFFER_WIDTH / 5.0f, FRAME_BUFFER_HEIGHT / 7.0f);
+    m_RoomButtons[1].d2dLayoutRect = MakeLayoutRectByCorner(GAMEROOM_BUTTON_X_OFFSET + (FRAME_BUFFER_WIDTH / 5.0f), GAMEROOM_BUTTON_Y_OFFSET, FRAME_BUFFER_WIDTH / 5.0f, FRAME_BUFFER_HEIGHT / 7.0f);
 
     m_ReadyBitmaps[0].resource = LoadPngFromFile(L"UI/Ready.png");
     m_ReadyBitmaps[1].resource = LoadPngFromFile(L"UI/Ready2.png");
@@ -712,7 +721,7 @@ void UIManager::InitializeDevice(ID3D12Device5* pd3dDevice, ID3D12CommandQueue* 
     {
         m_RoomListLayout[i] = MakeLayoutRectByCorner(LOBBYROOMLIST_X_OFFSET
             , LOBBYROOMLIST_Y_OFFSET + (FRAME_BUFFER_HEIGHT / 2.0f * ((float)i / m_nRoomListPerPage)),
-            FRAME_BUFFER_WIDTH - (LOBBYROOMLIST_X_OFFSET + LOBBYROOMLIST_X_OFFSET2), FRAME_BUFFER_HEIGHT / 2.0f * (1.0 / m_nRoomListPerPage));
+            FRAME_BUFFER_WIDTH - (LOBBYROOMLIST_X_OFFSET + LOBBYROOMLIST_X_OFFSET2), FRAME_BUFFER_HEIGHT / 2.0f * (1.0f / m_nRoomListPerPage));
         m_RoomListTextBlock[i].m_d2dLayoutRect = m_RoomListLayout[i];
         m_RoomListTextBlock[i].m_pdwFormat = m_LobbyTextFormat;
         m_RoomListTextBlock[i].m_pstrText =  L"ROOMNUM:   MEMBER:   0/4";
@@ -725,7 +734,7 @@ void UIManager::InitializeDevice(ID3D12Device5* pd3dDevice, ID3D12CommandQueue* 
     m_CharProfile[2].resource = LoadPngFromFile(L"UI/Char_UI_3.png"); // Mask 
     m_CharProfile[3].resource = LoadPngFromFile(L"UI/Char_UI_5.png"); // Goggle
     for (int i = 0; i < PLAYERNUM; ++i)
-        m_CharProfile[i].d2dLayoutRect = MakeLayoutRectByCorner(FRAME_BUFFER_WIDTH * 0.01, FRAME_BUFFER_HEIGHT * 0.1 * i, FRAME_BUFFER_WIDTH * 0.1, FRAME_BUFFER_HEIGHT * 0.1);
+        m_CharProfile[i].d2dLayoutRect = MakeLayoutRectByCorner(FRAME_BUFFER_WIDTH * 0.01, FRAME_BUFFER_HEIGHT * 0.1f* i, FRAME_BUFFER_WIDTH * 0.1f, FRAME_BUFFER_HEIGHT * 0.1f);
 
     // 상태 --> 동적으로 변하는 것이므로 그때 그때 위치를 업데이트하기로 한다. 일단 비트맵 리소스만 로드한다.
     m_CharStatusBitmaps[0] = LoadPngFromFile(L"UI/Normal.png");

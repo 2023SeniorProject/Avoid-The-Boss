@@ -71,12 +71,12 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <OutDir>$(SolutionDir)Binary\$(Configuration)\</OutDir>
+    <OutDir>$(SolutionDir)AvoidTheBoss\$(Configuration)\</OutDir>
     <LibraryPath>$(SolutionDir)AvoidTheBoss\FMOD\lib;$(SolutionDir)Library\;$(LibraryPath);$(SolutionDir)FMOD\lib\</LibraryPath>
     <IncludePath>$(SolutionDir)CoreEngine\;$(SolutionDir)AvoidTheBoss\FMOD\inc;C:\AvoidTheBoss\AvoidTheBoss\CoreEngine;$(IncludePath);$(SolutionDir)\</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <OutDir>$(SolutionDir)AvoidTheBoss\AvoidTheBoss\$(Configuration)\</OutDir>
+    <OutDir>$(SolutionDir)$(Configuration)\</OutDir>
     <IncludePath>$(SolutionDir);$(SolutionDir)CoreEngine\;$(IncludePath);$(SolutionDir)\</IncludePath>
     <LibraryPath>$(SolutionDir)Library\;$(LibraryPath);$(SolutionDir)FMOD\lib\</LibraryPath>
   </PropertyGroup>

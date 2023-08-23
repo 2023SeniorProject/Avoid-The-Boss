@@ -533,17 +533,16 @@ void UIManager::UpdateGameSceneUI(CGameScene* gc)
                 for (int i = 0; i < 21; ++i)  m_GenerateUIButtons[i].m_hide = true;
             }
 
+            CEmployee* targetEmp = static_cast<CEmployee*>(gc->GetScenePlayerByIdx(myPlayer->m_curRescuingEmpIdx));
             if (myPlayer->GetIsPlayerOnRescueInter())
             {
-
-                CEmployee* targetEmp = static_cast<CEmployee*>(gc->GetScenePlayerByIdx(myPlayer->m_curRescuingEmpIdx));
                 if (targetEmp)
                 {
                     if (targetEmp->m_curGuage < 100)
                     {
-                        float dx = ((targetEmp->m_curGuage * 5.8f) / MAX_RESCUE_GUAGE) * 100;
+                        float dx = (targetEmp->m_curGuage * 5.8f / MAX_RESCUE_GUAGE) * 100;
                         m_RescueGuage.m_hide = false;
-                        m_RescueGuage.d2dLayoutRect[1] = MakeLayoutRect(CENTER_X+(-MAX_RESCUE_GUAGE + dx)/2, CENTER_Y, dx, 50);
+                        m_RescueGuage.d2dLayoutRect[1] = MakeLayoutRect(CENTER_X + (-MAX_RESCUE_GUAGE + dx) / 2, CENTER_Y, dx, 50);
                     }
                     else if (targetEmp->m_curGuage > 100)
                     {
@@ -558,20 +557,17 @@ void UIManager::UpdateGameSceneUI(CGameScene* gc)
                 }
             }
             else if (myPlayer->m_bIsRescuing)
-            {
-               
-                if (myPlayer->m_curGuage <= 100)
+            {     
+                if (targetEmp->m_curGuage < 100)
                 {
+                    float dx = (targetEmp->m_curGuage * 3 * 2 / MAX_RESCUE_GUAGE) * 100;
                     m_RescueGuage.m_hide = false;
-                    m_RescueGuage.d2dLayoutRect[1] = MakeLayoutRect(CENTER_X,CENTER_Y, (myPlayer->m_curGuage * 3) ,50);
-                    std::cout << myPlayer->m_curGuage << "\n";
-
+                    m_RescueGuage.d2dLayoutRect[1] = MakeLayoutRect(CENTER_X + (-MAX_RESCUE_GUAGE + dx) / 2, CENTER_Y, dx, 50);
                 }
-                else if (myPlayer->m_curGuage >= 100)
+                else if (targetEmp->m_curGuage > 100)
                 {
-                    m_RescueGuage.d2dLayoutRect[1] = m_RescueGuage.d2dLayoutRect[0];
                     m_RescueGuage.m_hide = true;
-
+                    m_RescueGuage.d2dLayoutRect[1] = m_RescueGuage.d2dLayoutRect[0];
                 }
             }
             else if (!myPlayer->m_bIsRescuing || !myPlayer->GetIsPlayerOnRescueInter()) m_RescueGuage.m_hide = true;
@@ -612,7 +608,7 @@ void UIManager::DrawGameSceneUI(int32 Scene)
         if (!m_RescueGuage.m_hide)
         {
             m_pd2dDeviceContext->FillRectangle(m_RescueGuage.d2dLayoutRect[1], greenBrush);
-            m_pd2dDeviceContext->DrawRectangle(m_RescueGuage.d2dLayoutRect[0],blackBrush, 5.0f);
+            m_pd2dDeviceContext->DrawRectangle(m_RescueGuage.d2dLayoutRect[0], blackBrush, 5.0f);
         }
     }
 

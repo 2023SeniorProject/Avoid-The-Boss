@@ -450,15 +450,45 @@ void UIManager::UpdateGameSceneUI(CGameScene* gc)
             {
                 if (mp->m_bIsInvincibility)
                 {
-                    m_AttackedEffect[i].m_hide = false;
-                    if (mp->m_UICoolTime >= 0.0f) m_AttackedOpacity[i] = mp->m_UICoolTime * 0.5f;
-                    if (i == 0)
-                        m_AttackedOpacity[i] *= 0.5f;
-                    else if (i == 1)
-                        m_AttackedOpacity[i] *= 0.7f;
-                    else if(i>=3)
-                        m_AttackedOpacity[i] *= 2.0f;
+                    float maxOpacity = 0.5f;
+                    float bulletHoleOpacityExtra = 1.9f;
+                    float baseOpacityExtra = 0.5f;
+                    float outlineOpacityExtra = 2.0f;
+                    if (i == 4)
+                    {
+                        if (mp->m_UICoolTime <= 0.5f)
+                        {
+                            m_AttackedEffect[i].m_hide = false;
+                            m_AttackedOpacity[i] = ((mp->m_UICoolTime) / 0.5f) * maxOpacity * bulletHoleOpacityExtra;
+                        }
+                        else
+                        {
+                            m_AttackedEffect[i].m_hide = false;
+                            m_AttackedOpacity[i] = ((1.0f-mp->m_UICoolTime) / 0.5f) * maxOpacity * bulletHoleOpacityExtra;
+                        }
+                    }
+                    else if (i == 3)
+                    {
+                        if (mp->m_UICoolTime > 0.65f)
+                        {
+                            m_AttackedEffect[i].m_hide = false;
+                            m_AttackedOpacity[i] = (mp->m_UICoolTime/ 0.35f) * maxOpacity* bulletHoleOpacityExtra;
+                        }
+                        else if (mp->m_UICoolTime >= 0.3f)
+                        {
+                            m_AttackedEffect[i].m_hide = false;
+                            m_AttackedOpacity[i] = (1.0f-mp->m_UICoolTime / 0.35f) * maxOpacity * bulletHoleOpacityExtra;
+                        }
+                    }
+                    else
+                        m_AttackedEffect[i].m_hide = false;
 
+                    if (mp->m_UICoolTime >= 0.0f && i < 3) m_AttackedOpacity[i] = mp->m_UICoolTime * maxOpacity;
+                    
+                    if (i == 0)
+                        m_AttackedOpacity[i] *= baseOpacityExtra;
+                    else if (i == 1)
+                        m_AttackedOpacity[i] *= outlineOpacityExtra;
                 }
                 else m_AttackedEffect[i].m_hide = true;
             }
@@ -780,7 +810,7 @@ void UIManager::InitializeDevice(ID3D12Device5* pd3dDevice, ID3D12CommandQueue* 
     m_AttackedEffect[0].d2dLayoutRect = MakeLayoutRectByCorner(0, 0, FRAME_BUFFER_WIDTH, FRAME_BUFFER_HEIGHT);
     m_AttackedEffect[0].m_hide = false;
 
-    m_AttackedEffect[1].resource = LoadPngFromFile(L"UI/Attacked.png");
+    m_AttackedEffect[1].resource = LoadPngFromFile(L"UI/blood_outline.png");
     m_AttackedEffect[1].d2dLayoutRect = MakeLayoutRectByCorner(0, 0, FRAME_BUFFER_WIDTH, FRAME_BUFFER_HEIGHT);
     m_AttackedEffect[1].m_hide = false;
 

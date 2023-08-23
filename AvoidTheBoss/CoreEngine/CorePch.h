@@ -108,7 +108,7 @@ using Microsoft::WRL::ComPtr;
 #pragma comment(lib, "dwrite.lib")
 
 //----클라이언트 영역 크기 및 후면 버퍼 크기
-#define FRAME_BUFFER_WIDTH  1920/2 //1200
+#define FRAME_BUFFER_WIDTH  1200 //1200
 #define FRAME_BUFFER_HEIGHT 900 //900
 
 const float CENTER_X = FRAME_BUFFER_WIDTH / 2.0;
@@ -154,7 +154,7 @@ const float IDPW_Y_OFFSET = FontSize / 2.0f;
 //1.0f = 1m 
 #define UNIT 1.0f // 1m = 1 unit
 
-#define PLAYERNUM 2
+#define PLAYERNUM 3
 #define GENCNT 3
 const float EMPLOYEE_VELOCITY = UNIT * 3.f;
 const float BOSS_VELOCITY = UNIT * 2.f;

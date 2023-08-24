@@ -37,7 +37,7 @@ void SoundManager::PlayBackGroundSound(int32 Scene)
 		m_pSound->PlayBackGroundSound(1, 0);
 		break;
 	case 4:
-		for (int i = 0; i < 7; i++)
+		for (int i = 0; i < 3; i++)
 		{
 			m_pSound->SoundStop(8 + i);
 		}

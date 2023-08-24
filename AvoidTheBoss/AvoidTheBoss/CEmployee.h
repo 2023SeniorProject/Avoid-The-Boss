@@ -96,6 +96,8 @@ public:
 		m_hp = 3;
 		m_bIsRescuing = false;
 
+		m_bOnMoveSound = false;
+
 	}
 
 	// ÃÑ¾Ë ¸Â°í ¾²·¯Áü x,2

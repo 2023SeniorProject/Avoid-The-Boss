@@ -89,7 +89,6 @@ CEmployee::CEmployee(ID3D12Device5* pd3dDevice, ID3D12GraphicsCommandList4* pd3d
 
 CEmployee::~CEmployee()
 {
-	
 	delete[] m_pSwitches;
 }
 
@@ -265,7 +264,9 @@ void CEmployee::LateUpdate(float fTimeElapsed, CLIENT_TYPE ptype)
 		{
 			m_bEmpExit = true;
 			SetBehavior(PLAYER_BEHAVIOR::EXIT);
-			
+			m_bOnMoveSound = false;
+			if (CLIENT_TYPE::OWNER == m_clientType)
+				SoundManager::SoundStop(14);
 			SC_EVENTPACKET packet;
 			packet.size = sizeof(SC_EVENTPACKET);
 			packet.type = (uint8)SC_GAME_PACKET_TYPE::GAMEEVENT;
@@ -800,15 +801,18 @@ void CEmployee::AnimTrackUpdate()
 	{
 	case (int32)PLAYER_BEHAVIOR::IDLE:
 		SetIdleAnimTrack();
-		if (GetOnMoveSound())
+		if (CLIENT_TYPE::OWNER == m_clientType)
 		{
-			SetOnMoveSound(false);
-			SoundManager::SoundStop(14);
+			if (GetOnMoveSound())
+			{
+				SetOnMoveSound(false);
+				SoundManager::SoundStop(14);
+			}
 		}
 		break;
 	case (int32)PLAYER_BEHAVIOR::RUN:
 		SetRunAnimTrack();
-		if (!GetOnMoveSound())
+		if (!GetOnMoveSound() && CLIENT_TYPE::OWNER == m_clientType )
 		{
 			SoundManager::GetInstance().PlayObjectSound(12, 14);
 			SetOnMoveSound(true);
@@ -823,7 +827,8 @@ void CEmployee::AnimTrackUpdate()
 		{
 			SetAttackedAnimTrack();
 			m_attackedAnimationCount--;
-			SoundManager::GetInstance().PlayObjectSound(13, 15);
+			if (CLIENT_TYPE::OWNER == m_clientType )
+				SoundManager::GetInstance().PlayObjectSound(13, 15);
 		}
 		else 
 		{
@@ -848,7 +853,8 @@ void CEmployee::AnimTrackUpdate()
 			m_downAnimationCount--;
 			if (m_downAnimationCount <= 0)
 			{
-				SoundManager::GetInstance().PlayObjectSound(7, 15);
+				if (CLIENT_TYPE::OWNER == m_clientType )
+					SoundManager::GetInstance().PlayObjectSound(7, 15);
 				SetBehavior(PLAYER_BEHAVIOR::CRAWL);
 			}
 		}
@@ -862,7 +868,7 @@ void CEmployee::AnimTrackUpdate()
 		break;
 
 	case (int32)PLAYER_BEHAVIOR::EXIT:
-		if (GetOnMoveSound())
+		if (GetOnMoveSound()&& CLIENT_TYPE::OWNER == m_clientType )
 		{
 			SetOnMoveSound(false);
 			SoundManager::SoundStop(14);

@@ -149,6 +149,7 @@ void CBoss::ResetState()
 	 m_runAttackAnimTime = 0;
 	 m_standAttackAnimTime = 0;
 	 m_IsOnAttack = false;
+	 m_bOnMoveSound = false;
 }
 
 void CBoss::SetAttackAnimOtherClient()
@@ -526,7 +527,7 @@ void CBoss::AnimTrackUpdate()
 	{
 		case (int32)PLAYER_BEHAVIOR::IDLE:
 			SetIdleAnimTrack();
-			if (GetOnMoveSound())
+			if (GetOnMoveSound()&&CLIENT_TYPE::OWNER == m_clientType)
 			{
 				SoundManager::GetInstance().SoundStop(5);
 				SetOnMoveSound(false);
@@ -534,14 +535,15 @@ void CBoss::AnimTrackUpdate()
 			break;
 		case(int32)PLAYER_BEHAVIOR::RUN:
 			SetRunAnimTrack();
-			if (!GetOnMoveSound())
+			if (!GetOnMoveSound()&& CLIENT_TYPE::OWNER == m_clientType)
 			{
 				SoundManager::GetInstance().PlayObjectSound(10, 5);
 				SetOnMoveSound(true);			
 			}
 			break;
 		case (int32)PLAYER_BEHAVIOR::ATTACK:
-			SoundManager::GetInstance().SoundStop(5);
+			if(CLIENT_TYPE::OWNER == m_clientType)
+				SoundManager::GetInstance().SoundStop(5);
 			SetAttackAnimTrack();
 			break;
 		case (int32)PLAYER_BEHAVIOR::RUN_ATTACK:
@@ -568,7 +570,8 @@ uint8 CBoss::ProcessInput()
 	if (InputManager::GetInstance().GetKeyBuffer(KEY_TYPE::SPACE) == (uint8)KEY_STATUS::KEY_PRESS && !GetOnAttack())
 	{
 		SetOnAttack(true);
-		SoundManager::GetInstance().PlayObjectSound(2, 6);
+		if(CLIENT_TYPE::OWNER == m_clientType)
+			SoundManager::GetInstance().PlayObjectSound(2, 6);
 
 		C2S_ATTACK packet;
 		packet.type = (uint8)C_GAME_PACKET_TYPE::CATTACK;
@@ -607,7 +610,8 @@ uint8 CBoss::ProcessInput()
 		}
 		m_pBullet->SetOnShoot(true);
 		m_pBullet->SetStartShoot(true);
-		SoundManager::GetInstance().PlayObjectSound(4, 6);
+		if(CLIENT_TYPE::OWNER == m_clientType)
+			SoundManager::GetInstance().PlayObjectSound(4, 6);
 	}
 	if (InputManager::GetInstance().GetKeyBuffer(KEY_TYPE::G) == (uint8)KEY_STATUS::KEY_PRESS)
 	{

@@ -79,7 +79,9 @@ void CTexture::ReleaseUploadBuffers()
 {
 	if (m_ppd3dTextureUploadBuffers)
 	{
-		for (int i = 0; i < m_nTextures; i++) if (m_ppd3dTextureUploadBuffers[i]) m_ppd3dTextureUploadBuffers[i]->Release();
+		for (int i = 0; i < m_nTextures; i++) if (m_ppd3dTextureUploadBuffers[i]) {
+			m_ppd3dTextureUploadBuffers[i]->Release();
+		}
 		delete[] m_ppd3dTextureUploadBuffers;
 		m_ppd3dTextureUploadBuffers = NULL;
 	}
@@ -109,11 +111,16 @@ CMaterial::CMaterial(int nTextures)
 
 CMaterial::~CMaterial()
 {
-	if (m_pShader) m_pShader->Release();
+	if (m_pShader) {
+		m_pShader->Release(); 
+		m_pShader= nullptr;
+	}
 
 	if (m_nTextures > 0)
 	{
-		for (int i = 0; i < m_nTextures; i++) if (m_ppTextures[i]) m_ppTextures[i]->Release();
+		for (int i = 0; i < m_nTextures; i++) if (m_ppTextures[i]) {
+			m_ppTextures[i]->Release(); m_ppTextures[i]= nullptr;
+		}
 		delete[] m_ppTextures;
 
 		if (m_ppstrTextureNames) delete[] m_ppstrTextureNames;
@@ -431,11 +438,15 @@ CAnimationController::~CAnimationController()
 	{
 		m_ppd3dcbSkinningBoneTransforms[i]->Unmap(0, NULL);
 		m_ppd3dcbSkinningBoneTransforms[i]->Release();
+		m_ppd3dcbSkinningBoneTransforms[i] = nullptr;
 	}
 	if (m_ppd3dcbSkinningBoneTransforms) delete[] m_ppd3dcbSkinningBoneTransforms;
 	if (m_ppcbxmf4x4MappedSkinningBoneTransforms) delete[] m_ppcbxmf4x4MappedSkinningBoneTransforms;
 
-	if (m_pAnimationSets) m_pAnimationSets->Release();
+	if (m_pAnimationSets) {
+		m_pAnimationSets->Release(); m_pAnimationSets
+			= nullptr;
+	}
 
 	if (m_ppSkinnedMeshes) delete[] m_ppSkinnedMeshes;
 }
@@ -570,16 +581,21 @@ CGameObject::CGameObject(int nMaterials) : CGameObject()
 
 CGameObject::~CGameObject()
 {
-	if (m_pMesh) m_pMesh->Release();
+	if (m_pMesh) {
+		m_pMesh->Release(); 
+		m_pMesh
+			= nullptr;
+	}
 
 	if (m_nMaterials > 0)
 	{
 		for (int i = 0; i < m_nMaterials; i++)
 		{
 			if (m_ppMaterials[i]) m_ppMaterials[i]->Release();
+			m_ppMaterials[i] = nullptr;
 		}
+		delete[] m_ppMaterials;
 	}
-	if (m_ppMaterials) delete[] m_ppMaterials;
 
 	if (m_pSkinnedAnimationController) delete m_pSkinnedAnimationController;
 	if (m_pSkinnedAnimationController1) delete m_pSkinnedAnimationController1;
@@ -597,9 +613,14 @@ void CGameObject::AddRef()
 
 void CGameObject::Release() 
 { 
-	if (m_pChild) m_pChild->Release();
-	if (m_pSibling) m_pSibling->Release();
-
+	if (m_pChild) {
+		m_pChild->Release(); 
+		m_pChild = nullptr;
+	}
+	if (m_pSibling) {
+		m_pSibling->Release();
+		m_pSibling = nullptr;
+	}
 	if (--m_nReferences <= 0) delete this; 
 }
 

@@ -59,15 +59,15 @@ void CGameScene::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPARAM 
 	case WM_KEYUP:
 		switch (wParam)
 		{
-		case VK_ESCAPE:
-			::PostQuitMessage(0);
-			break;
+		//case VK_ESCAPE:
+		//	::PostQuitMessage(0);
+		//	break;
 		case VK_RETURN:
 			break;
 			/*‘F1’ 키를 누르면 1인칭 카메라, ‘F3’ 키를 누르면 3인칭 카메라로 변경한다.*/
 		case VK_F9:
 			//“F9” 키가 눌려지면 윈도우 모드와 전체화면 모드의 전환을 처리한다. 
-			mainGame.ChangeSwapChainState();
+			//mainGame.ChangeSwapChainState();
 			break;
 		default:
 			break;
@@ -145,11 +145,6 @@ void CGameScene::BuildDefaultLightsAndMaterials()
 	m_pLights[4].m_xmf4Specular = XMFLOAT4(0.5f, 0.5f, 0.5f, 0.0f);
 	m_pLights[4].m_xmf3Position = XMFLOAT3(600.0f, 250.0f, 700.0f);
 	m_pLights[4].m_xmf3Attenuation = XMFLOAT3(1.0f, 0.001f, 0.0001f);
-}
-
-void CGameScene::BuildObjects(ID3D12Device5* pd3dDevice,ID3D12GraphicsCommandList4*  pd3dCommandList)
-{
-
 }
 
 void CGameScene::ProcessInput(HWND& hWnd)
@@ -736,9 +731,9 @@ void CLobbyScene::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPARAM
 	case WM_KEYUP:
 		switch (wParam)
 		{
-		case VK_ESCAPE:
-			::PostQuitMessage(0);
-			break;
+		//case VK_ESCAPE:
+		//	::PostQuitMessage(0);
+		//	break;
 		case VK_F1:
 			break;
 			/*‘F1’ 키를 누르면 1인칭 카메라, ‘F3’ 키를 누르면 3인칭 카메라로 변경한다.*/

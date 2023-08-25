@@ -381,7 +381,6 @@ void CGameFramework::ReleaseScenes()
 	if (m_UIRenderer) m_UIRenderer->ReleaseResources();
 	if (m_UIRenderer) delete m_UIRenderer;
 	m_SceneManager->ReleaseScene();
-
 }
 
 void CGameFramework::ProcessInput()

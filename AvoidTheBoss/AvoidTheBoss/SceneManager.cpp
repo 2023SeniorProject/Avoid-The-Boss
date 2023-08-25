@@ -16,8 +16,7 @@ void SceneManager::Update(HWND& hWnd,int32 idx)
 }
 
 void SceneManager::ProcessInput(HWND& hWnd, int32 idx)
-{
-	
+{	
 	m_pScenes[idx]->ProcessInput(hWnd);
 }
 
@@ -37,7 +36,8 @@ void SceneManager::ReleaseUpBuffers()
 }
 void SceneManager::ReleaseScene()
 {
-     m_pScenes[3]->ReleaseObjects();
+	for (int i = 0; i < 4; ++i)  m_pScenes[i]->ReleaseObjects();
+     //m_pScenes[3]->ReleaseObjects();
 }
 void SceneManager::Animate(int32 idx)
 {

@@ -72,26 +72,20 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
        {
            if (msg.message == WM_QUIT)
            {
-               clientCore.Disconnect(0);
                mainGame.OnDestroy();
+               clientCore.Disconnect(0);
                break;
            }
            else if (!::TranslateAccelerator(msg.hwnd, hAccelTable, &msg))
            {
                ::TranslateMessage(&msg);
                ::DispatchMessage(&msg);
-
-           }
-       
+           }      
        }
        mainGame.FrameAdvance(); // 처리할 윈도우 메세지가 큐에 없을 때 게임프로그램이 CPU사용
    }
- 
-  
-    
+    //mainGame.OnDestroy();
     delete GCThreadManager;
-  
-
     std::cout << "Quit Client\n";
     SocketUtil::Clear();
     return (int)msg.wParam;

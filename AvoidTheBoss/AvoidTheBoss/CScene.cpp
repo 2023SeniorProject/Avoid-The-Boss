@@ -323,7 +323,6 @@ void CScene::ReleaseUploadBuffers()
 
 void CScene::ReleaseObjects()
 {
-	
 	if (m_pd3dGraphicsRootSignature) m_pd3dGraphicsRootSignature->Release();
 	if (m_pd3dCbvSrvDescriptorHeap) m_pd3dCbvSrvDescriptorHeap->Release();
 
@@ -338,8 +337,11 @@ void CScene::ReleaseObjects()
 		for (int i = 0; i < m_nShaders; i++)
 		{
 			m_ppShaders[i]->ReleaseShaderVariables();
+			std::cout << "Shader Index: " << i << std::endl;
+
 			m_ppShaders[i]->ReleaseObjects();
 			m_ppShaders[i]->Release();
+			m_ppShaders[i] = nullptr;
 		}
 		delete[] m_ppShaders;
 	}

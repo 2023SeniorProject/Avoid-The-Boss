@@ -63,7 +63,9 @@ void CGameScene::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPARAM 
 	case WM_KEYUP:
 		switch (wParam)
 		{
-		
+		//case VK_ESCAPE:
+		//	::PostQuitMessage(0);
+		//	break;
 		case VK_RETURN:
 			break;
 			/*‘F1’ 키를 누르면 1인칭 카메라, ‘F3’ 키를 누르면 3인칭 카메라로 변경한다.*/
@@ -240,9 +242,6 @@ void CGameScene::BuildObjects(ID3D12Device5* pd3dDevice,ID3D12GraphicsCommandLis
 	m_pSkyBox->SetPosition(0.0f, 100.0f, 0.0f);
 	m_pSkyBox->Rotate(0.0f, 150.0f, 0.0f);
 
-	m_nShaders = 6;
-	m_ppShaders = new CShader * [m_nShaders];
-
 	for (int i = 0; i < PLAYERNUM; ++i)
 	{
 		if (i == (int)(CHARACTER_TYPE::BOSS))
@@ -257,6 +256,9 @@ void CGameScene::BuildObjects(ID3D12Device5* pd3dDevice,ID3D12GraphicsCommandLis
 	}
 	m_pCamera = m_players[m_playerIdx]->GetCamera();
 	
+	m_nShaders = 6;
+	m_ppShaders = new CShader * [m_nShaders];
+
 	CMapObjectsShader* pMapShader = new CMapObjectsShader();
 	pMapShader->CreateShader(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature);
 	pMapShader->BuildObjects(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, NULL, NULL);
@@ -286,8 +288,6 @@ void CGameScene::BuildObjects(ID3D12Device5* pd3dDevice,ID3D12GraphicsCommandLis
 	pHitEffectObjectsShader->CreateShader(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature);
 	pHitEffectObjectsShader->BuildObjects(pd3dDevice, pd3dCommandList, m_pd3dGraphicsRootSignature, NULL, NULL);
 	m_ppShaders[5] = pHitEffectObjectsShader;
-
-	
 
 	m_ppGenerator = new CGenerator * [m_nGenerator];
 	
@@ -319,7 +319,7 @@ void CGameScene::BuildObjects(ID3D12Device5* pd3dDevice,ID3D12GraphicsCommandLis
 	}
 	CreateShaderVariables(pd3dDevice, pd3dCommandList);
 
-	m_ppGameObjects = nullptr;
+	//m_ppGameObjects = nullptr;
 }
 
 void CGameScene::ProcessInput(HWND& hWnd)

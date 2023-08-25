@@ -19,7 +19,13 @@ private:
 
 public:
 	void AddRef() { m_nReferences++; }
-	void Release() { if (--m_nReferences <= 0) delete this; }
+	void Release() {
+		if (--m_nReferences <= 0)
+		{
+			std::cout<<"m_nReferences : "<< m_nReferences<< std::endl;
+			delete this;
+		}
+	}
 
 	virtual D3D12_INPUT_LAYOUT_DESC CreateInputLayout();
 	virtual D3D12_RASTERIZER_DESC CreateRasterizerState();
@@ -96,6 +102,8 @@ public:
 	virtual D3D12_SHADER_BYTECODE CreatePixelShader();
 
 	virtual void ResetState() {}
+	virtual void ReleaseObjects() { }
+
 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -125,6 +133,7 @@ public:
 	virtual ~CMapObjectsShader();
 
 	virtual void BuildObjects(ID3D12Device5* pd3dDevice, ID3D12GraphicsCommandList4 * pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, CLoadedModelInfo* pModel, void* pContext = NULL);
+	//virtual void ReleaseObjects();
 };
 
 class CBoundsObjectsShader : public CStandardObjectsShader
@@ -143,7 +152,7 @@ public:
 	virtual ~CBulletObjectsShader();
 
 	virtual void BuildObjects(ID3D12Device5* pd3dDevice, ID3D12GraphicsCommandList4 * pd3dCommandList, ID3D12RootSignature* pd3dGraphicsRootSignature, CLoadedModelInfo* pModel, void* pContext = NULL);
-	virtual void Render(ID3D12GraphicsCommandList4 * pd3dCommandList, CCamera* pCamera, bool bRaster);
+	virtual void Render(ID3D12GraphicsCommandList4* pd3dCommandList, CCamera* pCamera, bool bRaster);
 };
 
 class CDoorObjectsShader : public CStandardObjectsShader

@@ -13,14 +13,21 @@ CMesh::CMesh(ID3D12Device5 *pd3dDevice, ID3D12GraphicsCommandList4*pd3dCommandLi
 
 CMesh::~CMesh()
 {
-	if (m_pd3dPositionBuffer) m_pd3dPositionBuffer->Release();
+	if (m_pd3dPositionBuffer) {
+		m_pd3dPositionBuffer->Release(); m_pd3dPositionBuffer
+			= nullptr;
+	}
 
 	if (m_nSubMeshes > 0)
 	{
 		for (int i = 0; i < m_nSubMeshes; i++)
 		{
-			if (m_ppd3dSubSetIndexBuffers[i]) m_ppd3dSubSetIndexBuffers[i]->Release();
-			if (m_ppnSubSetIndices[i]) delete[] m_ppnSubSetIndices[i];
+			if (m_ppd3dSubSetIndexBuffers[i]) {
+				m_ppd3dSubSetIndexBuffers[i]->Release(); 
+				m_ppd3dSubSetIndexBuffers[i]
+					= nullptr;
+			}
+			if (m_ppnSubSetIndices[i]) delete m_ppnSubSetIndices[i]; //왜 delete[]로 되있지?
 		}
 		if (m_ppd3dSubSetIndexBuffers) delete[] m_ppd3dSubSetIndexBuffers;
 		if (m_pd3dSubSetIndexBufferViews) delete[] m_pd3dSubSetIndexBufferViews;

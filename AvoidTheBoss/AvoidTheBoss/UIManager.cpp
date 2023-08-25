@@ -451,9 +451,9 @@ void UIManager::UpdateGameSceneUI(CGameScene* gc)
                 if (mp->m_bIsInvincibility)
                 {
                     float maxOpacity = 0.5f;
-                    float bulletHoleOpacityExtra = 1.9f;
+                    float bulletHoleOpacityExtra = 1.7f; //1.9f
                     float baseOpacityExtra = 0.5f;
-                    float outlineOpacityExtra = 2.0f;
+                    float outlineOpacityExtra = 1.0f; //2.0f
                     if (i == 4)
                     {
                         if (mp->m_UICoolTime <= 0.5f)

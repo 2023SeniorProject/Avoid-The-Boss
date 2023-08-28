@@ -53,7 +53,7 @@ void CSound::PlayBackGroundSound(int nSound, int nChannel)
 	FMOD_System_PlaySound(pSystem, pSound[nSound], nullptr, 0, &pChannel[nChannel]);
 }
 
-void CSound::PlaySoundA(int nSound, int nChannel)
+void CSound::PlaySound(int nSound, int nChannel)
 {
 	FMOD_System_PlaySound(pSystem, pSound[nSound], nullptr, 0, &pChannel[nChannel]);
 }

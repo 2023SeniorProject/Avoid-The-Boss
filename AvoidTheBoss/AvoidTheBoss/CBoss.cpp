@@ -150,6 +150,7 @@ void CBoss::ResetState()
 	 m_standAttackAnimTime = 0;
 	 m_IsOnAttack = false;
 	 m_bOnMoveSound = false;
+	 SoundManager::SoundStop(5);
 }
 
 void CBoss::SetAttackAnimOtherClient()

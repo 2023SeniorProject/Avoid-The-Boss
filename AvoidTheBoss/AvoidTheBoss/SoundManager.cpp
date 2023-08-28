@@ -47,7 +47,7 @@ void SoundManager::PlayBackGroundSound(int32 Scene)
 
 void SoundManager::PlayObjectSound(int32 idx, int32 channel)
 {
-	m_pSound->PlaySoundA(idx, channel);
+	m_pSound->PlaySound(idx, channel);
 }
 
 void SoundManager::SoundStop(int32 nChannel)

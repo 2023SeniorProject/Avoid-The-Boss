@@ -15,7 +15,7 @@
 #include "GameInput.h"
 
 HWND Win32Application::m_hwnd = nullptr;
-bool Win32Application::m_fullscreenMode = false;
+bool Win32Application::m_fullscreenMode = true;
 RECT Win32Application::m_windowRect;
 
 using Microsoft::WRL::ComPtr;
@@ -221,7 +221,7 @@ LRESULT CALLBACK Win32Application::WindowProc(HWND hWnd, UINT message, WPARAM wP
     {
     case WM_CREATE:
     {
-        // Save the DXSample* passed in to CreateWindow.
+        //Save the DXSample* passed in to CreateWindow.
         LPCREATESTRUCT pCreateStruct = reinterpret_cast<LPCREATESTRUCT>(lParam);
         SetWindowLongPtr(hWnd, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(pCreateStruct->lpCreateParams));
     }

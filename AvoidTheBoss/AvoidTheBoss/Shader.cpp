@@ -488,10 +488,10 @@ void CMapObjectsShader::BuildObjects(ID3D12Device5 * pd3dDevice,ID3D12GraphicsCo
 	m_nObjects = 3;
 	m_ppObjects = new CGameObject * [m_nObjects];
 
-	CGameObject* pMap = CGameObject::LoadGeometryFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "Model/Map/Industry_Map(6).bin", this,Layout::MAP);
+	CGameObject* pMap = CGameObject::LoadGeometryFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "Model/Map/Industry_Map.bin", this,Layout::MAP);
 	m_ppObjects[0] = new CGameObject();
 	m_ppObjects[0]->SetChild(pMap ,true);
-	m_ppObjects[0]->SetPosition(XMFLOAT3(0.0f, 0.0f, 0.0f));
+	m_ppObjects[0]->SetPosition(XMFLOAT3(-7.674544f, 0.0f, -1.90f));
 
 	CGameObject* pTile = CGameObject::LoadGeometryFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "Model/Map/Industry_Field2(1).bin", this, Layout::MAP);
 	m_ppObjects[1] = new CGameObject();

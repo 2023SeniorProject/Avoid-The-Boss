@@ -1,6 +1,57 @@
-<Frame>: 0 <Textures>: 31 Industry_Map
-	<Children>: 59
-		<Frame>: 1 <Textures>: 0 Delivery_Box
+<Frame>: 0 <Textures>: 28 Industry_Map
+	<Children>: 58
+		<Frame>: 1 <Textures>: 0 Conveyor2
+			<Materials>: 1
+				<Material>: 0
+					<AlbedoMap>:Conveyor
+					<NormalMap>:Conveyor_Main_Normal
+			</Materials>
+			<Children>: 0
+		</Frame>
+		<Frame>: 2 <Textures>: 0 Conveyor3
+			<Materials>: 1
+				<Material>: 0
+					<AlbedoMap>:Conveyor
+					<NormalMap>:Conveyor_Main_Normal
+			</Materials>
+			<Children>: 0
+		</Frame>
+		<Frame>: 3 <Textures>: 0 Conveyor_Angle2
+			<Materials>: 1
+				<Material>: 0
+					<AlbedoMap>:Conveyor_Angle
+					<NormalMap>:Conveyor_Angle_Normal
+			</Materials>
+			<Children>: 0
+		</Frame>
+		<Frame>: 4 <Textures>: 0 Conveyor_Angle3
+			<Materials>: 1
+				<Material>: 0
+					<AlbedoMap>:Conveyor_Angle
+					<NormalMap>:Conveyor_Angle_Normal
+			</Materials>
+			<Children>: 0
+		</Frame>
+		<Frame>: 5 <Textures>: 0 Conveyor_Middle
+			<Children>: 0
+		</Frame>
+		<Frame>: 6 <Textures>: 0 Conveyor_Middle2
+			<Materials>: 1
+				<Material>: 0
+					<AlbedoMap>:Conveyor_Middle
+					<NormalMap>:Conveyor_Middle_Normal
+			</Materials>
+			<Children>: 0
+		</Frame>
+		<Frame>: 7 <Textures>: 0 Conveyor_Middle3
+			<Materials>: 1
+				<Material>: 0
+					<AlbedoMap>:Conveyor_Middle
+					<NormalMap>:Conveyor_Middle_Normal
+			</Materials>
+			<Children>: 0
+		</Frame>
+		<Frame>: 8 <Textures>: 0 Delivery_Box001
 			<Materials>: 1
 				<Material>: 0
 					<AlbedoMap>:Delivery_Box2_BaseColor
@@ -8,177 +59,133 @@
 			</Materials>
 			<Children>: 0
 		</Frame>
-		<Frame>: 2 <Textures>: 0 Box_Dummy001
+		<Frame>: 9 <Textures>: 0 Delivery_Box002
 			<Materials>: 1
 				<Material>: 0
-					<AlbedoMap>:Box_BaseColor
-					<NormalMap>:Boxs_Normal
+					<AlbedoMap>:Delivery_Box2_BaseColor
+					<NormalMap>:Delivery_Box_low_Box2_Normal
 			</Materials>
 			<Children>: 0
 		</Frame>
-		<Frame>: 3 <Textures>: 0 Box_Dummy002
+		<Frame>: 10 <Textures>: 0 DummyBox001
 			<Materials>: 1
 				<Material>: 0
-					<AlbedoMap>:Box_BaseColor
-					<NormalMap>:Boxs_Normal
+					<AlbedoMap>:Industry_Box_BaseColor
+					<NormalMap>:Industry_Box_Normal
 			</Materials>
 			<Children>: 0
 		</Frame>
-		<Frame>: 4 <Textures>: 0 Box_Dummy003
+		<Frame>: 11 <Textures>: 0 DummyBox002
 			<Materials>: 1
 				<Material>: 0
-					<AlbedoMap>:Box_BaseColor
-					<NormalMap>:Boxs_Normal
+					<AlbedoMap>:Industry_Box_BaseColor
+					<NormalMap>:Industry_Box_Normal
 			</Materials>
 			<Children>: 0
 		</Frame>
-		<Frame>: 5 <Textures>: 0 Box_Dummy004
+		<Frame>: 12 <Textures>: 0 DummyBox003
 			<Materials>: 1
 				<Material>: 0
-					<AlbedoMap>:Box_BaseColor
-					<NormalMap>:Boxs_Normal
+					<AlbedoMap>:Industry_Box_BaseColor
+					<NormalMap>:Industry_Box_Normal
 			</Materials>
 			<Children>: 0
 		</Frame>
-		<Frame>: 6 <Textures>: 0 Box_Dummy005
+		<Frame>: 13 <Textures>: 0 DummyBox004
 			<Materials>: 1
 				<Material>: 0
-					<AlbedoMap>:Box_BaseColor
-					<NormalMap>:Boxs_Normal
+					<AlbedoMap>:Industry_Box_BaseColor
+					<NormalMap>:Industry_Box_Normal
 			</Materials>
 			<Children>: 0
 		</Frame>
-		<Frame>: 7 <Textures>: 0 Box_Dummy006
+		<Frame>: 14 <Textures>: 0 DummyBox005
 			<Materials>: 1
 				<Material>: 0
-					<AlbedoMap>:Box_BaseColor
-					<NormalMap>:Boxs_Normal
+					<AlbedoMap>:Industry_Box_BaseColor
+					<NormalMap>:Industry_Box_Normal
 			</Materials>
 			<Children>: 0
 		</Frame>
-		<Frame>: 8 <Textures>: 0 Box_Dummy007
+		<Frame>: 15 <Textures>: 0 DummyBox006
 			<Materials>: 1
 				<Material>: 0
-					<AlbedoMap>:Box_BaseColor
-					<NormalMap>:Boxs_Normal
+					<AlbedoMap>:Industry_Box_BaseColor
+					<NormalMap>:Industry_Box_Normal
 			</Materials>
 			<Children>: 0
 		</Frame>
-		<Frame>: 9 <Textures>: 0 Box_Dummy008
+		<Frame>: 16 <Textures>: 0 DummyBox007
 			<Materials>: 1
 				<Material>: 0
-					<AlbedoMap>:Box_BaseColor
-					<NormalMap>:Boxs_Normal
+					<AlbedoMap>:Industry_Box_BaseColor
+					<NormalMap>:Industry_Box_Normal
 			</Materials>
 			<Children>: 0
 		</Frame>
-		<Frame>: 10 <Textures>: 0 Button002
+		<Frame>: 17 <Textures>: 0 DummyBox008
+			<Materials>: 1
+				<Material>: 0
+					<AlbedoMap>:Industry_Box_BaseColor
+					<NormalMap>:Industry_Box_Normal
+			</Materials>
+			<Children>: 0
+		</Frame>
+		<Frame>: 18 <Textures>: 0 Fork_Lift1
+			<Materials>: 1
+				<Material>: 0
+					<AlbedoMap>:Fork_Lift
+					<NormalMap>:Fork_Lift_Normal
+			</Materials>
+			<Children>: 0
+		</Frame>
+		<Frame>: 19 <Textures>: 0 Fork_Lift2
+			<Materials>: 1
+				<Material>: 0
+					<AlbedoMap>:Fork_Lift
+					<NormalMap>:Fork_Lift_Normal
+			</Materials>
+			<Children>: 0
+		</Frame>
+		<Frame>: 20 <Textures>: 0 Fork_Lift3
+			<Materials>: 1
+				<Material>: 0
+					<AlbedoMap>:Fork_Lift
+					<NormalMap>:Fork_Lift_Normal
+			</Materials>
+			<Children>: 0
+		</Frame>
+		<Frame>: 21 <Textures>: 0 Fork_Lift4
+			<Materials>: 1
+				<Material>: 0
+					<AlbedoMap>:Fork_Lift
+					<NormalMap>:Fork_Lift_Normal
+			</Materials>
+			<Children>: 0
+		</Frame>
+		<Frame>: 22 <Textures>: 0 Generator_Lever
 			<Materials>: 1
 				<Material>: 0
 					<AlbedoMap>:Button_BaseColor
 			</Materials>
 			<Children>: 0
 		</Frame>
-		<Frame>: 11 <Textures>: 0 Conveyor2
+		<Frame>: 23 <Textures>: 0 Generator_Lever002
 			<Materials>: 1
 				<Material>: 0
-					<AlbedoMap>:Conveyor_Main
-					<NormalMap>:Conveyor_Main_Normal
+					<AlbedoMap>:Button_BaseColor
 			</Materials>
 			<Children>: 0
 		</Frame>
-		<Frame>: 12 <Textures>: 0 Conveyor3
+		<Frame>: 24 <Textures>: 0 Industry_EdgeFrame
 			<Materials>: 1
 				<Material>: 0
-					<AlbedoMap>:Conveyor_Main
-					<NormalMap>:Conveyor_Main_Normal
-			</Materials>
-			<Children>: 0
-		</Frame>
-		<Frame>: 13 <Textures>: 0 Conveyor_Angle2
-			<Materials>: 1
-				<Material>: 0
-					<AlbedoMap>:Conveyor_Angle
-					<NormalMap>:Conveyor_Angle_Normal
-			</Materials>
-			<Children>: 0
-		</Frame>
-		<Frame>: 14 <Textures>: 0 Conveyor_Angle3
-			<Materials>: 1
-				<Material>: 0
-					<AlbedoMap>:Conveyor_Angle
-					<NormalMap>:Conveyor_Angle_Normal
-			</Materials>
-			<Children>: 0
-		</Frame>
-		<Frame>: 15 <Textures>: 0 Conveyor_Middle
-			<Children>: 0
-		</Frame>
-		<Frame>: 16 <Textures>: 0 Conveyor_Middle2
-			<Materials>: 1
-				<Material>: 0
-					<AlbedoMap>:Conveyor_Middle
-					<NormalMap>:Conveyor_Middle_Normal
-			</Materials>
-			<Children>: 0
-		</Frame>
-		<Frame>: 17 <Textures>: 0 Conveyor_Middle3
-			<Materials>: 1
-				<Material>: 0
-					<AlbedoMap>:Conveyor_Middle
-					<NormalMap>:Conveyor_Middle_Normal
-			</Materials>
-			<Children>: 0
-		</Frame>
-		<Frame>: 18 <Textures>: 0 Delivery_Box001
-			<Materials>: 1
-				<Material>: 0
-					<AlbedoMap>:Delivery_Box2_BaseColor
-					<NormalMap>:Delivery_Box_low_Box2_Normal
-			</Materials>
-			<Children>: 0
-		</Frame>
-		<Frame>: 19 <Textures>: 0 Fork_Lift1
-			<Materials>: 1
-				<Material>: 0
-					<AlbedoMap>:Fork_Lift
-					<NormalMap>:Fork_Lift_Normal
-			</Materials>
-			<Children>: 0
-		</Frame>
-		<Frame>: 20 <Textures>: 0 Fork_Lift2
-			<Materials>: 1
-				<Material>: 0
-					<AlbedoMap>:Fork_Lift
-					<NormalMap>:Fork_Lift_Normal
-			</Materials>
-			<Children>: 0
-		</Frame>
-		<Frame>: 21 <Textures>: 0 Fork_Lift3
-			<Materials>: 1
-				<Material>: 0
-					<AlbedoMap>:Fork_Lift
-					<NormalMap>:Fork_Lift_Normal
-			</Materials>
-			<Children>: 0
-		</Frame>
-		<Frame>: 22 <Textures>: 0 Fork_Lift4
-			<Materials>: 1
-				<Material>: 0
-					<AlbedoMap>:Fork_Lift
-					<NormalMap>:Fork_Lift_Normal
-			</Materials>
-			<Children>: 0
-		</Frame>
-		<Frame>: 23 <Textures>: 0 Industry_EdgeFrame
-			<Materials>: 1
-				<Material>: 0
-					<AlbedoMap>:Industry_EdgeFrame_BaseColor
+					<AlbedoMap>:Industry_EdgeFrame
 					<NormalMap>:Industry_EdgeFrame_Normal
 			</Materials>
 			<Children>: 0
 		</Frame>
-		<Frame>: 24 <Textures>: 0 Industry_Pillar
+		<Frame>: 25 <Textures>: 0 Industry_Pillar
 			<Materials>: 1
 				<Material>: 0
 					<AlbedoMap>:Industry_Pillar1
@@ -186,7 +193,7 @@
 			</Materials>
 			<Children>: 0
 		</Frame>
-		<Frame>: 25 <Textures>: 0 Industry_Pillar2
+		<Frame>: 26 <Textures>: 0 Industry_Pillar2
 			<Materials>: 1
 				<Material>: 0
 					<AlbedoMap>:Industry_Pillar2
@@ -194,97 +201,78 @@
 			</Materials>
 			<Children>: 0
 		</Frame>
-		<Frame>: 26 <Textures>: 0 Industry_Roof_low
+		<Frame>: 27 <Textures>: 0 Industry_Roof_low
 			<Materials>: 1
 				<Material>: 0
 					<AlbedoMap>:Industry_Roof_BaseColor
+			</Materials>
+			<Children>: 0
+		</Frame>
+		<Frame>: 28 <Textures>: 0 Industry_RoofFrame
+			<Materials>: 1
+				<Material>: 0
+					<AlbedoMap>:Industry_RoofFrame
 					<NormalMap>:Industry_Roof_Normal
 			</Materials>
 			<Children>: 0
 		</Frame>
-		<Frame>: 27 <Textures>: 0 Industry_RoofFrame
+		<Frame>: 29 <Textures>: 0 Industry_Wall
 			<Materials>: 1
 				<Material>: 0
-					<AlbedoMap>:Industry_RoofFrame
-					<NormalMap>:Industry_RoofFrame_Normal
+					<AlbedoMap>:Industry_Wall_BaseColor
 			</Materials>
 			<Children>: 0
 		</Frame>
-		<Frame>: 28 <Textures>: 0 Industry_Wall
+		<Frame>: 30 <Textures>: 0 Industry_Wall1
 			<Materials>: 1
 				<Material>: 0
-					<AlbedoMap>:Plane_Wall_BaseColor
-					<NormalMap>:Plane_Wall_Normal
+					<AlbedoMap>:Industry_Wall_BaseColor
 			</Materials>
 			<Children>: 0
 		</Frame>
-		<Frame>: 29 <Textures>: 0 Industry_Wall1
+		<Frame>: 31 <Textures>: 0 Industry_Wall3
 			<Materials>: 1
 				<Material>: 0
-					<AlbedoMap>:Plane_Wall_BaseColor
-					<NormalMap>:Plane_Wall_Normal
+					<AlbedoMap>:Industry_Wall_BaseColor
 			</Materials>
 			<Children>: 0
 		</Frame>
-		<Frame>: 30 <Textures>: 0 Industry_Wall3
+		<Frame>: 32 <Textures>: 0 Industry_Wall4
 			<Materials>: 1
 				<Material>: 0
-					<AlbedoMap>:Plane_Wall_BaseColor
-					<NormalMap>:Plane_Wall_Normal
+					<AlbedoMap>:Industry_Wall_BaseColor
 			</Materials>
 			<Children>: 0
 		</Frame>
-		<Frame>: 31 <Textures>: 0 Industry_Wall4
-			<Materials>: 1
-				<Material>: 0
-					<AlbedoMap>:Plane_Wall_BaseColor
-					<NormalMap>:Plane_Wall_Normal
-			</Materials>
-			<Children>: 0
-		</Frame>
-		<Frame>: 32 <Textures>: 0 Oil_Drum1
+		<Frame>: 33 <Textures>: 0 Oil_Drum1
 			<Materials>: 1
 				<Material>: 0
 					<AlbedoMap>:Oil_Drum
 			</Materials>
 			<Children>: 0
 		</Frame>
-		<Frame>: 33 <Textures>: 0 Oil_Drum2
+		<Frame>: 34 <Textures>: 0 Oil_Drum2
 			<Materials>: 1
 				<Material>: 0
 					<AlbedoMap>:Oil_Drum
 			</Materials>
 			<Children>: 0
 		</Frame>
-		<Frame>: 34 <Textures>: 0 Oil_Drum3
+		<Frame>: 35 <Textures>: 0 Oil_Drum3
 			<Materials>: 1
 				<Material>: 0
 					<AlbedoMap>:Oil_Drum
 			</Materials>
 			<Children>: 0
 		</Frame>
-		<Frame>: 35 <Textures>: 0 Oil_Drum4
+		<Frame>: 36 <Textures>: 0 Oil_Drum4
 			<Materials>: 1
 				<Material>: 0
 					<AlbedoMap>:Oil_Drum
 			</Materials>
 			<Children>: 0
 		</Frame>
-		<Frame>: 36 <Textures>: 0 Oxygen_Tank
-			<Materials>: 1
-				<Material>: 0
-					<AlbedoMap>:Oxygen_Tank
-			</Materials>
-			<Children>: 0
-		</Frame>
-		<Frame>: 37 <Textures>: 0 Oxygen_Tank001
-			<Materials>: 1
-				<Material>: 0
-					<AlbedoMap>:Oxygen_Tank
-			</Materials>
-			<Children>: 0
-		</Frame>
-		<Frame>: 38 <Textures>: 0 Shelf1
+		<Frame>: 37 <Textures>: 0 Shelf1
 			<Materials>: 1
 				<Material>: 0
 					<AlbedoMap>:Shelf
@@ -292,7 +280,7 @@
 			</Materials>
 			<Children>: 0
 		</Frame>
-		<Frame>: 39 <Textures>: 0 Shelf2
+		<Frame>: 38 <Textures>: 0 Shelf2
 			<Materials>: 1
 				<Material>: 0
 					<AlbedoMap>:Shelf
@@ -300,7 +288,7 @@
 			</Materials>
 			<Children>: 0
 		</Frame>
-		<Frame>: 40 <Textures>: 0 Shelf3
+		<Frame>: 39 <Textures>: 0 Shelf3
 			<Materials>: 1
 				<Material>: 0
 					<AlbedoMap>:Shelf
@@ -308,7 +296,7 @@
 			</Materials>
 			<Children>: 0
 		</Frame>
-		<Frame>: 41 <Textures>: 0 Shelf4
+		<Frame>: 40 <Textures>: 0 Shelf4
 			<Materials>: 1
 				<Material>: 0
 					<AlbedoMap>:Shelf
@@ -316,7 +304,7 @@
 			</Materials>
 			<Children>: 0
 		</Frame>
-		<Frame>: 42 <Textures>: 0 Shelf5
+		<Frame>: 41 <Textures>: 0 Shelf5
 			<Materials>: 1
 				<Material>: 0
 					<AlbedoMap>:Shelf
@@ -324,7 +312,7 @@
 			</Materials>
 			<Children>: 0
 		</Frame>
-		<Frame>: 43 <Textures>: 0 Shelf6
+		<Frame>: 42 <Textures>: 0 Shelf6
 			<Materials>: 1
 				<Material>: 0
 					<AlbedoMap>:Shelf
@@ -332,7 +320,7 @@
 			</Materials>
 			<Children>: 0
 		</Frame>
-		<Frame>: 44 <Textures>: 0 Shelf7
+		<Frame>: 43 <Textures>: 0 Shelf7
 			<Materials>: 1
 				<Material>: 0
 					<AlbedoMap>:Shelf
@@ -340,7 +328,7 @@
 			</Materials>
 			<Children>: 0
 		</Frame>
-		<Frame>: 45 <Textures>: 0 Shelf8
+		<Frame>: 44 <Textures>: 0 Shelf8
 			<Materials>: 1
 				<Material>: 0
 					<AlbedoMap>:Shelf
@@ -348,7 +336,7 @@
 			</Materials>
 			<Children>: 0
 		</Frame>
-		<Frame>: 46 <Textures>: 0 Shelf9
+		<Frame>: 45 <Textures>: 0 Shelf9
 			<Materials>: 1
 				<Material>: 0
 					<AlbedoMap>:Shelf
@@ -356,7 +344,7 @@
 			</Materials>
 			<Children>: 0
 		</Frame>
-		<Frame>: 47 <Textures>: 0 Shelf10
+		<Frame>: 46 <Textures>: 0 Shelf10
 			<Materials>: 1
 				<Material>: 0
 					<AlbedoMap>:Shelf
@@ -364,7 +352,7 @@
 			</Materials>
 			<Children>: 0
 		</Frame>
-		<Frame>: 48 <Textures>: 0 Shelf11
+		<Frame>: 47 <Textures>: 0 Shelf11
 			<Materials>: 1
 				<Material>: 0
 					<AlbedoMap>:Shelf
@@ -372,7 +360,7 @@
 			</Materials>
 			<Children>: 0
 		</Frame>
-		<Frame>: 49 <Textures>: 0 Shelf12
+		<Frame>: 48 <Textures>: 0 Shelf12
 			<Materials>: 1
 				<Material>: 0
 					<AlbedoMap>:Shelf
@@ -380,7 +368,7 @@
 			</Materials>
 			<Children>: 0
 		</Frame>
-		<Frame>: 50 <Textures>: 0 Shelf013
+		<Frame>: 49 <Textures>: 0 Shelf013
 			<Materials>: 1
 				<Material>: 0
 					<AlbedoMap>:Shelf
@@ -388,7 +376,7 @@
 			</Materials>
 			<Children>: 0
 		</Frame>
-		<Frame>: 51 <Textures>: 0 Shelf014
+		<Frame>: 50 <Textures>: 0 Shelf014
 			<Materials>: 1
 				<Material>: 0
 					<AlbedoMap>:Shelf
@@ -396,66 +384,66 @@
 			</Materials>
 			<Children>: 0
 		</Frame>
-		<Frame>: 52 <Textures>: 0 Wood_Pallet1
+		<Frame>: 51 <Textures>: 0 Wood_Pallet1
 			<Materials>: 1
 				<Material>: 0
-					<AlbedoMap>:Wood_Pallet
+					<AlbedoMap>:Wood_Pallet_BaseColor
 					<NormalMap>:Wood_Pallet_Normal
 			</Materials>
 			<Children>: 0
 		</Frame>
-		<Frame>: 53 <Textures>: 0 Wood_Pallet2
+		<Frame>: 52 <Textures>: 0 Wood_Pallet2
 			<Materials>: 1
 				<Material>: 0
-					<AlbedoMap>:Wood_Pallet
+					<AlbedoMap>:Wood_Pallet_BaseColor
 					<NormalMap>:Wood_Pallet_Normal
 			</Materials>
 			<Children>: 0
 		</Frame>
-		<Frame>: 54 <Textures>: 0 Wood_Pallet3
+		<Frame>: 53 <Textures>: 0 Wood_Pallet3
 			<Materials>: 1
 				<Material>: 0
-					<AlbedoMap>:Wood_Pallet
+					<AlbedoMap>:Wood_Pallet_BaseColor
 					<NormalMap>:Wood_Pallet_Normal
 			</Materials>
 			<Children>: 0
 		</Frame>
-		<Frame>: 55 <Textures>: 0 Wood_Pallet4
+		<Frame>: 54 <Textures>: 0 Wood_Pallet4
 			<Materials>: 1
 				<Material>: 0
-					<AlbedoMap>:Wood_Pallet
+					<AlbedoMap>:Wood_Pallet_BaseColor
 					<NormalMap>:Wood_Pallet_Normal
 			</Materials>
 			<Children>: 0
 		</Frame>
-		<Frame>: 56 <Textures>: 0 Wood_Pallet005
+		<Frame>: 55 <Textures>: 0 Wood_Pallet005
 			<Materials>: 1
 				<Material>: 0
-					<AlbedoMap>:Wood_Pallet
+					<AlbedoMap>:Wood_Pallet_BaseColor
 					<NormalMap>:Wood_Pallet_Normal
 			</Materials>
 			<Children>: 0
 		</Frame>
-		<Frame>: 57 <Textures>: 0 Wood_Pallet006
+		<Frame>: 56 <Textures>: 0 Wood_Pallet006
 			<Materials>: 1
 				<Material>: 0
-					<AlbedoMap>:Wood_Pallet
+					<AlbedoMap>:Wood_Pallet_BaseColor
 					<NormalMap>:Wood_Pallet_Normal
 			</Materials>
 			<Children>: 0
 		</Frame>
-		<Frame>: 58 <Textures>: 0 Wood_Pallet007
+		<Frame>: 57 <Textures>: 0 Wood_Pallet007
 			<Materials>: 1
 				<Material>: 0
-					<AlbedoMap>:Wood_Pallet
+					<AlbedoMap>:Wood_Pallet_BaseColor
 					<NormalMap>:Wood_Pallet_Normal
 			</Materials>
 			<Children>: 0
 		</Frame>
-		<Frame>: 59 <Textures>: 0 Wood_Pallet008
+		<Frame>: 58 <Textures>: 0 Wood_Pallet008
 			<Materials>: 1
 				<Material>: 0
-					<AlbedoMap>:Wood_Pallet
+					<AlbedoMap>:Wood_Pallet_BaseColor
 					<NormalMap>:Wood_Pallet_Normal
 			</Materials>
 			<Children>: 0

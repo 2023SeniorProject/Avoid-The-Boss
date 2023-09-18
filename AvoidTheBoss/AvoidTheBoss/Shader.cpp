@@ -491,7 +491,17 @@ void CMapObjectsShader::BuildObjects(ID3D12Device5 * pd3dDevice,ID3D12GraphicsCo
 	CGameObject* pMap = CGameObject::LoadGeometryFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "Model/Map/Industry_Map.bin", this,Layout::MAP);
 	m_ppObjects[0] = new CGameObject();
 	m_ppObjects[0]->SetChild(pMap ,true);
-	m_ppObjects[0]->SetPosition(XMFLOAT3(-7.674544f, 0.0f, -1.90f));
+	m_ppObjects[0]->SetPosition(XMFLOAT3(-7.774636f, -0.0f, -1.926502f));
+
+	CGameObject* lever1 = m_ppObjects[0]->CGameObject::FindFrame("Generator_Lever");
+	CGameObject* lever2 = m_ppObjects[0]->CGameObject::FindFrame("Generator_Lever002");
+	XMMATRIX xmmtxTranslate = DirectX::XMMatrixTranslation(-2.0f, 0.0f, 0.1f);
+	lever1->m_xmf4x4ToParent = Matrix4x4::Multiply(xmmtxTranslate, lever1->m_xmf4x4ToParent);
+
+	XMMATRIX xmmtxTranslate2 = DirectX::XMMatrixTranslation(-1.5f, 0.0f, 0.0f);
+	lever2->m_xmf4x4ToParent = Matrix4x4::Multiply(xmmtxTranslate2, lever2->m_xmf4x4ToParent);
+
+	m_ppObjects[0]->CGameObject::UpdateTransform(NULL);
 
 	CGameObject* pTile = CGameObject::LoadGeometryFromFile(pd3dDevice, pd3dCommandList, pd3dGraphicsRootSignature, "Model/Map/Industry_Field2(1).bin", this, Layout::MAP);
 	m_ppObjects[1] = new CGameObject();

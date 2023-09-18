@@ -812,7 +812,7 @@ void CGeneratorObjectsShader::BuildObjects(ID3D12Device5* pd3dDevice, ID3D12Grap
 
 	m_ppObjects[2] = new CGenerator();
 	m_ppObjects[2]->SetChild(pGenerator3 ,true);
-	m_ppObjects[2]->SetPosition(XMFLOAT3(0.0f, 0.0f, -22.82f));
+	m_ppObjects[2]->SetPosition(XMFLOAT3(0.0f, 0.0f, -22.85f));
 	m_ppObjects[2]->Rotate(0.0f, 0.0f, 0.0f);
 	m_ppObjects[2]->OnPrepareAnimate();
 	m_ppObjects[2]->SetNormalVector();

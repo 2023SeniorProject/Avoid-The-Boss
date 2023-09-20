@@ -566,7 +566,7 @@ void CGameFramework::OnProcessingMouseMessage(HWND hWnd, UINT nMessageID, WPARAM
 
 void CGameFramework::OnProcessingKeyboardMessage(HWND hWnd, UINT nMessageID, WPARAM wParam, LPARAM lParam)
 {
-	if (m_hWnd != ::GetActiveWindow()) return;
+	//if (m_hWnd != ::GetActiveWindow()) return;
 	switch (nMessageID)
 	{
 	case WM_KEYUP:

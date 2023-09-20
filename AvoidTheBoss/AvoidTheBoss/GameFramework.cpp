@@ -559,7 +559,7 @@ void CGameFramework::ChangeScene(SCENESTATE ss)
 
 void CGameFramework::OnProcessingMouseMessage(HWND hWnd, UINT nMessageID, WPARAM wParam, LPARAM lParam)
 {
-	if (m_hWnd != ::GetActiveWindow()) return;
+	//if (m_hWnd != ::GetActiveWindow()) return;
 	m_SceneManager->GetSceneByIdx(m_curScene)->OnProcessingMouseMessage(hWnd, nMessageID, wParam, lParam);
 	
 }

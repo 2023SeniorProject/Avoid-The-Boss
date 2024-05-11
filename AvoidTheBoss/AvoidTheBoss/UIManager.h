@@ -134,13 +134,16 @@ public:
     // 방 전용
     UIButton m_RoomButtons[2];
 
-    InGameUI m_CharCrossHead;
-    InGameUI m_RescueIcon;
-    int m_nAttackedUI = 5;
-    InGameUI m_AttackedEffect[5];
-   
-    float m_AttackedOpacity[5];
-    float m_CrossHeadOpacity = 0.8f;
+    // 인 게임
+    InGameUI m_RescueIcon; // 살리기 UI
+    InGameUI m_CharCrossHead; // 조준선 UI
+
+    int m_nAttackedUI = 5; // 피격 UI 텍스쳐 수
+    InGameUI m_AttackedEffect[5]; // 피격 UI 텍스쳐
+    
+    float m_AttackedOpacity[5]; // 피격 UI 투명도
+    float m_CrossHeadOpacity = 0.8f; // 조준선 투명도
+
 
     // 인 게임 전용
     int32                      m_playerIdx = -1;

@@ -4,7 +4,7 @@
 #include "SPlayer.h"
 #include "CSIocpCore.h"
 #include "JobQueue.h"
-#include "OBDC_MGR.h"
+
 
 
 
@@ -15,70 +15,13 @@ using namespace std;
 
 void LoginProcess(ServerSession* s, std::wstring sqlexec)
 {
-	USER_DB_MANAGER udb;
-	udb.AllocateHandles();
-	udb.ConnectDataSource(L"USER_DB");
-	udb.ExecuteStatementDirect(sqlexec.c_str());
-	udb.RetrieveResult();
-
-
-	s->_cid = udb.user_cid;
-
-	/*{
-		READ_SERVER_LOCK;
-		for (auto i : ServerIocpCore._clients)
-		{
-			if (i.second->_cid == s->_cid)
-			{
-				s->_cid = -1;
-				udb.DisconnectDataSource();
-				s->DoSendLoginPacket(false);
-				return;
-			}
-		}
-
-	}*/
-
-	if (s->_cid == -1)
-	{
-		std::cout << "LoginFail" << endl;
-		udb.DisconnectDataSource();
-		s->DoSendLoginPacket(false);
-		return;
-	}
-
-
-	std::cout << "client[" << s->_sid << "] " << "LoginSuccess" << endl;
-	udb.DisconnectDataSource();
-	s->DoSendLoginPacket(true);
-	SQL_NULL_DATA;
+	
 }
 
 
 void RegisterProcess(ServerSession* s, std::wstring sqlexec)
 {
-	USER_DB_MANAGER udb;
-	udb.AllocateHandles();
-	udb.ConnectDataSource(L"USER_DB");
-	const WCHAR* a = sqlexec.c_str();
-	udb.ExecuteStatementDirect(sqlexec.c_str());
-
-	if(udb.retcode == SQL_SUCCESS || udb.retcode == SQL_SUCCESS_WITH_INFO)
-	{
-		S2C_REG packet;
-		packet.size = sizeof(S2C_REG);
-		packet.type = (uint8)S_TITLE_PACKET_TYPE::REG_OK;
-		s->DoSend(&packet);
-	}
-	else
-	{
-
-		S2C_REG packet;
-		packet.size = sizeof(S2C_REG);
-		packet.type = (uint8)S_TITLE_PACKET_TYPE::REG_FAIL;
-		s->DoSend(&packet);
-	}
-	udb.DisconnectDataSource();
+	
 }
 
 ServerSession::ServerSession() 
